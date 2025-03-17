@@ -1,0 +1,209 @@
+/* Estilo do modal */
+.modal-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.5s ease-in-out; /* Transição suave para o modal */
+    background: linear-gradient(to bottom, white,#003366); /* Gradiente no fundo do container */
+}
+
+/* Conteúdo do modal */
+.modal-content {
+    color: white;
+    padding: 38px;
+    border-radius: 18px;
+    width: 25%;
+    height: auto;
+    position: relative;
+    opacity: 1;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    transform: translateY(0);
+    box-shadow: none; /* Removido o box-shadow para eliminar a borda preta */
+    z-index: 1;
+    background: linear-gradient(to bottom, white, #003366); /* Gradiente para o conteúdo */
+    overflow: hidden;
+    border: none; /* Removido qualquer borda */
+}
+
+/* Cabeçalho do modal */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1); /* Linha suave para separação */
+    margin-bottom: 20px;
+}
+
+/* Título do modal */
+.modal-title {
+    font-family: 'Poppins-Regular', sans-serif; /* Fonte Poppins */
+    font-size: 22px; /* Tamanho de fonte ajustado */
+    font-weight: bold;
+    color: black; /* Título em preto */
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Botão de Fechar */
+.modal-close {
+    font-family: 'Poppins-Regular', sans-serif; /* Fonte Poppins */
+    font-size: 28px;
+    color: black; /* Fechar com cor preta */
+    cursor: pointer;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #ff5e57; /* Cor vibrante ao passar o mouse */
+}
+
+/* Estilo para as caixas de texto */
+.modal-input {
+    font-family: 'Poppins-Regular', sans-serif; /* Fonte Poppins */
+    font-size: 16px;
+    color: #333; /* Texto em preto */
+    line-height: 1.5;
+    display: block;
+    width: 100%;
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid #ccc; /* Borda mais fina e suave */
+    border-radius: 8px; /* Bordas arredondadas mais suaves */
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efeito focus para as caixas de texto */
+.modal-input:focus {
+    background: white;
+    color: #333;
+    border-color: #00aaff;
+    box-shadow: 0 0 8px  #003366; /* Efeito de glow mais sutil */
+    outline: none;
+}
+
+/* Estilo para o placeholder */
+.modal-input::placeholder {
+    color: rgba(0, 0, 0, 0.6); /* Placeholder em cinza mais escuro */
+}
+
+/* Botões do modal */
+.modal-button {
+    font-family: 'Poppins-Regular', sans-serif;
+    background-color: #fff;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 20%;
+    margin-top: 15px;
+}
+
+/* Efeito hover para os botões */
+.modal-button:hover {
+    color: white;
+    background-color: #003366; /* Cor de fundo mais escura para o hover */
+    transform: translateY(-3px); /* Efeito de elevação */
+    box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.5); /* Efeito de box-shadow branco suave */
+}
+
+/* Estilo do link "Recupera Senha" */
+.modal .recover-password {
+    font-family: 'Poppins-Regular', sans-serif; /* Fonte Poppins */
+    color: black; /* Cor preta */
+    text-decoration: underline;
+    font-size: 16px;
+    margin-top: 15px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+}
+
+.logo-central-1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.img-logo-central-1 {
+    width: 220px; /* Largura padrão para a imagem */
+    height: auto; /* Mantém a proporção da imagem */
+  }
+  
+  
+  /* Para dispositivos com largura entre 768px e 1023px (Tablets e dispositivos menores) */
+  @media (max-width: 1023px) and (min-width: 768px) {
+    .img-logo-central-1 {
+      width: 150px; /* Tamanho padrão para tablets */
+    }
+  }
+  
+  /* Para dispositivos com largura máxima de 767px (Celulares e dispositivos móveis) */
+  @media (max-width: 767px) {
+    .img-logo-central-1 {
+      width: 150px; /* Reduz o tamanho da imagem para telas pequenas */
+    }
+  }
+  
+
+.recover-password:hover {
+    color:#003366; /* Cor de destaque vibrante ao passar o mouse */
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+        max-width: 320px;
+        padding: 20px;
+    }
+
+    .modal-title {
+        font-size: 20px;
+    }
+
+    .modal-input {
+        font-size: 15px;
+    }
+
+    .modal-button {
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        text-align: center;
+        width: 25%;
+        font-size: 13px;
+        padding: 8px 14px;
+    }
+}
+
+/* Efeito ao abrir o modal */
+.modal-container.show {
+    display: flex;
+    opacity: 1;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px); /* Modal começa mais acima */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

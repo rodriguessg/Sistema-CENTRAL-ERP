@@ -1,0 +1,162 @@
+  /* Estilo geral */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* Container principal (painel) */
+.main-container {
+    /* margin-left: 240px; Ajusta a margem do painel considerando a largura do menu lateral */
+    flex-grow: 1;
+    
+    padding: 20px;
+    ;
+}
+
+.dashboard {
+    display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+}
+
+/* Cards */
+.cards-container {
+    display: grid
+    ;
+        grid-template-columns: repeat(5, 5fr);
+        gap: 20px;
+        margin-bottom: 20px;
+}
+
+.cards-container2 {
+    display: grid
+    ;
+        grid-template-columns: repeat(3, 5fr);
+        gap: 20px;
+        margin-bottom: 20px;
+}
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 250px;
+    width: 100%;
+    /* max-width: 500px; */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+}
+.card5 {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 250px;
+    width: 100%;
+    /* max-width: 500px; */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.card:hover {
+    transform: translateY(-5px);  /* Eleva o card ao passar o mouse */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);  /* Aumenta a sombra do card */
+}
+
+.card h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.card p {
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Tabelas */
+.table-container {
+    /* background: #fff; */
+    padding: 20px;
+    border-radius: 8px;
+     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); 
+    width: 100%;  /* Aumenta a largura da tabela */
+    overflow-x: auto;
+}
+
+.table-container h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    background: white;
+}
+
+table th {
+    background: #f4f4f9;
+    color:  #333;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .cards-container {
+        grid-template-columns: 1fr; /* Coloca os cards em uma coluna */
+        gap: 15px;
+    }
+
+    .table-container {
+        padding: 15px;
+    }
+
+    table th, table td {
+        font-size: 12px;
+    }
+
+    .card p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cards-container {
+        grid-template-columns: 1fr; /* Coloca os cards em uma coluna */
+    }
+
+    .table-container {
+        padding: 10px;
+    }
+
+    table th, table td {
+        font-size: 10px;
+    }
+
+    .card p {
+        font-size: 12px;
+    }
+}

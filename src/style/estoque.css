@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #001f3f;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+.form-container3 {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 850px;
+    margin: 40px auto;
+}
+
+h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex; /* Alinha os elementos na horizontal */
+    gap: 20px; /* Espaçamento entre os inputs */
+    margin-bottom: 15px;
+}
+
+label {
+    flex: 1; /* Define que o label e input ocupam o mesmo espaço */
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+input, select {
+    flex: 2; /* O input ocupa mais espaço que o label */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+select {
+    width: 71%;
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%; /* Ocupa toda a largura */
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.form-group2 {
+    display: ruby;
+}
+.form-group3 input {
+    width: 100%;
+    margin-right: 23px;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.form-group3 {
+    margin-bottom: 6px;
+    padding-right: 25px;
+}
+.form-container3.active {
+        display: block;
+    }

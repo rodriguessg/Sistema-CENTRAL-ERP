@@ -1,0 +1,62 @@
+.user-form-container {
+    padding: 20px 24px 10px 24px;
+    /* margin-top: 15px; */
+    width: 300px;
+    background-color: #ffffff;
+    /* left: 40%; */
+    border: 2px solid #ccc;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    position: relative;
+}
+
+/* Bordas 3D */
+.user-form-container:before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #e0e0e0;
+    z-index: -1;
+    transform: translate(4px, 4px);
+}
+
+h3 {
+    text-align: center;
+}
+
+.user-form-group {
+    margin-bottom: 15px;
+}
+
+.user-form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.user-form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+button {
+    /* width: 100%; */
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #0056b3;
+}

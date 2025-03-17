@@ -1,0 +1,308 @@
+:root {
+  --cor-modal: rgba(0, 0, 0, 0.5);
+  --cor-principal: #005a92;
+  --cor-secundaria: white;
+  --cor-modal-erro: #e74c3c;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background-color: var(--cor-secundaria);
+  -webkit-font-smoothing: antialiased; /* Suaviza fontes em WebKit */
+  -moz-osx-font-smoothing: grayscale; /* Suaviza fontes no Firefox */
+  text-rendering: optimizeLegibility; /* Otimiza a legibilidade do texto */
+}
+
+footer {
+  background-color: #005a92;
+  color: var(--cor-secundaria);
+  text-align: center;
+  padding: 10px;
+  width: 100%;
+  position: relative;
+  bottom: 0;
+  height: 40px;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 100px); /* Subtrai a altura do footer */
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.log1 {
+  max-width: 300px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding-left: 15px;
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+#modalSector {
+  color: #005a92;
+}
+
+#signatureLayout {
+  display: flex;
+  align-items: center;
+}
+
+.logo-section {
+  padding-left: 17px;
+  padding-right: 30px;
+}
+
+.content-section {
+  padding-left: 25px;
+}
+
+.strong {
+  font-weight: 600;
+}
+
+.gvn {
+  width: 320px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 20px auto;
+}
+
+input,
+select {
+  margin: 5px 0;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 2px solid #ddd;
+  transition: border-color 0.3s, background-color 0.3s;
+  text-align: center;
+}
+
+button {
+  margin: 8px 0;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+  transition: border-color 0.3s, background-color 0.3s;
+  text-align: center;
+  display: block;
+  width: 100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+input:focus {
+  border-color: var(--cor-principal);
+  outline: none;
+}
+
+button {
+  background-color: var(--cor-principal);
+  color: var(--cor-secundaria);
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--cor-principal);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--cor-modal);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: var(--cor-secundaria);
+  padding: 20px;
+  border-radius: 8px;
+  width: 1000px;
+  text-align: left;
+  position: fixed;
+  bottom: 365px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.close {
+  position: absolute;
+  top: -16px;
+  right: -3px;
+  font-size: 42px;
+  cursor: pointer;
+}
+
+#signatureLayout {
+  text-align: left;
+  padding: 10px;
+  border: 2px solid #ddd;
+  font-size: 16px;
+  display: flex;
+  position: relative;
+  padding-left: 20px;
+  border-radius: 5px;
+  gap: 40px;
+}
+
+#signatureLayout h3 {
+  margin: 0;
+  color: #1d70a3;
+}
+
+p {
+  font-size: 14px;
+}
+
+#signatureLayout::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  height: 100%;
+  width: 9px;
+  background: linear-gradient(to bottom, #1d70a3 50%, #2d7e4e 50%);
+  top: 0%;
+}
+
+#signatureForm {
+  border-radius: 20px;
+  box-shadow: 0 2px 5px #005a92;
+  padding: 15px;
+  background-color: var(--cor-secundaria);
+}
+
+#signatureLayout p {
+  margin: 5px 0;
+}
+
+/* Modal de erro */
+.modal2 {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--cor-modal);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content2 {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+  position: relative;
+}
+
+.modal-content2 img {
+  width: 50px;
+  margin-bottom: 10px;
+}
+
+.modal-content2 h3 {
+  color: var(--cor-modal-erro);
+  margin: 10px 0;
+}
+
+.progress-bar {
+  width: 100%;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-bar-fill {
+  height: 10px;
+  width: 0;
+  background-color: var(--cor-modal-erro);
+  transition: width 5s linear;
+}
+
+.input-error {
+  border: 2px solid red;
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+.close2 {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal3 {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--cor-modal);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content3 {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  max-width: 300px;
+  width: 80%;
+}
+
+.loading-icon {
+  animation: rotate 1s infinite linear;
+}
+
+.success-icon {
+  color: #4caf50;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

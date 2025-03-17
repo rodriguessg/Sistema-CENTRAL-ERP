@@ -1,0 +1,97 @@
+/* Estilos para a Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #343a40;
+    color: white;
+    padding-top: 20px;
+    transition: 0.3s;
+}
+
+.sidebar-header {
+    text-align: center;
+    padding: 10px;
+}
+
+.sidebar-header img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+}
+.navbar>.container, .navbar>.container-fluid, .navbar>.container-lg, .navbar>.container-md, .navbar>.container-sm, .navbar>.container-xl, .navbar>.container-xxl {
+    /* display: flex
+; */
+    flex-wrap: inherit;
+    align-items: center;
+    justify-content: space-between;
+}
+.sidebar-header h4 {
+    color: white;
+    margin-top: 10px;
+}
+
+.sidebar-nav {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.sidebar-nav .nav-item {
+    padding: 10px 20px;
+    margin: 5px 0;
+}
+
+.sidebar-nav .nav-link {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: 0.2s;
+}
+
+.sidebar-nav .nav-link:hover {
+    background-color: #495057;
+    color: #f8f9fa;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.sidebar-footer .btn {
+    width: 100%;
+}
+
+/* Estilos para o conteúdo principal */
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.header {
+    background-color: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+/* Modal do Perfil */
+.modal-content {
+    padding: 20px;
+}
+
+.modal-body img {
+    display: block;
+    margin: 0 auto;
+}

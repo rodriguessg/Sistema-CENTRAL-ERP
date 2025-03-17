@@ -1,0 +1,84 @@
+/* css */
+
+.cr-backgroun-primary{
+    background-color:#005A92;
+}
+
+.cr-btn-color{
+    width: 100%;
+}
+
+.cr-invisible{
+    display: none;
+}
+
+.cr-name-person, .cr-name-person2, .cr-name-profession, .cr-email-company{
+    font-size: 16px;
+    color: white;
+  
+}
+
+label{
+    color: #005A92;
+    font-size: bolder;
+}
+
+.text1, p{
+    display: grid;
+    margin: 1px;
+    text-align: start;
+    gap: 2px;
+}
+
+.central{
+    font-size: 9px;
+    padding-left: 24px;
+    padding-right: 24px;
+    text-align: center;
+    color: black;
+}
+.qrcode {
+    display: grid;
+    grid-template-columns: 4fr 1fr; /* A primeira coluna é quatro vezes maior que a segunda */
+    align-items: center;
+    margin-left: 4px;
+}
+
+.qrcode div:first-child { /* Presumindo que o texto está no primeiro item */
+    white-space: normal; /* Permite que o texto quebre em várias linhas */
+    overflow-wrap: break-word; /* Permite quebra de linha para palavras longas */
+    word-break: break-word; /* Quebra palavras longas */
+}
+
+
+.text-column {
+    /* Estilos adicionais para o texto, se necessário */
+}
+
+
+.img-code{
+    height: 100px;
+    width: 80px;
+    margin-top: 50px;
+}
+
+.azul{
+   color: #005A92;
+   font-size: large;
+   font-weight: bolder;
+   
+}
+.azul1{
+    font-size: 7px;
+    color: #005A92;
+    font-weight: bold;
+    text-align: center;
+}
+
+.red1{
+    font-size: 9px;
+    color: red;
+    font-weight: bolder;
+    text-align: center;
+}
+

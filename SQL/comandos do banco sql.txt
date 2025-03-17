@@ -1,0 +1,100 @@
+id, username, senha, matricula, email,setor, cargo, situação, foto, primeira vez
+
+
+CREATE TABLE usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,        -- Identificador único
+    username VARCHAR(50) NOT NULL,           -- Nome de usuário
+    senha VARCHAR(255) NOT NULL,             -- Senha (hash)
+    matricula VARCHAR(20) NOT NULL UNIQUE,   -- Matrícula única
+    email VARCHAR(100) NOT NULL UNIQUE,      -- Email único
+    setor ENUM('administrativo', 'estoque', 'patrimonio', 'financeiro') NOT NULL, -- Setor do usuário
+    cargo VARCHAR(50) NOT NULL,              -- Cargo do usuário
+    situacao ENUM('ativo', 'inativo') DEFAULT 'ativo', -- Situação do usuário
+    foto VARCHAR(255) DEFAULT 'default.png', -- Caminho para a foto (padrão: default.png)
+    primeira_vez BOOLEAN DEFAULT TRUE        -- Indica se é o primeiro login
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+INSERT INTO usuario (username, senha, matricula, email, setor, cargo, situacao, foto, primeira_vez) 
+VALUES (
+    'nome_de_usuario',                            -- Substitua pelo nome do usuário
+    '$2y$10$abcdefghijklmnopqrstuvwx',           -- Substitua pelo hash da senha
+    '123456',                                    -- Substitua pela matrícula do usuário
+    'email@example.com',                         -- Substitua pelo e-mail do usuário
+    'administrativo',                            -- Substitua pelo setor (administrativo, estoque, patrimonio, financeiro)
+    'Gerente',                                   -- Substitua pelo cargo do usuário
+    'ativo',                                     -- Substitua por 'ativo' ou 'inativo'
+    'perfil1.png',                               -- Substitua pelo nome do arquivo da foto ou 'default.png'
+    TRUE                                         -- Use TRUE se for o primeiro login, caso contrário FALSE
+);
+
+
+INSERT INTO usuario (username, senha, matricula, email, setor, cargo, situacao, foto, primeira_vez) 
+VALUES (
+    'MASTER', 
+    '$2y$10$eImiTXuWVxfM37uY4JANjQvlG7G9blO1xJ/Nqkj6VzFjfUrH/w4a.', 
+    '000000', 
+    'master@example.com', 
+    'administrativo', 
+    'Supervisor', 
+    'ativo', 
+    
+   
+'default.png', 
+    TRUE
+);
+
+/////////////tabela patrimônio
+CREATE TABLE patrimonio (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    descricao TEXT,
+    valor DECIMAL(10, 2),
+    data_aquisicao DATE,
+    situacao VARCHAR(100),
+    localizacao VARCHAR(255),
+    data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    codigo VARCHAR(50) UNIQUE NOT NULL,
+    categoria VARCHAR(100),
+    cadastrado_por VARCHAR(255),
+    destino VARCHAR(255),
+    responsavel VARCHAR(255)
+) 
+
+id, nome, descrição, valor, data aquisicao,situacao, localização, data registro, código, categoria, cadastrado por, destino, responsável
+
+//////////////////////
+
+id, patrimonio_id, destino, data transferência, observação, criado em, atualizado em, responsável
+
+////////////transferências
+
+CREATE TABLE transferencias (
+    id INT AUTO_INCREMENT PRIMARY KEY,                -- ID da transferência (chave primária)
+    patrimonio_id INT NOT NULL,                        -- ID do patrimônio (chave estrangeira)
+    destino VARCHAR(255) NOT NULL,                      -- Destino da transferência
+    data_transferencia DATE NOT NULL,                   -- Data da transferência
+    observacao TEXT,                                   -- Observações adicionais
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,     -- Data e hora de criação
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- Data e hora da última atualização
+    responsavel VARCHAR(255) NOT NULL,                  -- Responsável pela transferência
+    CONSTRAINT fk_patrimonio_id FOREIGN KEY (patrimonio_id) REFERENCES patrimonio(id) ON DELETE CASCADE -- Chave estrangeira para a tabela patrimonio
+);
+               
+
+
+
+
+CREATE TABLE treinamentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,              -- Identificador único do treinamento
+    titulo VARCHAR(100) NOT NULL,                  -- Título do treinamento
+    descricao TEXT,                                -- Descrição detalhada do treinamento
+    data_inicio DATE NOT NULL,                     -- Data de início do treinamento
+    data_fim DATE,                                 -- Data de término (pode ser NULL para treinamentos em andamento)
+    status ENUM('Planejado', 'Em andamento', 'Concluído') DEFAULT 'Planejado', -- Status do treinamento
+    criador_id INT NOT NULL,                       -- ID do responsável ou criador do treinamento
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data de criação do registro
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Data da última atualização
+    FOREIGN KEY (criador_id) REFERENCES funcionario(id) -- Relacionamento com a tabela `funcionario`
+);

@@ -46,13 +46,14 @@ select {
 
 button {
     background-color: #007BFF;
+    display: inline;
     color: white;
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    width: 100%; /* Ocupa toda a largura */
+    /* width: 100%; */
     margin-top: 20px;
 }
 

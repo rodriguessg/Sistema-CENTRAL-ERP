@@ -1,5 +1,5 @@
 <?php
-include './include/banco.php'; // Inclua a conexão com o banco de dados
+include 'banco.php'; // Inclua a conexão com o banco de dados
 
 header('Content-Type: application/json');
 

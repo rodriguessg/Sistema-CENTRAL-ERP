@@ -12,14 +12,7 @@
     <link rel="stylesheet" href="src/style/estoque.css">
     
 <style>
-  .modal {
-    /* background: #fff; */
-    /* margin-left: 9%; */
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 90%;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
+  
 </style>
 
 </head>
@@ -280,29 +273,32 @@
 </div><div class="form-container3" id="retirar">
     <h3>Retirar Material do Estoque</h3>
     <form id="retirar-form" action="retirar_materialestoque.php" method="POST">
-    <div class="form-group3">
+        <div class="form-group3">
             <label for="material-nome">Nome do Material:</label>
             <input type="text" id="material-nome" name="material-nome" placeholder="Digite o nome do material" required>
-      
+
             <label for="material-codigo">Código do Material:</label>
-            <input type="text" id="material-codigo" name="material-codigo"  placeholder=" preenchido automáticamente"readonly>
+            <input type="text" id="material-codigo" name="material-codigo" placeholder=" preenchido automaticamente" readonly>
         </div>
+
         <div class="form-group3">
             <label for="material-classificacao">Classificação:</label>
-            <input type="text" id="material-classificacao" name="material-classificacao" placeholder=" preenchido automáticamente" readonly>
-      
+            <input type="text" id="material-classificacao" name="material-classificacao" placeholder=" preenchido automaticamente" readonly>
+
             <label for="material-natureza">Natureza:</label>
-            <input type="text" id="material-natureza" name="material-natureza" placeholder=" preenchido automáticamente" readonly>
+            <input type="text" id="material-natureza" name="material-natureza" placeholder=" preenchido automaticamente" readonly>
         </div>
+
         <div class="form-group3">
             <label for="material-localizacao">Localização:</label>
             <input type="text" id="material-localizacao" name="material-localizacao" placeholder=" preenchido automaticamente" readonly>
-     
+
             <label for="material-quantidade">Quantidade:</label>
             <input type="number" id="material-quantidade" name="material-quantidade" min="1" placeholder="Digite a quantidade a retirar" required>
         </div>
+
         <div class="form-group3">
-        <button type="submit">Retirar</button>
+            <button type="submit">Retirar</button>
         </div>
     </form>
     <div id="mensagem" style="color: red; margin-top: 10px;"></div>
@@ -314,9 +310,10 @@
     const classificacaoInput = document.getElementById('material-classificacao');
     const naturezaInput = document.getElementById('material-natureza');
     const localizacaoInput = document.getElementById('material-localizacao');
+    const quantidadeInput = document.getElementById('material-quantidade');
     const mensagemDiv = document.getElementById('mensagem');
 
-    // Atualiza os campos de código, classificação, natureza e localização ao digitar o nome
+    // Função para buscar material e preencher os campos automaticamente
     nomeInput.addEventListener('input', () => {
         const nomeMaterial = nomeInput.value.trim();
 
@@ -325,13 +322,14 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        // Preenche os campos com as informações do produto
                         codigoInput.value = data.codigo || "Não encontrado";
                         classificacaoInput.value = data.classificacao || "Não encontrado";
                         naturezaInput.value = data.natureza || "Não encontrado";
                         localizacaoInput.value = data.localizacao || "Não encontrado";
-                        mensagemDiv.innerText = "";
+                        mensagemDiv.innerText = "";  // Limpa a mensagem de erro
                     } else {
-                        // Caso o material não seja encontrado
+                        // Caso o produto não seja encontrado
                         codigoInput.value = "";
                         classificacaoInput.value = "";
                         naturezaInput.value = "";
@@ -344,7 +342,7 @@
                     mensagemDiv.innerText = "Erro na busca. Tente novamente.";
                 });
         } else {
-            // Limpa os campos se o nome for apagado
+            // Limpa os campos se o nome do material for apagado
             codigoInput.value = "";
             classificacaoInput.value = "";
             naturezaInput.value = "";
@@ -353,14 +351,19 @@
         }
     });
 
-    // Validação do formulário antes do envio
+    // Função para validação do formulário
     document.getElementById('retirar-form').addEventListener('submit', function(event) {
+        // Verifica se todos os campos estão preenchidos
         if (!codigoInput.value || !classificacaoInput.value || !naturezaInput.value || !localizacaoInput.value) {
-            event.preventDefault();
-            mensagemDiv.innerText = "Preencha corretamente todos os campos.";
+            event.preventDefault();  // Impede o envio do formulário
+            mensagemDiv.innerText = "Preencha corretamente todos os campos antes de continuar.";
+        } else if (quantidadeInput.value <= 0) {
+            event.preventDefault();  // Impede o envio do formulário
+            mensagemDiv.innerText = "A quantidade a ser retirada deve ser maior que 0.";
         }
     });
 </script>
+
 
 
 <!-- Modal para Detalhes -->

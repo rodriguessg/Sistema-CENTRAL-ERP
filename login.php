@@ -76,7 +76,7 @@ function getRedirectionPage($setor) {
         case 'financeiro':
             return "homefinanceiro.php";
         case 'estoque':
-            return "homeestoque.php";
+            return "painelalmoxarifado.php";
         case 'recursos_humanos':
             return "RH.php";
         case 'contratos':

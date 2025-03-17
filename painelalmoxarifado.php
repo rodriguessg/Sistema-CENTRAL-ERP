@@ -1,5 +1,9 @@
 <?php
-include 'header.php'; ?>
+include 'header.php'; 
+
+
+include 'verificar_quantidade_produtos.php';
+?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -8,51 +12,10 @@ include 'header.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Estoque</title>
     <link rel="stylesheet" href="./src/style/style.css">
+    <link rel="stylesheet" href="./src/style/painelalmoxarifado.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <style>
-         /* Estilo do painel */
-        .painelestoque { padding: 20px; font-family: Arial, sans-serif;    margin-bottom: 111px; display: contents; gap: 25px; }
-        .cardss { display: flex; gap: 20px; margin-bottom: 20px; }
-        .card { 
-            flex: 1;
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    display: flex;
-    margin-bottom:8.01%;
-;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
-        }
-        .card2 { flex: 1; padding: 20px; background: #dc3737; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); text-align: center; }
-        .grafico-container { max-width: 800px; margin: 0 auto;  height: 300px; width: 600px;}
-        #totalProdutos {
-            margin-top: 0;
-    font-size: 23px;
-    margin-bottom: 2rem;
-        } 
-        .modal {
-    /* background: #fff; */
-    padding: 20px;
-    border-radius: 8px;
-    /* width: 400px; */
-    /* margin-left: 30%; */
-    /* max-width: 90%; */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 
-}
-.card-estoque-produtos {
-    display: flex;
-    gap: 20px;
-}
-
-    </style>
 </head>
 <body>
 
@@ -246,7 +209,8 @@ include 'header.php'; ?>
        
 
 <script>
-        document.addEventListener("DOMContentLoaded", () => {
+     
+     document.addEventListener("DOMContentLoaded", () => {
     // Função para atualizar os cards com os dados do backend
     function atualizarCards(data) {
         const totalProdutosCard = document.getElementById('totalProdutos');
@@ -293,7 +257,6 @@ include 'header.php'; ?>
     // Iniciar o carregamento dos dados
     buscarDados();
     });
-
 </script>
 <script>
    document.addEventListener("DOMContentLoaded", () => {

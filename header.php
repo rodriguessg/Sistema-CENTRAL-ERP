@@ -82,7 +82,7 @@ try {
             break;
             case 'estoque':
                 $menuItens = [
-                    ['link' => 'painelestoque.php', 'nome' => 'Painel'],
+                    ['link' => 'painelalmoxarifado.php', 'nome' => 'Painel'],
                     ['link' => 'homeestoque.php', 'nome' => 'Home'],
                     ['link' => 'rh.php', 'nome' => 'Assinatura webmail'],
                     ['link' => 'perfil.php', 'nome' => 'Perfil'],
@@ -119,6 +119,44 @@ try {
     die("Erro ao acessar as informações do usuário: " . $e->getMessage());
 }
 ?>
+<?php
+// Supondo que a variável $setor contém o setor do usuário logado (essa variável já deve estar definida)
+// Verifique o setor do usuário
+$setor = $_SESSION['setor']; // Supondo que o setor está armazenado na sessão
+
+// Conexão com o banco de dados
+$host = 'localhost';
+$dbname = 'supat';
+$user = 'root';
+$password = '';
+
+try {
+    // Conectando ao banco de dados
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Verifica se o setor do usuário é "administrador" ou "estoque"
+    if ($setor == 'administrador' || $setor == 'estoque') {
+        // Consulta para pegar as notificações não lidas
+        $query = "SELECT id, mensagem FROM notificacoes WHERE status = 'nao lida' ORDER BY data_criacao DESC";
+        $stmt = $pdo->query($query);
+        $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Conta a quantidade de notificações não lidas
+        $unreadCount = count($notifications);
+    } else {
+        // Se o setor não for administrador nem estoque, definimos $unreadCount como 0
+        $unreadCount = 0;
+        $notifications = [];
+    }
+
+    // Agora o $unreadCount e $notifications estão prontos para serem enviados para o frontend
+} catch (PDOException $e) {
+    echo "Erro ao conectar ao banco de dados: " . $e->getMessage();
+}
+?>
+
+
 
 
 <!DOCTYPE html>
@@ -131,366 +169,12 @@ try {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Incluindo o seu arquivo de estilos customizados -->
     <link rel="stylesheet" href="./src/style/style.css">
-
-<style>
-    header {
-        color: #fff;
-        padding: 15px 0;
-        text-align: center;
-        width: 100%;
-    }
-
-    header h1 {
-        font-size: 1.8rem;
-    }
-
-    /* Estilo da barra de navegação */
-    .navbar {
-        margin-top: 10px;
-    }
-
-    /* Efeito para os links do menu */
-    .navbar-nav .nav-link {
-        color: #fff;
-        font-weight: bold;
-        position: relative;
-        display: inline-block;
-        text-decoration: none;
-        overflow: hidden;
-        transition: color 0.3s ease;
-    }
-
-    .navbar-nav .nav-link::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: -100%;
-        width: 100%;
-        height: 2px;
-        background: #f8f9fa; /* Cor do efeito */
-        transition: left 0.4s ease;
-    }
-
-    .navbar-nav .nav-link:hover {
-        color: #f8f9fa; /* Cor do texto ao passar o mouse */
-    }
-
-    .navbar-nav .nav-link:hover::after {
-        left: 0; /* Move a linha para o início */
-    }
-    .navbar .container, .navbar .container-fluid, .navbar .container-lg, .navbar .container-md, .navbar .container-sm, .navbar .container-xl {
-    display: -ms-flexbox;
-    display: contents;
-    /* -ms-flex-wrap: wrap; */
-    /* flex-wrap: wrap; */
-    /* -ms-flex-align: center; */
-    /* align-items: center; */
-    -ms-flex-pack: justify;
-    }
-
-    /* Estilo do perfil do usuário */
-    .user-profile {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-    }
-
-    .user-profile .pro {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        margin-right: 10px;
-    }
-
-    .pro {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        margin-right: 10px;
-    }
-
-    .modal-header, .modal-footer {
-        background-color: #343a40;
-        color: white;
-    }
-
-    .dropdown-item {
-        display: block;
-        width: 100%;
-        padding: .25rem 1.5rem;
-        clear: both;
-        font-weight: 400;
-        color: #333;
-        text-align: inherit;
-        white-space: nowrap;
-        background-color: transparent;
-        border: 0;
-    }
-
-    .modal-backdrop {
-        z-index: auto !important; /* Remove o z-index definido pelo Bootstrap */
-    }
-
-    .modal-body {
-        position: relative;
-        -ms-flex: 1 1 auto;
-        flex: 1 1 auto;
-        text-align: left;
-        padding: 1rem;
-    }
-    /* Estilo geral do cabeçalho */
-    header {
-        color: #fff;
-        padding: 15px 0;
-        text-align: center;
-        width: 100%;
-        background-color: #343a40; /* Adiciona um fundo ao cabeçalho */
-    }
-
-    header h1 {
-        font-size: 1.8rem;
-        margin: 0;
-    }
-
-    /* Estilo da barra de navegação */
-    .navbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 10px;
-        padding: 0 20px;
-    }
-
-    .navbar-nav {
-        display: flex;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    /* Links do menu */
-    .navbar-nav .nav-link {
-        color: #fff;
-        font-weight: bold;
-        position: relative;
-        text-decoration: none;
-        cursor: pointer;
-        overflow: hidden;
-        margin: 0 10px;
-        cursor: pointer;
-        transition: color 0.3s ease;
-    }
-
-    .navbar-nav .nav-link::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: -100%;
-        width: 100%;
-        height: 2px;
-        background: #f8f9fa; /* Cor do efeito */
-        cursor: pointer;
-        transition: left 0.4s ease;
-    }
-
-    .navbar-nav .nav-link:hover {
-        color: #f8f9fa; /* Cor do texto ao passar o mouse */
-        cursor: pointer;
-    }
-
-    .navbar-nav .nav-link:hover::after {
-        left: 0; /* Move a linha para o início */
-    }
-
-    /* Estilo do perfil do usuário */
-    .user-profile {
-        display: flex;
-        align-items: center;
-    }
-
-    .user-profile .pro {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        margin-left: 10px;
-    }
-
-    /* Estilo do modal */
-    .modal-header,
-    .modal-footer {
-        background-color: #343a40;
-        color: white;
-    }
-
-    .modal-body {
-        position: relative;
-        flex: 1 1 auto;
-        text-align: left;
-        padding: 1rem;
-    }
-
-    /* MODAL CHAT BOT */
-
-    .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-        .modalchat {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            width: 400px;
-            max-width: 90%;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-        .modal-header {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .modal-body {
-            /* max-height: 300px; */
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-        .message {
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-        }
-        .message.user {
-            background-color: #e0f7fa;
-            align-self: flex-end;
-        }
-        .message.bot {
-            background-color: #f1f1f1;
-            align-self: flex-start;
-        }
-        .chat-form {
-            display: flex;
-            gap: 10px;
-        }
-        .chat-form input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .chat-form button {
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .chat-form button:hover {
-            background-color: #0056b3;
-        }
-
-        .option {
-            padding: 10px;
-            margin: 5px 0;
-            background-color: #f4f4f4;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .option:hover {
-            background-color: #e0e0e0;
-        }
-        #response {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-    @media (min-width: 992px) {
-        /* .navbar-expand-lg, .container, .navbar-expand-lg>.container-fluid, .navbar-expand-lg.container-lg, .navbar-expand-lg>.container-md, .navbar-expand-lg>.container-sm, .navbar-expand-lg>.container-xl {
-            /* -ms-flex-wrap: nowrap; */
-            /* flex-wrap: nowrap;
-            */
-        }
-
-    /* Responsividade para dispositivos móveis */
-    @media (max-width: 768px) {
-        header {
-            padding: 10px 0;
-        }
-
-        header h1 {
-            font-size: 1.5rem;
-        }
-
-        .navbar {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .navbar-nav {
-            flex-direction: column;
-            align-items: center;
-            display: none; /* Oculta o menu por padrão */
-        }
-
-        .navbar-nav.active {
-            display: flex; /* Mostra o menu quando ativo */
-        }
-
-        .navbar-nav .nav-link {
-            margin: 10px 0;
-        }
-
-        .navbar-toggle {
-            display: block;
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        .user-profile {
-            margin-top: 10px;
-        }
-
-        .pro {
-            width: 35px;
-            height: 35px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        header h1 {
-            font-size: 1.2rem;
-        }
-
-        .navbar-nav .nav-link {
-            font-size: 0.9rem;
-        }
-
-        .pro {
-            width: 30px;
-            height: 30px;
-        }
-
-        .modal-body {
-            padding: 0.5rem;
-            font-size: 0.9rem;
-        }
-    }
+    <link rel="stylesheet" href="./src/style/nav.css">
+    <link rel="stylesheet" href="./src/style/icon-notificacao.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 
-    </style>
+
 </head>
 <body>
     
@@ -536,6 +220,35 @@ try {
 
                 <!-- Link do perfil à direita -->
                 <ul class="navbar-nav ml-auto">
+                     <!-- Ícone de notificações -->    
+                  <!-- Ícone de notificações -->
+                  <li class="nav-item">
+    <a class="nav-link" href="#" id="notificacaoLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa fa-bell"></i>
+        <span class="badge badge-danger" id="notificationCount"><?= $unreadCount ?></span> <!-- Número de notificações -->
+    </a>
+
+    <!-- Dropdown para exibir as notificações -->
+    <div class="dropdown-menu" aria-labelledby="notificacaoLink" id="notificationList" style="min-width: 300px; max-height: 300px; overflow-y: auto;">
+        <h6 class="dropdown-header">Notificações</h6>
+        <?php 
+        // Exibir notificações somente para os setores "administrador" ou "estoque"
+        if ($unreadCount > 0) {
+            foreach ($notifications as $notification) {
+        ?>
+                <a class="dropdown-item" href="#" onclick="markAsRead(<?= $notification['id'] ?>)">
+                    <?= htmlspecialchars($notification['mensagem']) ?>
+                </a>
+        <?php 
+            }
+        } else { 
+        ?>
+            <p class="dropdown-item">Sem novas notificações.</p>
+        <?php } ?>
+    </div>
+</li>
+
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="perfilDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img
@@ -714,6 +427,6 @@ $(document).ready(function() {
 </script>
 
 
-
+<script src="./src/js/icon-notificacao.js"></script>
 </body>
 </html>

@@ -10,18 +10,6 @@
     <title>Estoque</title>
     <!-- <link rel="stylesheet" href="src/style/style.css"> -->
     <link rel="stylesheet" href="src/style/estoque.css">
-    
-<style>
-  .modal {
-    /* background: #fff; */
-    /* margin-left: 9%; */
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 90%;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-</style>
-
 </head>
 <body>
     <h1>Gerencimento de Almoxarifado</h1>

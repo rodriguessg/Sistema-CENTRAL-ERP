@@ -1,106 +1,315 @@
- /* Estilos para a tabela e a barra de rolagem */
- .table-container2 {
-    max-width: 100%;
-    height: 800px;
-    overflow-x: auto;
+/* Estilo geral */
+
+
+/* 
+
+ body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+} */
+
+/* Barra lateral de navegação */
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: white;
+    padding: 20px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 5px;
 }
 
-.tabela-estoque {
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 15px;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 10px 15px;
+    display: block;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #34495e;
+}
+
+/* Container principal */
+.container {
+    display: flex;
+    margin-left: 270px; /* Deixa espaço para o menu lateral */
+    width: 100%;
+    padding: 20px;
+    flex-direction: column;
+}
+
+/* Abas de navegação */
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    background-color: #2c3e50;
+    padding: 10px 0;
+    margin-bottom: 20px;
+}
+
+.tab {
+    color: white;
+    cursor: pointer;
+    padding: 10px 20px;
+    text-align: center;
+    flex-grow: 1;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.tab:hover {
+    background-color: #34495e;
+}
+
+.tab.active {
+    background-color: #2980b9;
+}
+
+/* Conteúdo das abas */
+.tab-content {
+    display: none;
+    padding: 20px;
+    background-color: white;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* Formulário - Contêiner centralizado */
+.form-container {
+    display: none;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 0 auto; /* Centraliza horizontalmente */
+    width: 80%; /* Largura padrão para o formulário */
+    max-width: 1100px; /* Largura máxima do formulário */
+    box-shadow: 0 4px 10px rgba(0.9, 0.5, 0.5, 0.9);
+    border-radius: 8px;
+    overflow: hidden;
+    max-height: 70vh; /* Limita a altura do formulário */
+    overflow-y: auto; /* Permite rolagem vertical quando necessário */
+}
+
+/* Personalização da barra de rolagem para navegadores WebKit */
+.form-container::-webkit-scrollbar {
+    width: 10px; /* Largura da barra de rolagem vertical */
+    height: 10px; /* Altura da barra de rolagem horizontal */
+}
+
+.form-container::-webkit-scrollbar-track {
+    background: rgba(200, 200, 200, 0.3); /* Cor do fundo da barra de rolagem */
+    border-radius: 8px; /* Cantos arredondados da trilha */
+}
+
+.form-container::-webkit-scrollbar-thumb {
+    background: rgba(100, 100, 100, 0.8); /* Cor da parte que se move */
+    border-radius: 8px; /* Cantos arredondados do "polegar" */
+}
+
+/* Para navegadores que suportam scrollbar-width (Firefox) */
+.form-container {
+    scrollbar-width: thin; /* Largura da barra de rolagem */
+    scrollbar-color: rgba(100, 100, 100, 0.8) rgba(200, 200, 200, 0.3); /* Cor do polegar e da trilha */
+}
+
+/* Classe que faz com que a aba se torne visível */
+.form-container.active {
+    display: block;
+}
+
+
+/* Formulário e inputs dentro do container */
+.form-group3 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.form-group3 label {
+    width: 100%;
+    font-weight: bold;
+}
+
+.form-group3 input,
+.form-group3 select {
+    width: 100%; /* Garantindo que os inputs não ultrapassem o limite do container */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* Para garantir que o padding não afete o tamanho final do input */
+}
+
+.form-group3 button {
+    width: 48%; /* Para os botões, garantindo que não fiquem muito largos */
+    padding: 12px;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.form-group3 button:hover {
+    background-color: #2980b9;
+}
+
+/* Tabelas */
+table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.tabela-estoque th, .tabela-estoque td {
-    padding: 8px;
-    text-align: left;
+table, th, td {
     border: 1px solid #ddd;
 }
 
-/* Estilos da barra de rolagem */
-#tabelaestoque {
-    max-height: 300px; /* Limita a altura da tabela */
-    overflow-y: auto; /* Adiciona rolagem vertical */
+th, td {
+    padding: 10px;
+    text-align: left;
 }
 
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #001f3f;
+th {
+    background-color: #34495e;
     color: white;
-    margin: 0;
-    padding: 0;
 }
 
-.form-container3 {
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 850px;
-    margin: 40px auto;
-}
-
-h3 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.form-row {
-    display: flex; /* Alinha os elementos na horizontal */
-    gap: 20px; /* Espaçamento entre os inputs */
-    margin-bottom: 15px;
-}
-
-label {
-    flex: 1; /* Define que o label e input ocupam o mesmo espaço */
-    font-weight: bold;
-    margin-bottom: 5px;
-    display: block;
-}
-
-input, select {
-    flex: 2; /* O input ocupa mais espaço que o label */
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-    font-size: 14px;
-}
-select {
-    width: 71%;
-}
-
-button {
-    background-color: #007BFF;
-    display: inline;
+/* Botões de ação na tabela */
+.btn-estoque2 {
+    background-color: #3498db;
     color: white;
     padding: 10px 15px;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
     cursor: pointer;
-    /* width: 100%; */
-    margin-top: 20px;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-.form-group2 {
-    display: ruby;
-}
-.form-group3 input {
-    width: 100%;
-    margin-right: 23px;
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
     border-radius: 5px;
 }
-.form-group3 {
-    margin-bottom: 6px;
-    padding-right: 25px;
+
+.btn-estoque2:hover {
+    background-color: #2980b9;
 }
-.form-container3.active {
-        display: block;
+
+/* Caixa de pesquisa */
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-container input {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.search-container button {
+    padding: 10px 15px;
+    margin-left: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.search-container button:hover {
+    background-color: #2980b9;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    border-radius: 8px;
+}
+
+.modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Modal para Detalhes */
+#modal-detalhes, #modal-atualizar {
+    display: none;
+}
+
+/* Ajustes de responsividade */
+@media screen and (max-width: 768px) {
+    /* Ajusta o layout para telas menores */
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        margin-bottom: 20px;
     }
+
+    .container {
+        margin-left: 0;
+    }
+
+    .tabs {
+        flex-direction: column;
+    }
+
+    .tab {
+        padding: 12px;
+    }
+
+    .form-group3 {
+        flex-direction: column;
+    }
+
+    .form-group3 label, .form-group3 input, .form-group3 select {
+        width: 100%;
+    }
+
+    .form-group3 button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}

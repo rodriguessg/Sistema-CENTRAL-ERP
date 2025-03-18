@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 // Inicie a sessão, caso ainda não tenha sido iniciada
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -18,37 +17,30 @@ require_once 'bancoo.php';
 try {
     if (!isset($pdo)) {
         die("A conexão com o banco de dados não foi estabelecida.");
-=======
-    // Inicie a sessão, caso ainda não tenha sido iniciada
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
->>>>>>> 2a93acd9c63bda7951b1e826a611001c66399016
     }
+} catch (PDOException $e) {
+    die("Erro ao conectar ao banco de dados: " . $e->getMessage());
+}
 
-    // Verifique se o usuário está logado
-    if (!isset($_SESSION['username']) || !isset($_SESSION['setor'])) {
-        header("Location: login.php");
-        exit();
-    }
+try {
+    // Recupere as informações do usuário da sessão
+    $username = $_SESSION['username'];
+    $setor = $_SESSION['setor'];
 
-    // Inclua a conexão com o banco de dados
-    require_once 'bancoo.php';
+    // Diretório base das fotos dos usuários
+    $fotoBasePath = 'uploads/';
 
-    // Verifique se a conexão foi estabelecida
-    try {
-        if (!isset($pdo)) {
-            die("A conexão com o banco de dados não foi estabelecida.");
-        }
-    } catch (PDOException $e) {
-        die("Erro ao conectar ao banco de dados: " . $e->getMessage());
-    }
+    // Busque as informações do usuário no banco de dados (foto)
+    $query = $pdo->prepare("SELECT foto FROM usuario WHERE username = :username");
+    $query->bindParam(':username', $username, PDO::PARAM_STR);
+    $query->execute();
+    $result = $query->fetch(PDO::FETCH_ASSOC);
 
-    try {
-        // Recupere as informações do usuário da sessão
-        $username = $_SESSION['username'];
-        $setor = $_SESSION['setor'];
+    // Caminho completo da foto ou uma imagem padrão
+    $foto = (!empty($result['foto']) && file_exists($fotoBasePath . $result['foto']))
+        ? $fotoBasePath . $result['foto']
+        : $fotoBasePath . 'perfil-user-673e5672cac27.png';
 
-<<<<<<< HEAD
     // Configure as permissões de navegação com base no setor do usuário
     $menuItens = [];
     switch ($setor) {
@@ -104,88 +96,6 @@ try {
                 ];
                 break;
 
-=======
-        // Diretório base das fotos dos usuários
-        $fotoBasePath = 'uploads/';
-
-        // Busque as informações do usuário no banco de dados (foto)
-        $query = $pdo->prepare("SELECT foto FROM usuario WHERE username = :username");
-        $query->bindParam(':username', $username, PDO::PARAM_STR);
-        $query->execute();
-        $result = $query->fetch(PDO::FETCH_ASSOC);
-
-        // Caminho completo da foto ou uma imagem padrão
-        $foto = (!empty($result['foto']) && file_exists($fotoBasePath . $result['foto']))
-            ? $fotoBasePath . $result['foto']
-            : $fotoBasePath . 'perfil-user-673e5672cac27.png';
-
-        // Configure as permissões de navegação com base no setor do usuário
-        $menuItens = [];
-        switch ($setor) {
-            case 'administrador':
-                $menuItens = [
-                    ['link' => 'painel.php', 'nome' => 'Painel'],
-                    ['link' => 'homeRh.php', 'nome' => 'Recursos Humanos'],
-                    ['link' => 'homefinanceiro.php', 'nome' => 'Financeiro'],
-                    ['link' => 'homecontratos.php', 'nome' => 'Contratos'],
-                    ['link' => 'homeestoque.php', 'nome' => 'Estoque'],
-                    ['link' => 'homepatrimonio.php', 'nome' => 'Patrimônio'],
-                    ['link' => 'cadastro_usuario.php', 'nome' => 'Cadastrar Usuário'],
-                    ['link' => 'gerenciarpermissao.php', 'nome' => 'Gerenciar Permissões'],
-                    ['link' => 'ia.php', 'nome' => 'IA CENTRAL'],
-                    
-                    ['link' => 'rh.php', 'nome' => 'Assinatura webmail'],
-                    
-                    ['link' => 'perfil.php', 'nome' => 'Perfil'],
-                ];
-                break;
-
-            case 'financeiro':
-                $menuItens = [
-                    ['link' => 'homefinanceiro.php', 'nome' => 'Home'],
-                    ['link' => 'painelfinanceiro.php', 'nome' => 'Painel'],
-                    ['link' => 'rh.php', 'nome' => 'Assinatura webmail'],
-                    ['link' => 'perfil.php', 'nome' => 'Perfil'],
-                    ['link' => 'sair.php', 'nome' => 'Sair'],
-                ];
-                break;
-
-            case 'patrimonio':
-                $menuItens = [
-                    ['link' => 'painelpatrimonio.php', 'nome' => 'Painel'],
-                    ['link' => 'homepatrimonio.php', 'nome' => 'Home'],
-                    ['link' => 'rh.php', 'nome' => 'Assinatura webmail'],
-                    ['link' => 'perfil.php', 'nome' => 'Perfil'],
-                ];
-                break;
-                case 'estoque':
-                    $menuItens = [
-                        ['link' => 'painelalmoxarifado.php', 'nome' => 'Painel'],
-                        ['link' => 'homeestoque.php', 'nome' => 'Home'],
-                        ['link' => 'rh.php', 'nome' => 'Assinatura webmail'],
-                        ['link' => 'perfil.php', 'nome' => 'Perfil'],
-                    ];
-                    break;
-                case 'recursos_humanos':
-                    $menuItens = [
-                        ['link' => 'painelRh.php', 'nome' => 'Painel'],
-                        ['link' => 'homeRh.php', 'nome' => 'Home'],
-                        ['link' => 'cracha.php', 'nome' => 'Gerador Cracha'],
-                        ['link' => 'rh.php', 'nome' => 'Assinatura webmail'],
-                        ['link' => 'perfil.php', 'nome' => 'Perfil'],
-                    ];
-                    break;
-                    case 'contratos':
-                        $menuItens = [
-
-                            ['link' => 'painelcontratos.php', 'nome' => 'Painel'],
-                            ['link' => 'homecontratos.php', 'nome' => 'Home'],
-                            ['link' => 'rh.php', 'nome' => 'Assinatura webmail'],
-                            ['link' => 'perfil.php', 'nome' => 'Perfil'],
-                        ];
-                        break;
-        
->>>>>>> 2a93acd9c63bda7951b1e826a611001c66399016
 
         case 'recursos_humanos':
             $menuItens = [
@@ -198,22 +108,15 @@ try {
 
           
 
-<<<<<<< HEAD
         default:
             // Caso o setor não seja reconhecido, redireciona para a página de erro
             header("Location: mensagem.php?mensagem=setor_nao_reconhecido&pagina=login.php");
             exit();
-=======
-            default:
-                // Caso o setor não seja reconhecido, redireciona para a página de erro
-                header("Location: mensagem.php?mensagem=setor_nao_reconhecido&pagina=index.php");
-                exit();
-        }
-    } catch (PDOException $e) {
-        // Caso haja erro ao buscar informações do banco de dados, exibe a mensagem de erro
-        die("Erro ao acessar as informações do usuário: " . $e->getMessage());
->>>>>>> 2a93acd9c63bda7951b1e826a611001c66399016
     }
+} catch (PDOException $e) {
+    // Caso haja erro ao buscar informações do banco de dados, exibe a mensagem de erro
+    die("Erro ao acessar as informações do usuário: " . $e->getMessage());
+}
 ?>
 
 
@@ -224,7 +127,7 @@ try {
 
     // Conexão com o banco de dados
     $host = 'localhost';
-    $dbname = 'gm_sicbd';
+    $dbname = 'supat';
     $user = 'root';
     $password = '';
 
@@ -370,7 +273,7 @@ try {
 <script src="./src/header/js/perfil.js"></script>
 
 <!-- JS ATUALIZACAO ICONE INFORMAÇÕES -->
-<script src="./src/header/js/icon-notificacao.js"></script>
+<script src="./src/js/icon-notificacao.js"></script>
 </body>
 </html>
 

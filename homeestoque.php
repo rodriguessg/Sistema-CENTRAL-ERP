@@ -1,24 +1,17 @@
 <?php
     include 'header.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="Pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estoque</title>
+    <title>Almoxarifado</title>
     <!-- <link rel="stylesheet" href="src/style/style.css"> -->
     <link rel="stylesheet" href="src/estoque/style/estoque.css">
-    
-<style>
-  
-</style>
-
 </head>
 <body>
     <h1>Gerencimento de Almoxarifado</h1>
-
 <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">Cadastrar Materiais</div>
     <div class="tab" data-tab="retirar" onclick="showTab('consulta')">Consulta de produtos</div>
@@ -116,7 +109,6 @@
 </div>
 
 
-
 </div><div class="form-container3" id="retirar">
     <h3>Retirar Material do Estoque</h3>
     <form id="retirar-form" action="retirar_materialestoque.php" method="POST">
@@ -150,8 +142,6 @@
     </form>
     <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
-
-
 
 <!-- Modal para Detalhes -->
 <div class="modal" id="modal-detalhes">
@@ -239,9 +229,6 @@
     </div>
 </div>
 
-
-
-
 <div class="form-container" id="relatorio">
     <h3>Gerar Relatório</h3>
     <form id="form-relatorio" style="display: flex; flex-direction: column; gap: 15px;">
@@ -285,7 +272,7 @@
     <!-- Botão de Exportação para Excel -->
     <button id="exportarExcelBtn" onclick="exportarParaExcel()" style="display: none; margin-top: 10px;">Exportar para Excel</button>
 </div>
-
+<!-- AO RETIRAR ESTE SCRIPT APRESEMTA ERRO NO PREENCHIMENTO DO NOME DO USUÁRIO NO RELATÓRIO -->
 <script>
     // Exibir o seletor de exercício apenas se a opção anual for selecionada
     function toggleExercicioSelector(periodo) {
@@ -316,7 +303,6 @@
             console.error('Erro ao carregar exercícios:', error);
         }
     }
-
     // Preencher o campo de usuário logado dinamicamente
     document.addEventListener("DOMContentLoaded", () => {
         const usuario = "<?php echo $_SESSION['username'] ?? 'Desconhecido'; ?>";
@@ -425,12 +411,8 @@
 <!--  JS PREENHE OS DETALHES DA LINHA SELECIONADA NO MODAL -->
 <script src="./src/estoque/js/modal-estoque.js"></script>
 
-
-<script src="./src/js/active.js">
-   
-
-
-</script>
+<!-- JS ATIVAÇÃO DAS ABAS -->
+<script src="./src/js/active.js"></script>
 </body>
 </html>
 

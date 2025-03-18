@@ -164,7 +164,6 @@
 </div>
 
 
-
 <div class="form-container" id="Estoque">
     <h2>Consulta de Estoque</h2>
 
@@ -273,7 +272,7 @@
     <button id="exportarExcelBtn" onclick="exportarParaExcel()" style="display: none; margin-top: 10px;">Exportar para Excel</button>
 </div>
 <!-- AO RETIRAR ESTE SCRIPT APRESEMTA ERRO NO PREENCHIMENTO DO NOME DO USUÁRIO NO RELATÓRIO -->
-<script>
+<script >
     // Exibir o seletor de exercício apenas se a opção anual for selecionada
     function toggleExercicioSelector(periodo) {
         const exercicioGroup = document.getElementById('exercicio-group');
@@ -396,8 +395,6 @@
         URL.revokeObjectURL(url);
     }
 </script>
-
-
 
 
 <!-- JS CÁLCULO DE PREÇO MÉDIO -->

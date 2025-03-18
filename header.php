@@ -119,45 +119,43 @@ try {
     die("Erro ao acessar as informações do usuário: " . $e->getMessage());
 }
 ?>
+<!-- PHP GERENCIA CONEXAO NOTIFICAO PREENCHIMENTO BD -->
 <?php
-// Supondo que a variável $setor contém o setor do usuário logado (essa variável já deve estar definida)
-// Verifique o setor do usuário
-$setor = $_SESSION['setor']; // Supondo que o setor está armazenado na sessão
+    // Supondo que a variável $setor contém o setor do usuário logado (essa variável já deve estar definida)
+    // Verifique o setor do usuário
+    $setor = $_SESSION['setor']; // Supondo que o setor está armazenado na sessão
 
-// Conexão com o banco de dados
-$host = 'localhost';
-$dbname = 'supat';
-$user = 'root';
-$password = '';
+    // Conexão com o banco de dados
+    $host = 'localhost';
+    $dbname = 'supat';
+    $user = 'root';
+    $password = '';
 
-try {
-    // Conectando ao banco de dados
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    try {
+        // Conectando ao banco de dados
+        $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Verifica se o setor do usuário é "administrador" ou "estoque"
-    if ($setor == 'administrador' || $setor == 'estoque') {
-        // Consulta para pegar as notificações não lidas
-        $query = "SELECT id, mensagem FROM notificacoes WHERE status = 'nao lida' ORDER BY data_criacao DESC";
-        $stmt = $pdo->query($query);
-        $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // Verifica se o setor do usuário é "administrador" ou "estoque"
+        if ($setor == 'administrador' || $setor == 'estoque') {
+            // Consulta para pegar as notificações não lidas
+            $query = "SELECT id, mensagem FROM notificacoes WHERE status = 'nao lida' ORDER BY data_criacao DESC";
+            $stmt = $pdo->query($query);
+            $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Conta a quantidade de notificações não lidas
-        $unreadCount = count($notifications);
-    } else {
-        // Se o setor não for administrador nem estoque, definimos $unreadCount como 0
-        $unreadCount = 0;
-        $notifications = [];
+            // Conta a quantidade de notificações não lidas
+            $unreadCount = count($notifications);
+        } else {
+            // Se o setor não for administrador nem estoque, definimos $unreadCount como 0
+            $unreadCount = 0;
+            $notifications = [];
+        }
+
+        // Agora o $unreadCount e $notifications estão prontos para serem enviados para o frontend
+    } catch (PDOException $e) {
+        echo "Erro ao conectar ao banco de dados: " . $e->getMessage();
     }
-
-    // Agora o $unreadCount e $notifications estão prontos para serem enviados para o frontend
-} catch (PDOException $e) {
-    echo "Erro ao conectar ao banco de dados: " . $e->getMessage();
-}
 ?>
-
-
-
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -172,8 +170,6 @@ try {
     <link rel="stylesheet" href="./src/style/nav.css">
     <link rel="stylesheet" href="./src/style/icon-notificacao.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-
 
 </head>
 <body>
@@ -198,7 +194,7 @@ try {
     <?php if ($setor === 'contratos'): ?>
         <h1>Sistema de Gestão de contratos</h1>
     <?php endif; ?>
-    <nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg">
         <div class="container">
             <!-- Botão para dispositivos móveis -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -219,34 +215,34 @@ try {
                 </ul>
 
                 <!-- Link do perfil à direita -->
-                <ul class="navbar-nav ml-auto">
+     <ul class="navbar-nav ml-auto">
                      <!-- Ícone de notificações -->    
                   <!-- Ícone de notificações -->
-                  <li class="nav-item">
-    <a class="nav-link" href="#" id="notificacaoLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-bell"></i>
-        <span class="badge badge-danger" id="notificationCount"><?= $unreadCount ?></span> <!-- Número de notificações -->
-    </a>
-
-    <!-- Dropdown para exibir as notificações -->
-    <div class="dropdown-menu" aria-labelledby="notificacaoLink" id="notificationList" style="min-width: 300px; max-height: 300px; overflow-y: auto;">
-        <h6 class="dropdown-header">Notificações</h6>
-        <?php 
-        // Exibir notificações somente para os setores "administrador" ou "estoque"
-        if ($unreadCount > 0) {
-            foreach ($notifications as $notification) {
-        ?>
-                <a class="dropdown-item" href="#" onclick="markAsRead(<?= $notification['id'] ?>)">
-                    <?= htmlspecialchars($notification['mensagem']) ?>
+        <li class="nav-item">
+                <a class="nav-link" href="#" id="notificacaoLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-bell"></i>
+                    <span class="badge badge-danger" id="notificationCount"><?= $unreadCount ?></span> <!-- Número de notificações -->
                 </a>
-        <?php 
-            }
-        } else { 
-        ?>
-            <p class="dropdown-item">Sem novas notificações.</p>
-        <?php } ?>
-    </div>
-</li>
+
+                <!-- Dropdown para exibir as notificações -->
+                <div class="dropdown-menu" aria-labelledby="notificacaoLink" id="notificationList" style="min-width: 300px; max-height: 300px; overflow-y: auto;">
+                    <h6 class="dropdown-header">Notificações</h6>
+                    <?php 
+                    // Exibir notificações somente para os setores "administrador" ou "estoque"
+                    if ($unreadCount > 0) {
+                        foreach ($notifications as $notification) {
+                    ?>
+                            <a class="dropdown-item" href="#" onclick="markAsRead(<?= $notification['id'] ?>)">
+                                <?= htmlspecialchars($notification['mensagem']) ?>
+                            </a>
+                    <?php 
+                        }
+                    } else { 
+                    ?>
+                        <p class="dropdown-item">Sem novas notificações.</p>
+                    <?php } ?>
+                </div>
+            </li>
 
 
                     <li class="nav-item dropdown">
@@ -268,7 +264,7 @@ try {
                 </ul>
             </div>
         </div>
-    </nav>
+</nav>
 </header>
 
 <!-- Modal Perfil -->
@@ -335,98 +331,12 @@ try {
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-$(document).ready(function() {
-    const initialOptions = [
-        'Gerar relatório do sistema',
-        'Quantos usuários estão cadastrados?',
-        'Quantos produtos estão cadastrados?',
-        'Informações sobre o patrimônio',
-        'Quantos setores estão ativos?',
-        'Quantos funcionários estão cadastrados?',
-        'O que você pode fazer?'
-    ];
+<!-- JS CONVERSAO IA -->
+<script src="./src/header/js/ia.js"></script>
+<!-- JS PREENCHIMENTO INFORMAÇÕES PERFIL -->
+<script src="./src/header/js/perfil.js"></script>
 
-    function addOptions(options) {
-        $('#chat-options').empty();
-        options.forEach(option => {
-            const button = $('<button>')
-                .addClass('btn btn-outline-primary m-1')
-                .text(option)
-                .on('click', function() {
-                    sendMessage(option);
-                });
-            $('#chat-options').append(button);
-        });
-    }
-
-    function appendMessage(sender, message) {
-        const messageDiv = $('<div>').html(`<strong>${sender}:</strong> ${message}`);
-        $('#chat-messages').append(messageDiv);
-        $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
-    }
-
-    function sendMessage(message) {
-        appendMessage('Você', message);
-        $('#chat-input').val('');
-
-        $.ajax({
-            url: 'ia.php',
-            type: 'POST',
-            data: JSON.stringify({ message: message }),
-            contentType: 'application/json',
-            success: function(response) {
-                appendMessage('IA', response.reply);
-                if (response.options && response.options.length > 0) {
-                    addOptions(response.options);
-                }
-            },
-            error: function(xhr, status, error) {
-                appendMessage('Erro', 'Não foi possível obter resposta da IA.');
-            }
-        });
-    }
-
-    $('#send-message').on('click', function() {
-        const message = $('#chat-input').val();
-        if (message.trim() !== '') {
-            sendMessage(message);
-        }
-    });
-
-    $('#iaModal').on('show.bs.modal', function() {
-        addOptions(initialOptions);
-    });
-});
-</script>
-<script>
-//Este código realiza a atualização das informações sobre o perfil
-$(document).ready(function() {
-    $('#perfilModal').on('show.bs.modal', function () {
-        $.ajax({
-            url: 'perfil.php',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                if (data.error) {
-                    alert(data.error);
-                    return;
-                }
-                $('#modal-email').text(data.email);
-                $('#modal-setor').text(data.setor);
-                $('#modal-tempo-registro').text(data.tempo_registro);
-                $('#modal-movimentacoes').text(data.movimentacoes);
-            },
-            error: function(xhr, status, error) {
-                alert('Erro ao carregar dados: ' + error);
-            }
-        });
-    });
-});
-
-</script>
-
-
+<!-- JS ATUALIZACAO ICONE INFORMAÇÕES -->
 <script src="./src/js/icon-notificacao.js"></script>
 </body>
 </html>

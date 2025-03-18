@@ -60,7 +60,7 @@ try {
             
         case 'estoque':
             $menuItens = [
-                ['link' => 'painelestoque.php', 'nome' => 'Painel', 'icon' => 'cogs'],
+                ['link' => 'painelalmoxarifado.php', 'nome' => 'Painel', 'icon' => 'cogs'],
                 ['link' => 'homeestoque.php', 'nome' => 'Home', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
             ];

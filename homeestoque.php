@@ -25,7 +25,7 @@
 <!-- Conteúdo das abas -->
 <div class="form-container3" id="cadastrar" style="display:none;">
     <h3>Cadastrar Produto</h3>
-    <form id="form-cadastrar-produto" action="cadastrar_produto.php" method="POST" enctype="multipart/form-data" style="display: ruby;">
+    <form id="form-cadastrar-produto" action="./include/estoque/cadastrar_produto.php" method="POST" enctype="multipart/form-data" style="display: ruby;">
         <div class="form-group3">
             <label for="produto">Produto:</label>
             <input type="text" id="produto" name="produto" placeholder="Digite o nome do produto" required>
@@ -111,7 +111,7 @@
 
 </div><div class="form-container3" id="retirar">
     <h3>Retirar Material do Estoque</h3>
-    <form id="retirar-form" action="retirar_materialestoque.php" method="POST">
+    <form id="retirar-form" action="./include/estoque/retirar_materialestoque.php" method="POST">
         <div class="form-group3">
             <label for="material-nome">Nome do Material:</label>
             <input type="text" id="material-nome" name="material-nome" placeholder="Digite o nome do material" required>
@@ -287,7 +287,7 @@
     // Função para carregar os exercícios disponíveis
     async function fetchExercicios() {
         try {
-            const response = await fetch('buscar_exercicios.php');
+            const response = await fetch('./include/estoque/buscar_exercicios.php');
             const exercicios = await response.json();
             const exercicioSelect = document.getElementById('exercicio');
 
@@ -326,7 +326,7 @@
         }
 
         try {
-            const response = await fetch('gerar_relatorioestoque.php', {
+            const response = await fetch('./include/estoque/gerar_relatorioestoque.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({

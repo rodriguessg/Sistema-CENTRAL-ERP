@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estoque</title>
     <!-- <link rel="stylesheet" href="src/style/style.css"> -->
-    <link rel="stylesheet" href="src/style/estoque.css">
+    <link rel="stylesheet" href="src/estoque/style/estoque.css">
     
 <style>
   
@@ -83,51 +83,6 @@
     </form>
 </div>
 
-<script>
-// Função para calcular o preço médio
-        function calcularPrecoMedio() {
-            const custoInput = document.getElementById('custo');
-            const quantidadeInput = document.getElementById('quantidade');
-            const precoMedioInput = document.getElementById('preco_medio');
-
-            // Função para converter o formato brasileiro (0.00,00) para número
-            function converterParaNumero(valor) {
-                if (!valor) return 0; // Retorna 0 se o valor for vazio ou inválido
-                return parseFloat(valor.replace(/\./g, '').replace(',')) || 0;
-            }
-
-            // Obtém os valores de custo e quantidade no formato correto
-            const custo = converterParaNumero(custoInput.value);
-            const quantidade = parseFloat(quantidadeInput.value) || 0;
-
-            // Valida os valores
-            if (custo < 0 || quantidade < 0) {
-                precoMedioInput.value = '0'; // Define o valor padrão
-                return;
-            }
-
-            // Calcula o preço médio apenas se a quantidade for maior que zero
-            const precoMedio = quantidade > 0 ? (custo / quantidade).toFixed(2) : '0';
-
-            // Atualiza o campo de preço médio
-            precoMedioInput.value = precoMedio;
-        }
-
-        // Adiciona eventos aos campos de custo e quantidade
-        document.getElementById('custo').addEventListener('input', calcularPrecoMedio);
-        document.getElementById('quantidade').addEventListener('input', calcularPrecoMedio);
-
-
-    // Função para limpar o formulário
-    function limparFormulario() {
-        const form = document.getElementById('form-cadastrar-produto');
-        form.reset(); // Reseta todos os campos do formulário
-        document.getElementById('preco_medio').value = ''; // Reseta o campo de preço médio
-    }
-
-    // Evento no botão de limpar
-    document.getElementById('limpar-formulario').addEventListener('click', limparFormulario);
-</script>
 
 <div class="form-container" id="consulta">
 
@@ -159,115 +114,7 @@
         <div class="pagination"></div>
     </div>
 </div>
-<script>
-// Variáveis globais
-        let paginaAtual = 1;
-        const itensPorPagina = 7;
 
-        // Função para carregar os dados da tabela
-        function carregarTabela(pagina, filtro = "") {
-            fetch(`paginasTabelaestoque.php?pagina=${pagina}&itensPorPagina=${itensPorPagina}&filtro=${filtro}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.dados) {
-                        preencherTabela(data.dados);
-                        criarPaginacao(data.total_paginas);
-                    } else {
-                        console.error("Estrutura de dados inesperada:", data);
-                    }
-                })
-                .catch(error => console.error("Erro ao carregar dados:", error));
-        }
-
-        // Função para preencher a tabela
-        function preencherTabela(dados) {
-            const tbody = document.getElementById("tabelaProdutos");
-            tbody.innerHTML = ""; // Limpar a tabela
-
-            if (dados.length === 0) {
-                const row = document.createElement("tr");
-                row.innerHTML = `<td colspan="8">Nenhum produto encontrado.</td>`;
-                tbody.appendChild(row);
-                return;
-            }
-
-            dados.forEach(dado => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${dado.id}</td>
-                    <td>${dado.produto}</td>
-                    <td>${dado.classificacao}</td>
-                    <td>${dado.localizacao}</td>
-                    <td>${dado.codigo}</td>
-                    <td>${dado.natureza}</td>
-                    <td>${dado.quantidade}</td>
-                    <td class="actions">
-                        <button class="btn-estoque1" onclick="abrirModalDetalhes('${dado.id}')">+ Detalhes</button>
-                        <button class="btn-estoque" onclick="abrirModalAtualizar('${dado.id}')">Atualizar</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        // Função para criar a paginação com botões "<<" e ">>"
-        function criarPaginacao(totalPaginas) {
-            const paginacaoContainer = document.querySelector(".pagination");
-            paginacaoContainer.innerHTML = ""; // Limpar os botões de paginação
-
-            const maxBotoes = 5;
-            let inicio = Math.max(1, paginaAtual - Math.floor(maxBotoes / 2));
-            let fim = Math.min(totalPaginas, inicio + maxBotoes - 1);
-
-            if (fim - inicio + 1 < maxBotoes) {
-                inicio = Math.max(1, fim - maxBotoes + 1);
-            }
-
-            if (inicio > 1) {
-                const primeiro = document.createElement("button");
-                primeiro.textContent = "<<";
-                primeiro.addEventListener("click", () => {
-                    paginaAtual = 1;
-                    carregarTabela(paginaAtual, document.getElementById("filtroProduto").value);
-                });
-                paginacaoContainer.appendChild(primeiro);
-            }
-
-            for (let i = inicio; i <= fim; i++) {
-                const button = document.createElement("button");
-                button.textContent = i;
-                button.className = i === paginaAtual ? "active" : "";
-                button.addEventListener("click", () => {
-                    paginaAtual = i;
-                    carregarTabela(paginaAtual, document.getElementById("filtroProduto").value);
-                });
-                paginacaoContainer.appendChild(button);
-            }
-
-            if (fim < totalPaginas) {
-                const ultimo = document.createElement("button");
-                ultimo.textContent = ">>";
-                ultimo.addEventListener("click", () => {
-                    paginaAtual = fim + 1;
-                    carregarTabela(paginaAtual, document.getElementById("filtroProduto").value);
-                });
-                paginacaoContainer.appendChild(ultimo);
-            }
-        }
-
-        // Eventos de filtro e limpeza
-        document.getElementById("filtrar").addEventListener("click", () => {
-            carregarTabela(1, document.getElementById("filtroProduto").value);
-        });
-
-        document.getElementById("limpar").addEventListener("click", () => {
-            document.getElementById("filtroProduto").value = "";
-            carregarTabela(1);
-        });
-
-        // Carregar tabela na inicialização
-        window.addEventListener("load", () => carregarTabela(paginaAtual));
-</script>
 
 
 </div><div class="form-container3" id="retirar">
@@ -304,66 +151,6 @@
     <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
 
-<script>
-    const nomeInput = document.getElementById('material-nome');
-    const codigoInput = document.getElementById('material-codigo');
-    const classificacaoInput = document.getElementById('material-classificacao');
-    const naturezaInput = document.getElementById('material-natureza');
-    const localizacaoInput = document.getElementById('material-localizacao');
-    const quantidadeInput = document.getElementById('material-quantidade');
-    const mensagemDiv = document.getElementById('mensagem');
-
-    // Função para buscar material e preencher os campos automaticamente
-    nomeInput.addEventListener('input', () => {
-        const nomeMaterial = nomeInput.value.trim();
-
-        if (nomeMaterial.length > 0) {
-            fetch(`buscar_codigo.php?nome=${encodeURIComponent(nomeMaterial)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Preenche os campos com as informações do produto
-                        codigoInput.value = data.codigo || "Não encontrado";
-                        classificacaoInput.value = data.classificacao || "Não encontrado";
-                        naturezaInput.value = data.natureza || "Não encontrado";
-                        localizacaoInput.value = data.localizacao || "Não encontrado";
-                        mensagemDiv.innerText = "";  // Limpa a mensagem de erro
-                    } else {
-                        // Caso o produto não seja encontrado
-                        codigoInput.value = "";
-                        classificacaoInput.value = "";
-                        naturezaInput.value = "";
-                        localizacaoInput.value = "";
-                        mensagemDiv.innerText = "Material não encontrado.";
-                    }
-                })
-                .catch(err => {
-                    console.error('Erro ao buscar os dados:', err);
-                    mensagemDiv.innerText = "Erro na busca. Tente novamente.";
-                });
-        } else {
-            // Limpa os campos se o nome do material for apagado
-            codigoInput.value = "";
-            classificacaoInput.value = "";
-            naturezaInput.value = "";
-            localizacaoInput.value = "";
-            mensagemDiv.innerText = "";
-        }
-    });
-
-    // Função para validação do formulário
-    document.getElementById('retirar-form').addEventListener('submit', function(event) {
-        // Verifica se todos os campos estão preenchidos
-        if (!codigoInput.value || !classificacaoInput.value || !naturezaInput.value || !localizacaoInput.value) {
-            event.preventDefault();  // Impede o envio do formulário
-            mensagemDiv.innerText = "Preencha corretamente todos os campos antes de continuar.";
-        } else if (quantidadeInput.value <= 0) {
-            event.preventDefault();  // Impede o envio do formulário
-            mensagemDiv.innerText = "A quantidade a ser retirada deve ser maior que 0.";
-        }
-    });
-</script>
-
 
 
 <!-- Modal para Detalhes -->
@@ -386,94 +173,6 @@
     </div>
 </div>
 
-<script>
-    // Função para abrir o modal e carregar os detalhes
-    function abrirModalDetalhes(id) {
-        const linha = [...document.querySelectorAll('#tabelaProdutos tr')].find(tr => tr.children[0].textContent == id);
-        if (!linha) return;
-
-        const dados = {
-            id: linha.children[0].textContent,
-            produto: linha.children[1].textContent,
-            classificacao: linha.children[2].textContent,
-            localizacao: linha.children[3].textContent,
-            codigo: linha.children[4].textContent,
-            natureza: linha.children[5].textContent,
-            quantidade: linha.children[6].textContent,
-        };
-
-        const modalConteudo = document.getElementById('modal-informacoes');
-        modalConteudo.innerHTML = `
-            <h3>Detalhes do Produto</h3>
-            <p><strong>ID:</strong> ${dados.id}</p>
-            <p><strong>Produto:</strong> ${dados.produto}</p>
-            <p><strong>Classificação:</strong> ${dados.classificacao}</p>
-            <p><strong>Localização:</strong> ${dados.localizacao}</p>
-            <p><strong>Código:</strong> ${dados.codigo}</p>
-            <p><strong>Natureza:</strong> ${dados.natureza}</p>
-            <p><strong>Quantidade:</strong> ${dados.quantidade}</p>
-        `;
-
-        document.getElementById('modal-detalhes').style.display = 'block';
-    }
-
-    // Função para abrir o modal de atualização
-    function abrirModalAtualizar(id) {
-        const linha = [...document.querySelectorAll('#tabelaProdutos tr')].find(tr => tr.children[0].textContent == id);
-        if (!linha) return;
-
-        const dados = {
-            id: linha.children[0].textContent,
-            produto: linha.children[1].textContent,
-            classificacao: linha.children[2].textContent,
-            localizacao: linha.children[3].textContent,
-            codigo: linha.children[4].textContent,
-            natureza: linha.children[5].textContent,
-            quantidade: linha.children[6].textContent,
-        };
-
-        const modalConteudo = document.getElementById('modal-atualizacao');
-        modalConteudo.innerHTML = `
-            <h3>Atualizar Produto</h3>
-            <form id="formAtualizar">
-                <input type="hidden" name="id" value="${dados.id}">
-                <p><label>Produto:</label><input type="text" name="produto" value="${dados.produto}" readonly></p>
-                <p><label>Classificação:</label><input type="text" name="classificacao" value="${dados.classificacao}"readonly></p>
-                <p><label>Localização:</label><input type="text" name="localizacao" value="${dados.localizacao}"readonly></p>
-                <p><label>Código:</label><input type="text" name="codigo" value="${dados.codigo} " readonly></p>
-                <p><label>Natureza:</label><input type="text" name="natureza" value="${dados.natureza}" readonly></p>
-                <p><label>Quantidade:</label><input type="number" name="quantidade" value="${dados.quantidade}"></p>
-                <button type="button" onclick="salvarAlteracoes()">Salvar Alterações</button>
-            </form>
-        `
-        document.getElementById('modal-atualizar').style.display = 'block';
-    }
-
-    // Função para salvar alterações
-    function salvarAlteracoes() {
-        const form = document.getElementById('formAtualizar');
-        const dadosAtualizados = new FormData(form);
-
-        // Enviar os dados para o backend via fetch ou outra requisição AJAX
-        fetch('atualizar_produto.php', {
-            method: 'POST',
-            body: dadosAtualizados
-        })
-        .then(response => response.text())
-        .then(result => {
-            alert('Produto atualizado com sucesso!');
-            fecharModal('modal-atualizar');
-            location.reload(); // Recarrega a página para atualizar a tabela
-        })
-        .catch(error => alert('Erro ao atualizar produto.'));
-    }
-
-    // Função para fechar o modal
-    function fecharModal(modalId) {
-        document.getElementById(modalId).style.display = 'none';
-    }
-    
-</script>
 
 
 <div class="form-container" id="Estoque">
@@ -540,69 +239,7 @@
     </div>
 </div>
 
-<script>
-    // Função para filtrar a tabela com base no valor do input
-    function filtrarTabela() {
-        const filtro = document.getElementById('filtroestoque').value.toLowerCase().trim();
-        const linhas = document.querySelectorAll('#tabelaestoque tr');
 
-        linhas.forEach(linha => {
-            const produto = linha.cells[1]?.textContent.toLowerCase().trim() || '';
-            // Exibe a linha se o produto contém o filtro, ou oculta se não contém
-            linha.style.display = produto.includes(filtro) ? '' : 'none';
-        });
-    }
-
-    // Função para limpar o campo de input
-    function limparFiltro() {
-        document.getElementById('filtroestoque').value = ''; // Limpar o campo de texto
-        filtrarTabela(); // Reaplicar o filtro
-    }
-
-    // Função para limitar a tabela a 7 linhas e adicionar scroll
-    window.onload = function() {
-        const tabelaBody = document.getElementById('tabelaestoque');
-        const linhas = tabelaBody.getElementsByTagName('tr');
-
-        // Limitar a 7 linhas
-        const limite = 7;
-        for (let i = 0; i < linhas.length; i++) {
-            if (i >= limite) {
-                linhas[i].style.display = 'none';
-            }
-        }
-
-        // Adicionar barra de rolagem
-        tabelaBody.style.maxHeight = '300px';
-        tabelaBody.style.overflowY = 'auto';
-    };
-</script>
-
-<style>
-    /* Estilos para a tabela e a barra de rolagem */
-    .table-container2 {
-        max-width: 100%;
-        height: 800px;
-        overflow-x: auto;
-    }
-
-    .tabela-estoque {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .tabela-estoque th, .tabela-estoque td {
-        padding: 8px;
-        text-align: left;
-        border: 1px solid #ddd;
-    }
-
-    /* Estilos da barra de rolagem */
-    #tabelaestoque {
-        max-height: 300px; /* Limita a altura da tabela */
-        overflow-y: auto; /* Adiciona rolagem vertical */
-    }
-</style>
 
 
 <div class="form-container" id="relatorio">
@@ -777,36 +414,20 @@
 
 
 
+<!-- JS CÁLCULO DE PREÇO MÉDIO -->
+<script src="./src/estoque/js/calc-preco-medio.js"></script>
+<!-- JS DE PAGINA E FILTRO DA TABELA-ESTOQUE -->
+<script src="./src/estoque/js/paginacao-filtro.js"></script>
+<!-- JS DE PAGINA E FILTRO DA TABELA -->
+<script src="./src/estoque/js/paginacao-filtro.js"></script>
+<!-- PREENCHIMENTO AUTOMÁTICO RETIRADA DE PRODUTO -->
+<script src="./src/estoque/js/preencher-produto-retirada.js"></script>
+<!--  JS PREENHE OS DETALHES DA LINHA SELECIONADA NO MODAL -->
+<script src="./src/estoque/js/modal-estoque.js"></script>
 
 
 <script src="./src/js/active.js">
-    // Função para alternar entre as abas
-    function showTab(tabName) {
-    // Esconder todas as abas do tipo form-container e form-container2
-    const tabs = document.querySelectorAll('.form-container, .form-container3');
-    tabs.forEach(tab => tab.style.display = 'none');
-
-    // Exibir a aba selecionada (form-container ou form-container2)
-    const selectedTab = document.getElementById(tabName);
-    if (selectedTab) {
-        selectedTab.style.display = 'block';
-    }
-
-    // Atualizar o estilo das abas para mostrar qual está ativa
-    const tabLinks = document.querySelectorAll('.tab');
-    tabLinks.forEach(tab => tab.classList.remove('active'));
-    const activeTabLink = document.querySelector(`[data-tab="${tabName}"]`);
-    if (activeTabLink) {
-        activeTabLink.classList.add('active');
-    }
-    }
-
-
-    // Mostrar a aba 'cadastrar' como padrão quando a página for carregada
-    window.onload = function() {
-        showTab('cadastrar');
-    };
-
+   
 
 
 </script>

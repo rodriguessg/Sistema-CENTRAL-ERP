@@ -3,7 +3,7 @@
 $host = 'localhost';
 $user = 'root';
 $password = '';
-$database = 'supat';
+$database = 'gm_sicbd';
 
 $conn = new mysqli($host, $user, $password, $database);
 

@@ -114,7 +114,7 @@ include 'verificar_quantidade_produtos.php';
             <?php
             // Configurações do banco de dados
             $host = 'localhost'; // Substitua pelo host do banco
-            $dbname = 'supat';   // Nome do banco de dados
+            $dbname = 'gm_sicbd';   // Nome do banco de dados
             $user = 'root';      // Nome de usuário do banco
             $password = '';      // Senha do banco
             

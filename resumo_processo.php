@@ -1,7 +1,7 @@
 <?php
 // Configuração do banco de dados
 $host = 'localhost'; // ou o endereço do seu servidor de banco de dados
-$dbname = 'supat'; // Nome do banco de dados
+$dbname = 'gm_sicbd'; // Nome do banco de dados
 $username = 'root'; // Usuário do banco de dados
 $password = ''; // Senha do banco de dados
 

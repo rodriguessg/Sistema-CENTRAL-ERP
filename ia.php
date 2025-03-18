@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 $host = 'localhost';
 $user = 'root';
 $password = '';
-$dbname = 'supat';
+$dbname = 'gm_sicbd';
 
 // Conexão com o banco de dados
 $conn = new mysqli($host, $user, $password, $dbname);

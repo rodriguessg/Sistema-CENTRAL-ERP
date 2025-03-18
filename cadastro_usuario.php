@@ -1,7 +1,7 @@
 <?php
 // Configuração do banco de dados
 $host = 'localhost';
-$db = 'supat';
+$db = 'gm_sicbd';
 $user = 'root';
 $password = '';
 

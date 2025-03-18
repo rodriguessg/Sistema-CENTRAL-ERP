@@ -5,7 +5,7 @@ session_start();
 $host = 'localhost';
 $user = 'root';
 $password = '';
-$dbname = 'supat';
+$dbname = 'gm_sicbd';
 
 $conn = new mysqli($host, $user, $password, $dbname);
 

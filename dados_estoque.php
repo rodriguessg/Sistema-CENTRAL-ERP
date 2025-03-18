@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 
 // Conexão com o banco de dados
-$conn = new mysqli('localhost', 'root', '', 'supat');
+$conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
 if ($conn->connect_error) {
     die(json_encode(['error' => 'Falha na conexão com o banco de dados']));
 }

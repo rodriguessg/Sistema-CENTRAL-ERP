@@ -3,7 +3,7 @@
 $servidor = "localhost";
 $usuario = "root";
 $senha = "";
-$banco = "supat";
+$banco = "gm_sicbd";
 
 // Conexão com o banco de dados
 $conn = new mysqli($servidor, $usuario, $senha, $banco);

@@ -6,7 +6,7 @@ session_start();
 $host = 'localhost';
 $user = 'root'; // Substitua pelo seu usuário do banco de dados
 $password = ''; // Substitua pela sua senha
-$dbname = 'supat'; // Substitua pelo nome do seu banco de dados
+$dbname = 'gm_sicbd'; // Substitua pelo nome do seu banco de dados
 
 // Conexão com o banco de dados
 $conn = new mysqli($host, $user, $password, $dbname);

@@ -9,9 +9,9 @@ if (!isset($_SESSION['username']) || !isset($_SESSION['setor'])) {
     header("Location: login.php");
     exit();
 }
+// Incluindo a conexão com o banco de dados, verificando se o arquivo existe
+require_once 'bancoo.php';  // Atualize o caminho conforme necessário
 
-// Inclua a conexão com o banco de dados
-require_once 'bancoo.php';
 
 // Verifique se a conexão foi estabelecida
 try {

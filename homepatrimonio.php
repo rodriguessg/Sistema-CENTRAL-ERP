@@ -31,7 +31,7 @@ $categoriaSelecionada = "";
         }
         
             
-    /* Estilo do Modal */
+    Estilo do Modal
     .modal {
         display: none; /* Inicialmente oculto */
         position: fixed;

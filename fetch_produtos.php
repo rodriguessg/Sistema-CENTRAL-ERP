@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$dbname = 'supat';
+$dbname = 'gm_sicbd';
 $user = 'root';
 $password = '';
 

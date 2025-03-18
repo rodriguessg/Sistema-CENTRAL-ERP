@@ -164,7 +164,6 @@
 </div>
 
 
-
 <div class="form-container" id="Estoque">
     <h2>Consulta de Estoque</h2>
 
@@ -192,7 +191,7 @@
                 <?php
                 // Função para conectar ao banco de dados
                 function conectarBanco() {
-                    $conn = new mysqli('localhost', 'root', '', 'supat');
+                    $conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
                     if ($conn->connect_error) {
                         die("Falha na conexão: " . $conn->connect_error);
                     }
@@ -398,8 +397,6 @@
 </script>
 
 
-
-
 <!-- JS CÁLCULO DE PREÇO MÉDIO -->
 <script src="./src/estoque/js/calc-preco-medio.js"></script>
 <!-- JS DE PAGINA E FILTRO DA TABELA-ESTOQUE -->
@@ -412,7 +409,9 @@
 <script src="./src/estoque/js/modal-estoque.js"></script>
 
 <!-- JS ATIVAÇÃO DAS ABAS -->
-<script src="./src/js/active.js"></script>
+<script src="./src/estoque/js/active-tab-estoque.js"></script>
+
+
 </body>
 </html>
 

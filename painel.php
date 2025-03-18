@@ -7,7 +7,7 @@ include 'banco.php'; // Inclua a conexão com o banco de dados
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "supat";
+$dbname = "gm_sicbd";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 

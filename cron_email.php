@@ -1,7 +1,7 @@
 <?php
 // Configurações de conexão com o banco de dados
 $host = 'localhost';
-$dbname = 'supat';
+$dbname = 'gm_sicbd';
 $user = 'root';
 $password = '';
 

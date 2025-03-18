@@ -2,7 +2,7 @@
     // contrato.php
     session_start();
     // Conexão com o banco de dados
-    $dsn = 'mysql:host=localhost;dbname=supat';
+    $dsn = 'mysql:host=localhost;dbname=gm_sicbd';
     $username = 'root';
     $password = '';
 
@@ -129,7 +129,7 @@ if ($processId) {
 
 <?php
     // Conexão com o banco de dados (substitua pelos seus dados)
-    $pdo = new PDO('mysql:host=localhost;dbname=supat', 'root', '');
+    $pdo = new PDO('mysql:host=localhost;dbname=gm_sicbd', 'root', '');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"])) {
@@ -645,7 +645,7 @@ document.getElementById('editProcessForm').addEventListener('submit', function(e
         $servername = "localhost";
         $username = "root";
         $password = "";
-        $dbname = "supat";
+        $dbname = "gm_sicbd";
         $conn = new mysqli($servername, $username, $password, $dbname);
         if ($conn->connect_error) {
             die("Conexão falhou: " . $conn->connect_error);

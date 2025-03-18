@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     {
         try {
             // Conexão segura com o banco de dados
-            $pdo = new PDO('mysql:host=localhost;dbname=supat;charset=utf8', 'root', '');
+            $pdo = new PDO('mysql:host=localhost;dbname=gm_sicbd;charset=utf8', 'root', '');
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             // Query para buscar os dados

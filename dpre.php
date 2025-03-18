@@ -1,5 +1,5 @@
 <?php
-include './include/banco.php'; // Inclua sua conexão com o banco de dados
+include 'banco.php'; // Inclua sua conexão com o banco de dados
 $query = "SELECT codigo, nome, data_aquisicao, valor FROM patrimonio";
 $result = $con->query($query);
 

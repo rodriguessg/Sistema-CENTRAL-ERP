@@ -208,8 +208,8 @@ include 'verificar_quantidade_produtos.php';
 
        
 
-<script src="./src/estoque/painelalmoxarifado.js"></script>
-<script src="./src/estoque/grafico.js">
+<script src="./src/estoque/js/painelalmoxarifado.js"></script>
+<script src="./src/estoque/js/grafico.js">
   
 </script>
 

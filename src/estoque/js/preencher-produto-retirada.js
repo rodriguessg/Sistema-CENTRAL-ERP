@@ -11,7 +11,7 @@ nomeInput.addEventListener('input', () => {
     const nomeMaterial = nomeInput.value.trim();
 
     if (nomeMaterial.length > 0) {
-        fetch(`buscar_codigo.php?nome=${encodeURIComponent(nomeMaterial)}`)
+        fetch(`./include/estoque/buscar_codigo.php?nome=${encodeURIComponent(nomeMaterial)}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

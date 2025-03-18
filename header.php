@@ -230,8 +230,6 @@ try {
         </a>
     </li>
 </ul>
-        </nav>
-
         <!-- Conteúdo Principal -->
         <div id="content" class="content">
             <!-- Conteúdo já existente -->

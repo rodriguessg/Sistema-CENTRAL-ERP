@@ -1,7 +1,5 @@
 <?php
 include 'header.php'; 
-
-
 include 'verificar_quantidade_produtos.php';
 ?>
 
@@ -12,9 +10,8 @@ include 'verificar_quantidade_produtos.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Estoque</title>
     <link rel="stylesheet" href="./src/style/style.css">
-    <link rel="stylesheet" href="./src/style/painelalmoxarifado.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+    <link rel="stylesheet" href="./src/estoque/style/painelalmoxarifado.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
 
 </head>
 <body>
@@ -208,8 +205,8 @@ include 'verificar_quantidade_produtos.php';
 
        
 
-<script src="./src/estoque/painelalmoxarifado.js"></script>
-<script src="./src/estoque/grafico.js">
+<script src="./src/estoque/js/painelalmoxarifado.js"></script>
+<script src="./src/estoque/js/grafico.js">
   
 </script>
 

@@ -7,11 +7,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Almoxarifado</title>
-    <!-- <link rel="stylesheet" href="src/style/style.css"> -->
+    <link rel="stylesheet" href="src/style/style.css">
     <link rel="stylesheet" href="src/estoque/style/estoque.css">
+ 
 </head>
 <body>
-    <h1>Gerencimento de Almoxarifado</h1>
+
 <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">Cadastrar Materiais</div>
     <div class="tab" data-tab="retirar" onclick="showTab('consulta')">Consulta de produtos</div>
@@ -21,33 +22,33 @@
     <div class="tab" data-tab="galeria" onclick="showTab('galeria')">Galeria</div>
 </div>
 
-
 <!-- Conteúdo das abas -->
-<div class="form-container3" id="cadastrar" style="display:none;">
+<div class="form-container" id="cadastrar" style="display:none;">
+    
     <h3>Cadastrar Produto</h3>
-    <form id="form-cadastrar-produto" action="cadastrar_produto.php" method="POST" enctype="multipart/form-data" style="display: ruby;">
+    <form id="form-cadastrar-produto" action="./include/estoque/cadastrar_produto.php" method="POST" enctype="multipart/form-data" style="display: ruby;">
         <div class="form-group3">
             <label for="produto">Produto:</label>
             <input type="text" id="produto" name="produto" placeholder="Digite o nome do produto" required>
             
             <label for="classificacao">Classificação:</label>
             <input type="text" id="classificacao" name="classificacao" placeholder="Digite a classificação" required>
-        </div>
-        <div class="form-group3">
+        
+       
             <label for="natureza">Natureza:</label>
             <input type="text" id="natureza" name="natureza" placeholder="Digite a natureza do produto" required>
             
             <label for="contabil">Contábil:</label>
             <input type="text" id="contabil" name="contabil" placeholder="Digite o código contábil" required>
-        </div>  
-        <div class="form-group3">
+  
+        
             <label for="codigo">Código:</label>
             <input type="text" id="codigo" name="codigo" placeholder="Código do produto" required>
             
             <label for="unidade">Unidade:</label>
             <input type="text" id="unidade" name="unidade" placeholder="Unidade de medida" required>
-        </div>
-        <div class="form-group3">
+       
+      
             <label for="localizacao">Local:</label>
             <select id="localizacao" name="localizacao" required>
                 <option value="" disabled selected>Selecione o local</option>
@@ -57,19 +58,18 @@
             
             <label for="custo">Custo:</label>
             <input type="text" id="custo" name="custo" placeholder="Digite o custo" step="0.01" required>
-        </div>
-        <div class="form-group3">
+      
+      
             <label for="quantidade">Quantidade:</label>
             <input type="number" id="quantidade" name="quantidade" placeholder="Digite a quantidade" required>
         
             <label for="preco_medio">Preço Médio:</label>
             <input type="number" id="preco_medio" name="preco_medio" placeholder="Digite o preço médio" step="0.01" readonly>
-        </div>
-        <div class="form-group3">
+ 
+      
             <label for="nf">Nota Fiscal:</label>
-            <input type="text" id="nf" name="nf" placeholder="Digite a Nota Fiscal">
-        </div>
-        <div class="form-group3">
+
+    
             <button type="submit">Cadastrar</button>
             <button type="button" id="limpar-formulario">Limpar</button>
         </div>
@@ -109,9 +109,9 @@
 </div>
 
 
-</div><div class="form-container3" id="retirar">
+</div><div class="form-container" id="retirar">
     <h3>Retirar Material do Estoque</h3>
-    <form id="retirar-form" action="retirar_materialestoque.php" method="POST">
+    <form id="retirar-form" action="./include/estoque/retirar_materialestoque.php" method="POST">
         <div class="form-group3">
             <label for="material-nome">Nome do Material:</label>
             <input type="text" id="material-nome" name="material-nome" placeholder="Digite o nome do material" required>
@@ -287,7 +287,7 @@
     // Função para carregar os exercícios disponíveis
     async function fetchExercicios() {
         try {
-            const response = await fetch('buscar_exercicios.php');
+            const response = await fetch('./include/estoque/buscar_exercicios.php');
             const exercicios = await response.json();
             const exercicioSelect = document.getElementById('exercicio');
 
@@ -326,7 +326,7 @@
         }
 
         try {
-            const response = await fetch('gerar_relatorioestoque.php', {
+            const response = await fetch('./include/estoque/gerar_relatorioestoque.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({
@@ -415,4 +415,4 @@
 </body>
 </html>
 
-<?php include 'footer.php'; ?>
+<!-- <?php include 'footer.php'; ?> -->

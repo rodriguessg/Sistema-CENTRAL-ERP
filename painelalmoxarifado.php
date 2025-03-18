@@ -39,7 +39,7 @@ include 'verificar_quantidade_produtos.php';
                 <?php
                 // Configurações do banco de dados
                 $host = 'localhost'; // Substitua pelo host do banco
-                $dbname = 'supat';   // Nome do banco de dados
+                $dbname = 'gm_sicbd';   // Nome do banco de dados
                 $user = 'root';      // Nome de usuário do banco
                 $password = '';      // Senha do banco
 
@@ -152,7 +152,7 @@ include 'verificar_quantidade_produtos.php';
    
         <?php
         // Conexão com o banco de dados
-        $conn = new mysqli("localhost", "root", "", "supat");
+        $conn = new mysqli("localhost", "root", "", "gm_sicbd");
 
         // Verifique a conexão
         if ($conn->connect_error) {
@@ -208,146 +208,9 @@ include 'verificar_quantidade_produtos.php';
 
        
 
-<script>
-     
-     document.addEventListener("DOMContentLoaded", () => {
-    // Função para atualizar os cards com os dados do backend
-    function atualizarCards(data) {
-        const totalProdutosCard = document.getElementById('totalProdutos');
-        const produtoAcabandoCard = document.getElementById('produtoAcabando');
-        const cardProdutoAcabando = document.getElementById('cardProdutoAcabando');
-        const listaProdutosAcabando = document.getElementById('listaProdutosAcabando');
-        
-        // Atualiza o total de produtos
-        totalProdutosCard.textContent = data.totalProdutos;
-
-        // Verifica se há produtos acabando
-        const produtosAcabando = data.produtos.filter(produto => produto.quantidade < 10);
-        
-        if (produtosAcabando.length > 0) {
-            // Exibe o card de produtos acabando
-            cardProdutoAcabando.style.display = 'block';
-
-            // Preenche a lista de produtos com pouca unidade
-            listaProdutosAcabando.innerHTML = ''; // Limpa a lista antes de adicionar os novos itens
-            produtosAcabando.forEach(produto => {
-                const li = document.createElement('li');
-                li.textContent = `${produto.nome} - ${produto.quantidade} unidades`;
-                listaProdutosAcabando.appendChild(li);
-            });
-
-            // Atualiza o texto do produto que está acabando
-            produtoAcabandoCard.textContent = `${produtosAcabando.length} produto(s) acabando`;
-        } else {
-            // Se não houver produtos acabando, oculta o card
-            cardProdutoAcabando.style.display = 'none';
-        }
-    }
-
-    // Função para buscar dados do backend
-    function buscarDados() {
-        fetch('dados_estoque.php')
-            .then(response => response.json())
-            .then(data => {
-                atualizarCards(data);
-            })
-            .catch(error => console.error('Erro ao carregar dados:', error));
-    }
-
-    // Iniciar o carregamento dos dados
-    buscarDados();
-    });
-</script>
-<script>
-   document.addEventListener("DOMContentLoaded", () => {
-        const ctx = document.getElementById("graficoProdutos").getContext("2d");
-        let chart;
-
-        const modal = document.getElementById("modalAno");
-        const closeButton = document.querySelector(".close-button");
-        const tabelaProdutosAno = document.getElementById("tabelaProdutosAno");
-        const anoSelecionado = document.getElementById("anoSelecionado");
-
-        const renderChart = (labels, data, label) => {
-            if (chart) chart.destroy();
-
-            chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: label,
-                        data: data,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    onClick: async (event, elements) => {
-                        if (elements.length > 0) {
-                            const index = elements[0].index;
-                            const selectedYear = labels[index];
-
-                            // Exibir modal com produtos do ano
-                            anoSelecionado.textContent = selectedYear;
-                            await fetchProdutosDoAno(selectedYear);
-                            modal.style.display = "block";
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        };
-
-        const fetchData = async (type) => {
-            const response = await fetch(`fetch_data.php?type=${type}`);
-            const result = await response.json();
-
-            const labels = result.map(item => item.label);
-            const data = result.map(item => item.count);
-
-            renderChart(labels, data, type === 'year' ? 'Quantidade de Produtos por Ano' : 'Quantidade de Produtos por Mês');
-        };
-
-        const fetchProdutosDoAno = async (year) => {
-            const response = await fetch(`fetch_produtos.php?ano=${year}`);
-            const produtos = await response.json();
-
-            // Preencher tabela do modal
-            tabelaProdutosAno.innerHTML = produtos.map(produto => `
-                <tr>
-                    <td>${produto.produto}</td>
-                    <td>${produto.quantidade}</td>
-                    <td>${produto.codigo}</td>
-                    <td>${produto.data_cadastro}</td>
-                </tr>
-            `).join('');
-        };
-
-        closeButton.addEventListener("click", () => {
-            modal.style.display = "none";
-        });
-
-        window.addEventListener("click", (event) => {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        });
-
-        // Evento na caixa de combinação
-        document.getElementById("filterType").addEventListener("change", (event) => {
-            const selectedValue = event.target.value;
-            fetchData(selectedValue);
-        });
-
-        // Carregar dados inicial por mês
-        fetchData('month');
-    });
+<script src="./src/estoque/painelalmoxarifado.js"></script>
+<script src="./src/estoque/grafico.js">
+  
 </script>
 
 </body>

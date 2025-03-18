@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Função para buscar dados do backend
     function buscarDados() {
-        fetch('dados_estoque.php')
+        fetch('./include/estoque/dados_estoque.php')
             .then(response => response.json())
             .then(data => {
                 atualizarCards(data);

@@ -9,7 +9,7 @@ require 'vendor/autoload.php';
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "supat";
+$dbname = "gm_sicbd";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 

@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 
 // Configurações do banco de dados
 $host = 'localhost';
-$dbname = 'supat';
+$dbname = 'gm_sicbd';
 $user = 'root';
 $password = '';
 

@@ -7,11 +7,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Almoxarifado</title>
-    <link rel="stylesheet" href="src/style/style.css">
+    <!-- <link rel="stylesheet" href="src/style/style.css"> -->
     <link rel="stylesheet" href="src/estoque/style/estoque.css">
  
 </head>
 <body>
+
+<div class="caderno">
 
 <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">Cadastrar Materiais</div>
@@ -21,7 +23,6 @@
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">Relatorio</div>
     <div class="tab" data-tab="galeria" onclick="showTab('galeria')">Galeria</div>
 </div>
-
 <!-- Conteúdo das abas -->
 <div class="form-container" id="cadastrar" style="display:none;">
     
@@ -109,34 +110,22 @@
 </div>
 
 
-</div><div class="form-container" id="retirar">
+<div class="form-container" id="retirar">
     <h3>Retirar Material do Estoque</h3>
     <form id="retirar-form" action="./include/estoque/retirar_materialestoque.php" method="POST">
         <div class="form-group3">
             <label for="material-nome">Nome do Material:</label>
             <input type="text" id="material-nome" name="material-nome" placeholder="Digite o nome do material" required>
-
             <label for="material-codigo">Código do Material:</label>
             <input type="text" id="material-codigo" name="material-codigo" placeholder=" preenchido automaticamente" readonly>
-        </div>
-
-        <div class="form-group3">
             <label for="material-classificacao">Classificação:</label>
             <input type="text" id="material-classificacao" name="material-classificacao" placeholder=" preenchido automaticamente" readonly>
-
             <label for="material-natureza">Natureza:</label>
             <input type="text" id="material-natureza" name="material-natureza" placeholder=" preenchido automaticamente" readonly>
-        </div>
-
-        <div class="form-group3">
             <label for="material-localizacao">Localização:</label>
             <input type="text" id="material-localizacao" name="material-localizacao" placeholder=" preenchido automaticamente" readonly>
-
             <label for="material-quantidade">Quantidade:</label>
             <input type="number" id="material-quantidade" name="material-quantidade" min="1" placeholder="Digite a quantidade a retirar" required>
-        </div>
-
-        <div class="form-group3">
             <button type="submit">Retirar</button>
         </div>
     </form>
@@ -270,6 +259,8 @@
     
     <!-- Botão de Exportação para Excel -->
     <button id="exportarExcelBtn" onclick="exportarParaExcel()" style="display: none; margin-top: 10px;">Exportar para Excel</button>
+</div>
+
 </div>
 <!-- AO RETIRAR ESTE SCRIPT APRESEMTA ERRO NO PREENCHIMENTO DO NOME DO USUÁRIO NO RELATÓRIO -->
 <script>

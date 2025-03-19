@@ -387,7 +387,6 @@
     }
 </script>
 
-
 <!-- JS CÁLCULO DE PREÇO MÉDIO -->
 <script src="./src/estoque/js/calc-preco-medio.js"></script>
 <!-- JS DE PAGINA E FILTRO DA TABELA-ESTOQUE -->
@@ -395,7 +394,7 @@
 <!-- JS DE PAGINA E FILTRO DA TABELA -->
 <script src="./src/estoque/js/paginacao-filtro.js"></script>
 <!-- PREENCHIMENTO AUTOMÁTICO RETIRADA DE PRODUTO -->
-<script src="/preencher-produto-retirada.js"></script>
+<script src="./preencher-produto-retirada.js"></script>
 <!--  JS PREENHE OS DETALHES DA LINHA SELECIONADA NO MODAL -->
 <script src="./src/estoque/js/modal-estoque.js"></script>
 

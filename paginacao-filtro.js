@@ -4,7 +4,7 @@ const itensPorPagina = 7;
 
 // Função para carregar os dados da tabela
 function carregarTabela(pagina, filtro = "") {
-    fetch(`./include/estoque/paginasTabelaestoque.php?pagina=${pagina}&itensPorPagina=${itensPorPagina}&filtro=${filtro}`)
+    fetch(`paginasTabelaestoque.php?pagina=${pagina}&itensPorPagina=${itensPorPagina}&filtro=${filtro}`)
         .then(response => response.json())
         .then(data => {
             if (data && data.dados) {

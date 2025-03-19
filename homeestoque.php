@@ -26,7 +26,7 @@
 <div class="form-container" id="cadastrar" style="display:none;">
     
     <h3>Cadastrar Produto</h3>
-    <form id="form-cadastrar-produto" action="./include/estoque/cadastrar_produto.php" method="POST" enctype="multipart/form-data" style="display: ruby;">
+    <form id="form-cadastrar-produto" action="cadastrar_produto.php" method="POST" enctype="multipart/form-data" style="display: ruby;">
         <div class="form-group3">
             <label for="produto">Produto:</label>
             <input type="text" id="produto" name="produto" placeholder="Digite o nome do produto" required>

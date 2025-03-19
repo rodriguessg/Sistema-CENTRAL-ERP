@@ -111,7 +111,7 @@
 
 <div class="form-container" id="retirar">
     <h3>Retirar Material do Estoque</h3>
-    <form id="retirar-form" action="./include/estoque/retirar_materialestoque.php" method="POST">
+    <form id="retirar-form" action="retirar_materialestoque.php" method="POST">
         <div class="form-group3">
             <label for="material-nome">Nome do Material:</label>
             <input type="text" id="material-nome" name="material-nome" placeholder="Digite o nome do material" required>
@@ -130,6 +130,7 @@
     </form>
     <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
+
 
 <!-- Modal para Detalhes -->
 <div class="modal" id="modal-detalhes">
@@ -277,7 +278,7 @@
     // Função para carregar os exercícios disponíveis
     async function fetchExercicios() {
         try {
-            const response = await fetch('./include/estoque/buscar_exercicios.php');
+            const response = await fetch('buscar_exercicios.php');
             const exercicios = await response.json();
             const exercicioSelect = document.getElementById('exercicio');
 
@@ -316,7 +317,7 @@
         }
 
         try {
-            const response = await fetch('./include/estoque/gerar_relatorioestoque.php', {
+            const response = await fetch('gerar_relatorioestoque.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({
@@ -394,7 +395,7 @@
 <!-- JS DE PAGINA E FILTRO DA TABELA -->
 <script src="./src/estoque/js/paginacao-filtro.js"></script>
 <!-- PREENCHIMENTO AUTOMÁTICO RETIRADA DE PRODUTO -->
-<script src="./src/estoque/js/preencher-produto-retirada.js"></script>
+<script src="/preencher-produto-retirada.js"></script>
 <!--  JS PREENHE OS DETALHES DA LINHA SELECIONADA NO MODAL -->
 <script src="./src/estoque/js/modal-estoque.js"></script>
 

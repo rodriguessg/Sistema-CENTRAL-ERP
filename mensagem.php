@@ -20,6 +20,7 @@ $mensagens = [
     'produto_adicionado' => 'Produto cadastrado com sucesso.',
     'produto_retirado' => 'Produto retirado com sucesso!',
    ' produto_retirado2' => 'Produto retirado com sucesso!',
+   ' retirar' => 'Produto retirado com sucesso!',
     'estoque_insuficiente' => 'Estoque insuficiente para retirada.',
     'produto_nao_encontrado' => 'Produto não encontrado no estoque.',
     'padrao' => 'Ocorreu um erro inesperado.'

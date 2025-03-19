@@ -1,7 +1,7 @@
 // Função para carregar as notificações ao clicar no ícone de sino
 document.getElementById('notificacaoLink').addEventListener('click', function() {
     // Faz a requisição para o PHP (getNotifications.php)
-    fetch('getNotifications.php')
+    fetch('getNotificationsCount.php')
         .then(response => response.json())
         .then(data => {
             // Atualiza o conteúdo do dropdown com as notificações

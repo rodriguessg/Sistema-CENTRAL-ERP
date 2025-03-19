@@ -1,27 +1,35 @@
 <?php
-// Conexão com o banco de dados
+// Inclui a conexão
 include 'banco.php';
 
-// Verifique se a conexão foi bem-sucedida
+// Verifica se a conexão foi bem-sucedida
 if ($con->connect_error) {
-    die("Falha na conexão com o banco de dados: " . $con->connect_error);
+    die(json_encode(['success' => false, 'message' => 'Erro de conexão: ' . $con->connect_error]));
 }
 
-// Verifica se a requisição foi enviada via GET para buscar material
+// Verifica se a requisição foi enviada via GET
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['nome'])) {
     $nome = isset($_GET['nome']) ? $con->real_escape_string($_GET['nome']) : '';
-    
+
     if (!empty($nome)) {
-        // Consulta para buscar o produto pelo nome
-        $query = "SELECT codigo, classificacao, natureza, localizacao FROM produtos WHERE nome LIKE ?";
+        // Verifica se a consulta está correta
+        $query = "SELECT codigo, classificacao, natureza, localizacao FROM produtos WHERE produto LIKE ?";
         $stmt = $con->prepare($query);
-        $likeNome = "%" . $nome . "%"; // Usando LIKE para buscar parcialmente
+
+        if (!$stmt) {
+            die(json_encode(['success' => false, 'message' => 'Erro na preparação da consulta: ' . $con->error]));
+        }
+
+        $likeNome = "%" . $nome . "%";
         $stmt->bind_param('s', $likeNome);
-        $stmt->execute();
+
+        if (!$stmt->execute()) {
+            die(json_encode(['success' => false, 'message' => 'Erro na execução da consulta: ' . $stmt->error]));
+        }
+
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            // Produto encontrado, retorna os dados em JSON
             $produto = $result->fetch_assoc();
             echo json_encode([
                 'success' => true,
@@ -31,18 +39,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['nome'])) {
                 'localizacao' => $produto['localizacao']
             ]);
         } else {
-            // Produto não encontrado
-            echo json_encode(['success' => false]);
+            echo json_encode(['success' => false, 'message' => 'Material não encontrado.']);
         }
 
         $stmt->close();
     } else {
-        echo json_encode(['success' => false]);
+        echo json_encode(['success' => false, 'message' => 'Nome do material não fornecido.']);
     }
-    
+
     $con->close();
     exit;
+} else {
+    echo json_encode(['success' => false, 'message' => 'Requisição inválida.']);
+    exit;
 }
-
-
 ?>

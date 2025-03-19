@@ -385,6 +385,8 @@
 
         URL.revokeObjectURL(url);
     }
+
+    
 </script>
 
 <!-- JS CÁLCULO DE PREÇO MÉDIO -->
@@ -394,7 +396,7 @@
 <!-- JS DE PAGINA E FILTRO DA TABELA -->
 <script src="./src/estoque/js/paginacao-filtro.js"></script>
 <!-- PREENCHIMENTO AUTOMÁTICO RETIRADA DE PRODUTO -->
-<script src="./preencher-produto-retirada.js"></script>
+<script src="./src/estoque/js/preencher-produto-retirada.js"></script>
 <!--  JS PREENHE OS DETALHES DA LINHA SELECIONADA NO MODAL -->
 <script src="./src/estoque/js/modal-estoque.js"></script>
 

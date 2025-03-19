@@ -70,7 +70,7 @@
  
       
             <label for="nf">Nota Fiscal:</label>
-
+            <input type="number" id="nf" name="nf" placeholder="Digite o Codigo" required>
     
             <button type="submit">Cadastrar</button>
             <button type="button" id="limpar-formulario">Limpar</button>

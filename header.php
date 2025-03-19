@@ -51,8 +51,8 @@ try {
                 ['link' => 'homeestoque.php', 'nome' => 'Estoque', 'icon' => 'cogs'],
                 ['link' => 'homepatrimonio.php', 'nome' => 'Patrimônio', 'icon' => 'building'],
                 ['link' => 'cadastro_usuario.php', 'nome' => 'Cadastrar Usuário', 'icon' => 'user-plus'],
-                ['link' => 'gerenciarpermissao.php', 'nome' => 'Gerenciar Permissões', 'icon' => 'key'],
-                ['link' => 'homeRh.php', 'nome' => 'Recursos Humanos', 'icon' => 'users'],
+                ['link' => 'gerenciarpermissao.php', 'nome' => 'Usuários', 'icon' => 'key'],
+                ['link' => 'homeRh.php', 'nome' => 'Recursos H', 'icon' => 'users'],
                 ['link' => 'homecontratos.php', 'nome' => 'Contratos', 'icon' => 'users'],
             ];
             break;
@@ -222,6 +222,8 @@ try {
             <ul class="list-unstyled components">
     <!-- Outros itens do menu -->
 
+
+
     <!-- Botão Sair -->
     <li class="exit-btn">
         <a href="sair.php" class="exit-btn-link">
@@ -230,10 +232,7 @@ try {
         </a>
     </li>
 </ul>
-        <!-- Conteúdo Principal -->
-        <div id="content" class="content">
-            <!-- Conteúdo já existente -->
-        </div>
+     
 
         <!-- Modal Perfil -->
         <div class="modal fade" id="perfilModal" tabindex="-1" aria-labelledby="perfilModalLabel" aria-hidden="true">

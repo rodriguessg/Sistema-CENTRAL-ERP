@@ -1,9 +1,8 @@
 /* Menu Lateral */
 #sidebar {
-  width: 250px;
-  background-color: #343a40;
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
   color: white;
-  padding: 30px 10px;
+  padding: 20px 12px;
   position: fixed;
   height: 100%;
   top: 0;
@@ -12,48 +11,73 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 1000; /* Garante que o menu lateral fique acima do conteúdo */
+  z-index: 1000;
+  border-radius: 10px 0 0 10px;
+  transition: width 0.5s ease, transform 0.3s ease-in-out;
+  overflow-y: auto; /* Permite rolagem no menu se o conteúdo for grande */
 }
 
-#sidebar img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-bottom: 20px;
-}
-
-#sidebar h3 {
-  margin: 10px 0;
-}
-
-/* Itens do Menu Lateral */
-.menu-item {
+/* Para garantir que o conteúdo não seja cortado ou empurre o menu */
+#sidebar .profile-section,
+#sidebar .menu-item {
   width: 100%;
-  padding: 15px;
   text-align: center;
-  background-color: #2d3e50;
-  color: #fff;
-  border: none;
-  font-size: 18px;
-  margin: 10px 0;
-  cursor: pointer;
-  border-radius: 5px;
+  overflow: hidden;
+  white-space: nowrap; /* Impede o texto de quebrar para a linha */
+  text-overflow: ellipsis; /* Adiciona '...' ao final do texto longo */
 }
 
-.menu-item:hover {
-  background-color: #1e2a37;
+#sidebar .profile-section img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.menu-item.active {
-  background-color: #007bff;
-}
-
-/* Estilo dos itens do menu */
-#sidebar .components li {
-  padding: 15px;
-  border-bottom: 1px solid #484e54;
-  transition: all 0.3s ease-in-out;
+/* Ícone de Notificação */
+#sidebar .notification {
   position: relative;
+  font-size: 24px;
+}
+
+#sidebar .notification .badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #ff0000;
+  color: white;
+  padding: 5px;
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.list-unstyled {
+  width: 248px;
+  padding-left: 0;
+  list-style: none;
+}
+
+/* Efeito de Hover no Menu */
+#sidebar .menu-item:hover {
+  background-color: #4e5a6a;
+  transform: scale(1.05); /* Efeito de aumento no item ao passar o mouse */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra suave ao passar o mouse */
+}
+
+/* Ícone da Aba Ativa */
+#sidebar .menu-item.active {
+  background-color: #007bff;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); /* Sombra suave para a aba ativa */
+}
+
+/* Itens da lista de navegação */
+#sidebar .components li {
+  padding: 10px;
+  border-bottom: 1px solid #4e5a6a;
+  transition: background-color 0.3s ease, padding-left 0.3s ease;
 }
 
 #sidebar .components li a {
@@ -61,83 +85,36 @@
   text-decoration: none;
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 10px 15px;
   position: relative;
+  border-radius: 5px;
+  transition: padding-left 0.3s ease, background-color 0.3s ease;
 }
 
-#sidebar .components li a i {
-  margin-right: 10px; /* Espaço entre o ícone e o texto */
-  font-size: 18px;
-  transition: transform 0.3s ease-in-out; /* Transição suave para o ícone */
-}
-
+/* Efeito de Hover nos Links da Lista */
 #sidebar .components li a:hover {
   background-color: #495057;
-  border-radius: 5px; /* Bordas arredondadas ao passar o mouse */
-  transition: background-color 0.3s ease, border-radius 0.3s ease;
+  padding-left: 25px; /* Deslocamento suave ao passar o mouse */
 }
 
-#sidebar .components li:hover {
-  background-color: #495057;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Sombra ao passar o mouse */
+/* Aumento do ícone no hover */
+#sidebar .components li a i {
+  margin-right: 10px;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
-/* Efeito hover no ícone */
 #sidebar .components li a:hover i {
-  transform: scale(1.3); /* Aumenta o ícone mais ao passar o mouse */
-  color: #ffb400; /* Cor do ícone quando passar o mouse (substitua por qualquer cor que preferir) */
-  transition: transform 0.3s ease, color 0.3s ease; /* Transição suave para o ícone e a cor */
+  transform: scale(1.2); /* Aumenta o ícone ao passar o mouse */
+  color: #ffb400; /* Cor do ícone no hover */
 }
 
-/* Estilo do conteúdo principal */
-.content {
-  margin-left: 250px; /* Deixa espaço para o menu lateral */
-  padding: 20px;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.4s ease-in-out;
-  min-height: 100vh; /* Garante que o conteúdo ocupe toda a altura da tela */
+/* Sombra nos itens da lista */
+#sidebar .components li:hover {
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Sombra leve ao passar o mouse */
 }
 
-/* Perfil do usuário no topo */
-#sidebar .profile-section {
-  padding: 10px;
-  text-align: center;
-  transition: all 0.4s ease-in-out;
-  position: relative;
-}
-
-#sidebar .profile-section img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  transition: width 0.3s ease, height 0.3s ease;
-}
-
-/* Ícone de saída */
-.exit-icon {
-  font-size: 20px;
-  padding-left: 10px;
-  transition: transform 0.3s ease; /* Transição suave para o ícone */
-}
-
-#sidebar .exit-btn:hover .exit-icon {
-  transform: scale(1.2); /* Aumenta o ícone de saída no hover */
-}
-
-/* Adiciona a transição de conteúdo */
-#sidebar .components li a span {
-  transition: opacity 0.3s ease-in-out;
-}
-
-/* Esconder o texto "Sair" quando o menu estiver minimizado */
-#sidebar .exit-btn span {
-  display: inline; /* Exibe o texto quando o menu está maximizado */
-}
-
-/* Estilo dos Botões */
+/* Botões de ação */
 button {
   padding: 12px 20px;
   background-color: #007bff;
@@ -145,12 +122,13 @@ button {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
   font-size: 1rem;
 }
 
 button:hover {
   background-color: #0056b3;
+  transform: scale(1.05); /* Pequeno aumento ao passar o mouse */
 }
 
 button:disabled {
@@ -158,45 +136,9 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Barra de Progresso */
-.progress {
-  width: 100%;
-  background-color: #ddd;
-  border-radius: 5px;
-  overflow: hidden;
-  height: 12px;
-}
-
-.progress-bar {
-  height: 100%;
-  text-align: center;
-  color: white;
-  padding-right: 5px;
-  border-radius: 5px;
-}
-
-/* Tabelas */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 30px;
-}
-
-th,
-td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-th {
-  background-color: #007bff;
-  color: #fff;
-}
-
-td {
-  background-color: #fff;
-  color: #333;
+/* Efeito de transição no conteúdo */
+#sidebar .components li a span {
+  transition: opacity 0.3s ease-in-out;
 }
 
 /* Modal */
@@ -228,6 +170,18 @@ td {
   right: 10px;
 }
 
+/* Remover o marcador (bolinha) no li */
+.nav-item::marker {
+  content: none; /* Remove o marcador */
+}
+
+/* Abrir Menu */
+#sidebar.open {
+  width: 250px;
+  transform: translateX(0); /* Animação de deslizamento */
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
+}
+
 /* Responsividade */
 @media (max-width: 1024px) {
   #sidebar {
@@ -251,30 +205,35 @@ td {
 
 @media (max-width: 768px) {
   #sidebar {
-    width: 100%;
-    position: absolute;
-    height: 100%;
+    width: 80%; /* Menu lateral ocupa 80% da largura */
+    padding: 20px 10px;
   }
 
   .content {
     margin-left: 0;
-    width: 100%;
-    padding: 10px;
   }
 
-  table {
-    font-size: 0.9rem;
+  #sidebar .menu-item {
+    padding: 12px;
+    font-size: 16px;
   }
 
-  .tabs {
-    flex-direction: column;
+  #sidebar img {
+    width: 50px;
+    height: 50px;
+  }
+
+  #sidebar h3 {
+    font-size: 1.2rem;
   }
 }
 
-/* Adiciona bordas e cores agradáveis ao conteúdo */
-.content {
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+/* Ajustes Finais */
+#sidebar .components li a span {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Efeito de Transição suave nos itens */
+#sidebar .components li a:hover {
+  transform: translateX(10px); /* Deslocamento suave */
 }

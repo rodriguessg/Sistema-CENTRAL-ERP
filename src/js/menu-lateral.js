@@ -40,7 +40,7 @@ $(document).ready(function () {
     },
     function () {
       if ($("#sidebar").hasClass("minimized")) {
-        $(".profile-section img").css({ width: "50px", height: "50px" });
+        $(".profile-section img").css({ width: "100px", height: "100px" });
       }
     }
   );

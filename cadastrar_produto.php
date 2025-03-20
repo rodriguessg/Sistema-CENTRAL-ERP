@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $custo = $_POST['custo'];
     $quantidade = $_POST['quantidade'];
     $preco_medio = $_POST['preco_medio'];
-    // $nf = $_POST['nf'];
+     $nf = $_POST['nf'];
 
     // Consulta para verificar se o produto já existe
     $sql_verifica = "SELECT id, quantidade FROM produtos WHERE produto = ?";

@@ -72,7 +72,7 @@
         <div class="button-estoque">
             <button type="submit">Cadastrar</button>
             <button type="button" id="limpar-formulario">Limpar</button>
-            </div>
+        </div>
     </form>
 </div>
 

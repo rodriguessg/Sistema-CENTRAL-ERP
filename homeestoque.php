@@ -30,51 +30,49 @@
     <h3>Cadastrar Produto</h3>
     <form id="form-cadastrar-produto" action="cadastrar_produto.php" method="POST" enctype="multipart/form-data" style="display: ruby;">
         <div class="form-group3">
-            <label for="produto">Produto:</label>
-            <input type="text" id="produto" name="produto" placeholder="Digite o nome do produto" required>
+            <div>
+                <label for="produto">Produto:</label>
+                <input type="text" id="produto" name="produto" placeholder="Digite o nome do produto" required>
+                
+                <label for="classificacao">Classificação:</label>
+                <input type="text" id="classificacao" name="classificacao" placeholder="Digite a classificação" required>
+                <label for="natureza">Natureza:</label>
+                <input type="text" id="natureza" name="natureza" placeholder="Digite a natureza do produto" required>
+                
+                <label for="contabil">Contábil:</label>
+                <input type="text" id="contabil" name="contabil" placeholder="Digite o código contábil" required>
+                <label for="codigo">Código:</label>
+                <input type="text" id="codigo" name="codigo" placeholder="Código do produto" required>
+
+                <label for="unidade">Unidade:</label>
+                <input type="text" id="unidade" name="unidade" placeholder="Unidade de medida" required>
+            </div>
             
-            <label for="classificacao">Classificação:</label>
-            <input type="text" id="classificacao" name="classificacao" placeholder="Digite a classificação" required>
-        
-       
-            <label for="natureza">Natureza:</label>
-            <input type="text" id="natureza" name="natureza" placeholder="Digite a natureza do produto" required>
-            
-            <label for="contabil">Contábil:</label>
-            <input type="text" id="contabil" name="contabil" placeholder="Digite o código contábil" required>
-  
-        
-            <label for="codigo">Código:</label>
-            <input type="text" id="codigo" name="codigo" placeholder="Código do produto" required>
-            
-            <label for="unidade">Unidade:</label>
-            <input type="text" id="unidade" name="unidade" placeholder="Unidade de medida" required>
-       
-      
-            <label for="localizacao">Local:</label>
-            <select id="localizacao" name="localizacao" required>
-                <option value="" disabled selected>Selecione o local</option>
-                <option value="xm1">XM1</option>
-                <option value="xm2">XM2</option>
-            </select>
-            
-            <label for="custo">Custo:</label>
-            <input type="text" id="custo" name="custo" placeholder="Digite o custo" step="0.01" required>
-      
-      
-            <label for="quantidade">Quantidade:</label>
-            <input type="number" id="quantidade" name="quantidade" placeholder="Digite a quantidade" required>
-        
-            <label for="preco_medio">Preço Médio:</label>
-            <input type="number" id="preco_medio" name="preco_medio" placeholder="Digite o preço médio" step="0.01" readonly>
- 
-      
-            <label for="nf">Nota Fiscal:</label>
-            <input type="number" id="nf" name="nf" placeholder="Digite o Codigo" required>
-    
+            <div>
+              
+                <label for="localizacao">Local:</label>
+                <select id="localizacao" name="localizacao" required>
+                    <option value="" disabled selected>Selecione o local</option>
+                    <option value="xm1">XM1</option>
+                    <option value="xm2">XM2</option>
+                </select>
+                
+                <label for="custo">Custo:</label>
+                <input type="text" id="custo" name="custo" placeholder="Digite o custo" step="0.01" required>
+                <label for="quantidade">Quantidade:</label>
+                <input type="number" id="quantidade" name="quantidade" placeholder="Digite a quantidade" required>
+                <label for="preco_medio">Preço Médio:</label>
+                <input type="number" id="preco_medio" name="preco_medio" placeholder="Digite o preço médio" step="0.01" readonly>
+                <label for="nf">Nota Fiscal:</label>
+                <input type="number" id="nf" name="nf" placeholder="Digite o Codigo" required>
+                
+            </div>
+           
+        </div>
+        <div class="button-estoque">
             <button type="submit">Cadastrar</button>
             <button type="button" id="limpar-formulario">Limpar</button>
-        </div>
+            </div>
     </form>
 </div>
 

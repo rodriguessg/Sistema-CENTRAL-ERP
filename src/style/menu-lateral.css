@@ -12,7 +12,7 @@
   flex-direction: column;
   align-items: center;
   z-index: 1000;
-  border-radius: 10px 0 0 10px;
+  border-radius: 0px 20px 20px 0px;
   transition: width 0.5s ease, transform 0.3s ease-in-out;
   overflow-y: auto; /* Permite rolagem no menu se o conteúdo for grande */
 }
@@ -37,6 +37,14 @@
   margin-right: auto;
 }
 
+#sidebar .profile-section p {
+  font-size: larger;
+  font-family: cursive;
+}
+
+#sidebar .profile-section a {
+  text-decoration: none;
+}
 /* Ícone de Notificação */
 #sidebar .notification {
   position: relative;
@@ -55,9 +63,10 @@
 }
 
 .list-unstyled {
-  width: 248px;
+  width: 250px;
   padding-left: 0;
   list-style: none;
+  font-family: cursive;
 }
 
 /* Efeito de Hover no Menu */
@@ -112,18 +121,6 @@
 #sidebar .components li:hover {
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Sombra leve ao passar o mouse */
-}
-
-/* Botões de ação */
-button {
-  padding: 12px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  font-size: 1rem;
 }
 
 button:hover {

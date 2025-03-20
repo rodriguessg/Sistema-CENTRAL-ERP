@@ -83,10 +83,9 @@ body {
   display: none;
   background-color: white;
   border: 1px solid #ccc;
-  padding: 20px;
+  padding: 10px;
   margin: 0 auto; /* Centraliza horizontalmente */
   width: 100%; /* Largura do formulário para ocupar o espaço do container */
-  box-shadow: 0 4px 10px rgba(0.9, 0.5, 0.5, 0.9);
   border-radius: 8px;
   overflow: hidden;
   overflow-y: auto; /* Permite rolagem vertical quando necessário */
@@ -122,9 +121,6 @@ body {
 /* Formulário e inputs dentro do container */
 .form-group3 {
   display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 15px;
   width: 100%;
 }
 
@@ -135,18 +131,38 @@ body {
 
 .form-group3 input,
 .form-group3 select {
-  width: 100%; /* Garantindo que os inputs não ultrapassem o limite do container */
+  width: 80%; /* Garantindo que os inputs não ultrapassem o limite do container */
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
   box-sizing: border-box; /* Para garantir que o padding não afete o tamanho final do input */
+  margin-bottom: 12px;
 }
 
 .form-group3 button {
-  width: 48%; /* Para os botões, garantindo que não fiquem muito largos */
+  width: 20%; /* Para os botões, garantindo que não fiquem muito largos */
   padding: 12px;
   border: none;
-  background-color: #3498db;
+  background-color: #2d3e50;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.button-estoque {
+  width: 20%;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.button-estoque button {
+  width: 50%; /* Para os botões, garantindo que não fiquem muito largos */
+  padding: 12px;
+  border: none;
+  background-color: #2d3e50;
   color: white;
   cursor: pointer;
   font-size: 16px;
@@ -155,7 +171,7 @@ body {
 }
 
 .form-group3 button:hover {
-  background-color: #2980b9;
+  background-color: #2d3e50;
 }
 
 /* Responsividade */
@@ -187,10 +203,5 @@ body {
   .form-group3 input,
   .form-group3 select {
     width: 100%;
-  }
-
-  .form-group3 button {
-    width: 100%;
-    margin-bottom: 10px;
   }
 }

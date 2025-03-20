@@ -39,7 +39,7 @@ try {
     // Caminho completo da foto ou uma imagem padrão
     $foto = (!empty($result['foto']) && file_exists($fotoBasePath . $result['foto']))
         ? $fotoBasePath . $result['foto']
-        : $fotoBasePath . 'perfil-user-673e5672cac27.png';
+        : $fotoBasePath . 'perfil.jpg';
 
     // Configure as permissões de navegação com base no setor do usuário
     $menuItens = [];

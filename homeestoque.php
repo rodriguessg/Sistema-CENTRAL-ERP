@@ -11,6 +11,7 @@
     <title>Almoxarifado</title>
      <link rel="stylesheet" href="src/style/modal.css">
     <link rel="stylesheet" href="src/estoque/style/estoque.css">
+    
 </head>
 <body>
 

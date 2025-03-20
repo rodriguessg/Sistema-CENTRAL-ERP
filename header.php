@@ -47,6 +47,8 @@ try {
         case 'administrador':
             $menuItens = [
                 ['link' => 'painel.php', 'nome' => 'Painel', 'icon' => 'tachometer-alt'],
+                ['link' => 'log.php', 'nome' => 'LOG', 'icon' => 'users'],
+                ['link' => 'configuracao.php', 'nome' => 'Configurações', 'icon' => 'gear'],
                 ['link' => 'homefinanceiro.php', 'nome' => 'Financeiro', 'icon' => 'money-bill'],
                 ['link' => 'homeestoque.php', 'nome' => 'Estoque', 'icon' => 'cogs'],
                 ['link' => 'homepatrimonio.php', 'nome' => 'Patrimônio', 'icon' => 'building'],
@@ -54,6 +56,7 @@ try {
                 ['link' => 'gerenciarpermissao.php', 'nome' => 'Usuários', 'icon' => 'key'],
                 ['link' => 'homeRh.php', 'nome' => 'Recursos H', 'icon' => 'users'],
                 ['link' => 'homecontratos.php', 'nome' => 'Contratos', 'icon' => 'users'],
+
             ];
             break;
 

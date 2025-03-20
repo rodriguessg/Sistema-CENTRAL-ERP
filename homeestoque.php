@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Almoxarifado</title>
      <link rel="stylesheet" href="src/style/modal.css">
+     <link rel="stylesheet" href="src/style/style.css">
     <link rel="stylesheet" href="src/estoque/style/estoque.css">
     
 </head>
@@ -77,17 +78,15 @@
     </form>
 </div>
 
-
 <div class="form-container" id="consulta">
-
     <h2>Lista de Produtos</h2>
-
     <div class="search-container">
         <label for="filtroProduto">Pesquisar Produto:</label>
         <input type="text" id="filtroProduto" placeholder="Digite o nome do produto">
         <button class="btn-estoque2" id="filtrar">Filtrar</button>
         <button class="btn-estoque2" id="limpar">Limpar</button>
     </div>
+
     <!-- Tabela com botões "Detalhes" e "Atualizar" -->
     <div class="table-container">
         <table border="1">
@@ -109,29 +108,33 @@
     </div>
 </div>
 
-
 <div class="form-container" id="retirar">
     <h3>Retirar Material do Estoque</h3>
     <form id="retirar-form" action="retirar_materialestoque.php" method="POST">
         <div class="form-group3">
             <label for="material-nome">Nome do Material:</label>
             <input type="text" id="material-nome" name="material-nome" placeholder="Digite o nome do material" required>
+            
             <label for="material-codigo">Código do Material:</label>
-            <input type="text" id="material-codigo" name="material-codigo" placeholder=" preenchido automaticamente" readonly>
+            <input type="text" id="material-codigo" name="material-codigo" placeholder="preenchido automaticamente" readonly>
+            
             <label for="material-classificacao">Classificação:</label>
-            <input type="text" id="material-classificacao" name="material-classificacao" placeholder=" preenchido automaticamente" readonly>
+            <input type="text" id="material-classificacao" name="material-classificacao" placeholder="preenchido automaticamente" readonly>
+            
             <label for="material-natureza">Natureza:</label>
-            <input type="text" id="material-natureza" name="material-natureza" placeholder=" preenchido automaticamente" readonly>
+            <input type="text" id="material-natureza" name="material-natureza" placeholder="preenchido automaticamente" readonly>
+            
             <label for="material-localizacao">Localização:</label>
-            <input type="text" id="material-localizacao" name="material-localizacao" placeholder=" preenchido automaticamente" readonly>
+            <input type="text" id="material-localizacao" name="material-localizacao" placeholder="preenchido automaticamente" readonly>
+            
             <label for="material-quantidade">Quantidade:</label>
             <input type="number" id="material-quantidade" name="material-quantidade" min="1" placeholder="Digite a quantidade a retirar" required>
+            
             <button type="submit">Retirar</button>
         </div>
     </form>
     <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
-
 
 <!-- Modal para Detalhes -->
 <div class="modal" id="modal-detalhes">
@@ -152,7 +155,6 @@
         </div>
     </div>
 </div>
-
 
 <div class="form-container" id="Estoque">
     <h2>Consulta de Estoque</h2>
@@ -178,41 +180,7 @@
                 </tr>
             </thead>
             <tbody id="tabelaestoque">
-                <?php
-                // Função para conectar ao banco de dados
-                function conectarBanco() {
-                    $conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
-                    if ($conn->connect_error) {
-                        die("Falha na conexão: " . $conn->connect_error);
-                    }
-                    return $conn;
-                }
-
-                // Função para buscar e exibir os produtos
-                function exibirProdutos($conn) {
-                    $sql = "SELECT * FROM produtos";
-                    $result = $conn->query($sql);
-
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<tr>
-                                    <td>{$row['id']}</td>
-                                    <td>{$row['produto']}</td>
-                                    <td>{$row['classificacao']}</td>
-                                    <td>{$row['localizacao']}</td>
-                                    <td>{$row['quantidade']}</td>
-                                  </tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='5'>Nenhum produto cadastrado.</td></tr>";
-                    }
-                }
-
-                // Conectar ao banco e exibir os produtos
-                $conn = conectarBanco();
-                exibirProdutos($conn);
-                $conn->close();
-                ?>
+                <!-- Os dados serão preenchidos dinamicamente -->
             </tbody>
         </table>
     </div>
@@ -257,12 +225,12 @@
 
     <!-- Botão de Impressão -->
     <button id="imprimirBtn" onclick="imprimirTabela()" style="display: none; margin-top: 10px;">Imprimir Tabela</button>
-    
+
     <!-- Botão de Exportação para Excel -->
     <button id="exportarExcelBtn" onclick="exportarParaExcel()" style="display: none; margin-top: 10px;">Exportar para Excel</button>
 </div>
 
-</div>
+
 <!-- AO RETIRAR ESTE SCRIPT APRESEMTA ERRO NO PREENCHIMENTO DO NOME DO USUÁRIO NO RELATÓRIO -->
 <script>
     // Exibir o seletor de exercício apenas se a opção anual for selecionada

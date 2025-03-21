@@ -12,6 +12,12 @@
   box-sizing: border-box;
   font-family: "Roboto", sans-serif; /* Usando a fonte Roboto */
 }
+body {
+  background-color: rgb(217 217 217 / 90%);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
 
 /* Container principal - "Caderno" */
 .caderno {
@@ -80,10 +86,14 @@
 
 /* Estilo para o formulário */
 .form-container {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.9); /* Fundo levemente transparente */
+  border-radius: 12px; /* Cantos mais arredondados */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra mais suave */
+  backdrop-filter: blur(10px); /* Adiciona um efeito de desfoque no fundo */
+  max-width: 100%; /* Garante que o formulário ocupe toda a largura disponível */
+  margin: 20px auto; /* Centraliza o formulário */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Font mais moderna */
 }
 
 /* Título do formulário */
@@ -134,7 +144,7 @@ h3 {
 .input-group input,
 .input-group select {
   width: 100%;
-  padding: 14px 16px;
+  padding: 10px 16px;
   padding-left: 35px; /* Espaço para o ícone à esquerda */
   border: 2px solid #ddd;
   border-radius: 8px;

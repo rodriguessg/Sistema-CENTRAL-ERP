@@ -11,9 +11,13 @@
     <title>Almoxarifado</title>
      <link rel="stylesheet" href="src/style/modal.css">
     <link rel="stylesheet" href="src/estoque/style/estoque-conteudo.css">
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+
 </head>
 <body>
-
+    
 <div class="caderno">
 
 <div class="tabs">
@@ -128,15 +132,15 @@
 
 
 <div class="form-container" id="consulta">
-
     <h2>Lista de Produtos</h2>
-
+    <label for="filtroProduto">Pesquisar Produto:</label>
     <div class="search-container">
-        <label for="filtroProduto">Pesquisar Produto:</label>
         <input type="text" id="filtroProduto" placeholder="Digite o nome do produto">
-        <button class="btn-estoque2" id="filtrar">Filtrar</button>
-        <button class="btn-estoque2" id="limpar">Limpar</button>
     </div>
+    <div class="button-group">
+            <button class="btn-estoque2" id="filtrar">Filtrar</button>
+            <button class="btn-estoque2" id="limpar">Limpar</button>
+        </div>
     <!-- Tabela com botões "Detalhes" e "Atualizar" -->
     <div class="table-container">
         <table border="1">
@@ -232,16 +236,19 @@
 
 <div class="form-container" id="Estoque">
     <h2>Consulta de Estoque</h2>
-
+    <label for="filtroestoque">Pesquisar Produto:</label>
     <!-- Campo de pesquisa -->
     <div class="search-container">
-        <label for="filtroestoque">Pesquisar Produto:</label>
         <input type="text" id="filtroestoque" placeholder="Digite o nome do produto">
+    
+    </div>
+
+    <div class="button-group">
         <button class="btn-estoque2" onclick="filtrarTabela()">Filtrar</button>
         <button class="btn-estoque2" onclick="limparFiltro()">Limpar</button>
     </div>
 
-    <div class="table-container2">
+    <div class="table-container">
         <h3>Lista de Produtos</h3>
         <table class="tabela-estoque" border="1">
             <thead>

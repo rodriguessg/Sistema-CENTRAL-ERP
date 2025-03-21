@@ -20,13 +20,13 @@
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
         <i class="fas fa-plus-circle"></i> Cadastrar Materiais
     </div>
-    <div class="tab" data-tab="retirar" onclick="showTab('consulta')">
+    <div class="tab" data-tab="consulta" onclick="showTab('consulta')">
         <i class="fas fa-search"></i> Consulta de produtos
     </div>
-    <div class="tab" data-tab="levantamento" onclick="showTab('Estoque')">
+    <div class="tab" data-tab="Estoque" onclick="showTab('Estoque')">
         <i class="fas fa-cogs"></i> Estoque
     </div>
-    <div class="tab" data-tab="DPRE" onclick="showTab('retirar')">
+    <div class="tab" data-tab="retirar" onclick="showTab('retirar')">
         <i class="fas fa-minus-circle"></i> Retirar material
     </div>
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
@@ -36,6 +36,10 @@
         <i class="fas fa-image"></i> Galeria
     </div>
 </div>
+
+
+
+
 <div class="form-container" id="cadastrar" style="display:none;">
     <h3>Cadastrar Produto</h3>
     <form id="form-cadastrar-produto" action="cadastrar_produto.php" method="POST" enctype="multipart/form-data">

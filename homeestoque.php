@@ -29,7 +29,7 @@
     
     <h3>Cadastrar Produto</h3>
     <form id="form-cadastrar-produto" action="cadastrar_produto.php" method="POST" enctype="multipart/form-data" style="display: ruby;">
-        <div class="form-group3">
+        <div class="form-group2">
             <div>
                 <label for="produto">Produto:</label>
                 <input type="text" id="produto" name="produto" placeholder="Digite o nome do produto" required>

@@ -79,6 +79,16 @@
   font-weight: bold;
 }
 
+.form-group2 input,
+.form-group2 select {
+  width: 80%; /* Garantindo que os inputs não ultrapassem o limite do container */
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box; /* Para garantir que o padding não afete o tamanho final do input */
+  margin-bottom: 12px;
+}
+
 .form-group3 input,
 .form-group3 select {
   width: 80%; /* Garantindo que os inputs não ultrapassem o limite do container */

@@ -166,18 +166,18 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SISTEMA INTEGRADO CENTRAL</title>
+    <link rel="stylesheet" href="src/style/lateral-menu.css">
     <!-- Incluindo o Bootstrap 4 CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Incluindo o CSS customizado -->
-    <link rel="stylesheet" href="src/style/menu-lateral.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
     <div class="wrapper">
         <!-- Menu Lateral -->
         <nav id="sidebar" class="active">
-
-        <li class="nav-item">
+            <!-- Notificações -->
+            <li class="nav-item">
                 <a class="nav-link" href="#" id="notificacaoLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fa fa-bell"></i>
                     <span class="badge badge-danger" id="notificationCount"><?= $unreadCount ?></span> <!-- Número de notificações -->
@@ -222,20 +222,18 @@ try {
                     </li>
                 <?php endforeach; ?>
             </ul>
+
+            <!-- Outros itens do menu -->
             <ul class="list-unstyled components">
-    <!-- Outros itens do menu -->
-
-
-
-    <!-- Botão Sair -->
-    <li class="exit-btn">
-        <a href="sair.php" class="exit-btn-link">
-            <i class="fa fa-sign-out-alt exit-icon"></i>
-            <span>Sair</span> <!-- O texto Sair será ocultado quando o menu estiver minimizado -->
-        </a>
-    </li>
-</ul>
-     
+                <!-- Botão Sair -->
+                <li class="exit-btn">
+                    <a href="sair.php" class="exit-btn-link">
+                        <i class="fa fa-sign-out-alt exit-icon"></i>
+                        <span>Sair</span> <!-- O texto Sair será ocultado quando o menu estiver minimizado -->
+                    </a>
+                </li>
+            </ul>
+        </nav> <!-- Fechando a tag nav -->
 
         <!-- Modal Perfil -->
         <div class="modal fade" id="perfilModal" tabindex="-1" aria-labelledby="perfilModalLabel" aria-hidden="true">
@@ -268,12 +266,12 @@ try {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./src/js/menu-lateral.js"></script>
     <!-- JS CONVERSAO IA -->
-<script src="./src/header/js/ia.js"></script>
-<!-- JS PREENCHIMENTO INFORMAÇÕES PERFIL -->
-<script src="./src/header/js/perfil.js"></script>
-
-<!-- JS ATUALIZACAO ICONE INFORMAÇÕES -->
-<script src="./src/js/icon-notificacao.js"></script>
+    <script src="./src/header/js/ia.js"></script>
+    <!-- JS PREENCHIMENTO INFORMAÇÕES PERFIL -->
+    <script src="./src/header/js/perfil.js"></script>
+    <!-- JS ATUALIZACAO ICONE INFORMAÇÕES -->
+    <script src="./src/js/icon-notificacao.js"></script>
 </body>
 </html>
+
 

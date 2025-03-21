@@ -28,8 +28,6 @@
 }
 
 #sidebar .profile-section img {
-  width: 100px;
-  height: 100px;
   border-radius: 50%;
   margin-bottom: 10px;
   display: block;
@@ -71,9 +69,18 @@
 
 /* Efeito de Hover no Menu */
 #sidebar .menu-item:hover {
-  background-color: #4e5a6a;
-  transform: scale(1.05); /* Efeito de aumento no item ao passar o mouse */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra suave ao passar o mouse */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.1
+  ); /* Fundo do hover mais transparente */
+  transform: scale(
+    1.02
+  ); /* Efeito de aumento suave no item ao passar o mouse */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Sombra suave ao passar o mouse */
+  transition: background-color 0.4s ease, transform 0.4s ease,
+    box-shadow 0.3s ease; /* Transição mais suave */
 }
 
 /* Ícone da Aba Ativa */
@@ -102,8 +109,15 @@
 
 /* Efeito de Hover nos Links da Lista */
 #sidebar .components li a:hover {
-  background-color: #495057;
-  padding-left: 25px; /* Deslocamento suave ao passar o mouse */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.1
+  ); /* Fundo do hover mais transparente */
+  padding-left: 20px; /* Deslocamento suave ao passar o mouse */
+  color: #1a242f;
+  transition: background-color 0.4s ease, padding-left 0.3s ease; /* Transição mais suave */
 }
 
 /* Aumento do ícone no hover */
@@ -113,8 +127,8 @@
 }
 
 #sidebar .components li a:hover i {
-  transform: scale(1.2); /* Aumenta o ícone ao passar o mouse */
-  color: #ffb400; /* Cor do ícone no hover */
+  transform: scale(1.1); /* Aumenta o ícone ao passar o mouse */
+  color: #777; /* Cor do ícone no hover */
 }
 
 /* Sombra nos itens da lista */
@@ -233,4 +247,5 @@ button:disabled {
 /* Efeito de Transição suave nos itens */
 #sidebar .components li a:hover {
   transform: translateX(10px); /* Deslocamento suave */
+  transition: transform 0.3s ease; /* Adicionada transição para o deslocamento */
 }

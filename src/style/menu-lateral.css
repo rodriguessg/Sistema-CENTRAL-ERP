@@ -2,7 +2,7 @@
 #sidebar {
   background: linear-gradient(180deg, #2d3e50, #1a242f);
   color: white;
-  padding: 20px 12px;
+  padding: 0px 12px;
   position: fixed;
   height: 100%;
   top: 0;
@@ -94,7 +94,7 @@
   text-decoration: none;
   display: flex;
   align-items: center;
-  padding: 10px 15px;
+  padding: 5px 5px;
   position: relative;
   border-radius: 5px;
   transition: padding-left 0.3s ease, background-color 0.3s ease;

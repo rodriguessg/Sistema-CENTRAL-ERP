@@ -162,21 +162,48 @@
 <div class="form-container" id="retirar">
     <h3>Retirar Material do Estoque</h3>
     <form id="retirar-form" action="retirar_materialestoque.php" method="POST">
-        <div class="form-group3">
-            <label for="material-nome">Nome do Material:</label>
-            <input type="text" id="material-nome" name="material-nome" placeholder="Digite o nome do material" required>
-            <label for="material-codigo">Código do Material:</label>
-            <input type="text" id="material-codigo" name="material-codigo" placeholder=" preenchido automaticamente" readonly>
-            <label for="material-classificacao">Classificação:</label>
-            <input type="text" id="material-classificacao" name="material-classificacao" placeholder=" preenchido automaticamente" readonly>
-            <label for="material-natureza">Natureza:</label>
-            <input type="text" id="material-natureza" name="material-natureza" placeholder=" preenchido automaticamente" readonly>
-            <label for="material-localizacao">Localização:</label>
-            <input type="text" id="material-localizacao" name="material-localizacao" placeholder=" preenchido automaticamente" readonly>
-            <label for="material-quantidade">Quantidade:</label>
-            <input type="number" id="material-quantidade" name="material-quantidade" min="1" placeholder="Digite a quantidade a retirar" required>
-            <button type="submit">Retirar</button>
-        </div>
+    <div class="form-group3">
+  <div class="input-group">
+    <label for="material-nome">Nome do Material:</label>
+    <i class="fas fa-cogs"></i> <!-- Ícone ao lado do campo -->
+    <input type="text" id="material-nome" name="material-nome" placeholder="Digite o nome do material" required>
+  </div>
+
+  <div class="input-group">
+    <label for="material-codigo">Código do Material:</label>
+    <i class="fas fa-barcode"></i> <!-- Ícone ao lado do campo -->
+    <input type="text" id="material-codigo" name="material-codigo" placeholder="preenchido automaticamente" readonly>
+  </div>
+
+  <div class="input-group">
+    <label for="material-classificacao">Classificação:</label>
+    <i class="fas fa-tags"></i> <!-- Ícone ao lado do campo -->
+    <input type="text" id="material-classificacao" name="material-classificacao" placeholder="preenchido automaticamente" readonly>
+  </div>
+
+  <div class="input-group">
+    <label for="material-natureza">Natureza:</label>
+    <i class="fas fa-flask"></i> <!-- Ícone ao lado do campo -->
+    <input type="text" id="material-natureza" name="material-natureza" placeholder="preenchido automaticamente" readonly>
+  </div>
+
+  <div class="input-group">
+    <label for="material-localizacao">Localização:</label>
+    <i class="fas fa-map-marker-alt"></i> <!-- Ícone ao lado do campo -->
+    <input type="text" id="material-localizacao" name="material-localizacao" placeholder="preenchido automaticamente" readonly>
+  </div>
+
+  <div class="input-group">
+    <label for="material-quantidade">Quantidade:</label>
+    <i class="fas fa-cogs"></i> <!-- Ícone ao lado do campo -->
+    <input type="number" id="material-quantidade" name="material-quantidade" min="1" placeholder="Digite a quantidade a retirar" required>
+  </div>
+
+    <div  class="button-group" >
+    <button class="btn-submit" type="submit">Retirar</button>
+    </div>
+</div>
+
     </form>
     <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>

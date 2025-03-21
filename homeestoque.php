@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Almoxarifado</title>
      <link rel="stylesheet" href="src/style/modal.css">
-    <link rel="stylesheet" href="src/estoque/style/teste.css">
+    <link rel="stylesheet" href="src/estoque/style/estoque-conteudo.css">
 </head>
 <body>
 
@@ -42,31 +42,37 @@
         <div class="form-group">
             <div class="input-group">
                 <label for="produto">Produto:</label>
+                <i class="fas fa-cogs"></i> <!-- Ícone de engrenagem -->
                 <input type="text" id="produto" name="produto" placeholder="Digite o nome do produto" required>
             </div>
             
             <div class="input-group">
                 <label for="classificacao">Classificação:</label>
+                <i class="fas fa-tag"></i> <!-- Ícone de etiqueta -->
                 <input type="text" id="classificacao" name="classificacao" placeholder="Digite a classificação" required>
             </div>
             
             <div class="input-group">
                 <label for="natureza">Natureza:</label>
+                <i class="fas fa-flask"></i> <!-- Ícone de frasco -->
                 <input type="text" id="natureza" name="natureza" placeholder="Digite a natureza do produto" required>
             </div>
             
             <div class="input-group">
                 <label for="contabil">Contábil:</label>
+                <i class="fas fa-calculator"></i> <!-- Ícone de calculadora -->
                 <input type="text" id="contabil" name="contabil" placeholder="Digite o código contábil" required>
             </div>
 
             <div class="input-group">
                 <label for="codigo">Código:</label>
+                <i class="fas fa-barcode"></i> <!-- Ícone de código de barras -->
                 <input type="text" id="codigo" name="codigo" placeholder="Código do produto" required>
             </div>
 
             <div class="input-group">
                 <label for="unidade">Unidade:</label>
+                <i class="fas fa-box"></i> <!-- Ícone de caixa -->
                 <input type="text" id="unidade" name="unidade" placeholder="Unidade de medida" required>
             </div>
         </div>
@@ -74,6 +80,7 @@
         <div class="form-group">
             <div class="input-group">
                 <label for="localizacao">Local:</label>
+                <i class="fas fa-map-marker-alt"></i> <!-- Ícone de local -->
                 <select id="localizacao" name="localizacao" required>
                     <option value="" disabled selected>Selecione o local</option>
                     <option value="xm1">XM1</option>
@@ -83,21 +90,25 @@
             
             <div class="input-group">
                 <label for="custo">Custo:</label>
+                <i class="fas fa-dollar-sign"></i> <!-- Ícone de símbolo de dólar -->
                 <input type="text" id="custo" name="custo" placeholder="Digite o custo" step="0.01" required>
             </div>
             
             <div class="input-group">
                 <label for="quantidade">Quantidade:</label>
+                <i class="fas fa-cogs"></i> <!-- Ícone de engrenagem -->
                 <input type="number" id="quantidade" name="quantidade" placeholder="Digite a quantidade" required>
             </div>
             
             <div class="input-group">
                 <label for="preco_medio">Preço Médio:</label>
+                <i class="fas fa-money-bill-wave"></i> <!-- Ícone de dinheiro -->
                 <input type="number" id="preco_medio" name="preco_medio" placeholder="Digite o preço médio" step="0.01" readonly>
             </div>
 
             <div class="input-group">
                 <label for="nf">Nota Fiscal:</label>
+                <i class="fas fa-file-invoice"></i> <!-- Ícone de nota fiscal -->
                 <input type="number" id="nf" name="nf" placeholder="Digite o Codigo" required>
             </div>
         </div>
@@ -108,6 +119,7 @@
         </div>
     </form>
 </div>
+
 
 
 

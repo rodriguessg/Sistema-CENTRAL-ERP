@@ -47,15 +47,15 @@ try {
         case 'administrador':
             $menuItens = [
                 ['link' => 'painel.php', 'nome' => 'Painel', 'icon' => 'tachometer-alt'],
-                ['link' => 'log.php', 'nome' => 'LOG', 'icon' => 'users'],
-                ['link' => 'configuracao.php', 'nome' => 'Configurações', 'icon' => 'gear'],
+                ['link' => 'homeestoque.php', 'nome' => 'Estoque', 'icon' => 'box'],
                 ['link' => 'homefinanceiro.php', 'nome' => 'Financeiro', 'icon' => 'money-bill'],
-                ['link' => 'homeestoque.php', 'nome' => 'Estoque', 'icon' => 'cogs'],
                 ['link' => 'homepatrimonio.php', 'nome' => 'Patrimônio', 'icon' => 'building'],
                 ['link' => 'cadastro_usuario.php', 'nome' => 'Cadastrar Usuário', 'icon' => 'user-plus'],
                 ['link' => 'gerenciarpermissao.php', 'nome' => 'Usuários', 'icon' => 'key'],
                 ['link' => 'homeRh.php', 'nome' => 'Recursos H', 'icon' => 'users'],
-                ['link' => 'homecontratos.php', 'nome' => 'Contratos', 'icon' => 'users'],
+                ['link' => 'homecontratos.php', 'nome' => 'Contratos', 'icon' => 'file-contract'],
+                ['link' => 'log.php', 'nome' => 'LOG', 'icon' => 'users'],
+                ['link' => 'configuracao.php', 'nome' => 'Configurações', 'icon' => 'cogs'],
 
             ];
             break;
@@ -169,7 +169,7 @@ try {
     <!-- Incluindo o Bootstrap 4 CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Incluindo o CSS customizado -->
-    <link rel="stylesheet" href="./src/style/menu-lateral.css">
+    <link rel="stylesheet" href="src/style/menu-lateral.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>

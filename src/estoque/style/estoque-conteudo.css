@@ -114,8 +114,12 @@ h3 {
 .input-group {
   width: 48%; /* 2 inputs por linha */
   margin-bottom: 12px;
+  position: relative; /* Necessário para o ícone dentro do campo de entrada */
+  display: flex;
+  align-items: center; /* Alinha o ícone e o texto do input */
 }
 
+/* Estilo do label */
 .input-group label {
   display: block;
   font-size: 14px;
@@ -123,16 +127,95 @@ h3 {
   color: #333;
   margin-bottom: 6px;
   font-family: "Open Sans", sans-serif; /* Fonte Open Sans nos labels */
+  font-weight: bolder;
 }
 
+/* Estilo para os campos de input e select */
 .input-group input,
 .input-group select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  padding: 14px 16px;
+  padding-left: 35px; /* Espaço para o ícone à esquerda */
+  border: 2px solid #ddd;
+  border-radius: 8px;
   font-size: 16px;
   color: #333;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* Alinhamento do placeholder mais perto do ícone */
+.input-group input::placeholder {
+  color: #777;
+  padding-left: 35px; /* O placeholder fica ao lado do ícone */
+}
+
+/* Estilo dos ícones dentro dos inputs */
+.input-group i {
+  position: absolute;
+  left: 12px; /* Alinha o ícone à esquerda dentro do campo */
+  top: 65%;
+  transform: translateY(-50%); /* Centraliza o ícone verticalmente */
+  font-size: 18px;
+  color: #777;
+  pointer-events: none; /* O ícone não deve ser clicável */
+  z-index: 2; /* Garante que o ícone fique acima do conteúdo digitado */
+}
+
+/* Quando o campo de entrada recebe foco, o ícone muda de cor */
+.input-group input:focus + i {
+  color: #4caf50; /* Cor do ícone ao focar no campo */
+}
+
+.input-group input#classificacao::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#natureza::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#contabil::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#codigo::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#unidade::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group select#localizacao::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#custo::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#quantidade::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#preco_medio::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#nf::placeholder {
+  color: #777;
+  padding-left: 30px;
 }
 
 .input-group input:focus,

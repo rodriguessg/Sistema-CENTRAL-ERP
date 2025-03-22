@@ -17,15 +17,15 @@ function abrirModalDetalhes(id) {
 
   const modalConteudo = document.getElementById("modal-informacoes");
   modalConteudo.innerHTML = `
-            <h3>Detalhes do Produto</h3>
-            <p><strong>ID:</strong> ${dados.id}</p>
-            <p><strong>Produto:</strong> ${dados.produto}</p>
-            <p><strong>Classificação:</strong> ${dados.classificacao}</p>
-            <p><strong>Localização:</strong> ${dados.localizacao}</p>
-            <p><strong>Código:</strong> ${dados.codigo}</p>
-            <p><strong>Natureza:</strong> ${dados.natureza}</p>
-            <p><strong>Quantidade:</strong> ${dados.quantidade}</p>
-        `;
+  <h2><i class="fas fa-box-open"></i> Detalhes do Produto</h2>
+  <p><strong><i class="fas fa-hashtag"></i> ID:</strong> ${dados.id}</p>
+  <p><strong><i class="fas fa-tag"></i> Produto:</strong> ${dados.produto}</p>
+  <p><strong><i class="fas fa-layer-group"></i> Classificação:</strong> ${dados.classificacao}</p>
+  <p><strong><i class="fas fa-map-marker-alt"></i> Localização:</strong> ${dados.localizacao}</p>
+  <p><strong><i class="fas fa-barcode"></i> Código:</strong> ${dados.codigo}</p>
+  <p><strong><i class="fas fa-cube"></i> Natureza:</strong> ${dados.natureza}</p>
+  <p><strong><i class="fas fa-sort-numeric-up"></i> Quantidade:</strong> ${dados.quantidade}</p>
+`;
 
   document.getElementById("modal-detalhes").style.display = "block";
 }

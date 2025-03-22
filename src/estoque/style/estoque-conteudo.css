@@ -1436,12 +1436,11 @@ tr:hover {
 .modal {
   display: none;
   position: fixed;
-  z-index: 999;
-  left: 0;
+  z-index: 998;
   top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
 }
 
 /* Fundo escuro transparente */
@@ -1452,16 +1451,17 @@ tr:hover {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
 }
 
-/* Conteúdo do modal */
+/* Conteúdo do modal (CENTRALIZADO e MENOR) */
 .modal-content.atualizado {
   background: #ffffff;
   border-radius: 12px;
-  padding: 30px;
-  width: 90%;
-  max-width: 480px;
-  max-height: 90vh;
+  padding: 30px 25px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;
   overflow-y: auto;
   position: fixed;
   top: 50%;
@@ -1469,7 +1469,7 @@ tr:hover {
   transform: translate(-50%, -50%);
   z-index: 999;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  animation: slideFade 0.4s ease;
+  animation: fadeIn 0.4s ease;
 }
 
 /* Botão fechar */
@@ -1503,6 +1503,13 @@ tr:hover {
   border-radius: 6px;
   font-size: 14px;
   box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.modal-content input:focus {
+  border-color: #777;
+  box-shadow: 0 0 5px rgba(119, 119, 119, 0.4);
+  outline: none;
 }
 
 /* Botão de salvar */
@@ -1515,12 +1522,13 @@ tr:hover {
   border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
   width: 100%;
 }
 
 .btn-salvar:hover {
   background-color: #0056b3;
+  transform: scale(1.02);
 }
 
 /* Animação de entrada */

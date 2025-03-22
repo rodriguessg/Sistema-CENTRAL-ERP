@@ -1,7 +1,7 @@
 <?php
 session_start(); // Inicia a sessão
 
-include 'banco.php'; // Inclua a conexão com o banco de dados
+include 'banco.php'; // Inclui a conexão com o banco de dados
 
 // Conexão com o banco de dados
 $servername = "localhost";
@@ -99,13 +99,17 @@ try {
         // Se não houver resultados, define a variável como um array vazio
         $ultimosPatrimonios = [];
     }
+
+    // Recuperar configurações do painel
+    $query_painel = "SELECT * FROM painel_config WHERE id = 1";
+    $resultado_painel = $conn->query($query_painel);
+    $painel = $resultado_painel->fetch_assoc();
 } catch (Exception $e) {
     echo "Erro ao consultar o banco de dados: " . $e->getMessage();
     exit();
 }
 
-// Inclui o cabeçalho
-include 'header.php';
+include 'header.php'; // Inclui o cabeçalho
 ?>
 
 <!DOCTYPE html>
@@ -188,35 +192,34 @@ include 'header.php';
                 </table>
             </div>
 
-                    <!-- Tabela de Usuários que Mais Cadastraram -->
-        <div class="table-container">
-            <h3>Últimas Alterações nos Setores</h3>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>Data e Hora</th>
-                        <th>Operação</th>
-                        <th>Setor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if ($result_ultimasAlteracoesSetores->num_rows > 0): ?>
-                        <?php while ($alteracao = $result_ultimasAlteracoesSetores->fetch_assoc()): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($alteracao['data_hora']); ?></td>
-                                <td><?php echo htmlspecialchars($alteracao['tipo_operacao']); ?></td>
-                                <td><?php echo htmlspecialchars($alteracao['setor']); ?></td>
-                            </tr>
-                        <?php endwhile; ?>
-                    <?php else: ?>
+            <!-- Tabela de Usuários que Mais Cadastraram -->
+            <div class="table-container">
+                <h3>Últimas Alterações nos Setores</h3>
+                <table border="1">
+                    <thead>
                         <tr>
-                            <td colspan="3">Nenhuma alteração encontrada.</td>
+                            <th>Data e Hora</th>
+                            <th>Operação</th>
+                            <th>Setor</th>
                         </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-
+                    </thead>
+                    <tbody>
+                        <?php if ($result_ultimasAlteracoesSetores->num_rows > 0): ?>
+                            <?php while ($alteracao = $result_ultimasAlteracoesSetores->fetch_assoc()): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($alteracao['data_hora']); ?></td>
+                                    <td><?php echo htmlspecialchars($alteracao['tipo_operacao']); ?></td>
+                                    <td><?php echo htmlspecialchars($alteracao['setor']); ?></td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="3">Nenhuma alteração encontrada.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -288,5 +291,5 @@ include 'header.php';
 
 <?php
 // Fecha a conexão ao final do script
-$con->close();
+$conn->close();
 ?>

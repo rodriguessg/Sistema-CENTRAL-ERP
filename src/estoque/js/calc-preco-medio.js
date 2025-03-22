@@ -7,7 +7,7 @@ function calcularPrecoMedio() {
     // Função para converter o formato brasileiro (0.00,00) para número
     function converterParaNumero(valor) {
         if (!valor) return 0; // Retorna 0 se o valor for vazio ou inválido
-        return parseFloat(valor.replace(/\./g, '').replace(',')) || 0;
+        return parseFloat(valor.replace(/\./g, '').replace(',', '.')) || 0;  // Corrigido para trocar a vírgula por ponto
     }
 
     // Obtém os valores de custo e quantidade no formato correto
@@ -15,16 +15,16 @@ function calcularPrecoMedio() {
     const quantidade = parseFloat(quantidadeInput.value) || 0;
 
     // Valida os valores
-    if (custo < 0 || quantidade < 0) {
-        precoMedioInput.value = '0'; // Define o valor padrão
+    if (custo < 0 || quantidade <= 0) {
+        precoMedioInput.value = '0,00'; // Define o valor padrão para preço médio
         return;
     }
 
-    // Calcula o preço médio apenas se a quantidade for maior que zero
-    const precoMedio = quantidade > 0 ? (custo / quantidade).toFixed(2) : '0';
+    // Calcula o preço médio sem arredondamento (truncando a 2 casas decimais)
+    const precoMedio = Math.floor((custo / quantidade) * 100) / 100; // Trunca a 2 casas decimais
 
     // Atualiza o campo de preço médio
-    precoMedioInput.value = precoMedio;
+    precoMedioInput.value = precoMedio.toFixed(2).replace('.', ','); // Exibe com 2 casas decimais
 }
 
 // Adiciona eventos aos campos de custo e quantidade
@@ -34,9 +34,9 @@ document.getElementById('quantidade').addEventListener('input', calcularPrecoMed
 
 // Função para limpar o formulário
 function limparFormulario() {
-const form = document.getElementById('form-cadastrar-produto');
-form.reset(); // Reseta todos os campos do formulário
-document.getElementById('preco_medio').value = ''; // Reseta o campo de preço médio
+    const form = document.getElementById('form-cadastrar-produto');
+    form.reset(); // Reseta todos os campos do formulário
+    document.getElementById('preco_medio').value = ''; // Reseta o campo de preço médio
 }
 
 // Evento no botão de limpar

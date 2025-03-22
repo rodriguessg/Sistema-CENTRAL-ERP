@@ -554,3 +554,167 @@ tr:hover {
     width: 90%; /* Deixa o formulário ocupar mais espaço em telas pequenas */
   }
 }
+
+/* Estilo geral para o formulário */
+.relatorio-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  font-family: "Arial", sans-serif;
+  padding: 30px;
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Estilo para os grupos de campos no formulário */
+.relatorio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Estilo para os labels */
+.relatorio-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Estilo para os campos de entrada (select, input, textarea) */
+.relatorio-group select,
+.relatorio-group input,
+.relatorio-group textarea {
+  padding: 10px 16px;
+  padding-left: 35px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  background-color: #f9f9f9;
+  color: #333;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  height: 40px;
+}
+
+/* Efeito de foco para os campos de entrada */
+.relatorio-group select:focus,
+.relatorio-group input:focus,
+.relatorio-group textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Botões de ação */
+.relatorio-group button {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  color: white;
+  padding: 8px 16px; /* Tamanho reduzido */
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Efeito suave */
+  text-transform: uppercase;
+  font-weight: bold;
+  width: 100%;
+  height: 40px;
+}
+
+.relatorio-group button:hover {
+  background-color: #0056b3;
+  transform: scale(1.03); /* Efeito de hover suave */
+}
+
+/* Estilo para a área de resultado do relatório */
+#resultadoRelatorio {
+  margin-top: 30px;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Tabela do relatório */
+#resultadoRelatorio table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#resultadoRelatorio th,
+#resultadoRelatorio td {
+  padding: 15px;
+  text-align: left;
+  font-size: 14px;
+}
+
+#resultadoRelatorio th {
+  background-color: #007bff;
+  color: white;
+}
+
+#resultadoRelatorio td {
+  background-color: #f2f2f2;
+}
+
+#resultadoRelatorio tr:nth-child(even) td {
+  background-color: #e9e9e9;
+}
+
+#resultadoRelatorio td,
+#resultadoRelatorio th {
+  border-bottom: 1px solid #ddd;
+}
+
+/* Botões de Impressão e Exportação */
+#imprimirBtn,
+#exportarExcelBtn {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  color: white;
+  padding: 8px 16px; /* Tamanho reduzido */
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Efeito suave */
+  text-transform: uppercase;
+  font-weight: bold;
+  width: 100%;
+  height: 40px;
+}
+
+#imprimirBtn:hover,
+#exportarExcelBtn:hover {
+  background-color: #218838;
+  transform: scale(1.03); /* Efeito de hover suave */
+}
+
+/* Layout para campos de seleção do exercício */
+#exercicio-group {
+  display: none;
+}
+
+#exercicio-group select {
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  width: 100%;
+  height: 40px;
+}
+
+/* Transições e animações para interação suave */
+.relatorio-group select,
+.relatorio-group input,
+.relatorio-group textarea {
+  transition: all 0.3s ease;
+}

@@ -11,6 +11,7 @@
     <title>Almoxarifado</title>
      <link rel="stylesheet" href="src/style/modal.css">
     <link rel="stylesheet" href="src/estoque/style/container-estoque.css">
+    <link rel="stylesheet" href="src/estoque/style/modal-sucesso.css">
 <!-- Font Awesome CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
@@ -125,8 +126,10 @@
             <button type="submit" class="btn-submit">Cadastrar</button>
             <button type="button" id="limpar-formulario" class="btn-clear">Limpar</button>
         </div>
+
     </form>
 </div>
+
 
 
 
@@ -250,7 +253,7 @@
 
     <div class="table-container">
         <h3>Lista de Produtos</h3>
-        <table class="tabela-estoque" border="1">
+        <table class="tabela-estoque">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -303,37 +306,38 @@
 
 <div class="form-container" id="relatorio">
     <h3>Gerar Relatório</h3>
-    <form id="form-relatorio" style="display: flex; flex-direction: column; gap: 15px;">
-        <!-- Seletor de Período -->
-        <div class="form-group">
-            <label for="periodo">Selecione o Período:</label>
-            <select id="periodo" name="periodo" required onchange="toggleExercicioSelector(this.value)">
-                <option value="" disabled selected>Escolha uma opção</option>
-                <option value="semanal">Semanal</option>
-                <option value="mensal">Mensal</option>
-                <option value="anual">Anual</option>
-            </select>
-        </div>
+<form id="form-relatorio" class="relatorio-form">
+    <!-- Seletor de Período -->
+    <label for="periodo">Selecione o Período:</label>
+    <div class="relatorio-group">
+        <select id="periodo" name="periodo" required onchange="toggleExercicioSelector(this.value)">
+            <option value="" disabled selected>Escolha uma opção</option>
+            <option value="semanal">Semanal</option>
+            <option value="mensal">Mensal</option>
+            <option value="anual">Anual</option>
+        </select>
+    </div>
 
-        <!-- Seletor de Exercício (Ano) -->
-        <div class="form-group" id="exercicio-group" style="display: none;">
-            <label for="exercicio">Selecione o Exercício:</label>
-            <select id="exercicio" name="exercicio">
-                <option value="" disabled selected>Carregando...</option>
-            </select>
-        </div>
+    <!-- Seletor de Exercício (Ano) -->
+    <label for="exercicio">Selecione o Exercício:</label>
+    <div class="relatorio-group" id="exercicio-group" style="display: none;">
+        <select id="exercicio" name="exercicio">
+            <option value="" disabled selected>Carregando...</option>
+        </select>
+    </div>
 
-        <!-- Campo de Usuário Logado -->
-        <div class="form-group">
-            <label for="usuario">Usuário Logado:</label>
-            <input type="text" id="usuario" name="usuario" value="" readonly>
-        </div>
+    <!-- Campo de Usuário Logado -->
+    <div class="relatorio-group">
+        <label for="usuario">Usuário Logado:</label>
+        <input type="text" id="usuario" name="usuario" value="" readonly>
+    </div>
 
-        <!-- Botão de Submissão -->
-        <div class="form-group">
-            <button type="button" id="incluir_quantidade" name="incluir_quantidade" onclick="gerarRelatorio()">Gerar Relatório</button>
-        </div>
-    </form>
+    <!-- Botão de Submissão -->
+    <div class="relatorio-group">
+        <button type="button" id="incluir_quantidade" name="incluir_quantidade" onclick="gerarRelatorio()">Gerar Relatório</button>
+    </div>
+</form>
+
 
     <!-- Área para exibição do relatório gerado -->
     <div id="resultadoRelatorio" style="margin-top: 20px;"></div>

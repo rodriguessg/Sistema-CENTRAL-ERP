@@ -1456,15 +1456,20 @@ tr:hover {
 
 /* Conteúdo do modal */
 .modal-content.atualizado {
-  background-color: #fff;
-  margin: 5% auto;
+  background: #ffffff;
+  border-radius: 12px;
   padding: 30px;
-  border-radius: 10px;
-  max-width: 500px;
-  position: relative;
-  z-index: 1000;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  animation: fadeIn 0.3s ease-in-out;
+  width: 90%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: slideFade 0.4s ease;
 }
 
 /* Botão fechar */

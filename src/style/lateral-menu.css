@@ -2,7 +2,7 @@
 #sidebar {
   background: linear-gradient(180deg, #2d3e50, #1a242f);
   color: white;
-  padding: 0px 12px;
+  padding: 30px 12px;
   position: fixed;
   height: 100%;
   top: 0;
@@ -14,35 +14,180 @@
   z-index: 1000;
   border-radius: 0px 20px 20px 0px;
   transition: width 0.5s ease, transform 0.3s ease-in-out;
-  overflow-y: auto; /* Permite rolagem no menu se o conteúdo for grande */
 }
 
-/* Para garantir que o conteúdo não seja cortado ou empurre o menu */
+.nav-item {
+  position: absolute;
+  left: 220px;
+  top: 13px;
+}
+
+/* Estilo do Dropdown Menu (Notificações) */
+#sidebar .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 30px;
+  right: 10px;
+  min-width: 320px;
+  background-color: #1a242f;
+  color: white !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 15px;
+  z-index: 1050;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease;
+  overflow-y: auto; /* Permite rolar o conteúdo verticalmente */
+  scrollbar-width: none; /* Para Firefox, remove a barra de rolagem */
+}
+
+#sidebar .dropdown-menu::-webkit-scrollbar {
+  display: none; /* Para o Webkit (Chrome, Safari), remove a barra de rolagem */
+}
+
+/* Exibição do Dropdown (Quando visível) */
+#sidebar .dropdown-menu.show {
+  display: block;
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Estilo para os itens do Dropdown */
+#sidebar .dropdown-menu .dropdown-item {
+  text-decoration: none;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 14px;
+  border-bottom: solid 1px #4e5a6a;
+  background-color: #2d3e50; /* Cor de fundo padrão para os itens */
+  border-radius: 8px;
+  color: white; /* Cor do texto */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+#sidebar .dropdown-menu .dropdown-item i {
+  margin-right: 10px; /* Espaçamento entre o ícone e o texto */
+  font-size: 18px; /* Tamanho do ícone */
+}
+
+/* Estilo do Cabeçalho das Notificações */
+.dropdown-header {
+  display: block !important;
+  padding: 10px 15px !important; /* Adicionando espaçamento interno */
+  margin-bottom: 15px !important; /* Espaçamento inferior entre as notificações */
+  font-size: 1rem !important; /* Tamanho da fonte mais legível */
+  color: white !important; /* Cor mais forte para o cabeçalho */
+  white-space: nowrap !important; /* Garante que o texto não quebre */
+  font-weight: bold !important; /* Destaca o cabeçalho */
+  border-bottom: 1px solid #e0e0e0; /* Linha de separação suave */
+  margin-bottom: 15px; /* Espaçamento adicional */
+}
+
+/* Efeito de Hover nos Itens de Notificação */
+#sidebar .dropdown-item:hover {
+  background-color: #007bff; /* Cor de fundo ao passar o mouse */
+  color: white; /* Cor do texto ao passar o mouse */
+  cursor: pointer; /* Muda o cursor para indicar que o item é clicável */
+}
+
+/* Efeito de Hover no botão do sino */
+#sidebar .fa-bell:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+  color: #007bff;
+}
+
+/* Estilo do Badge de Notificação */
+#sidebar .badge {
+  position: absolute;
+  top: -3px;
+  right: -2px;
+  background-color: #ff0000;
+  color: white;
+  padding: 5px;
+  border-radius: 50%;
+  font-size: 10px;
+  z-index: 1060;
+}
+
+/* Estilo de ícones dentro da notificação */
+#sidebar .dropdown-menu .dropdown-item i {
+  color: #ffcc00; /* Cor do ícone */
+  font-size: 16px;
+}
+
+/* Exemplos de ícones para diferentes tipos de notificação (Avise conforme necessário) */
+#sidebar .dropdown-menu .dropdown-item.warning i {
+  color: #f39c12; /* Cor do ícone de aviso */
+}
+
+/* Efeito de Hover nos Itens de Notificação */
+.dropdown-item:hover {
+  background-color: #2d3e50; /* Cor de fundo ao passar o mouse */
+  color: #fff; /* Cor do texto ao passar o mouse */
+  cursor: pointer; /* Muda o cursor para indicar que o item é clicável */
+}
+
+/* Efeito de Hover nos itens do Dropdown */
+#sidebar .dropdown-menu .dropdown-item:hover {
+  background-color: #4e5a6a;
+  color: white;
+}
+
+/* Efeito de Hover no botão do sino */
+#sidebar .fa-bell:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+  color: #007bff;
+}
+
+/* Estilo do Badge de Notificação */
+#sidebar .badge {
+  position: absolute;
+  top: -3px;
+  right: -2px;
+  background-color: #ff0000;
+  color: white;
+  padding: 5px;
+  border-radius: 50%;
+  font-size: 10px;
+  z-index: 1060;
+}
+
 #sidebar .profile-section,
 #sidebar .menu-item {
   width: 100%;
   text-align: center;
-  overflow: hidden;
-  white-space: nowrap; /* Impede o texto de quebrar para a linha */
-  text-overflow: ellipsis; /* Adiciona '...' ao final do texto longo */
+  overflow: hidden; /* Evita que o conteúdo ultrapasse o limite */
+  white-space: normal;
+  text-overflow: ellipsis; /* Adiciona "..." quando o texto for longo */
+}
+
+#sidebar .profile-section {
+  margin-bottom: 30px; /* Espaço inferior para separar do menu */
 }
 
 #sidebar .profile-section img {
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   margin-bottom: 10px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+  object-fit: cover;
 }
 
 #sidebar .profile-section p {
-  font-size: larger;
-  font-family: cursive;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
 }
 
 #sidebar .profile-section a {
   text-decoration: none;
 }
+
 /* Ícone de Notificação */
 #sidebar .notification {
   position: relative;
@@ -69,24 +214,17 @@
 
 /* Efeito de Hover no Menu */
 #sidebar .menu-item:hover {
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.1
-  ); /* Fundo do hover mais transparente */
-  transform: scale(
-    1.02
-  ); /* Efeito de aumento suave no item ao passar o mouse */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Sombra suave ao passar o mouse */
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   transition: background-color 0.4s ease, transform 0.4s ease,
-    box-shadow 0.3s ease; /* Transição mais suave */
+    box-shadow 0.3s ease;
 }
 
 /* Ícone da Aba Ativa */
 #sidebar .menu-item.active {
   background-color: #007bff;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); /* Sombra suave para a aba ativa */
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
 }
 
 /* Itens da lista de navegação */
@@ -109,15 +247,10 @@
 
 /* Efeito de Hover nos Links da Lista */
 #sidebar .components li a:hover {
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.1
-  ); /* Fundo do hover mais transparente */
-  padding-left: 20px; /* Deslocamento suave ao passar o mouse */
-  color: #1a242f;
-  transition: background-color 0.4s ease, padding-left 0.3s ease; /* Transição mais suave */
+  background-color: rgba(255, 255, 255, 0.1);
+  padding-left: 20px;
+  color: white;
+  transition: background-color 0.4s ease, padding-left 0.3s ease;
 }
 
 /* Aumento do ícone no hover */
@@ -127,19 +260,18 @@
 }
 
 #sidebar .components li a:hover i {
-  transform: scale(1.1); /* Aumenta o ícone ao passar o mouse */
-  color: #777; /* Cor do ícone no hover */
+  transform: scale(1.1);
+  color: white;
 }
 
 /* Sombra nos itens da lista */
 #sidebar .components li:hover {
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Sombra leve ao passar o mouse */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05); /* Pequeno aumento ao passar o mouse */
+  transform: scale(1.05);
 }
 
 button:disabled {
@@ -157,19 +289,23 @@ button:disabled {
   display: none;
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  right: 10px;
+  width: 400px;
+  height: auto;
   background-color: rgba(0, 0, 0, 0.7);
   justify-content: center;
   align-items: center;
+  z-index: 1050;
+  border-radius: 10px;
 }
 
 .modal-content {
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
-  width: 60%;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .modal-close {
@@ -183,13 +319,13 @@ button:disabled {
 
 /* Remover o marcador (bolinha) no li */
 .nav-item::marker {
-  content: none; /* Remove o marcador */
+  content: none;
 }
 
 /* Abrir Menu */
 #sidebar.open {
   width: 250px;
-  transform: translateX(0); /* Animação de deslizamento */
+  transform: translateX(0);
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -216,7 +352,7 @@ button:disabled {
 
 @media (max-width: 768px) {
   #sidebar {
-    width: 80%; /* Menu lateral ocupa 80% da largura */
+    width: 80%;
     padding: 20px 10px;
   }
 
@@ -239,13 +375,12 @@ button:disabled {
   }
 }
 
-/* Ajustes Finais */
+/* Ajustes finais */
 #sidebar .components li a span {
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Efeito de Transição suave nos itens */
 #sidebar .components li a:hover {
-  transform: translateX(10px); /* Deslocamento suave */
-  transition: transform 0.3s ease; /* Adicionada transição para o deslocamento */
+  transform: translateX(10px);
+  transition: transform 0.3s ease;
 }

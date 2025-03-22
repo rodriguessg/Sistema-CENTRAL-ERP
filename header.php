@@ -39,7 +39,7 @@ try {
     // Caminho completo da foto ou uma imagem padrão
     $foto = (!empty($result['foto']) && file_exists($fotoBasePath . $result['foto']))
         ? $fotoBasePath . $result['foto']
-        : $fotoBasePath . 'perfil.jpg';
+        : $fotoBasePath . 'man.png';
 
     // Configure as permissões de navegação com base no setor do usuário
     $menuItens = [];
@@ -178,30 +178,47 @@ try {
         <nav id="sidebar" class="active">
             <!-- Notificações -->
             <li class="nav-item">
-                <a class="nav-link" href="#" id="notificacaoLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-bell"></i>
-                    <span class="badge badge-danger" id="notificationCount"><?= $unreadCount ?></span> <!-- Número de notificações -->
-                </a>
+    <a class="nav-link" href="#" id="notificacaoLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa fa-bell"></i>
+        <span class="badge badge-danger" id="notificationCount"><?= $unreadCount ?></span> <!-- Número de notificações -->
+    </a>
 
-                <!-- Dropdown para exibir as notificações -->
-                <div class="dropdown-menu" aria-labelledby="notificacaoLink" id="notificationList" style="min-width: 300px; max-height: 300px; overflow-y: auto;">
-                    <h6 class="dropdown-header">Notificações</h6>
-                    <?php 
-                    // Exibir notificações somente para os setores "administrador" ou "estoque"
-                    if ($unreadCount > 0) {
-                        foreach ($notifications as $notification) {
-                    ?>
-                            <a class="dropdown-item" href="#" onclick="markAsRead(<?= $notification['id'] ?>)">
-                                <?= htmlspecialchars($notification['mensagem']) ?>
-                            </a>
-                    <?php 
-                        }
-                    } else { 
-                    ?>
-                        <p class="dropdown-item">Sem novas notificações.</p>
-                    <?php } ?>
-                </div>
-            </li>
+    <!-- Dropdown para exibir as notificações -->
+    <div class="dropdown-menu" aria-labelledby="notificacaoLink" id="notificationList" style="min-width: 600px; max-height: 300px; overflow-y: auto;">
+        <h6 class="dropdown-header">Notificações</h6>
+        <?php 
+        // Exibir notificações somente para os setores "administrador" ou "estoque"
+        if ($unreadCount > 0) {
+            foreach ($notifications as $notification) {
+        ?>
+                <a class="dropdown-item" href="#" onclick="markAsRead(<?= $notification['id'] ?>)">
+                    <?= htmlspecialchars($notification['mensagem']) ?>
+                </a>
+        <?php 
+            }
+        } else { 
+        ?>
+            <p class="dropdown-item">Sem novas notificações.</p>
+        <?php } ?>
+    </div>
+</li>
+
+<!-- Modal de notificações -->
+<div class="modal" id="notificationModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Notificações</h5>
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <!-- Conteúdo das notificações será gerado aqui -->
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Fechar</button>
+        </div>
+    </div>
+</div>
+
 
             <!-- Seção de perfil -->
             <div class="profile-section">
@@ -264,14 +281,20 @@ try {
     <!-- jQuery e Bootstrap 4 JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./src/js/menu-lateral.js"></script>
     <!-- JS CONVERSAO IA -->
     <script src="./src/header/js/ia.js"></script>
     <!-- JS PREENCHIMENTO INFORMAÇÕES PERFIL -->
     <script src="./src/header/js/perfil.js"></script>
     <!-- JS ATUALIZACAO ICONE INFORMAÇÕES -->
-    <script src="./src/js/icon-notificacao.js"></script>
+    <script src="./src/header/js/icon-notificacao.js"></script>
+    
+<!-- <?php
+include 'footer.php';
+?> -->
 </body>
+
+
 </html>
+
 
 

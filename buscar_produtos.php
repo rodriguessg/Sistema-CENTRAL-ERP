@@ -14,11 +14,13 @@ if ($conn->connect_error) {
 $produto = isset($_GET['produto']) ? $conn->real_escape_string($_GET['produto']) : '';
 
 // Consulta SQL com filtro
-$sql = "SELECT id, produto, classificacao, localizacao, quantidade FROM produtos";
+$sql = "SELECT id, produto, classificacao, localizacao, quantidade, custo FROM produtos";
 if (!empty($produto)) {
     $sql .= " WHERE produto LIKE '%$produto%'";
 }
 
+//ALTER TABLE produtos MODIFY COLUMN custo DECIMAL(10,5);
+//////10 Dígitos e 5 casas decimais 
 $result = $conn->query($sql);
 
 $produtos = [];

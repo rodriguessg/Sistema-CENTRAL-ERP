@@ -1,5 +1,37 @@
 <?php
     include 'header.php';
+
+
+    // Incluir a conexão com o banco de dados
+include 'banco.php'; 
+
+// Verificar se o formulário foi enviado via POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Recuperar o valor de custo do formulário
+    $custo = isset($_POST['custo']) ? $_POST['custo'] : 0;
+
+    // Verificar se o custo está em um formato correto (por exemplo, um número válido)
+    if (!is_numeric($custo)) {
+        echo "Custo inválido!";
+        exit();
+    }
+
+    // Formatando o custo para 4 casas decimais antes de salvar no banco de dados
+    $custo = number_format($custo, 4, '.', ''); // Formata para 4 casas decimais
+
+    // Consulta SQL para inserir o valor de custo na tabela produtos
+    $query = "INSERT INTO produtos (custo) VALUES ('$custo')";
+
+    // Executar a consulta
+    if ($con->query($query) === TRUE) {
+        echo "Produto inserido com sucesso!";
+    } else {
+        echo "Erro ao inserir produto: " . $con->error;
+    }
+
+    // Fechar a conexão com o banco de dados
+    $con->close();
+}
 ?>
 
 
@@ -156,6 +188,7 @@
                     <th>Código</th>
                     <th>Natureza</th>
                     <th>Quantidade</th>
+                    <th>Custo</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -261,6 +294,8 @@
                     <th>Classificação</th>
                     <th>Local</th>
                     <th>Quantidade</th>
+                    <th> Custo</tr>
+                    <th>Preço Médio </th>
                 </tr>
             </thead>
             <tbody id="tabelaestoque">
@@ -287,6 +322,8 @@
                                     <td>{$row['classificacao']}</td>
                                     <td>{$row['localizacao']}</td>
                                     <td>{$row['quantidade']}</td>
+                                    <td>{$row['custo']}</td>
+                                       <td>{$row['preco_medio']}</td>
                                   </tr>";
                         }
                     } else {

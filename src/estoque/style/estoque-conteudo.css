@@ -556,14 +556,15 @@ tr:hover {
 }
 
 /* Estilo geral para o formulário */
+/* Estilo geral para o formulário */
 .relatorio-form {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background-color: #777;
+  background-color: rgb(217 217 217 / 90%);
   border-radius: 10px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  font-family: "Arial", sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Fonte padrão ajustada */
   padding: 16px;
   max-width: 400px;
 }
@@ -587,14 +588,11 @@ tr:hover {
 .relatorio-group input,
 .relatorio-group textarea {
   padding: 10px 16px;
-  padding-left: 35px;
   font-size: 14px;
   border-radius: 8px;
   border: 2px solid #ddd;
-  background-color: #f9f9f9;
   color: #333;
   transition: all 0.3s ease;
-  width: 100%;
   box-sizing: border-box;
   height: 40px;
 }
@@ -604,8 +602,7 @@ tr:hover {
 .relatorio-group input:focus,
 .relatorio-group textarea:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: #777;
 }
 
 /* Botões de ação */
@@ -620,8 +617,8 @@ tr:hover {
   transition: background-color 0.3s ease, transform 0.3s ease; /* Efeito suave */
   text-transform: uppercase;
   font-weight: bold;
-  width: 100%;
   height: 40px;
+  width: 45%;
 }
 
 .relatorio-group button:hover {
@@ -685,7 +682,6 @@ tr:hover {
   transition: background-color 0.3s ease, transform 0.3s ease; /* Efeito suave */
   text-transform: uppercase;
   font-weight: bold;
-  width: 100%;
   height: 40px;
 }
 
@@ -715,4 +711,821 @@ tr:hover {
 .relatorio-group input,
 .relatorio-group textarea {
   transition: all 0.3s ease;
+}
+
+/* modal de informaçoes */
+
+/* Para garantir que o Font Awesome esteja disponível */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
+
+/* Importação das fontes */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap");
+
+/* Estilo Geral */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif; /* Usando a fonte Roboto */
+}
+body {
+  background-color: rgb(217 217 217 / 90%);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container principal - "Caderno" */
+.caderno {
+  display: flex; /* Flexbox para alinhamento do menu e conteúdo */
+  margin-left: 300px; /* Deixa espaço para o menu lateral */
+  padding: 20px;
+  width: 80%;
+  flex-direction: column;
+}
+
+/* Container para as Tabs e o Conteúdo */
+
+/* Estilo geral das abas */
+/* Estilo geral das abas */
+.tabs {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tab {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Estilo das abas ativas */
+.tab.active {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Estilo de hover em abas não ativas */
+.tab:hover {
+  background-color: #ddd;
+  transform: scale(1.02);
+}
+
+/* Ícones nas abas */
+.tab i {
+  font-size: 18px;
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 768px) {
+  .tabs {
+    flex-direction: column; /* Coloca as abas em uma coluna em telas pequenas */
+    align-items: center;
+  }
+  .tab {
+    width: 100%; /* As abas ocuparão toda a largura */
+    text-align: left; /* Alinha o texto à esquerda */
+  }
+}
+
+/* CONTEUDO LABELS INPUTS */
+
+/* Estilo para o formulário */
+.form-container {
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.9); /* Fundo levemente transparente */
+  border-radius: 12px; /* Cantos mais arredondados */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra mais suave */
+  backdrop-filter: blur(10px); /* Adiciona um efeito de desfoque no fundo */
+  max-width: 100%; /* Garante que o formulário ocupe toda a largura disponível */
+  margin: 20px 0px; /* Centraliza o formulário */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Font mais moderna */
+}
+
+/* Título do formulário */
+h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: 600;
+  font-family: "Open Sans", sans-serif; /* Usando Open Sans no título */
+}
+
+/* Estilo para os grupos de inputs */
+.form-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.form-group3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  border-radius: 12px;
+  margin: 20px 0px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Estilo para cada campo de input */
+.input-group {
+  width: 48%; /* 2 inputs por linha */
+  margin-bottom: 12px;
+  position: relative; /* Necessário para o ícone dentro do campo de entrada */
+  display: flex;
+  align-items: center; /* Alinha o ícone e o texto do input */
+}
+
+/* Estilo do label */
+.input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 6px;
+  font-family: "Open Sans", sans-serif; /* Fonte Open Sans nos labels */
+  font-weight: bolder;
+}
+
+/* Estilo para os campos de input e select */
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 10px 16px;
+  padding-left: 35px; /* Espaço para o ícone à esquerda */
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #333;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* Alinhamento do placeholder mais perto do ícone */
+.input-group input::placeholder {
+  color: #777;
+  padding-left: 35px; /* O placeholder fica ao lado do ícone */
+}
+
+/* Estilo dos ícones dentro dos inputs */
+.input-group i {
+  position: absolute;
+  left: 10px;
+  top: 70%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #777;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Quando o campo de entrada recebe foco, o ícone muda de cor */
+.input-group input:focus + i {
+  color: #4caf50; /* Cor do ícone ao focar no campo */
+}
+
+.input-group input#classificacao::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#natureza::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#contabil::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#codigo::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#unidade::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group select#localizacao::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#custo::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#quantidade::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#preco_medio::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input#nf::placeholder {
+  color: #777;
+  padding-left: 30px;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color: #777; /* Cor de foco */
+  outline: none;
+}
+
+/* Botões de ação */
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.button-group button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-submit {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  color: white;
+}
+
+.btn-submit:hover {
+  background-color: #777;
+  transform: scale(1.05);
+}
+
+.btn-clear {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  color: white;
+}
+
+.btn-clear:hover {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  transform: scale(1.05);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .input-group {
+    width: 100%; /* Os inputs ocupam 100% da largura em telas pequenas */
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .button-group button {
+    width: 100%; /* Botões ocupam toda a largura */
+  }
+}
+
+/* COSULTA PRODUTOS/ESTOQUE */
+
+/* Container de Pesquisa */
+.search-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+.search-container label {
+  font-size: 1rem;
+  color: #333;
+  font-family: "Open Sans", sans-serif; /* Usando Open Sans nas labels */
+}
+
+.search-container input {
+  width: 100%;
+  padding: 10px 16px;
+  padding-left: 35px;
+  border: 2px solid #777;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #333;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.search-container input:focus {
+  border-color: #777;
+}
+
+.search-container button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.search-container button:hover {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  transform: scale(1.05);
+}
+
+/* Tabela */
+.table-container {
+  width: 100%;
+  margin-top: 30px;
+  overflow-x: auto;
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Remover bordas verticais e manter apenas horizontais */
+th,
+td {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #111827; /* ou white, se for fundo escuro */
+  padding: 10px;
+  text-align: center;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: 1px solid #ddd; /* linha horizontal */
+  font-size: 1rem;
+}
+
+/* Cabeçalho */
+th {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Linhas alternadas */
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+  transition: background-color 0.3s ease;
+}
+
+/* Estilos para o botão Detalhes (btn-estoque1) */
+.btn-estoque1 {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #2c3e50; /* Azul escuro para o botão de detalhes */
+  color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-estoque1 i {
+  margin-right: 8px; /* Espaço entre o ícone e o texto */
+}
+
+/* Efeito hover para o botão Detalhes */
+.btn-estoque1:hover {
+  background-color: #34495e; /* Cor de fundo mais escura ao passar o mouse */
+  transform: translateY(-2px); /* Efeito de elevação ao passar o mouse */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Aumenta a sombra ao passar o mouse */
+}
+
+/* Estilos para o botão Atualizar (btn-estoque) */
+.btn-estoque {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #27ae60; /* Verde escuro para o botão de atualizar */
+  color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-estoque i {
+  margin-right: 8px; /* Espaço entre o ícone e o texto */
+}
+
+/* Efeito hover para o botão Atualizar */
+.btn-estoque:hover {
+  background-color: #2ecc71; /* Cor de fundo mais clara ao passar o mouse */
+  transform: translateY(-2px); /* Efeito de elevação ao passar o mouse */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Aumenta a sombra ao passar o mouse */
+}
+
+/* Botões de Ações */
+.btn-estoque2 {
+  font-size: 1rem;
+  padding: 10px 20px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-estoque2:hover {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  transform: scale(1.05);
+}
+
+.btn-estoque2 i {
+  font-size: 1.3rem;
+}
+
+.btn-estoque2:hover i {
+  transform: translateX(5px);
+}
+
+/* Paginação */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 10px 20px;
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:hover {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  th,
+  td {
+    font-size: 0.9rem;
+    padding: 12px;
+  }
+
+  .search-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-container input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .pagination button {
+    padding: 8px 12px;
+  }
+}
+
+/* retirar materiais */
+
+/* Estilo para os labels */
+.form-group3 label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Estilo para os campos de input */
+.form-group3 input {
+  width: 100%;
+
+  padding: 10px 35px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #333;
+  background-color: #f9f9f9;
+  transition: 0.3s;
+}
+
+/* Foco no campo de input */
+.form-group3 input:focus {
+  border-color: #777; /* Cor de borda quando o campo recebe foco */
+  background-color: #fff;
+  outline: none;
+}
+
+/* Responsividade: Ajuste para telas menores */
+@media (max-width: 768px) {
+  .form-group3 {
+    width: 90%; /* Deixa o formulário ocupar mais espaço em telas pequenas */
+  }
+}
+
+/* Estilo geral para o formulário */
+/* Estilo geral para o formulário */
+.relatorio-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: rgb(217 217 217 / 90%);
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Fonte padrão ajustada */
+  padding: 16px;
+  max-width: 400px;
+}
+
+/* Estilo para os grupos de campos no formulário */
+.relatorio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Estilo para os labels */
+.relatorio-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Estilo para os campos de entrada (select, input, textarea) */
+.relatorio-group select,
+.relatorio-group input,
+.relatorio-group textarea {
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  color: #333;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  height: 40px;
+}
+
+/* Efeito de foco para os campos de entrada */
+.relatorio-group select:focus,
+.relatorio-group input:focus,
+.relatorio-group textarea:focus {
+  outline: none;
+  border-color: #777;
+}
+
+/* Botões de ação */
+.relatorio-group button {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  color: white;
+  padding: 8px 16px; /* Tamanho reduzido */
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Efeito suave */
+  text-transform: uppercase;
+  font-weight: bold;
+  height: 40px;
+  width: 45%;
+}
+
+.relatorio-group button:hover {
+  background-color: #0056b3;
+  transform: scale(1.03); /* Efeito de hover suave */
+}
+
+/* Estilo para a área de resultado do relatório */
+#resultadoRelatorio {
+  margin-top: 30px;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Tabela do relatório */
+#resultadoRelatorio table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#resultadoRelatorio th,
+#resultadoRelatorio td {
+  padding: 15px;
+  text-align: left;
+  font-size: 14px;
+}
+
+#resultadoRelatorio th {
+  background-color: #007bff;
+  color: white;
+}
+
+#resultadoRelatorio td {
+  background-color: #f2f2f2;
+}
+
+#resultadoRelatorio tr:nth-child(even) td {
+  background-color: #e9e9e9;
+}
+
+#resultadoRelatorio td,
+#resultadoRelatorio th {
+  border-bottom: 1px solid #ddd;
+}
+
+/* Botões de Impressão e Exportação */
+#imprimirBtn,
+#exportarExcelBtn {
+  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  color: white;
+  padding: 8px 16px; /* Tamanho reduzido */
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Efeito suave */
+  text-transform: uppercase;
+  font-weight: bold;
+  height: 40px;
+}
+
+#imprimirBtn:hover,
+#exportarExcelBtn:hover {
+  background-color: #218838;
+  transform: scale(1.03); /* Efeito de hover suave */
+}
+
+/* Layout para campos de seleção do exercício */
+#exercicio-group {
+  display: none;
+}
+
+#exercicio-group select {
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  width: 100%;
+  height: 40px;
+}
+
+/* Transições e animações para interação suave */
+.relatorio-group select,
+.relatorio-group input,
+.relatorio-group textarea {
+  transition: all 0.3s ease;
+}
+
+/* modal de informaçoes */
+
+/* Modal geral */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+/* Fundo escuro transparente */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Conteúdo do modal */
+.modal-content.atualizado {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 500px;
+  position: relative;
+  z-index: 1000;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Botão fechar */
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #888;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #f00;
+}
+
+/* Inputs e labels */
+.modal-content label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Botão de salvar */
+.btn-salvar {
+  margin-top: 25px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.btn-salvar:hover {
+  background-color: #0056b3;
+}
+
+/* Animação de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

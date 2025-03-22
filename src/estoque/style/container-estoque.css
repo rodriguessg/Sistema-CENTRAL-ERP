@@ -355,14 +355,23 @@ table {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Remover bordas verticais e manter apenas horizontais */
 th,
 td {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #111827; /* ou white, se for fundo escuro */
   padding: 10px;
   text-align: center;
-  border: 1px solid #ddd;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: 1px solid #ddd; /* linha horizontal */
   font-size: 1rem;
 }
 
+/* Cabeçalho */
 th {
   background: linear-gradient(180deg, #2d3e50, #1a242f);
   color: white;
@@ -371,6 +380,7 @@ th {
   text-align: center;
 }
 
+/* Linhas alternadas */
 tr:nth-child(even) {
   background-color: #f9f9f9;
 }

@@ -178,10 +178,10 @@ try {
         <nav id="sidebar" class="active">
             <!-- Notificações -->
             <li class="nav-item">
-    <a class="nav-link" href="#" id="notificacaoLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-bell"></i>
-        <span class="badge badge-danger" id="notificationCount"><?= $unreadCount ?></span> <!-- Número de notificações -->
-    </a>
+            <a class="nav-link" href="#" id="notificacaoLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-bell"></i>
+               <span class="badge badge-danger" id="notificationCount"><?= $unreadCount ?></span> <!-- Número de notificações -->
+      </a>
 
     <!-- Dropdown para exibir as notificações -->
     <div class="dropdown-menu" aria-labelledby="notificacaoLink" id="notificationList" style="min-width: 600px; max-height: 300px; overflow-y: auto;">

@@ -30,17 +30,17 @@ $(document).ready(function () {
   // Se o menu estiver minimizado, esconder o texto
   $("#sidebar.minimized .components li a .menu-text").css("display", "none");
 
-  // Garantir que o ícone da foto do perfil e os ícones do menu se ajustem ao passar o mouse
-  $("#sidebar").hover(
-    function () {
-      if ($("#sidebar").hasClass("minimized")) {
-        $(".profile-section img").css({ width: "40px", height: "40px" });
-      }
-    },
-    function () {
-      if ($("#sidebar").hasClass("minimized")) {
-        $(".profile-section img").css({ width: "100px", height: "100px" });
-      }
-    }
-  );
-});
+//   // Garantir que o ícone da foto do perfil e os ícones do menu se ajustem ao passar o mouse
+//   $("#sidebar").hover(
+//     function () {
+//       if ($("#sidebar").hasClass("minimized")) {
+//         $(".profile-section img").css({ width: "40px", height: "40px" });
+//       }
+//     },
+//     function () {
+//       if ($("#sidebar").hasClass("minimized")) {
+//         $(".profile-section img").css({ width: "100px", height: "100px" });
+//       }
+//     }
+//   );
+// });

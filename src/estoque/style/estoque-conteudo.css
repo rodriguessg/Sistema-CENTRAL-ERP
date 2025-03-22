@@ -626,17 +626,6 @@ tr:hover {
   transform: scale(1.03); /* Efeito de hover suave */
 }
 
-/* Estilo para a área de resultado do relatório */
-#resultadoRelatorio {
-  margin-top: 30px;
-  padding: 30px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-height: 400px;
-  overflow-y: auto;
-}
-
 /* Tabela do relatório */
 #resultadoRelatorio table {
   width: 100%;
@@ -1346,7 +1335,6 @@ tr:hover {
 /* Estilo para a área de resultado do relatório */
 #resultadoRelatorio {
   margin-top: 30px;
-  padding: 30px;
   background-color: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -1431,34 +1419,11 @@ tr:hover {
 }
 
 /* modal de informaçoes */
-
-/* Modal geral */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 998;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* Fundo escuro transparente */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 998;
-}
-
 /* Conteúdo do modal (CENTRALIZADO e MENOR) */
 .modal-content.atualizado {
   background: #ffffff;
   border-radius: 12px;
-  padding: 30px 25px;
+  padding: 20px 20px;
   width: 100%;
   max-width: 420px;
   max-height: 85vh;
@@ -1469,7 +1434,7 @@ tr:hover {
   transform: translate(-50%, -50%);
   z-index: 999;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.4s ease;
+  animation: slideFromTop 0.4s ease; /* ou a que preferir */
 }
 
 /* Botão fechar */
@@ -1497,8 +1462,7 @@ tr:hover {
 
 .modal-content input {
   width: 100%;
-  padding: 10px;
-  margin-top: 5px;
+  padding: 5px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
@@ -1531,14 +1495,107 @@ tr:hover {
   transform: scale(1.02);
 }
 
-/* Animação de entrada */
-@keyframes fadeIn {
+/* detalhes modal */
+
+/* 🔲 Fundo escuro transparente atrás do modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 998;
+}
+
+/* 🧩 Título com ícone */
+.modal-content.atualizado h2,
+#modal-informacoes h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+#modal-informacoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: solid 1px #777;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* ❌ Botão de fechar (X) */
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+  color: #ff4d4d;
+}
+
+/* 🧾 Estilo antigo (parágrafos soltos) */
+#modal-informacoes p {
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  border-bottom: solid 1px;
+}
+
+/* 🟦 Ícones nos parágrafos (modo antigo) */
+#modal-informacoes i {
+  color: #777;
+  min-width: 18px;
+}
+
+/* 🖋️ Negrito */
+#modal-informacoes strong {
+  font-weight: bold;
+  color: #000;
+}
+
+/* ✅ Nova versão: estrutura com separadores */
+.detalhes-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+/* 🎯 Ícones modernos */
+.detalhes-item i {
+  color: #007bff;
+  font-size: 15px;
+  min-width: 18px;
+  margin-top: 2px;
+}
+
+@keyframes slideFromTop {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: translate(-50%, -50%) scale(0.85);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translate(-50%, -50%) scale(1);
   }
 }

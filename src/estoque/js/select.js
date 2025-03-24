@@ -6,31 +6,34 @@ document.getElementById('material-nome').addEventListener('change', function() {
     document.getElementById('material-classificacao').value = '';
     document.getElementById('material-natureza').value = '';
     document.getElementById('material-localizacao').value = '';
+    document.getElementById('material-preco-medio').value = ''; // Limpa o campo de preço médio
     document.getElementById('mensagem').innerText = ''; // Limpa a mensagem de erro
 
     // Verifica se o nome do material foi selecionado
     if (nomeMaterialId) {
-        // Faz a requisição para buscar os dados do material
-        fetch('buscar_dados_produto.php?id=' + nomeMaterialId)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Preenche os campos automaticamente com os dados recebidos
-                    document.getElementById('material-codigo').value = data.codigo || '';
-                    document.getElementById('material-classificacao').value = data.classificacao || '';
-                    document.getElementById('material-natureza').value = data.natureza || '';
-                    document.getElementById('material-localizacao').value = data.localizacao || '';
-                    // Limpa a mensagem de erro quando o produto é encontrado
-                    document.getElementById('mensagem').innerText = '';
-                } else {
-                    // Caso o produto não seja encontrado, exibe a mensagem de erro
-                    document.getElementById('mensagem').innerText = 'Material não encontrado.';
-                }
-            })
-            .catch(err => {
-                console.error('Erro ao buscar os dados:', err);
-                document.getElementById('mensagem').innerText = 'Erro na busca. Tente novamente.';
-            });
+       fetch('buscar_dados_produto.php?id=' + nomeMaterialId)
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);  // Verifique o conteúdo da resposta JSON
+
+        if (data.success) {
+            setTimeout(() => {
+                document.getElementById('material-codigo').value = data.codigo || '';
+                document.getElementById('material-classificacao').value = data.classificacao || '';
+                document.getElementById('material-natureza').value = data.natureza || '';
+                document.getElementById('material-localizacao').value = data.localizacao || '';
+                document.getElementById('material-preco-medio').value = data.preco_medio || ''; // Preenche o preço médio
+            }, 300); // Delay de 100ms
+            document.getElementById('mensagem').innerText = ''; // Limpa a mensagem de erro
+        } else {
+            document.getElementById('mensagem').innerText = 'Material não encontrado.';
+        }
+    })
+    .catch(err => {
+        console.error('Erro ao buscar os dados:', err);
+        document.getElementById('mensagem').innerText = 'Erro na busca. Tente novamente.';
+    });
+
     } else {
         // Caso nenhum material seja selecionado, limpa os campos
         document.getElementById('mensagem').innerText = ''; // Limpa a mensagem de erro

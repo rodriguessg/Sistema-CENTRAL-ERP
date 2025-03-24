@@ -264,6 +264,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fas fa-cogs"></i> <!-- Ícone ao lado do campo -->
                 <input type="number" id="material-quantidade" name="material-quantidade" min="1" placeholder="Digite a quantidade a retirar" required>
             </div>
+            <!-- Preço Médio -->
+            <div class="input-group">
+                <label for="material-preco-medio">Preço Médio:</label>
+                <i class="fas fa-dollar-sign"></i> <!-- Ícone ao lado do campo -->
+                <input type="text" id="material-preco-medio" name="material-preco-medio" placeholder="preenchido automaticamente" readonly>
+            </div>
+
 
             <div class="button-group">
                 <button class="btn-submit" type="submit">Retirar</button>

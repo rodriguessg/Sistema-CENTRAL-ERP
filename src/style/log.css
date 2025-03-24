@@ -1,0 +1,70 @@
+  /* Adicionando um estilo para a tabela com barra de rolagem */
+  .log-table-container {
+    max-height: 500px;      /* Define o máximo de altura da tabela */
+    overflow-y: auto;       /* Ativa a rolagem vertical */
+    border: 1px solid #ccc; /* Adiciona uma borda à tabela */
+    padding: 10px;          /* Adiciona um pequeno preenchimento */
+}
+
+
+
+table {
+    width: 100%;            /* Faz com que a tabela ocupe toda a largura disponível */
+    border-collapse: collapse; /* Mescla as bordas da tabela */
+}
+
+th, td {
+    padding: 8px;           /* Adiciona espaçamento dentro das células */
+    text-align: left;       /* Alinha o texto à esquerda */
+    border-bottom: 1px solid #ddd; /* Borda inferior nas células */
+}
+
+th {
+    background-color: #f2f2f2; /* Cor de fundo das células de cabeçalho */
+}
+
+tr:hover {
+    background-color: #f5f5f5; /* Efeito de destaque ao passar o mouse sobre a linha */
+}
+
+.filter-container {
+    margin-bottom: 20px;
+}
+
+.btn-clear {
+    margin-left: 10px;
+    padding: 6px 12px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-clear:hover {
+    background-color: #d32f2f;
+}
+
+/* Estilizar formulários */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Inputs e campos de texto */
+input[type="text"],
+input[type="email"],
+textarea,
+select {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Textarea */
+textarea {
+    height: 100px;
+}

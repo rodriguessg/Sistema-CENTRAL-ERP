@@ -1,5 +1,37 @@
 <?php
     include 'header.php';
+
+
+    // Incluir a conexão com o banco de dados
+include 'banco.php'; 
+
+// Verificar se o formulário foi enviado via POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Recuperar o valor de custo do formulário
+    $custo = isset($_POST['custo']) ? $_POST['custo'] : 0;
+
+    // Verificar se o custo está em um formato correto (por exemplo, um número válido)
+    if (!is_numeric($custo)) {
+        echo "Custo inválido!";
+        exit();
+    }
+
+    // Formatando o custo para 4 casas decimais antes de salvar no banco de dados
+    $custo = number_format($custo, 4, '.', ''); // Formata para 4 casas decimais
+
+    // Consulta SQL para inserir o valor de custo na tabela produtos
+    $query = "INSERT INTO produtos (custo) VALUES ('$custo')";
+
+    // Executar a consulta
+    if ($con->query($query) === TRUE) {
+        echo "Produto inserido com sucesso!";
+    } else {
+        echo "Erro ao inserir produto: " . $con->error;
+    }
+
+    // Fechar a conexão com o banco de dados
+    $con->close();
+}
 ?>
 
 
@@ -157,6 +189,7 @@
                     <th>Código</th>
                     <th>Natureza</th>
                     <th>Quantidade</th>
+                    <th>Custo</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -166,55 +199,83 @@
     </div>
 </div>
 
-
 <div class="form-container" id="retirar">
     <h3>Retirar Material do Estoque</h3>
     <form id="retirar-form" action="retirar_materialestoque.php" method="POST">
-    <div class="form-group3">
-  <div class="input-group">
-    <label for="material-nome">Nome do Material:</label>
-    <i class="fas fa-cogs"></i> <!-- Ícone ao lado do campo -->
-    <input type="text" id="material-nome" name="material-nome" placeholder="Digite o nome do material" required>
-  </div>
+        <div class="form-group3">
+            <!-- Select para o Nome do Material -->
+            <div class="input-group">
+                <label for="material-nome">Nome do Material:</label>
+                <i class="fas fa-cogs"></i> <!-- Ícone ao lado do campo -->
+                <select id="material-nome" name="material-nome" required>
+                    <option value="">Selecione o material</option>
+                    <?php
+                    // Conectar ao banco de dados
+                    include 'banco.php'; 
 
-  <div class="input-group">
-    <label for="material-codigo">Código do Material:</label>
-    <i class="fas fa-barcode"></i> <!-- Ícone ao lado do campo -->
-    <input type="text" id="material-codigo" name="material-codigo" placeholder="preenchido automaticamente" readonly>
-  </div>
+                    // Consulta para buscar os produtos na tabela "produtos"
+                    $query_produtos = "SELECT id, produto FROM produtos";
+                    $resultado_produtos = $con->query($query_produtos);
 
-  <div class="input-group">
-    <label for="material-classificacao">Classificação:</label>
-    <i class="fas fa-tags"></i> <!-- Ícone ao lado do campo -->
-    <input type="text" id="material-classificacao" name="material-classificacao" placeholder="preenchido automaticamente" readonly>
-  </div>
+                    // Verifica se a consulta retornou resultados
+                    if ($resultado_produtos->num_rows > 0) {
+                        // Preenche o select com os produtos
+                        while ($produto = $resultado_produtos->fetch_assoc()) {
+                            echo '<option value="' . $produto['id'] . '">' . $produto['produto'] . '</option>';
+                        }
+                    } else {
+                        echo '<option value="">Nenhum material encontrado</option>';
+                    }
+                    ?>
+                </select>
+            </div>
 
-  <div class="input-group">
-    <label for="material-natureza">Natureza:</label>
-    <i class="fas fa-flask"></i> <!-- Ícone ao lado do campo -->
-    <input type="text" id="material-natureza" name="material-natureza" placeholder="preenchido automaticamente" readonly>
-  </div>
+            <!-- Código do Material -->
+            <div class="input-group">
+                <label for="material-codigo">Código do Material:</label>
+                <i class="fas fa-barcode"></i> <!-- Ícone ao lado do campo -->
+                <input type="text" id="material-codigo" name="material-codigo" placeholder="preenchido automaticamente" readonly>
+            </div>
 
-  <div class="input-group">
-    <label for="material-localizacao">Localização:</label>
-    <i class="fas fa-map-marker-alt"></i> <!-- Ícone ao lado do campo -->
-    <input type="text" id="material-localizacao" name="material-localizacao" placeholder="preenchido automaticamente" readonly>
-  </div>
+            <!-- Classificação -->
+            <div class="input-group">
+                <label for="material-classificacao">Classificação:</label>
+                <i class="fas fa-tags"></i> <!-- Ícone ao lado do campo -->
+                <input type="text" id="material-classificacao" name="material-classificacao" placeholder="preenchido automaticamente" readonly>
+            </div>
 
-  <div class="input-group">
-    <label for="material-quantidade">Quantidade:</label>
-    <i class="fas fa-cogs"></i> <!-- Ícone ao lado do campo -->
-    <input type="number" id="material-quantidade" name="material-quantidade" min="1" placeholder="Digite a quantidade a retirar" required>
-  </div>
+            <!-- Natureza -->
+            <div class="input-group">
+                <label for="material-natureza">Natureza:</label>
+                <i class="fas fa-flask"></i> <!-- Ícone ao lado do campo -->
+                <input type="text" id="material-natureza" name="material-natureza" placeholder="preenchido automaticamente" readonly>
+            </div>
 
-    <div  class="button-group" >
-    <button class="btn-submit" type="submit">Retirar</button>
-    </div>
-</div>
+            <!-- Localização -->
+            <div class="input-group">
+                <label for="material-localizacao">Localização:</label>
+                <i class="fas fa-map-marker-alt"></i> <!-- Ícone ao lado do campo -->
+                <input type="text" id="material-localizacao" name="material-localizacao" placeholder="preenchido automaticamente" readonly>
+            </div>
 
+            <!-- Quantidade -->
+            <div class="input-group">
+                <label for="material-quantidade">Quantidade:</label>
+                <i class="fas fa-cogs"></i> <!-- Ícone ao lado do campo -->
+                <input type="number" id="material-quantidade" name="material-quantidade" min="1" placeholder="Digite a quantidade a retirar" required>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-submit" type="submit">Retirar</button>
+            </div>
+        </div>
     </form>
     <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
+
+
+
+<script src="./src/estoque/js/select.js"></script>
 
 
 <!-- Modal para Detalhes -->
@@ -265,6 +326,8 @@
                     <th>Classificação</th>
                     <th>Local</th>
                     <th>Quantidade</th>
+                    <th>Custo</tr>
+                    <!-- <th>PreçoMédio </th> -->
                 </tr>
             </thead>
             <tbody id="tabelaestoque">
@@ -291,6 +354,8 @@
                                     <td>{$row['classificacao']}</td>
                                     <td>{$row['localizacao']}</td>
                                     <td>{$row['quantidade']}</td>
+                                    <td>{$row['custo']}</td>
+                                   
                                   </tr>";
                         }
                     } else {
@@ -487,7 +552,7 @@
 <script src="./src/estoque/js/paginacao-filtro.js"></script>
 
 <!-- PREENCHIMENTO AUTOMÁTICO RETIRADA DE PRODUTO -->
-<script src="./src/estoque/js/preencher-produto-retirada.js"></script>
+<!-- <script src="./src/estoque/js/preencher-produto-retirada.js"></script> -->
 <!--  JS PREENHE OS DETALHES DA LINHA SELECIONADA NO MODAL -->
 <script src="./src/estoque/js/modal-estoque.js"></script>
 

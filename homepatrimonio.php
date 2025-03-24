@@ -138,6 +138,14 @@ $categoriaSelecionada = "";
         gap: 12px;
         text-align: center;
     }
+    .tabs {
+        display: flex
+;
+    cursor: pointer;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+    
 
 
     #form-atualizar button {
@@ -193,16 +201,14 @@ $categoriaSelecionada = "";
 
     .form-container {
         display: none;
-        background-color: white;
-        border: 1px solid #ccc;
-        padding: 20px;
-        margin-bottom: 20%;
-        /* max-height:700px; */
-    
-        box-shadow: 0 4px 10px rgba(0.9, 0.5, 0.5, 0.9);
-        border-radius: 8px;
-        /* overflow-y: auto; /* Barra de rolagem vertical */
-        /*overflow-x: auto; Barra de rolagem horizontal, se necessário */
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-left: 20%;
+    margin-bottom: 20%;
+    /* max-height: 700px; */
+    box-shadow: 0 4px 10px rgba(0.9, 0.5, 0.5, 0.9);
+    border-radius: 8px;
     }
     .chart-container {
         position: relative;

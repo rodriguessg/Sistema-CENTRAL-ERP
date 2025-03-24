@@ -23,7 +23,7 @@ function getUnreadNotificationsCount($userId) {
     }
 
     // Preparar a consulta SQL para contar as notificações não lidas
-    $query = "SELECT COUNT(*) FROM notificacoes WHERE user_id = ? AND status = 'nao lida'";
+    $query = "SELECT COUNT(*) FROM notificacoes WHERE username = ? AND status = 'nao lida'";
     $stmt = $conn->prepare($query);  // Prepara a consulta
 
     // Verifica se a consulta foi preparada corretamente

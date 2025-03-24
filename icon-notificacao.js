@@ -1,7 +1,9 @@
+
+
 // Função para carregar as notificações ao clicar no ícone de sino
 document.getElementById('notificacaoLink').addEventListener('click', function() {
     // Faz a requisição para o PHP (getNotifications.php)
-    fetch('getNotificationsCount.php')
+    fetch('getNotificationCount.php')
         .then(response => response.json())
         .then(data => {
             // Atualiza o conteúdo do dropdown com as notificações
@@ -27,10 +29,10 @@ document.getElementById('notificacaoLink').addEventListener('click', function() 
             console.error('Erro ao carregar notificações:', error);
         });
 });
-function markAsRead(notificationId) {
-    fetch('marcar_notificacao_lida.php', {
+function markAsRead(notificationStatus) {
+    fetch('marca_notificacao_lida.php', {
         method: 'POST',
-        body: JSON.stringify({ id: notificationId }),
+        body: JSON.stringify({ status: notificationStatus }),  // Envia o status em vez do ID
         headers: {
             'Content-Type': 'application/json',
         }
@@ -38,12 +40,13 @@ function markAsRead(notificationId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Atualizar a interface (exemplo: remover a notificação da lista ou marcar de alguma forma)
             alert("Notificação marcada como lida!");
-            document.location.reload(); // Recarga a página para refletir as mudanças
+            document.location.reload();
         } else {
             alert("Erro ao marcar a notificação como lida.");
         }
     })
     .catch(error => console.error('Erro ao marcar notificação:', error));
 }
+
+

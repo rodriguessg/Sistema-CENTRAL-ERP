@@ -31,3 +31,31 @@ function getUnreadNotificationsCount($user = null) {
 }
 ?>
 
+<?php
+
+if (!function_exists('marcar_notificacao_lida')) {
+    function marcar_notificacao_lida($notificationId) {
+        // Exemplo de conexão com banco via PDO
+        $host = 'localhost';
+        $dbname = 'gm_sicbd';
+        $user = 'root';
+        $pass = '';
+
+        try {
+            $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            // Marca a notificação como lida
+            $sql = "UPDATE notificacoes SET situacao = 'lida' WHERE id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':id', $notificationId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Retorna true se atualizou alguma linha
+            return ($stmt->rowCount() > 0);
+        } catch (PDOException $e) {
+            error_log("Erro ao marcar notificação como lida: " . $e->getMessage());
+            return false;
+        }
+    }
+}

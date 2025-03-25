@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 18/03/2025 às 12:53
+-- Tempo de geração: 25/03/2025 às 15:38
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.0.28
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Banco de dados: `supat`
+-- Banco de dados: `gm_sicbd`
 --
 
 -- --------------------------------------------------------
@@ -81,6 +81,27 @@ CREATE TABLE `codigo_atual` (
 INSERT INTO `codigo_atual` (`id`, `codigo`) VALUES
 (1, 600428000012478),
 (2, 600428000012478);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `configuracoes`
+--
+
+CREATE TABLE `configuracoes` (
+  `id` int(11) NOT NULL,
+  `nome_sistema` varchar(255) NOT NULL,
+  `email_sistema` varchar(255) NOT NULL,
+  `logotipo_sistema` varchar(255) DEFAULT NULL,
+  `tema_sistema` varchar(20) DEFAULT 'claro',
+  `painelalmoxarifado` tinyint(1) DEFAULT 1,
+  `painelfinanceiro` tinyint(1) DEFAULT 1,
+  `painelrh` tinyint(1) DEFAULT 1,
+  `descricao_sistema` text DEFAULT NULL,
+  `configuracoes_adicionais` longtext DEFAULT NULL,
+  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp(),
+  `data_atualizacao` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -346,7 +367,71 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (512, 'CONTRATOS', 'Login falhou: Senha inválida', '2025-03-17 19:38:34'),
 (513, 'CONTRATOS', 'Login bem-sucedido', '2025-03-17 19:38:44'),
 (514, 'CLAUDIA', 'Login bem-sucedido', '2025-03-17 19:39:37'),
-(515, 'PAULO', 'Login bem-sucedido', '2025-03-17 19:41:12');
+(515, 'PAULO', 'Login bem-sucedido', '2025-03-17 19:41:12'),
+(516, 'MASTER', 'Login bem-sucedido', '2025-03-18 12:14:54'),
+(517, 'PAULO', 'Login bem-sucedido', '2025-03-18 12:18:42'),
+(518, 'MASTER', 'Login bem-sucedido', '2025-03-18 12:57:23'),
+(519, 'PAULO', 'Login falhou: Senha inválida', '2025-03-18 12:59:44'),
+(520, 'MASTER', 'Login bem-sucedido', '2025-03-18 12:59:52'),
+(521, 'CLAUDIA', 'Login bem-sucedido', '2025-03-18 13:35:31'),
+(522, 'CLAUDIA', 'Login bem-sucedido', '2025-03-18 13:44:26'),
+(523, 'PAULO', 'Login bem-sucedido', '2025-03-18 13:47:23'),
+(524, 'CLAUDIA', 'Login bem-sucedido', '2025-03-18 13:47:56'),
+(525, 'CLAUDIA', 'Login bem-sucedido', '2025-03-18 13:52:03'),
+(526, 'PAULO', 'Login bem-sucedido', '2025-03-18 13:54:39'),
+(527, 'PAULO', 'atualizou o produto', '2025-03-18 13:55:01'),
+(528, 'PAULO', 'atualizou o produto', '2025-03-18 14:00:35'),
+(529, 'MASTER', 'Login bem-sucedido', '2025-03-18 14:22:18'),
+(530, 'MASTER', 'Login bem-sucedido', '2025-03-18 14:33:42'),
+(531, 'MASTER', 'Login bem-sucedido', '2025-03-18 17:05:55'),
+(532, 'PAULO', 'Login bem-sucedido', '2025-03-18 17:12:51'),
+(533, 'PAULO', 'Login falhou: Setor incorreto', '2025-03-18 17:19:46'),
+(534, 'PAULO', 'Login bem-sucedido', '2025-03-18 17:19:55'),
+(535, 'MASTER', 'Login falhou: Senha inválida', '2025-03-18 17:33:21'),
+(536, 'MASTER', 'Login bem-sucedido', '2025-03-18 17:33:28'),
+(537, 'MASTER', 'Login bem-sucedido', '2025-03-18 17:33:31'),
+(538, 'MASTER', 'Login bem-sucedido', '2025-03-19 18:00:58'),
+(539, 'MASTER', 'atualizou o produto', '2025-03-19 18:13:16'),
+(540, 'MASTER', 'atualizou o produto', '2025-03-19 18:14:48'),
+(541, 'MASTER', 'atualizou o produto', '2025-03-19 18:47:49'),
+(542, 'PAULO', 'Login bem-sucedido', '2025-03-19 19:32:54'),
+(543, 'MASTER', 'Login bem-sucedido', '2025-03-20 18:19:26'),
+(544, 'MASTER', 'Login falhou: Senha inválida', '2025-03-20 18:19:49'),
+(545, 'MASTER', 'Login bem-sucedido', '2025-03-20 18:19:58'),
+(546, 'PAULO', 'Login bem-sucedido', '2025-03-20 18:22:53'),
+(547, 'PAULO', 'atualizou o produto', '2025-03-20 19:20:34'),
+(548, 'PAULO', 'atualizou o produto', '2025-03-20 19:21:08'),
+(549, 'PAULO', 'cadastrou  o produto no estoque', '2025-03-20 19:21:34'),
+(550, 'MASTER', 'Login bem-sucedido', '2025-03-20 19:26:12'),
+(551, 'MASTER', 'Login bem-sucedido', '2025-03-20 19:57:24'),
+(552, 'MASTER', 'Login bem-sucedido', '2025-03-22 10:33:44'),
+(553, 'MASTER', 'Login bem-sucedido', '2025-03-22 10:57:46'),
+(554, 'MASTER', 'Login bem-sucedido', '2025-03-22 10:58:21'),
+(555, 'MASTER', 'Login bem-sucedido', '2025-03-22 12:00:59'),
+(556, 'MASTER', 'cadastrou  o produto no estoque', '2025-03-22 21:17:34'),
+(557, 'MASTER', 'cadastrou  o produto no estoque', '2025-03-22 21:39:41'),
+(558, 'MASTER', 'cadastrou  o produto no estoque', '2025-03-22 22:00:17'),
+(559, 'MASTER', 'cadastrou  o produto no estoque', '2025-03-22 22:04:14'),
+(560, 'MASTER', 'cadastrou  o produto no estoque', '2025-03-22 22:10:31'),
+(561, 'PAULO', 'Login falhou: Senha inválida', '2025-03-24 13:09:02'),
+(562, 'PAULO', 'Login bem-sucedido', '2025-03-24 13:09:12'),
+(563, 'PAULO', 'Login bem-sucedido', '2025-03-24 13:16:29'),
+(564, 'CONTRATOS', 'Login falhou: Senha inválida', '2025-03-24 13:26:51'),
+(565, 'CONTRATOS', 'Login falhou: Senha inválida', '2025-03-24 13:26:57'),
+(566, 'CONTRATOS', 'Login falhou: Senha inválida', '2025-03-24 13:27:03'),
+(567, 'CONTRATOS', 'Login bem-sucedido', '2025-03-24 13:27:12'),
+(568, 'MASTER', 'Login bem-sucedido', '2025-03-24 13:30:11'),
+(569, 'CLAUDIA', 'Login bem-sucedido', '2025-03-24 13:30:49'),
+(570, 'MASTER', 'Login bem-sucedido', '2025-03-24 13:37:02'),
+(571, 'MASTER', 'Login bem-sucedido', '2025-03-24 17:35:53'),
+(572, 'PAULO', 'Login bem-sucedido', '2025-03-24 17:49:04'),
+(573, 'PAULO', 'Login bem-sucedido', '2025-03-24 18:12:13'),
+(574, 'MASTER', 'Login bem-sucedido', '2025-03-25 12:59:22'),
+(575, 'MASTER', 'Login bem-sucedido', '2025-03-25 13:47:00'),
+(576, 'MASTER', 'Login falhou: Senha inválida', '2025-03-25 13:50:27'),
+(577, 'MASTER', 'Login bem-sucedido', '2025-03-25 13:50:34'),
+(578, 'PAULO', 'Login bem-sucedido', '2025-03-25 13:53:51'),
+(579, 'MASTER', 'Login bem-sucedido', '2025-03-25 14:29:51');
 
 -- --------------------------------------------------------
 
@@ -359,7 +444,7 @@ CREATE TABLE `notificacoes` (
   `username` varchar(255) NOT NULL,
   `setor` varchar(255) NOT NULL,
   `mensagem` text NOT NULL,
-  `status` enum('nao lida','lida') DEFAULT 'nao lida',
+  `situacao` enum('nao lida','lida') DEFAULT 'nao lida',
   `data_criacao` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -367,106 +452,15 @@ CREATE TABLE `notificacoes` (
 -- Despejando dados para a tabela `notificacoes`
 --
 
-INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `status`, `data_criacao`) VALUES
-(1, 'PAULO', 'estoque', 'O produto \'PROJETOR\' foi retirado do estoque. Quantidade retirada: 5.', 'lida', '2025-03-17 17:47:33'),
-(2, 'PAULO', 'estoque', 'O produto \'PROJETOR\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-17 17:59:22'),
-(3, 'PAULO', 'estoque', 'O produto \'PROJETOR\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-17 18:01:05'),
-(4, 'PAULO', 'estoque', 'O produto \'PROJETOR\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-17 18:04:05'),
+INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `data_criacao`) VALUES
 (5, 'PAULO', 'estoque', 'O produto \'PROJETOR\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-17 18:04:45'),
-(7, 'MASTER', 'administrador', 'O produto \'PROJETOR\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'nao lida', '2025-03-17 18:21:24'),
-(8, 'MASTER', 'administrador', 'O produto \'PROJETOR\' chegou ao limite mínimo de 5 unidades.', 'nao lida', '2025-03-17 18:22:48'),
-(9, 'MASTER', 'administrador', 'O produto \'PROJETOR\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'nao lida', '2025-03-17 18:28:10'),
-(10, 'MASTER', 'administrador', 'O produto \'PROJETOR\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'nao lida', '2025-03-17 18:28:29'),
-(11, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:43:53'),
-(12, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:43:53'),
-(13, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:43:53'),
-(14, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:05'),
-(15, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:05'),
-(16, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:05'),
-(17, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:32'),
+(9, 'MASTER', 'administrador', 'O produto \'PROJETOR\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-17 18:28:10'),
 (18, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:32'),
-(19, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:32'),
-(20, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:33'),
-(21, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:33'),
-(22, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:33'),
-(23, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:33'),
-(24, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:33'),
-(25, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:33'),
-(26, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:48'),
-(27, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:48'),
-(28, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:48'),
-(29, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:45:37'),
-(30, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:45:37'),
-(31, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:45:37'),
-(32, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:25'),
-(33, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:25'),
-(34, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:25'),
-(35, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:26'),
-(36, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:26'),
-(37, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:26'),
-(38, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:34'),
-(39, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:34'),
-(40, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:34'),
-(41, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:38'),
-(42, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:38'),
-(43, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:38'),
-(44, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(45, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(46, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(47, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(48, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(49, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(50, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(51, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(52, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(53, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(54, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(55, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:39'),
-(56, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:57'),
-(57, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:57'),
-(58, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:46:57'),
-(59, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:47:00'),
-(60, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:47:00'),
-(61, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:47:00'),
-(62, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:40:53'),
-(63, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:40:53'),
-(64, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:40:53'),
-(65, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:41:16'),
-(66, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:41:16'),
-(67, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:41:16'),
-(68, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:42:53'),
-(69, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:42:53'),
-(70, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:42:53'),
-(71, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:44:13'),
-(72, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:44:13'),
-(73, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:44:13'),
-(74, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:39'),
-(75, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:39'),
-(76, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:39'),
-(77, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:39'),
-(78, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:39'),
-(79, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:39'),
-(80, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:40'),
-(81, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:40'),
-(82, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:40'),
-(83, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:40'),
-(84, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:40'),
-(85, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:40'),
-(86, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:40'),
-(87, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:40'),
-(88, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:40'),
-(89, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:41'),
-(90, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:41'),
-(91, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:41'),
-(92, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:47'),
-(93, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:48'),
-(94, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:48'),
-(95, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:50'),
-(96, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:50'),
-(97, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 19:46:51'),
-(98, 'PAULO', 'estoque', 'O produto \'PAPEL A4w\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-18 11:17:12'),
-(99, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-18 11:17:12'),
-(100, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-18 11:17:12');
+(102, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-18 12:18:45'),
+(103, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-18 12:18:45'),
+(242, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 14:21:06'),
+(243, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-25 14:25:14'),
+(244, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-25 14:29:14');
 
 -- --------------------------------------------------------
 
@@ -481,6 +475,19 @@ CREATE TABLE `pagamentos` (
   `valor` decimal(10,2) NOT NULL,
   `data_pagamento` date NOT NULL,
   `data_lancamento` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `painel_config`
+--
+
+CREATE TABLE `painel_config` (
+  `id` int(11) NOT NULL,
+  `painelalmoxarifado` tinyint(1) DEFAULT 1,
+  `painelfinanceiro` tinyint(1) DEFAULT 1,
+  `painelrh` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -569,7 +576,7 @@ CREATE TABLE `produtos` (
   `codigo` varchar(50) DEFAULT NULL,
   `unidade` varchar(50) DEFAULT NULL,
   `localizacao` varchar(100) DEFAULT NULL,
-  `custo` double(10,2) DEFAULT NULL,
+  `custo` decimal(10,5) DEFAULT NULL,
   `quantidade` int(11) DEFAULT NULL,
   `nf` varchar(50) DEFAULT NULL,
   `preco_medio` decimal(10,2) DEFAULT NULL,
@@ -582,10 +589,16 @@ CREATE TABLE `produtos` (
 --
 
 INSERT INTO `produtos` (`id`, `produto`, `classificacao`, `natureza`, `contabil`, `codigo`, `unidade`, `localizacao`, `custo`, `quantidade`, `nf`, `preco_medio`, `tipo_operacao`, `data_cadastro`) VALUES
-(69, 'PAPEL A4w', 'TESTE', 'TESTE', '20.2200', '24716081', 'UM', 'xm2', 12.00, 2, '', 6.00, 'cadastrado', '2023-01-10 15:12:03'),
-(70, 'SACO LIXO 10L212', 'TESTE', '1', '2', '24716081', 'UM', 'xm2', 21.00, 2, '', 10.50, 'cadastrado', '2024-01-10 15:13:45'),
-(71, 'SACO LIXO 10LD', 'TESTE', 'W2', '20.2200', '22', '2', 'xm2', 2.00, 2, '', 1.00, 'cadastrado', '2025-01-31 14:54:04'),
-(75, 'PROJETOR', 'TESTE', 'TESTE', '20.2200', '24452005', '123', 'xm1', 2.00, 5, '', 0.01, 'retirado', '2025-03-17 15:11:43');
+(69, 'PAPEL A4w', 'TESTE', 'TESTE', '20.2200', '24716081', 'UM', 'xm2', 12.00000, 5, '', 6.00, 'retirado', '2023-01-10 15:12:03'),
+(70, 'SACO LIXO 10L212', 'TESTE', '1', '2', '24716081', 'UM', 'xm2', 21.00000, 10, '', 10.50, 'retirado', '2024-01-10 15:13:45'),
+(71, 'SACO LIXO 10LD', 'TESTE', 'W2', '20.2200', '22', '2', 'xm2', 2.00000, 2, '', 1.00, 'cadastrado', '2025-01-31 14:54:04'),
+(75, 'PROJETOR', 'TESTE', 'TESTE', '20.2200', '24452005', '123', 'xm1', 2.00000, 12, '', 0.01, 'retirado', '2025-03-17 15:11:43'),
+(76, 'CANETA AZUL', 'ESCRITÓRIO', 'escritório', '2', '3', '2', 'xm2', 2.00000, 34, '3', 0.06, 'cadastrado', '2025-03-20 16:21:34'),
+(77, 'MONITOR 24 POLEGADAS', 'INFORMÁTICA', 'ESCRITÓRIO', '2025.20', '500', 'UM', 'xm1', 32.80000, 138, '1', 237.67, 'cadastrado', '2025-03-22 18:17:34'),
+(78, 'PASTA', 'ESCRITÓRIO', 'ESCRITÓRIO', '1', '390', '32', 'xm2', 4.43000, 10, '3', 492.67, 'cadastrado', '2025-03-22 18:39:41'),
+(79, 'teste de custo', '3', '3', '3', '3', '3', 'xm1', 4.43000, 9, '1', 492.67, 'cadastrado', '2025-03-22 19:00:17'),
+(80, 'SACO LIXO 10L90', 'ESCRITÓRIO', 'TESTE123', '2', '1', 'um', 'xm2', 4.43400, 23, '1', 192.78, 'cadastrado', '2025-03-22 19:04:14'),
+(81, 'PAPEL A3', 'TESTE', '23', '1', '23q', 'um', 'xm2', 89340.00000, 198, '1', 451.21, 'cadastrado', '2025-03-22 19:10:31');
 
 -- --------------------------------------------------------
 
@@ -687,63 +700,7 @@ INSERT INTO `usuario` (`id`, `username`, `senha`, `matricula`, `email`, `setor`,
 (6, 'GABRIEL', '$2y$10$DEFqa14RkeKQvCzPfLOsQuHtbpD3TOFXJV/sEFJOaM2qhMhZaNoO2', '99000889', 'grodrigues@central.rj.gov.br', 'administrador', 'Analista de Suporte de Sistemas', 'ativo', 'perfil-user-673f82c52395e.jpg', 1, NULL),
 (9, 'Rita', '$2y$10$b1rZmXkpaeueSD.fC1jtt.aRWzP9zSiwKcA8mrblToKKmcWkZGuyS', '990002025', 'rita@central.rj.gov.br', 'contratos', 'ASSESSORA', 'ativo', 'default.png', 1, NULL),
 (10, 'CONTRATOS', '$2y$10$QG5qwt6JfD48s1.YqqS.M.7SUz/p5hBt4SiKnABpKiMN1cGLctEiW', '00', 'asscon@central.rj.gov.br', 'contratos', 'contratos', 'ativo', 'default.png', 1, '2025-03-25 11:43:45'),
-(11, 'MARCO', '$2y$10$V/PS4I1wx9viy9zkpuUMKO7B4AUC/PIRBI.ZZI6LYSvbSBDlQhAIi', '919', 'GERGEP@CENTRAL.RJ.GOV.BR', '', 'SUPERINTENDENTE', 'ativo', 'default.png', 1, NULL);
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `usuarios`
---
-
-CREATE TABLE `usuarios` (
-  `id` int(11) NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `senha` varchar(255) NOT NULL,
-  `matricula` varchar(50) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `cargo` varchar(50) NOT NULL,
-  `dados_status` varchar(50) DEFAULT 'ativo',
-  `senha_provisoria` tinyint(1) DEFAULT 1,
-  `setor` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Despejando dados para a tabela `usuarios`
---
-
-INSERT INTO `usuarios` (`id`, `username`, `senha`, `matricula`, `email`, `cargo`, `dados_status`, `senha_provisoria`, `setor`) VALUES
-(1, 'master', '$2y$10$BmLl2i5/Qi32kugMwXByNeynLE8wE6.LCret1eevK0.h9LEy7IA0i', '', '', '', 'ativo', 1, 'administrativo'),
-(44, 'maik', '$2y$10$IOVyl0SfDjmZVZgSOOpMoetcMe6MzF3e43X7bzYj.0Nootjur5zLW', '', '', '', 'ativo', 1, 'Estoque'),
-(46, 'gabriel', '$2y$10$y/dR02ny07xkxXbmDMygG.o4qPrlwebk9pYd2AjtpSup5DHPaR87a', '99000889', '', '', 'ativo', 0, 'Patrimônio'),
-(47, 'Alex', '$2y$10$YbJ45ee.j9NY0Cbfno/CQu0wuDGfvW6VkIhSo3KC6CiSTCHeQrN7G', '9900057', 'gfg@central.rj.gov.br', 'teste', 'ativo', 1, 'Patrimônio'),
-(48, 'novo', '$2y$10$uoWtOtMLJP4UOm6Td.oNsu.tSIF5uFxE7rLiCEAkGxS5yIF9RzXOy', '120', '10@gmail.com', 'teste', 'ativo', 1, 'Financeiro'),
-(49, 'Ivan Santos rodrigues', '$2y$10$jfOqMYFcsEZ.uERUD7zIsuiVr6cchbOx51deyAtVO4DXllkhbyrCm', '99000889', 'gabrielsouza.workti@gmail.com', 'sdf', 'ativo', 1, 'Financeiro'),
-(51, 'patrimonio_user', '$2y$10$kamCnI2sdqyNV.AcoZfx3OjtGbmf6nqZZdMvirut3EJ3/64GOTipu', '99000889', 'gfg@central.rj.gov.br', 'dsf', 'ativo', 1, 'Patrimônio');
-
---
--- Acionadores `usuarios`
---
-DELIMITER $$
-CREATE TRIGGER `after_user_insert` AFTER INSERT ON `usuarios` FOR EACH ROW BEGIN
-    -- Insere uma entrada na tabela permissoes com o novo usuario_id
-    INSERT INTO permissoes (usuario_id, setor_id) 
-    VALUES (NEW.id, NULL); -- Use NULL para o setor_id se não houver valor padrão
-END
-$$
-DELIMITER ;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `usuario_setores`
---
-
-CREATE TABLE `usuario_setores` (
-  `id` int(11) NOT NULL,
-  `usuario_id` int(11) NOT NULL,
-  `setor_id` int(11) NOT NULL,
-  `data_atribuicao` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+(11, 'MARCO', '$2y$10$V/PS4I1wx9viy9zkpuUMKO7B4AUC/PIRBI.ZZI6LYSvbSBDlQhAIi', '919', 'GERGEP@CENTRAL.RJ.GOV.BR', 'financeiro', 'SUPERINTENDENTE', 'ativo', 'default.png', 1, NULL);
 
 --
 -- Índices para tabelas despejadas
@@ -759,6 +716,12 @@ ALTER TABLE `agendamentos`
 -- Índices de tabela `codigo_atual`
 --
 ALTER TABLE `codigo_atual`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `configuracoes`
+--
+ALTER TABLE `configuracoes`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -798,6 +761,12 @@ ALTER TABLE `notificacoes`
 ALTER TABLE `pagamentos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_contrato` (`id_contrato`);
+
+--
+-- Índices de tabela `painel_config`
+--
+ALTER TABLE `painel_config`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices de tabela `patrimonio`
@@ -848,21 +817,6 @@ ALTER TABLE `usuario`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Índices de tabela `usuarios`
---
-ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `username` (`username`);
-
---
--- Índices de tabela `usuario_setores`
---
-ALTER TABLE `usuario_setores`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_usuario` (`usuario_id`),
-  ADD KEY `fk_setor` (`setor_id`);
-
---
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
@@ -877,6 +831,12 @@ ALTER TABLE `agendamentos`
 --
 ALTER TABLE `codigo_atual`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de tabela `configuracoes`
+--
+ALTER TABLE `configuracoes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `data_criacao`
@@ -900,18 +860,24 @@ ALTER TABLE `gestao_contratos`
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=516;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=580;
 
 --
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=245;
 
 --
 -- AUTO_INCREMENT de tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `painel_config`
+--
+ALTER TABLE `painel_config`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -930,7 +896,7 @@ ALTER TABLE `permissoes`
 -- AUTO_INCREMENT de tabela `produtos`
 --
 ALTER TABLE `produtos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
 
 --
 -- AUTO_INCREMENT de tabela `setores`
@@ -957,18 +923,6 @@ ALTER TABLE `usuario`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT de tabela `usuarios`
---
-ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
-
---
--- AUTO_INCREMENT de tabela `usuario_setores`
---
-ALTER TABLE `usuario_setores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- Restrições para tabelas despejadas
 --
 
@@ -984,13 +938,6 @@ ALTER TABLE `pagamentos`
 ALTER TABLE `permissoes`
   ADD CONSTRAINT `permissoes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `permissoes_ibfk_2` FOREIGN KEY (`setor`) REFERENCES `setores` (`id`) ON DELETE CASCADE;
-
---
--- Restrições para tabelas `usuario_setores`
---
-ALTER TABLE `usuario_setores`
-  ADD CONSTRAINT `fk_setor` FOREIGN KEY (`setor_id`) REFERENCES `setores` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

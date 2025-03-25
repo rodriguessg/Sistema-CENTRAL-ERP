@@ -59,3 +59,4 @@ if (!function_exists('marcar_notificacao_lida')) {
         }
     }
 }
+?>

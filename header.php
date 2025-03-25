@@ -191,9 +191,11 @@ try {
         if ($unreadCount > 0) {
             foreach ($notifications as $notification) {
         ?>
-                <a class="dropdown-item" href="#" id="notification-<?= $notification['id'] ?>" onclick="markAsRead(<?= $notification['id'] ?>)">
-                    <?= htmlspecialchars($notification['mensagem']) ?>
-                </a>
+               <a class="dropdown-item" href="marcar_notificacao_lida.php?id=<?= $notification['id'] ?>">
+    <?= htmlspecialchars($notification['mensagem']) ?>
+</a>
+
+
         <?php 
             }
         } else { 

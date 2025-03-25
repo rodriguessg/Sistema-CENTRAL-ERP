@@ -334,7 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <th>Local</th>
                     <th>Quantidade</th>
                     <th>Custo</tr>
-                    <!-- <th>PreçoMédio </th> -->
+                    <th>PreçoMédio </th>
                 </tr>
             </thead>
             <tbody id="tabelaestoque">
@@ -362,6 +362,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <td>{$row['localizacao']}</td>
                                     <td>{$row['quantidade']}</td>
                                     <td>{$row['custo']}</td>
+                                     <td>{$row['preco_medio']}</td>
                                    
                                   </tr>";
                         }

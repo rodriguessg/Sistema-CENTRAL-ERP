@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mensagem = "O produto '$nome' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.";
 
             // Inserir a notificação no banco de dados
-            $notificacaoQuery = "INSERT INTO notificacoes (username, setor, mensagem, status) 
+            $notificacaoQuery = "INSERT INTO notificacoes (username, setor, mensagem, situacao) 
                                  VALUES (?, ?, ?, 'nao lida')";
             $notificacaoStmt = $con->prepare($notificacaoQuery);
             $notificacaoStmt->bind_param('sss', $username, $setor, $mensagem);

@@ -40,7 +40,7 @@ try {
             $mensagem = "O produto '{$produto['produto']}' está com {$produto['quantidade']} unidades. Estoque abaixo de 5 unidades.";
 
             // Inserir a notificação no banco de dados
-            $notificacaoQuery = "INSERT INTO notificacoes (username, setor, mensagem, status) 
+            $notificacaoQuery = "INSERT INTO notificacoes (username, setor, mensagem, situacao) 
                                  VALUES (?, ?, ?, 'nao lida')";
             $notificacaoStmt = $pdo->prepare($notificacaoQuery);
             $notificacaoStmt->bindParam(1, $username);

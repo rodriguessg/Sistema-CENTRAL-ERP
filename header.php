@@ -142,7 +142,7 @@ try {
         // Verifica se o setor do usuário é "administrador" ou "estoque"
         if ($setor == 'administrador' || $setor == 'estoque') {
             // Consulta para pegar as notificações não lidas
-            $query = "SELECT id, mensagem FROM notificacoes WHERE status = 'nao lida' ORDER BY data_criacao DESC";
+            $query = "SELECT id, mensagem FROM notificacoes WHERE situacao = 'nao lida' ORDER BY data_criacao DESC";
             $stmt = $pdo->query($query);
             $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -178,10 +178,10 @@ try {
         <nav id="sidebar" class="active">
             <!-- Notificações -->
             <li class="nav-item">
-            <a class="nav-link" href="#" id="notificacaoLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fa fa-bell"></i>
-               <span class="badge badge-danger" id="notificationCount"><?= $unreadCount ?></span> <!-- Número de notificações -->
-      </a>
+    <a class="nav-link" href="#" id="notificacaoLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa fa-bell"></i>
+        <span class="badge badge-danger" id="notificationCount"><?= $unreadCount ?></span> <!-- Número de notificações -->
+    </a>
 
     <!-- Dropdown para exibir as notificações -->
     <div class="dropdown-menu" aria-labelledby="notificacaoLink" id="notificationList" style="min-width: 600px; max-height: 300px; overflow-y: auto;">
@@ -191,7 +191,7 @@ try {
         if ($unreadCount > 0) {
             foreach ($notifications as $notification) {
         ?>
-                <a class="dropdown-item" href="#" onclick="markAsRead(<?= $notification['id'] ?>)">
+                <a class="dropdown-item" href="#" id="notification-<?= $notification['id'] ?>" onclick="markAsRead(<?= $notification['id'] ?>)">
                     <?= htmlspecialchars($notification['mensagem']) ?>
                 </a>
         <?php 
@@ -202,6 +202,8 @@ try {
         <?php } ?>
     </div>
 </li>
+
+
 
 <!-- Modal de notificações -->
 <div class="modal" id="notificationModal">
@@ -286,7 +288,7 @@ try {
     <!-- JS PREENCHIMENTO INFORMAÇÕES PERFIL -->
     <script src="./src/header/js/perfil.js"></script>
     <!-- JS ATUALIZACAO ICONE INFORMAÇÕES -->
-    <script src="./src/header/js/icon-notificacao.js"></script>
+   <script src="./src/header/js/icon-notificacao.js"> </script> 
     
 <!-- <?php
 include 'footer.php';

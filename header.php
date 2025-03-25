@@ -194,6 +194,9 @@ try {
                <a class="dropdown-item" href="marcar_notificacao_lida.php?id=<?= $notification['id'] ?>">
     <?= htmlspecialchars($notification['mensagem']) ?>
 </a>
+<!-- <a class="dropdown-item" href="marcar_notificacao_lida.php?id=<?= $notification['id'] ?>">
+    <?= htmlspecialchars($notification['mensagem']) ?>
+</a> -->
 
 
         <?php 

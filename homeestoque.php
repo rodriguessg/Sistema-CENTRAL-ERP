@@ -332,6 +332,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <th>Produto</th>
                     <th>Classificação</th>
                     <th>Local</th>
+                    <th> C.contabil</th>
                     <th>Quantidade</th>
                     <th>Custo</tr>
                     <th>PreçoMédio </th>
@@ -360,6 +361,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <td>{$row['produto']}</td>
                                     <td>{$row['classificacao']}</td>
                                     <td>{$row['localizacao']}</td>
+                                     <td>{$row['contabil']}</td>
                                     <td>{$row['quantidade']}</td>
                                     <td>{$row['custo']}</td>
                                      <td>{$row['preco_medio']}</td>

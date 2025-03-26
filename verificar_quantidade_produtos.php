@@ -40,7 +40,7 @@ try {
 
     // Verifica se já foi enviado um e-mail hoje
     if (empty($ultimaNotificacao['ultima_data']) || date('Y-m-d') != date('Y-m-d', strtotime($ultimaNotificacao['ultima_data']))) {
-        // Se não foi enviado hoje, proceda para enviar a notificação
+        // Se não foi enviado hoje, proceda para enviar a notificação e e-mail
 
         if ($stmtAbaixo5->rowCount() > 0) {
             // Para cada produto abaixo de 5 unidades, envia uma notificação e um e-mail
@@ -56,8 +56,8 @@ try {
                 $notificacaoStmt->bindParam(3, $mensagem);
                 $notificacaoStmt->execute();
 
-                // Enviar e-mail para os destinatários
-                $emailsDestinatarios = [
+                // E-mails para notificação (destinatários)
+                $emailDestinatarios = [
                     'grodrigues@central.rj.gov.br',
                     'alexandrerocha@central.rj.gov.br',
                     'impressora@central.rj.gov.br',
@@ -67,10 +67,10 @@ try {
                 $assunto = 'Alerta de Estoque Abaixo de 5 Unidades';
                 $corpoEmail = "Alerta: O produto '{$produto['produto']}' está com {$produto['quantidade']} unidades, abaixo do limite de 5.";
 
-                // Chamar a função enviarEmail para enviar os e-mails
-                include 'enviar_email.php'; // Incluindo o arquivo para enviar e-mails
-                foreach ($emailsDestinatarios as $emailDestinatario) {
-                    enviarEmail($assunto, $corpoEmail, $emailDestinatario);
+                // Chamar o arquivo enviar_email.php para enviar o e-mail
+                include 'enviar_email.php';
+                foreach ($emailDestinatarios as $emailDestinatario) {
+                    enviarEmail($assunto, $corpoEmail, $emailDestinatario); // Enviar para cada destinatário
                 }
             }
         }

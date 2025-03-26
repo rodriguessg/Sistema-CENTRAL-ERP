@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 25/03/2025 às 15:38
+-- Tempo de geração: 26/03/2025 às 17:51
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.0.28
 
@@ -431,7 +431,64 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (576, 'MASTER', 'Login falhou: Senha inválida', '2025-03-25 13:50:27'),
 (577, 'MASTER', 'Login bem-sucedido', '2025-03-25 13:50:34'),
 (578, 'PAULO', 'Login bem-sucedido', '2025-03-25 13:53:51'),
-(579, 'MASTER', 'Login bem-sucedido', '2025-03-25 14:29:51');
+(579, 'MASTER', 'Login bem-sucedido', '2025-03-25 14:29:51'),
+(580, 'MASTER', 'atualizou o produto', '2025-03-26 12:34:37'),
+(581, 'MASTER', 'cadastrou  o produto no estoque', '2025-03-26 12:35:33'),
+(582, 'PAULO', 'cadastrou  o produto no estoque', '2025-03-26 16:43:21');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `materiais`
+--
+
+CREATE TABLE `materiais` (
+  `codigo` varchar(20) NOT NULL,
+  `descricao` varchar(255) DEFAULT NULL,
+  `classificacao` varchar(255) DEFAULT NULL,
+  `natureza` varchar(255) DEFAULT NULL,
+  `contabil` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `materiais`
+--
+
+INSERT INTO `materiais` (`codigo`, `descricao`, `classificacao`, `natureza`, `contabil`) VALUES
+('42400050002', 'RESPIRADOR DESCARTAVEL TIPO CONCHA', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03'),
+('42400050015', 'MASCARA RESPIRATORIA TIPO SEMI-FACIAL', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03'),
+('42400062685', 'PROTETOR FACIAL VISOR 1mm INCOLOR ID 0020004', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03'),
+('43400110010', 'FILTRO AR COMPRESSOR', 'Material para manutenção e conservação de Bens móveis', '333903011', '2425.11'),
+('47100016581', 'TUBO NAO METALICO AGUA 40mm 3M SIGA 0040041', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10'),
+('47100040037', 'TUBO ESGOTO 100MM', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10'),
+('47100040108', 'TUBO NAO METALICO AGUA 20mm 3M ID 0061400', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10'),
+('47300010047', 'ABRAÇADEIRA', 'Material Eletrico e Eletrônico', '333903042', '5570.42'),
+('51330020022', 'BROCA DE VIDEA 6MM', 'Maquinas Ferramentas e Utensilios de Oficina', '344905220', '3273.20'),
+('53250066709', 'DISPOSITIVO FIXAÇÃO TIPO GRAMPO 7 MM SIGA 0040009', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10'),
+('53250090945', 'DISPOSITIVO FIXAÇÃO TIPO GRAMPO 4 MM SIGA 0040017', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10'),
+('53500009505', 'LIXA ACABAMENTO MADEIRA GRANA 120 SIGA', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10'),
+('53500020089', 'LIXA 100', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10'),
+('54400010022', 'ESCADA DOMESTICA ALUMINIO 06 DEGRAUS', 'Outros Equipamentos', '344905206', '3886.06'),
+('55100040061', 'DORMENTE DE MADEIRA 1,60 M', 'Matérias Primas', '333903021', '2424.10'),
+('55100040062', 'DORMENTE DE MADEIRA 2,00 M', 'Matérias Primas', '333903021', '2424.10'),
+('59300060010', 'INTERRUPTOR COM TOMADA PREDIAL 10A 250V ID 0124286', 'Material Eletrico e Eletrônico', '333903042', '5570.42'),
+('59300060012', 'INTERRUPTOR C/TOM PREDIAL 2 TECLAS 20A 250V ID 0124', 'Material Eletrico e Eletrônico', '333903042', '5570.42'),
+('59750002873', 'CANALETA LISA BRANCO', 'Mat. Eletr. Mat. P/ Conserv. e Manut. de Bens Imoveis; Sinaliz. e Demarc', '344903010', '2424.10'),
+('59750080061', 'CANALETA NÃO METALICA BRC FECHADA 40X16X200mm ID951', 'Material Eletrico e Eletrônico', '333903042', '5570.42'),
+('62300004522', 'SOQUETE ADAPTADOR ROSCA PARA LAMPADA E40 x E27', 'Material Eletrico e Eletrônico', '333903042', '5570.42'),
+('63500095901', 'CONE BARRIL SINALIZACAO ZEBRADO 75CM', 'Material para Sinalização Visual e Outros', '333903033', '2444.33'),
+('68500117125', 'BROCA MADEIRA HELICOIDAL 3mm 1/8\" SIGA 0040035', 'Material para Sinalização Visual e Outros', '333903033', '2444.33'),
+('75100003798', 'COLCHETE Nº 07', 'Artigos em Geral e Impressos para Expediente, Escritorio', '333903005', '3437.05'),
+('75100004164', 'LAPIS DE ESCRITORIO', 'Artigos em Geral e Impressos para Expediente, Escritorio', '333903005', '3437.05'),
+('75100010011', 'ALMOFADA VERMELHA Nº 04', 'Artigos em Geral e Impressos para Expediente, Escritorio', '333903005', '3437.05'),
+('75200060035', 'CANETA VERMELHA PONTA ARREDONDADA', 'Artigos em Geral e Impressos para Expediente, Escritorio', '333903005', '3437.05'),
+('75200060089', 'CANETA VERMELHA PONTA FINA', 'Artigos em Geral e Impressos para Expediente, Escritorio', '333903005', '3437.05'),
+('75400010019', 'IMPRESSO CAPA DE PROCESSO', 'Artigos em Geral e Impressos para Expediente, Escritorio', '333903005', '3437.05'),
+('79200006809', 'ESPONJA - LÃ DE AÇO', 'Artigos para Limpeza, Higiêne e Toalete', '333903002', '2422.02'),
+('84150060027', 'CAPACETE CINZA', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03'),
+('84150060028', 'CAPACETE ABA TOTAL', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03'),
+('84150078394', 'AVENTAL DE SEGURANÇA TIPO SOLDADOR EM RASPA ID 0010', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03'),
+('8465001632', 'CAPACETE DE SEGURANÇA VERDE', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03');
 
 -- --------------------------------------------------------
 
@@ -455,12 +512,30 @@ CREATE TABLE `notificacoes` (
 INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `data_criacao`) VALUES
 (5, 'PAULO', 'estoque', 'O produto \'PROJETOR\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-17 18:04:45'),
 (9, 'MASTER', 'administrador', 'O produto \'PROJETOR\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-17 18:28:10'),
-(18, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-17 18:44:32'),
-(102, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-18 12:18:45'),
-(103, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-18 12:18:45'),
+(18, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-17 18:44:32'),
+(102, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-18 12:18:45'),
+(103, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-18 12:18:45'),
 (242, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 14:21:06'),
-(243, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-25 14:25:14'),
-(244, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-25 14:29:14');
+(243, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 14:25:14'),
+(244, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 14:29:14'),
+(245, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 14:41:57'),
+(246, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:54:20'),
+(247, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:55:31'),
+(248, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:55:36'),
+(249, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:55:38'),
+(250, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:55:52'),
+(251, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:57:58'),
+(252, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:58:00'),
+(253, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:58:06'),
+(254, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:58:15'),
+(255, 'PAULO', 'estoque', 'O produto \'78\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:19:08'),
+(256, 'PAULO', 'estoque', 'O produto \'70\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-25 17:28:15'),
+(257, 'PAULO', 'estoque', 'O produto \'70\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-25 17:28:30'),
+(258, 'PAULO', 'estoque', 'O produto \'70\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-25 17:29:53'),
+(259, 'PAULO', 'estoque', 'O produto \'78\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:30:11'),
+(260, 'PAULO', 'estoque', 'O produto \'78\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:33:13'),
+(261, 'PAULO', 'estoque', 'O produto \'75\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:45:44'),
+(262, 'PAULO', 'estoque', 'O produto \'75\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:46:15');
 
 -- --------------------------------------------------------
 
@@ -592,13 +667,14 @@ INSERT INTO `produtos` (`id`, `produto`, `classificacao`, `natureza`, `contabil`
 (69, 'PAPEL A4w', 'TESTE', 'TESTE', '20.2200', '24716081', 'UM', 'xm2', 12.00000, 5, '', 6.00, 'retirado', '2023-01-10 15:12:03'),
 (70, 'SACO LIXO 10L212', 'TESTE', '1', '2', '24716081', 'UM', 'xm2', 21.00000, 10, '', 10.50, 'retirado', '2024-01-10 15:13:45'),
 (71, 'SACO LIXO 10LD', 'TESTE', 'W2', '20.2200', '22', '2', 'xm2', 2.00000, 2, '', 1.00, 'cadastrado', '2025-01-31 14:54:04'),
-(75, 'PROJETOR', 'TESTE', 'TESTE', '20.2200', '24452005', '123', 'xm1', 2.00000, 12, '', 0.01, 'retirado', '2025-03-17 15:11:43'),
-(76, 'CANETA AZUL', 'ESCRITÓRIO', 'escritório', '2', '3', '2', 'xm2', 2.00000, 34, '3', 0.06, 'cadastrado', '2025-03-20 16:21:34'),
+(75, 'PROJETOR', 'TESTE', 'TESTE', '20.2200', '24452005', '123', 'xm1', 2.00000, 4, '', 0.01, 'retirado', '2025-03-17 15:11:43'),
+(76, 'CANETA AZUL', 'ESCRITÓRIO', 'escritório', '2', '3', '2', 'xm2', 2.00000, 28, '3', 0.06, 'retirado', '2025-03-20 16:21:34'),
 (77, 'MONITOR 24 POLEGADAS', 'INFORMÁTICA', 'ESCRITÓRIO', '2025.20', '500', 'UM', 'xm1', 32.80000, 138, '1', 237.67, 'cadastrado', '2025-03-22 18:17:34'),
-(78, 'PASTA', 'ESCRITÓRIO', 'ESCRITÓRIO', '1', '390', '32', 'xm2', 4.43000, 10, '3', 492.67, 'cadastrado', '2025-03-22 18:39:41'),
-(79, 'teste de custo', '3', '3', '3', '3', '3', 'xm1', 4.43000, 9, '1', 492.67, 'cadastrado', '2025-03-22 19:00:17'),
+(79, 'teste de custo', '3', '3', '3', '3', '3', 'xm1', 4.43000, 3, '1', 492.67, 'retirado', '2025-03-22 19:00:17'),
 (80, 'SACO LIXO 10L90', 'ESCRITÓRIO', 'TESTE123', '2', '1', 'um', 'xm2', 4.43400, 23, '1', 192.78, 'cadastrado', '2025-03-22 19:04:14'),
-(81, 'PAPEL A3', 'TESTE', '23', '1', '23q', 'um', 'xm2', 89340.00000, 198, '1', 451.21, 'cadastrado', '2025-03-22 19:10:31');
+(81, 'PAPEL A3', 'TESTE', '23', '1', '23q', 'um', 'xm2', 89340.00000, 198, '1', 451.21, 'cadastrado', '2025-03-22 19:10:31'),
+(82, 'PROJETOR54', 'SDFASDFAF', 'ADFSDF', 'ASDFASDF', 'ASDFASD', 'FASADF', 'xm1', 6.00000, 3, '234', 0.00, 'cadastrado', '2025-03-26 09:35:33'),
+(83, '42400050015', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', '42400050015', 'UM', 'xm1', 26.26200, 105, '3', 250.12, 'cadastrado', '2025-03-26 13:43:21');
 
 -- --------------------------------------------------------
 
@@ -750,6 +826,12 @@ ALTER TABLE `log_eventos`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Índices de tabela `materiais`
+--
+ALTER TABLE `materiais`
+  ADD PRIMARY KEY (`codigo`);
+
+--
 -- Índices de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
@@ -860,13 +942,13 @@ ALTER TABLE `gestao_contratos`
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=580;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=583;
 
 --
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=245;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=263;
 
 --
 -- AUTO_INCREMENT de tabela `pagamentos`
@@ -896,7 +978,7 @@ ALTER TABLE `permissoes`
 -- AUTO_INCREMENT de tabela `produtos`
 --
 ALTER TABLE `produtos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
 
 --
 -- AUTO_INCREMENT de tabela `setores`

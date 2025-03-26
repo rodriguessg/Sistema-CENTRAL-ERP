@@ -221,11 +221,14 @@ $conn->close();
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Produto</th>
+                    <th>Material</th>
                     <th>Classificação</th>
+                    <th>Natureza</th>
+                    <th>Descricao Detalhada</th>
+                    <th>Descricao Resumida</th>
                     <th>Local</th>
                     <th>Código</th>
-                    <th>Natureza</th>
+                   
                     <th>Quantidade</th>
                     <th>Custo</th>
                     <th>Ações</th>

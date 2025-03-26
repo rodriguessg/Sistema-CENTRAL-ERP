@@ -33,7 +33,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $con->close();
 }
 ?>
+<?php
+// Conexão com o banco de dados
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$dbname = 'gm_sicbd';
 
+$conn = new mysqli($host, $user, $password, $dbname);
+
+// Verificar conexão
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Buscar todos os produtos da tabela materiais
+$sql = "SELECT codigo, descricao, natureza, classificacao, contabil FROM materiais";
+$result = $conn->query($sql);
+
+// Gerar as opções do select com os dados 'data-*'
+$options = '';
+while ($row = $result->fetch_assoc()) {
+    $options .= "<option value='" . $row['codigo'] . "' 
+                    data-natureza='" . $row['natureza'] . "'
+                    data-classificacao='" . $row['classificacao'] . "'
+                    data-contabil='" . $row['contabil'] . "'>
+                    " . $row['descricao'] . "
+                </option>";
+}
+
+$conn->close();
+?>
 
 <!DOCTYPE html>
 <html lang="Pt-br">
@@ -56,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
-        <i class="fas fa-plus-circle"></i> Cadastrar Materiais
+        <i class="fas fa-plus-circle"></i> Lançamento de Materiais
     </div>
     <div class="tab" data-tab="consulta" onclick="showTab('consulta')">
         <i class="fas fa-search"></i> Consulta de produtos
@@ -79,14 +109,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 <div class="form-container" id="cadastrar" style="display:none;">
-    <h3>Cadastrar Produto</h3>
+    <h3>Lançamento de materiais</h3>
     <form id="form-cadastrar-produto" action="cadastrar_produto.php" method="POST" enctype="multipart/form-data">
         <div class="form-group">
-            <div class="input-group">
-                <label for="produto">Produto:</label>
-                <i class="fas fa-cogs"></i>
-                <input type="text" id="produto" name="produto" placeholder="Digite o nome do produto" required>
-            </div>
+        <div class="input-group">
+    <label for="produto">Produto:</label>
+    <i class="fas fa-cogs"></i> <!-- Ícone de engrenagem -->
+    <!-- Gerando o select com as opções -->
+<select id="produto" name="produto" required onchange="preencherCampos()">
+    <option value="" disabled selected>Selecione um produto</option>
+    <?php echo $options; ?>
+</select>
+</div>
+
 
             <div class="input-group">
                 <label for="classificacao">Classificação:</label>
@@ -164,7 +199,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- SCRIPT FINAL - DEVE FICAR DEPOIS DOS CAMPOS -->
 
-
+<script>
+  
+</script>
 
 
 
@@ -561,6 +598,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="./src/estoque/js/paginacao-filtro.js"></script>
 
 <!-- PREENCHIMENTO AUTOMÁTICO RETIRADA DE PRODUTO -->
+ <script src="./src/estoque/js/preencher-produto-retiradacodigoantigo.js"></script>
 <!-- <script src="./src/estoque/js/preencher-produto-retirada.js"></script> -->
 <!--  JS PREENHE OS DETALHES DA LINHA SELECIONADA NO MODAL -->
 <script src="./src/estoque/js/modal-estoque.js"></script>

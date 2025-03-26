@@ -42,3 +42,24 @@
 //         mensagemDiv.innerText = "";
 //     }
 // });
+function preencherCampos() {
+    // Obtém o select do produto
+    var selectProduto = document.getElementById("produto");
+    // Obtém a opção selecionada
+    var selectedOption = selectProduto.options[selectProduto.selectedIndex];
+
+    // Obtém o código do produto e outras informações usando os atributos 'data-*'
+    var codigoProduto = selectedOption.value;
+    var descricaoProduto = selectedOption.text;
+    var naturezaProduto = selectedOption.getAttribute("data-natureza");
+    var classificacaoProduto = selectedOption.getAttribute("data-classificacao");
+    var contabilProduto = selectedOption.getAttribute("data-contabil");
+
+    // Preenche o campo de código
+    document.getElementById("codigo").value = codigoProduto;
+    
+    // Preenche os campos adicionais
+    document.getElementById("natureza").value = naturezaProduto;
+    document.getElementById("classificacao").value = classificacaoProduto;
+    document.getElementById("contabil").value = contabilProduto;
+}

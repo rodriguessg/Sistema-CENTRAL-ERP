@@ -55,8 +55,9 @@ $result = $conn->query($sql);
 $options = '';
 while ($row = $result->fetch_assoc()) {
     $options .= "<option value='" . $row['codigo'] . "' 
-                    data-natureza='" . $row['natureza'] . "'
-                    data-classificacao='" . $row['classificacao'] . "'
+                    data-descricao='" . $row['descricao'] . "' 
+                    data-natureza='" . $row['natureza'] . "' 
+                    data-classificacao='" . $row['classificacao'] . "' 
                     data-contabil='" . $row['contabil'] . "'>
                     " . $row['descricao'] . "
                 </option>";
@@ -64,6 +65,7 @@ while ($row = $result->fetch_assoc()) {
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="Pt-br">
@@ -112,39 +114,45 @@ $conn->close();
     <h3>Lançamento de materiais</h3>
     <form id="form-cadastrar-produto" action="cadastrar_produto.php" method="POST" enctype="multipart/form-data">
         <div class="form-group">
-        <div class="input-group">
-    <label for="produto">Produto:</label>
-    <i class="fas fa-cogs"></i> <!-- Ícone de engrenagem -->
-    <!-- Gerando o select com as opções -->
-<select id="produto" name="produto" required onchange="preencherCampos()">
-    <option value="" disabled selected>Selecione um produto</option>
-    <?php echo $options; ?>
-</select>
-</div>
+            <div class="input-group">
+                <label for="produto">Produto:</label>
+                <i class="fas fa-cogs"></i> <!-- Ícone de engrenagem -->
+                <!-- Gerando o select com as opções -->
+                <select id="produto" name="produto" required onchange="preencherCampos()">
+                    <option value="" disabled selected>Selecione um produto</option>
+                    <?php echo $options; ?>
+                </select>
+            </div>
 
+            <!-- Campo de descrição visível -->
+            <div class="input-group">
+                <label for="descricao">Descrição:</label>
+                <i class="fas fa-barcode"></i>
+                <input type="text" id="descricao" name="descricao" placeholder="Descrição" required readonly>
+            </div>
 
             <div class="input-group">
                 <label for="classificacao">Classificação:</label>
                 <i class="fas fa-tag"></i>
-                <input type="text" id="classificacao" name="classificacao" placeholder="Digite a classificação" required>
+                <input type="text" id="classificacao" name="classificacao" placeholder="Digite a classificação" required readonly>
             </div>
 
             <div class="input-group">
                 <label for="natureza">Natureza:</label>
                 <i class="fas fa-flask"></i>
-                <input type="text" id="natureza" name="natureza" placeholder="Digite a natureza do produto" required>
+                <input type="text" id="natureza" name="natureza" placeholder="Digite a natureza do produto" required readonly>
             </div>
 
             <div class="input-group">
                 <label for="contabil">Contábil:</label>
                 <i class="fas fa-calculator"></i>
-                <input type="text" id="contabil" name="contabil" placeholder="Digite o código contábil" required>
+                <input type="text" id="contabil" name="contabil" placeholder="Digite o código contábil" required readonly>
             </div>
 
             <div class="input-group">
                 <label for="codigo">Código:</label>
                 <i class="fas fa-barcode"></i>
-                <input type="text" id="codigo" name="codigo" placeholder="Código do produto" required>
+                <input type="text" id="codigo" name="codigo" placeholder="Código do produto" required readonly>
             </div>
 
             <div class="input-group">
@@ -197,11 +205,9 @@ $conn->close();
     </form>
 </div>
 
+
 <!-- SCRIPT FINAL - DEVE FICAR DEPOIS DOS CAMPOS -->
 
-<script>
-  
-</script>
 
 
 
@@ -221,19 +227,49 @@ $conn->close();
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Código</th>
                     <th>Material</th>
-                    <th>Classificação</th>
-                    <th>Natureza</th>
-                    <th>Descricao Detalhada</th>
-                    <th>Descricao Resumida</th>
-                    <th>Local</th>             
+                    <th>Classificação</th>                   
+                    <th>Local</th>  
+                    <td>Descricao</td>    
+                    <th>Natureza</th>             
                     <th>Quantidade</th>
                     <th>Custo</th>
                     <th>Ações</th>
                 </tr>
             </thead>
-            <tbody id="tabelaProdutos"></tbody>
+            <tbody id="tabelaProdutos">
+            <?php
+                // Conexão com o banco de dados
+                $conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
+
+                // Verifica se houve erro na conexão
+                if ($conn->connect_error) {
+                    die("Falha na conexão: " . $conn->connect_error);
+                }
+
+                // Consulta SQL para buscar os produtos
+                $sql = "SELECT * FROM produtos";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<tr>
+                                <td>{$row['id']}</td>
+                                <td>{$row['produto']}</td>
+                             <td>{$row['classificacao']}</td>
+                             <td>{$row['descricao']}</td>
+                             <td>{$row['natureza']}</td>
+                             <td>{$row['quantidade']}</td>
+                             <td>{$row['custo']}</td>
+                              </tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='12'>Nenhum produto cadastrado.</td></tr>";
+                }
+
+                $conn->close();
+                ?>
+            </tbody>
         </table>
         <div class="pagination"></div>
     </div>

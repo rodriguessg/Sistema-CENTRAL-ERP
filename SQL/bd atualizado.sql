@@ -648,7 +648,7 @@ CREATE TABLE `produtos` (
   `classificacao` varchar(100) DEFAULT NULL,
   `natureza` varchar(100) DEFAULT NULL,
   `contabil` varchar(100) DEFAULT NULL,
-  `codigo` varchar(50) DEFAULT NULL,
+  `descricao` varchar(50) DEFAULT NULL,
   `unidade` varchar(50) DEFAULT NULL,
   `localizacao` varchar(100) DEFAULT NULL,
   `custo` decimal(10,5) DEFAULT NULL,

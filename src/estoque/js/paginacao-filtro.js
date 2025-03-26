@@ -2,7 +2,7 @@
 let paginaAtual = 1;
 const itensPorPagina = 7;
 
-// Função para carregar os dados da tabela
+// Função para carregar os dados da tabela com filtro e paginação
 function carregarTabela(pagina, filtro = "") {
   fetch(
     `paginasTabelaestoque.php?pagina=${pagina}&itensPorPagina=${itensPorPagina}&filtro=${filtro}`
@@ -19,7 +19,7 @@ function carregarTabela(pagina, filtro = "") {
     .catch((error) => console.error("Erro ao carregar dados:", error));
 }
 
-// Função para preencher a tabela
+// Função para preencher a tabela com os dados
 function preencherTabela(dados) {
   const tbody = document.getElementById("tabelaProdutos");
   tbody.innerHTML = ""; // Limpar a tabela
@@ -30,16 +30,22 @@ function preencherTabela(dados) {
     tbody.appendChild(row);
     return;
   }
+
   dados.forEach((dado) => {
+    // Verificar se a descrição está disponível, caso contrário, substituir por "Descrição não encontrada"
+    const descricao = dado.descricao || "Descrição não encontrada";
+
     const row = document.createElement("tr");
+
+    // Adicionando quebra de linha após a descrição, ou outra coluna que desejar
     row.innerHTML = `
         <td>${dado.id}</td>
         <td>${dado.produto}</td>
         <td>${dado.classificacao}</td>
-        <td>${dado.localizacao}</td>
-        <td>${dado.codigo}</td>
+        <td>${descricao}<br></td> <!-- Adicionando quebra de linha aqui -->
         <td>${dado.natureza}</td>
         <td>${dado.quantidade}</td>
+        <td>${dado.localizacao}</td>
         <td>${dado.custo}</td>
         <td class="actions">
             <button class="btn-estoque1" onclick="abrirModalDetalhes('${dado.id}')">
@@ -53,6 +59,7 @@ function preencherTabela(dados) {
     tbody.appendChild(row);
   });
 }
+
 
 // Função para criar a paginação com botões "<<" e ">>"
 function criarPaginacao(totalPaginas) {
@@ -72,10 +79,7 @@ function criarPaginacao(totalPaginas) {
     primeiro.textContent = "<<";
     primeiro.addEventListener("click", () => {
       paginaAtual = 1;
-      carregarTabela(
-        paginaAtual,
-        document.getElementById("filtroProduto").value
-      );
+      carregarTabela(paginaAtual, document.getElementById("filtroProduto").value);
     });
     paginacaoContainer.appendChild(primeiro);
   }
@@ -86,10 +90,7 @@ function criarPaginacao(totalPaginas) {
     button.className = i === paginaAtual ? "active" : "";
     button.addEventListener("click", () => {
       paginaAtual = i;
-      carregarTabela(
-        paginaAtual,
-        document.getElementById("filtroProduto").value
-      );
+      carregarTabela(paginaAtual, document.getElementById("filtroProduto").value);
     });
     paginacaoContainer.appendChild(button);
   }
@@ -99,10 +100,7 @@ function criarPaginacao(totalPaginas) {
     ultimo.textContent = ">>";
     ultimo.addEventListener("click", () => {
       paginaAtual = fim + 1;
-      carregarTabela(
-        paginaAtual,
-        document.getElementById("filtroProduto").value
-      );
+      carregarTabela(paginaAtual, document.getElementById("filtroProduto").value);
     });
     paginacaoContainer.appendChild(ultimo);
   }
@@ -124,10 +122,10 @@ window.addEventListener("load", () => carregarTabela(paginaAtual));
 // Função para filtrar a tabela com base no valor do input
 function filtrarTabela() {
   const filtro = document
-    .getElementById("filtroestoque")
+    .getElementById("filtroProduto")
     .value.toLowerCase()
     .trim();
-  const linhas = document.querySelectorAll("#tabelaestoque tr");
+  const linhas = document.querySelectorAll("#tabelaProdutos tr");
 
   linhas.forEach((linha) => {
     const produto = linha.cells[1]?.textContent.toLowerCase().trim() || "";
@@ -138,13 +136,13 @@ function filtrarTabela() {
 
 // Função para limpar o campo de input
 function limparFiltro() {
-  document.getElementById("filtroestoque").value = ""; // Limpar o campo de texto
+  document.getElementById("filtroProduto").value = ""; // Limpar o campo de texto
   filtrarTabela(); // Reaplicar o filtro
 }
 
 // Função para limitar a tabela a 7 linhas e adicionar scroll
 window.onload = function () {
-  const tabelaBody = document.getElementById("tabelaestoque");
+  const tabelaBody = document.getElementById("tabelaProdutos");
   const linhas = tabelaBody.getElementsByTagName("tr");
 
   // Limitar a 7 linhas

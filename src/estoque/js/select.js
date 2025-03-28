@@ -2,7 +2,7 @@ document.getElementById('material-nome').addEventListener('change', function() {
     const nomeMaterialId = this.value; // Pega o ID do material selecionado
 
     // Limpa os campos e a mensagem de erro ao selecionar o material
-    document.getElementById('material-codigo').value = '';
+    // document.getElementById('material-codigos').value = '';
     document.getElementById('material-classificacao').value = '';
     document.getElementById('material-natureza').value = '';
     document.getElementById('material-localizacao').value = '';
@@ -18,7 +18,7 @@ document.getElementById('material-nome').addEventListener('change', function() {
 
         if (data.success) {
             setTimeout(() => {
-                document.getElementById('material-codigo').value = data.codigo || '';
+                //  document.getElementById('material-codigos').value = data.codigo || '';
                 document.getElementById('material-classificacao').value = data.classificacao || '';
                 document.getElementById('material-natureza').value = data.natureza || '';
                 document.getElementById('material-localizacao').value = data.localizacao || '';

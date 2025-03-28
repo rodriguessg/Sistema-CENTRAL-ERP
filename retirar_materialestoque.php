@@ -1,5 +1,5 @@
 <?php
-include 'banco.php'; // Inclua a conexão com o banco de dados
+include 'banco.php'; // Conexão com o banco de dados
 
 // Verifica se a requisição foi enviada via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = isset($_POST['material-nome']) ? $con->real_escape_string($_POST['material-nome']) : '';
     $codigo = isset($_POST['material-codigo']) ? $con->real_escape_string($_POST['material-codigo']) : '';
     $quantidade = isset($_POST['material-quantidade']) ? (int) $_POST['material-quantidade'] : 0;
+    $data = date('Y-m-d'); // Data atual
 
     // Verifica se todos os campos obrigatórios estão preenchidos
     if (empty($nome) || empty($codigo) || $quantidade <= 0) {
@@ -15,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Consulta para verificar se o produto existe no estoque
-    $query = "SELECT quantidade FROM produtos WHERE codigo = ?";
+    $query = "SELECT quantidade FROM produtos WHERE descricao = ?";
     $stmt = $con->prepare($query);
     $stmt->bind_param('s', $codigo);
     $stmt->execute();
@@ -61,15 +62,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $deleteStmt->close();
             } else {
                 // Atualiza a quantidade do produto no estoque após a retirada
-                $updateQuery = "UPDATE produtos SET quantidade = quantidade - ?, tipo_operacao = 'retirado' WHERE codigo = ?";
+                $updateQuery = "UPDATE produtos SET quantidade = quantidade - ?, tipo_operacao = 'retirado' WHERE descricao = ?";
                 $updateStmt = $con->prepare($updateQuery);
                 $updateStmt->bind_param('is', $quantidade, $codigo);
                 $updateStmt->execute();
                 $updateStmt->close();
             }
 
+            // Registrar a transação de retirada na tabela 'transicao'
+            $query_transacao = "INSERT INTO transicao (material_id, quantidade, data, tipo) 
+                                VALUES (?, ?, ?, 'Saída')";
+            $transacaoStmt = $con->prepare($query_transacao);
+            $transacaoStmt->bind_param('iis', $nome, $quantidade, $data); // Aqui usamos o ID do material ($nome) e a quantidade
+            if ($transacaoStmt->execute()) {
+                $transacaoStmt->close();
+            } else {
+                echo "Erro ao registrar a transação: " . $con->error;
+                exit;
+            }
+
             // Após a retirada, verifica se a quantidade do produto ficou abaixo de 5
-            $queryAtualizada = "SELECT quantidade FROM produtos WHERE codigo = ?";
+            $queryAtualizada = "SELECT quantidade FROM produtos WHERE descricao = ?";
             $stmtAtualizada = $con->prepare($queryAtualizada);
             $stmtAtualizada->bind_param('s', $codigo);
             $stmtAtualizada->execute();

@@ -65,7 +65,43 @@ while ($row = $result->fetch_assoc()) {
 
 $conn->close();
 ?>
+<?php
+include 'banco.php'; // Conexão com o banco de dados
 
+// Verifica se o mês mudou e limpa a tabela 'transicao'
+$current_month = date('Y-m');
+$query_check_month = "SELECT mes FROM controle_transicao ORDER BY id DESC LIMIT 1";
+$result_check_month = $con->query($query_check_month);
+
+if ($result_check_month->num_rows > 0) {
+    $last_month = $result_check_month->fetch_assoc()['mes'];
+    if ($last_month !== $current_month) {
+        $con->query("TRUNCATE TABLE transicao"); // Limpa a tabela
+        $con->query("INSERT INTO controle_transicao (mes) VALUES ('$current_month')"); // Atualiza o controle
+    }
+} else {
+    $con->query("INSERT INTO controle_transicao (mes) VALUES ('$current_month')");
+}
+
+// Se um produto foi retirado, insere na tabela 'transicao' e atualiza a quantidade em 'produtos'
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $material_id = $_POST['material-nome'];
+    $quantidade = (int) $_POST['material-quantidade'];
+    $data = date('Y-m-d');
+
+    // Atualizar a quantidade no estoque
+    $query_update = "UPDATE produtos SET quantidade = quantidade - $quantidade WHERE id = '$material_id' AND quantidade >= $quantidade";
+    if ($con->query($query_update)) {
+        $con->query("INSERT INTO transicao (material_id, quantidade, data, tipo) VALUES ('$material_id', '$quantidade', '$data', 'Saída')");
+    } else {
+        echo "<script>alert('Erro: Estoque insuficiente!');</script>";
+    }
+}
+
+// Consulta os registros da tabela 'transicao'
+$query_transicao = "SELECT t.id, p.produto, p.classificacao, p.localizacao, p.descricao, p.natureza, t.quantidade, p.preco_medio, t.data, t.tipo FROM transicao t INNER JOIN produtos p ON t.material_id = p.id";
+$resultado_transicao = $con->query($query_transicao);
+?>
 
 <!DOCTYPE html>
 <html lang="Pt-br">
@@ -229,10 +265,11 @@ $conn->close();
                     <th>ID</th>
                     <th>Material</th>
                     <th>Classificação</th>                   
-                    <th>Local</th>  
-                    <td>Descricao</td>    
-                    <th>Natureza</th>             
+                    <th>Descricao</th> 
+                    <th>Natureza</th> 
                     <th>Quantidade</th>
+                    <th>Local</th>              
+                    
                     <th>Custo</th>
                     <th>Ações</th>
                 </tr>
@@ -257,6 +294,7 @@ $conn->close();
                                 <td>{$row['id']}</td>
                                 <td>{$row['produto']}</td>
                              <td>{$row['classificacao']}</td>
+                               <td>{$row['localizacao']}</td>
                              <td>{$row['descricao']}</td>
                              <td>{$row['natureza']}</td>
                              <td>{$row['quantidade']}</td>
@@ -350,94 +388,51 @@ $conn->close();
         <div class="button-group">
                 <button class="btn-submit" type="submit">Retirar</button>
         </div>
-    </form>
-    <div id="mensagem" style="color: red; margin-top: 10px;"></div>
+   
 
-
+    <div class="input-group">
     <table>
-        <thead>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Material</th>
+            <th>Classificação</th>
+            <th>Local</th>
+            <th>Descrição</th>
+            <th>Natureza</th>
+            <th>Quantidade</th>
+            <th>Custo</th>
+            <th>Data</th>
+            <th>Entrada/Saída</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php while ($row = $resultado_transicao->fetch_assoc()) { ?>
             <tr>
-                <th>ID</th>
-                <th>Material</th>
-                <th>Classificação</th>
-                <th>Local</th>
-                <th>Descrição</th>
-                <th>Natureza</th>
-                <th>Quantidade</th>
-                <th>Custo</th>
-                <th>Data</th>
-                <th>Entrada/Saída</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>69</td>
-                <td>Papel A4w</td>
-                <td>Teste</td>
-                <td>XM2</td>
-                <td>Descrição não encontrada</td>
-                <td>TESTE</td>
-                <td>28</td>
-                <td>12,00</td>
-                <td>2023-03-25</td>
-                <td class="entrada">Entrada</td>
+                <td><?= $row['id'] ?></td>
+                <td><?= $row['produto'] ?></td>
+                <td><?= $row['classificacao'] ?></td>
+                <td><?= $row['localizacao'] ?></td>
+                <td><?= $row['descricao'] ?></td>
+                <td><?= $row['natureza'] ?></td>
+                <td><?= $row['quantidade'] ?></td>
+                <td><?= number_format($row['preco_medio'], 2, ',', '.') ?></td>
+                <td><?= $row['data'] ?></td>
+                <td class="<?= strtolower($row['tipo']) ?>"><?= $row['tipo'] ?></td>
                 <td>
                     <button class="acoes-button editar-button">Editar</button>
                     <button class="acoes-button excluir-button">Excluir</button>
                 </td>
             </tr>
-            <tr>
-                <td>70</td>
-                <td>Saco Lixo 10L212</td>
-                <td>Teste</td>
-                <td>XM2</td>
-                <td>Descrição não encontrada</td>
-                <td>1</td>
-                <td>0</td>
-                <td>21,00</td>
-                <td>2023-03-25</td>
-                <td class="saida">Saída</td>
-                <td>
-                    <button class="acoes-button editar-button">Editar</button>
-                    <button class="acoes-button excluir-button">Excluir</button>
-                </td>
-            </tr>
-            <tr>
-                <td>71</td>
-                <td>Saco Lixo 10L</td>
-                <td>Teste</td>
-                <td>XM1</td>
-                <td>Descrição não encontrada</td>
-                <td>W2</td>
-                <td>2</td>
-                <td>2,00</td>
-                <td>2023-03-26</td>
-                <td class="entrada">Entrada</td>
-                <td>
-                    <button class="acoes-button editar-button">Editar</button>
-                    <button class="acoes-button excluir-button">Excluir</button>
-                </td>
-            </tr>
-            <tr>
-                <td>75</td>
-                <td>Projetor</td>
-                <td>Teste</td>
-                <td>XM2</td>
-                <td>Descrição não encontrada</td>
-                <td>TESTE</td>
-                <td>5</td>
-                <td>2,00</td>
-                <td>2023-03-26</td>
-                <td class="saida">Saída</td>
-                <td>
-                    <button class="acoes-button editar-button">Editar</button>
-                    <button class="acoes-button excluir-button">Excluir</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+        <?php } ?>
+    </tbody>
+</table>
 </div>
+</form>
+    <div id="mensagem" style="color: red; margin-top: 10px;"></div>
+</div>
+
 
 
 

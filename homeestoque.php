@@ -352,6 +352,91 @@ $conn->close();
         </div>
     </form>
     <div id="mensagem" style="color: red; margin-top: 10px;"></div>
+
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Material</th>
+                <th>Classificação</th>
+                <th>Local</th>
+                <th>Descrição</th>
+                <th>Natureza</th>
+                <th>Quantidade</th>
+                <th>Custo</th>
+                <th>Data</th>
+                <th>Entrada/Saída</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>69</td>
+                <td>Papel A4w</td>
+                <td>Teste</td>
+                <td>XM2</td>
+                <td>Descrição não encontrada</td>
+                <td>TESTE</td>
+                <td>28</td>
+                <td>12,00</td>
+                <td>2023-03-25</td>
+                <td class="entrada">Entrada</td>
+                <td>
+                    <button class="acoes-button editar-button">Editar</button>
+                    <button class="acoes-button excluir-button">Excluir</button>
+                </td>
+            </tr>
+            <tr>
+                <td>70</td>
+                <td>Saco Lixo 10L212</td>
+                <td>Teste</td>
+                <td>XM2</td>
+                <td>Descrição não encontrada</td>
+                <td>1</td>
+                <td>0</td>
+                <td>21,00</td>
+                <td>2023-03-25</td>
+                <td class="saida">Saída</td>
+                <td>
+                    <button class="acoes-button editar-button">Editar</button>
+                    <button class="acoes-button excluir-button">Excluir</button>
+                </td>
+            </tr>
+            <tr>
+                <td>71</td>
+                <td>Saco Lixo 10L</td>
+                <td>Teste</td>
+                <td>XM1</td>
+                <td>Descrição não encontrada</td>
+                <td>W2</td>
+                <td>2</td>
+                <td>2,00</td>
+                <td>2023-03-26</td>
+                <td class="entrada">Entrada</td>
+                <td>
+                    <button class="acoes-button editar-button">Editar</button>
+                    <button class="acoes-button excluir-button">Excluir</button>
+                </td>
+            </tr>
+            <tr>
+                <td>75</td>
+                <td>Projetor</td>
+                <td>Teste</td>
+                <td>XM2</td>
+                <td>Descrição não encontrada</td>
+                <td>TESTE</td>
+                <td>5</td>
+                <td>2,00</td>
+                <td>2023-03-26</td>
+                <td class="saida">Saída</td>
+                <td>
+                    <button class="acoes-button editar-button">Editar</button>
+                    <button class="acoes-button excluir-button">Excluir</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 

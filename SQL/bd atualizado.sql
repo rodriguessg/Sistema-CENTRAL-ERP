@@ -663,7 +663,7 @@ CREATE TABLE `produtos` (
 -- Despejando dados para a tabela `produtos`
 --
 
-INSERT INTO `produtos` (`id`, `produto`, `classificacao`, `natureza`, `contabil`, `codigo`, `unidade`, `localizacao`, `custo`, `quantidade`, `nf`, `preco_medio`, `tipo_operacao`, `data_cadastro`) VALUES
+INSERT INTO `produtos` (`id`, `produto`, `classificacao`, `natureza`, `contabil`, `descricao`, `unidade`, `localizacao`, `custo`, `quantidade`, `nf`, `preco_medio`, `tipo_operacao`, `data_cadastro`) VALUES
 (69, 'PAPEL A4w', 'TESTE', 'TESTE', '20.2200', '24716081', 'UM', 'xm2', 12.00000, 5, '', 6.00, 'retirado', '2023-01-10 15:12:03'),
 (70, 'SACO LIXO 10L212', 'TESTE', '1', '2', '24716081', 'UM', 'xm2', 21.00000, 10, '', 10.50, 'retirado', '2024-01-10 15:13:45'),
 (71, 'SACO LIXO 10LD', 'TESTE', 'W2', '20.2200', '22', '2', 'xm2', 2.00000, 2, '', 1.00, 'cadastrado', '2025-01-31 14:54:04'),

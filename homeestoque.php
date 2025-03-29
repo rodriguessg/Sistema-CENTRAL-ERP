@@ -138,11 +138,82 @@ $resultado_transicao = $con->query($query_transicao);
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
         <i class="fas fa-file-alt"></i> Relatório
     </div>
-    <div class="tab" data-tab="galeria" onclick="showTab('galeria')">
+    <div class="tab" data-tab="fechamento" onclick="showTab('fechamento')">
         <i class="fas fa-image"></i> Galeria
     </div>
 </div>
+<div class="form-container" id="fechamento" style="display:none;">
+    <h2>Fechamento de Saídas</h2>
+    <!-- Seletor de data -->
+    <form id="formFechamento">
+        <label for="dataFechamento">Data de Fechamento:</label>
+        <input type="month" id="dataFechamento" name="dataFechamento" required>
+        <button type="submit" id="btnFechar">Realizar Fechamento</button>
+    </form>
+    <div id="resultado"></div>
+</div>
 
+<script>
+document.getElementById('formFechamento').addEventListener('submit', function(event) {
+    event.preventDefault(); // Impede o comportamento padrão de envio do formulário
+    
+    const dataFechamento = document.getElementById('dataFechamento').value; // Obtém a data selecionada
+
+    if (!dataFechamento) {
+        document.getElementById('resultado').innerHTML = '<p style="color:red;">Por favor, selecione uma data de fechamento.</p>';
+        return;
+    }
+
+    fetch('fechamento.php', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ 
+            acao: "fechar", 
+            dataFechamento: dataFechamento 
+        }) // Envia a data de fechamento no corpo da requisição
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.erro) {
+            document.getElementById('resultado').innerHTML = `<p style="color:red;">Erro: ${data.erro}</p>`;
+        } else {
+            let tabela = `
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>Natureza</th>
+                            <th>Total de Entradas (R$)</th>
+                            <th>Total de Saídas (R$)</th>
+                            <th>Saldo (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+            // Preenche as linhas da tabela com os dados retornados
+            Object.keys(data.natureza).forEach(natureza => {
+                tabela += `
+                    <tr>
+                        <td>${natureza}</td>
+                        <td>${data.natureza[natureza]}</td>
+                        <td>${data.total_saidas}</td>
+                        <td>${(parseFloat(data.natureza[natureza]) - parseFloat(data.total_saidas)).toFixed(2)}</td>
+                    </tr>`;
+            });
+
+            tabela += `
+                    </tbody>
+                </table>`;
+
+            // Exibe o conteúdo da tabela
+            document.getElementById('resultado').innerHTML = tabela;
+        }
+    })
+    .catch(error => {
+        document.getElementById('resultado').innerHTML = '<p style="color:red;">Erro de conexão</p>';
+        console.error('Erro:', error);
+    });
+});
+</script>
 
 
 

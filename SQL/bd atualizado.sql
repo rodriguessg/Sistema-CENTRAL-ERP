@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 26/03/2025 às 17:51
--- Versão do servidor: 10.4.28-MariaDB
--- Versão do PHP: 8.0.28
+-- Tempo de geração: 29-Mar-2025 às 15:42
+-- Versão do servidor: 10.4.32-MariaDB
+-- versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Banco de dados: `gm_sicbd`
+-- Base de dados: `gm_sicbd`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `agendamentos`
+-- Estrutura da tabela `agendamentos`
 --
 
 CREATE TABLE `agendamentos` (
@@ -37,7 +37,7 @@ CREATE TABLE `agendamentos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `agendamentos`
+-- Extraindo dados da tabela `agendamentos`
 --
 
 INSERT INTO `agendamentos` (`id`, `nome`, `descricao`, `data_g`, `email`, `cor`) VALUES
@@ -66,7 +66,7 @@ INSERT INTO `agendamentos` (`id`, `nome`, `descricao`, `data_g`, `email`, `cor`)
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `codigo_atual`
+-- Estrutura da tabela `codigo_atual`
 --
 
 CREATE TABLE `codigo_atual` (
@@ -75,7 +75,7 @@ CREATE TABLE `codigo_atual` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `codigo_atual`
+-- Extraindo dados da tabela `codigo_atual`
 --
 
 INSERT INTO `codigo_atual` (`id`, `codigo`) VALUES
@@ -85,7 +85,7 @@ INSERT INTO `codigo_atual` (`id`, `codigo`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `configuracoes`
+-- Estrutura da tabela `configuracoes`
 --
 
 CREATE TABLE `configuracoes` (
@@ -106,7 +106,25 @@ CREATE TABLE `configuracoes` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `data_criacao`
+-- Estrutura da tabela `controle_transicao`
+--
+
+CREATE TABLE `controle_transicao` (
+  `id` int(11) NOT NULL,
+  `mes` varchar(7) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `controle_transicao`
+--
+
+INSERT INTO `controle_transicao` (`id`, `mes`) VALUES
+(1, '2025-03');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `data_criacao`
 --
 
 CREATE TABLE `data_criacao` (
@@ -116,7 +134,7 @@ CREATE TABLE `data_criacao` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `data_criacao`
+-- Extraindo dados da tabela `data_criacao`
 --
 
 INSERT INTO `data_criacao` (`id`, `tabela`, `data_criacao`) VALUES
@@ -125,7 +143,44 @@ INSERT INTO `data_criacao` (`id`, `tabela`, `data_criacao`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `funcionario`
+-- Estrutura da tabela `fechamento`
+--
+
+CREATE TABLE `fechamento` (
+  `id` int(11) NOT NULL,
+  `data_fechamento` date NOT NULL,
+  `natureza` varchar(255) NOT NULL,
+  `total_entrada` decimal(10,2) NOT NULL,
+  `total_saida` decimal(10,2) NOT NULL,
+  `saldo_atual` decimal(10,2) NOT NULL,
+  `custo` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `fechamento`
+--
+
+INSERT INTO `fechamento` (`id`, `data_fechamento`, `natureza`, `total_entrada`, `total_saida`, `saldo_atual`, `custo`) VALUES
+(1, '0000-00-00', 'escritório', 0.00, 6.00, 132.00, 2.00),
+(2, '0000-00-00', '333903003', 0.00, 105.05, 66574.17, 26.26),
+(3, '0000-00-00', '333903005', 0.00, 6.17, 66.64, 1.23),
+(4, '0000-00-00', '333903010', 6494.00, 0.00, 438968.43, 32.80),
+(5, '0000-00-00', 'escritório', 0.00, 6.00, 396.00, 2.00),
+(6, '0000-00-00', 'ADFSDF', 0.00, 12.00, -6.00, 6.00),
+(7, '0000-00-00', '333903003', 0.00, 105.05, 1814940.56, 26.26),
+(8, '0000-00-00', '333903005', 0.00, 6.17, 149.31, 1.23),
+(9, '0000-00-00', '333903010', 6494.00, 0.00, 14836240.90, 32.80),
+(10, '0000-00-00', 'escritório', 0.00, 6.00, 1188.00, 2.00),
+(11, '0000-00-00', 'ADFSDF', 0.00, 12.00, -42.00, 6.00),
+(12, '0000-00-00', '333903003', 0.00, 2468.63, 49474193.94, 26.26),
+(13, '0000-00-00', '333903005', 0.00, 6.17, 333.18, 1.23),
+(14, '0000-00-00', '333903010', 6494.00, 0.00, 99999999.99, 32.80),
+(15, '0000-00-00', '333903003', 1115.13, 0.00, 2230.26, 32.80);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `funcionario`
 --
 
 CREATE TABLE `funcionario` (
@@ -139,7 +194,7 @@ CREATE TABLE `funcionario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `funcionario`
+-- Extraindo dados da tabela `funcionario`
 --
 
 INSERT INTO `funcionario` (`id`, `nome`, `email`, `cargo`, `data_admissao`, `criado_em`, `atualizado_em`) VALUES
@@ -148,7 +203,7 @@ INSERT INTO `funcionario` (`id`, `nome`, `email`, `cargo`, `data_admissao`, `cri
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `gestao_contratos`
+-- Estrutura da tabela `gestao_contratos`
 --
 
 CREATE TABLE `gestao_contratos` (
@@ -170,7 +225,7 @@ CREATE TABLE `gestao_contratos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `gestao_contratos`
+-- Extraindo dados da tabela `gestao_contratos`
 --
 
 INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `contatos`, `valor_contrato`, `valor_aditivo`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`) VALUES
@@ -190,7 +245,7 @@ INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gest
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `log_eventos`
+-- Estrutura da tabela `log_eventos`
 --
 
 CREATE TABLE `log_eventos` (
@@ -201,7 +256,7 @@ CREATE TABLE `log_eventos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `log_eventos`
+-- Extraindo dados da tabela `log_eventos`
 --
 
 INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) VALUES
@@ -434,12 +489,19 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (579, 'MASTER', 'Login bem-sucedido', '2025-03-25 14:29:51'),
 (580, 'MASTER', 'atualizou o produto', '2025-03-26 12:34:37'),
 (581, 'MASTER', 'cadastrou  o produto no estoque', '2025-03-26 12:35:33'),
-(582, 'PAULO', 'cadastrou  o produto no estoque', '2025-03-26 16:43:21');
+(582, 'PAULO', 'cadastrou  o produto no estoque', '2025-03-26 16:43:21'),
+(583, 'MASTER', 'Login bem-sucedido', '2025-03-28 11:56:00'),
+(584, 'MASTER', 'cadastrou  o produto no estoque', '2025-03-28 20:40:18'),
+(585, 'MASTER', 'cadastrou  o produto no estoque', '2025-03-28 21:01:05'),
+(586, 'MASTER', 'Login bem-sucedido', '2025-03-29 12:34:33'),
+(587, 'MASTER', 'cadastrou o produto no estoque', '2025-03-29 14:01:13'),
+(588, 'PAULO', 'Login bem-sucedido', '2025-03-29 14:01:50'),
+(589, 'PAULO', 'cadastrou o produto no estoque', '2025-03-29 14:40:57');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `materiais`
+-- Estrutura da tabela `materiais`
 --
 
 CREATE TABLE `materiais` (
@@ -451,7 +513,7 @@ CREATE TABLE `materiais` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `materiais`
+-- Extraindo dados da tabela `materiais`
 --
 
 INSERT INTO `materiais` (`codigo`, `descricao`, `classificacao`, `natureza`, `contabil`) VALUES
@@ -493,7 +555,7 @@ INSERT INTO `materiais` (`codigo`, `descricao`, `classificacao`, `natureza`, `co
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `notificacoes`
+-- Estrutura da tabela `notificacoes`
 --
 
 CREATE TABLE `notificacoes` (
@@ -506,7 +568,7 @@ CREATE TABLE `notificacoes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `notificacoes`
+-- Extraindo dados da tabela `notificacoes`
 --
 
 INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `data_criacao`) VALUES
@@ -535,12 +597,18 @@ INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `
 (259, 'PAULO', 'estoque', 'O produto \'78\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:30:11'),
 (260, 'PAULO', 'estoque', 'O produto \'78\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:33:13'),
 (261, 'PAULO', 'estoque', 'O produto \'75\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:45:44'),
-(262, 'PAULO', 'estoque', 'O produto \'75\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:46:15');
+(262, 'PAULO', 'estoque', 'O produto \'75\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:46:15'),
+(263, 'MASTER', 'administrador', 'O produto \'69\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-28 20:31:38'),
+(264, 'MASTER', 'administrador', 'O produto \'69\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-28 20:31:45'),
+(265, 'MASTER', 'administrador', 'O produto \'70\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-28 20:32:08'),
+(266, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-29 14:01:53'),
+(267, 'PAULO', 'estoque', 'O produto \'PROJETOR\' está com 4 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-29 14:01:53'),
+(268, 'PAULO', 'estoque', 'O produto \'82\' chegou ao limite mínimo de 5 unidades.', 'nao lida', '2025-03-29 14:39:21');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `pagamentos`
+-- Estrutura da tabela `pagamentos`
 --
 
 CREATE TABLE `pagamentos` (
@@ -555,7 +623,7 @@ CREATE TABLE `pagamentos` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `painel_config`
+-- Estrutura da tabela `painel_config`
 --
 
 CREATE TABLE `painel_config` (
@@ -568,7 +636,7 @@ CREATE TABLE `painel_config` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `patrimonio`
+-- Estrutura da tabela `patrimonio`
 --
 
 CREATE TABLE `patrimonio` (
@@ -590,7 +658,7 @@ CREATE TABLE `patrimonio` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `patrimonio`
+-- Extraindo dados da tabela `patrimonio`
 --
 
 INSERT INTO `patrimonio` (`id`, `nome`, `descricao`, `valor`, `data_aquisicao`, `situacao`, `localizacao`, `data_registro`, `codigo`, `categoria`, `cadastrado_por`, `destino`, `responsavel`, `tipo_operacao`, `foto`) VALUES
@@ -618,7 +686,7 @@ INSERT INTO `patrimonio` (`id`, `nome`, `descricao`, `valor`, `data_aquisicao`, 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `permissoes`
+-- Estrutura da tabela `permissoes`
 --
 
 CREATE TABLE `permissoes` (
@@ -630,7 +698,7 @@ CREATE TABLE `permissoes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `permissoes`
+-- Extraindo dados da tabela `permissoes`
 --
 
 INSERT INTO `permissoes` (`id`, `usuario_id`, `setor`, `created_at`, `setor_id`) VALUES
@@ -639,7 +707,7 @@ INSERT INTO `permissoes` (`id`, `usuario_id`, `setor`, `created_at`, `setor_id`)
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `produtos`
+-- Estrutura da tabela `produtos`
 --
 
 CREATE TABLE `produtos` (
@@ -660,7 +728,7 @@ CREATE TABLE `produtos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `produtos`
+-- Extraindo dados da tabela `produtos`
 --
 
 INSERT INTO `produtos` (`id`, `produto`, `classificacao`, `natureza`, `contabil`, `descricao`, `unidade`, `localizacao`, `custo`, `quantidade`, `nf`, `preco_medio`, `tipo_operacao`, `data_cadastro`) VALUES
@@ -668,18 +736,22 @@ INSERT INTO `produtos` (`id`, `produto`, `classificacao`, `natureza`, `contabil`
 (70, 'SACO LIXO 10L212', 'TESTE', '1', '2', '24716081', 'UM', 'xm2', 21.00000, 10, '', 10.50, 'retirado', '2024-01-10 15:13:45'),
 (71, 'SACO LIXO 10LD', 'TESTE', 'W2', '20.2200', '22', '2', 'xm2', 2.00000, 2, '', 1.00, 'cadastrado', '2025-01-31 14:54:04'),
 (75, 'PROJETOR', 'TESTE', 'TESTE', '20.2200', '24452005', '123', 'xm1', 2.00000, 4, '', 0.01, 'retirado', '2025-03-17 15:11:43'),
-(76, 'CANETA AZUL', 'ESCRITÓRIO', 'escritório', '2', '3', '2', 'xm2', 2.00000, 28, '3', 0.06, 'retirado', '2025-03-20 16:21:34'),
+(76, 'CANETA AZUL', 'ESCRITÓRIO', 'escritório', '2', '3', '2', 'xm2', 2.00000, 1785, '3', 0.06, 'retirado', '2025-03-20 16:21:34'),
 (77, 'MONITOR 24 POLEGADAS', 'INFORMÁTICA', 'ESCRITÓRIO', '2025.20', '500', 'UM', 'xm1', 32.80000, 138, '1', 237.67, 'cadastrado', '2025-03-22 18:17:34'),
-(79, 'teste de custo', '3', '3', '3', '3', '3', 'xm1', 4.43000, 3, '1', 492.67, 'retirado', '2025-03-22 19:00:17'),
+(79, 'teste de custo', '3', '3', '3', '3', '3', 'xm1', 4.43000, 0, '1', 492.67, 'retirado', '2025-03-22 19:00:17'),
 (80, 'SACO LIXO 10L90', 'ESCRITÓRIO', 'TESTE123', '2', '1', 'um', 'xm2', 4.43400, 23, '1', 192.78, 'cadastrado', '2025-03-22 19:04:14'),
 (81, 'PAPEL A3', 'TESTE', '23', '1', '23q', 'um', 'xm2', 89340.00000, 198, '1', 451.21, 'cadastrado', '2025-03-22 19:10:31'),
-(82, 'PROJETOR54', 'SDFASDFAF', 'ADFSDF', 'ASDFASDF', 'ASDFASD', 'FASADF', 'xm1', 6.00000, 3, '234', 0.00, 'cadastrado', '2025-03-26 09:35:33'),
-(83, '42400050015', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', '42400050015', 'UM', 'xm1', 26.26200, 105, '3', 250.12, 'cadastrado', '2025-03-26 13:43:21');
+(82, 'PROJETOR54', 'SDFASDFAF', 'ADFSDF', 'ASDFASDF', 'ASDFASD', 'FASADF', 'xm1', 6.00000, -47, '234', 0.00, 'retirado', '2025-03-26 09:35:33'),
+(83, '42400050015', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', '42400050015', 'UM', 'xm1', 26.26200, 51360388, '3', 250.12, 'retirado', '2025-03-26 13:43:21'),
+(84, '42400050002', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', 'RESPIRADOR DESCARTAVEL TIPO CONCHA', 'UM3', 'xm1', 90.00000, 34, '2', 2.00, 'cadastrado', '2025-03-28 17:40:18'),
+(85, '75200060035', 'Artigos em Geral e Impressos para Expediente, Escritorio', '333903005', '3437.05', 'CANETA VERMELHA PONTA ARREDONDADA', 'UM', 'xm1', 1.23400, 608, '1', 36.00, 'retirado', '2025-03-28 18:01:05'),
+(86, '47100040108', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'TUBO NAO METALICO AGUA 20mm 3M ID 0061400', 'UM', 'xm1', 32.79800, 516723668, '2', 165.00, 'cadastrado', '2025-03-29 11:01:13'),
+(87, '84150078394', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', 'AVENTAL DE SEGURANÇA TIPO SOLDADOR EM RASPA ID 001', 'UM', 'xm1', 32.79800, 49476458, '2', 964.00, 'cadastrado', '2025-03-29 11:40:57');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `setores`
+-- Estrutura da tabela `setores`
 --
 
 CREATE TABLE `setores` (
@@ -688,7 +760,7 @@ CREATE TABLE `setores` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `setores`
+-- Extraindo dados da tabela `setores`
 --
 
 INSERT INTO `setores` (`id`, `nome_setor`) VALUES
@@ -701,7 +773,7 @@ INSERT INTO `setores` (`id`, `nome_setor`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `transferencias`
+-- Estrutura da tabela `transferencias`
 --
 
 CREATE TABLE `transferencias` (
@@ -717,7 +789,7 @@ CREATE TABLE `transferencias` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `transferencias`
+-- Extraindo dados da tabela `transferencias`
 --
 
 INSERT INTO `transferencias` (`id`, `patrimonio_id`, `destino`, `data_transferencia`, `observacao`, `criado_em`, `atualizado_em`, `responsavel`, `tipo_operacao`) VALUES
@@ -729,7 +801,7 @@ INSERT INTO `transferencias` (`id`, `patrimonio_id`, `destino`, `data_transferen
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `transferencia_historico`
+-- Estrutura da tabela `transferencia_historico`
 --
 
 CREATE TABLE `transferencia_historico` (
@@ -746,7 +818,35 @@ CREATE TABLE `transferencia_historico` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `usuario`
+-- Estrutura da tabela `transicao`
+--
+
+CREATE TABLE `transicao` (
+  `id` int(11) NOT NULL,
+  `material_id` int(11) NOT NULL,
+  `quantidade` int(11) NOT NULL,
+  `data` date NOT NULL,
+  `tipo` enum('Entrada','Saída') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `transicao`
+--
+
+INSERT INTO `transicao` (`id`, `material_id`, `quantidade`, `data`, `tipo`) VALUES
+(1, 83, 2, '2025-03-28', 'Saída'),
+(2, 83, 2, '2025-03-28', 'Saída'),
+(3, 76, 3, '2025-03-28', 'Saída'),
+(4, 85, 5, '2025-03-29', 'Saída'),
+(6, 86, 198, '2025-03-29', 'Entrada'),
+(7, 82, 2, '2025-03-29', 'Saída'),
+(8, 87, 34, '2025-03-29', 'Entrada'),
+(9, 83, 90, '2025-03-29', 'Saída');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `usuario`
 --
 
 CREATE TABLE `usuario` (
@@ -764,7 +864,7 @@ CREATE TABLE `usuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `usuario`
+-- Extraindo dados da tabela `usuario`
 --
 
 INSERT INTO `usuario` (`id`, `username`, `senha`, `matricula`, `email`, `setor`, `cargo`, `situacao`, `foto`, `primeira_vez`, `tempo_registro`) VALUES
@@ -783,82 +883,95 @@ INSERT INTO `usuario` (`id`, `username`, `senha`, `matricula`, `email`, `setor`,
 --
 
 --
--- Índices de tabela `agendamentos`
+-- Índices para tabela `agendamentos`
 --
 ALTER TABLE `agendamentos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `codigo_atual`
+-- Índices para tabela `codigo_atual`
 --
 ALTER TABLE `codigo_atual`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `configuracoes`
+-- Índices para tabela `configuracoes`
 --
 ALTER TABLE `configuracoes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `data_criacao`
+-- Índices para tabela `controle_transicao`
+--
+ALTER TABLE `controle_transicao`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `mes` (`mes`);
+
+--
+-- Índices para tabela `data_criacao`
 --
 ALTER TABLE `data_criacao`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `funcionario`
+-- Índices para tabela `fechamento`
+--
+ALTER TABLE `fechamento`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Índices para tabela `funcionario`
 --
 ALTER TABLE `funcionario`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Índices de tabela `gestao_contratos`
+-- Índices para tabela `gestao_contratos`
 --
 ALTER TABLE `gestao_contratos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `log_eventos`
+-- Índices para tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `materiais`
+-- Índices para tabela `materiais`
 --
 ALTER TABLE `materiais`
   ADD PRIMARY KEY (`codigo`);
 
 --
--- Índices de tabela `notificacoes`
+-- Índices para tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `pagamentos`
+-- Índices para tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_contrato` (`id_contrato`);
 
 --
--- Índices de tabela `painel_config`
+-- Índices para tabela `painel_config`
 --
 ALTER TABLE `painel_config`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `patrimonio`
+-- Índices para tabela `patrimonio`
 --
 ALTER TABLE `patrimonio`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `codigo` (`codigo`);
 
 --
--- Índices de tabela `permissoes`
+-- Índices para tabela `permissoes`
 --
 ALTER TABLE `permissoes`
   ADD PRIMARY KEY (`id`),
@@ -866,32 +979,39 @@ ALTER TABLE `permissoes`
   ADD KEY `setor_id` (`setor`);
 
 --
--- Índices de tabela `produtos`
+-- Índices para tabela `produtos`
 --
 ALTER TABLE `produtos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `setores`
+-- Índices para tabela `setores`
 --
 ALTER TABLE `setores`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `transferencias`
+-- Índices para tabela `transferencias`
 --
 ALTER TABLE `transferencias`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `transferencia_historico`
+-- Índices para tabela `transferencia_historico`
 --
 ALTER TABLE `transferencia_historico`
   ADD PRIMARY KEY (`id`),
   ADD KEY `patrimonio_id` (`patrimonio_id`);
 
 --
--- Índices de tabela `usuario`
+-- Índices para tabela `transicao`
+--
+ALTER TABLE `transicao`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `material_id` (`material_id`);
+
+--
+-- Índices para tabela `usuario`
 --
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`id`),
@@ -899,7 +1019,7 @@ ALTER TABLE `usuario`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- AUTO_INCREMENT para tabelas despejadas
+-- AUTO_INCREMENT de tabelas despejadas
 --
 
 --
@@ -921,10 +1041,22 @@ ALTER TABLE `configuracoes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `controle_transicao`
+--
+ALTER TABLE `controle_transicao`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de tabela `data_criacao`
 --
 ALTER TABLE `data_criacao`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `fechamento`
+--
+ALTER TABLE `fechamento`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de tabela `funcionario`
@@ -942,13 +1074,13 @@ ALTER TABLE `gestao_contratos`
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=583;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=590;
 
 --
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=263;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=269;
 
 --
 -- AUTO_INCREMENT de tabela `pagamentos`
@@ -978,7 +1110,7 @@ ALTER TABLE `permissoes`
 -- AUTO_INCREMENT de tabela `produtos`
 --
 ALTER TABLE `produtos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
 
 --
 -- AUTO_INCREMENT de tabela `setores`
@@ -999,27 +1131,32 @@ ALTER TABLE `transferencia_historico`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `transicao`
+--
+ALTER TABLE `transicao`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- Restrições para tabelas despejadas
+-- Restrições para despejos de tabelas
 --
 
 --
--- Restrições para tabelas `pagamentos`
+-- Limitadores para a tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
   ADD CONSTRAINT `fk_contrato` FOREIGN KEY (`id_contrato`) REFERENCES `gestao_contratos` (`id`);
 
 --
--- Restrições para tabelas `permissoes`
+-- Limitadores para a tabela `transicao`
 --
-ALTER TABLE `permissoes`
-  ADD CONSTRAINT `permissoes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `permissoes_ibfk_2` FOREIGN KEY (`setor`) REFERENCES `setores` (`id`) ON DELETE CASCADE;
+ALTER TABLE `transicao`
+  ADD CONSTRAINT `transicao_ibfk_1` FOREIGN KEY (`material_id`) REFERENCES `produtos` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

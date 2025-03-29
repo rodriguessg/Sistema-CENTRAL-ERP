@@ -244,7 +244,12 @@ $resultado_transicao = $con->query($query_transicao);
 
 <!-- SCRIPT FINAL - DEVE FICAR DEPOIS DOS CAMPOS -->
 
-
+<script>
+    function sincronizarProduto() {
+        // Copia o valor selecionado do select para o campo de input
+        document.getElementById("produto_input").value = document.getElementById("produto").value;
+    }
+</script>
 
 
 <div class="form-container" id="consulta">
@@ -319,7 +324,7 @@ $resultado_transicao = $con->query($query_transicao);
         <div class="form-group3">
             <!-- Select para o Nome do Material -->
             <div class="input-group">
-                <label for="material-nome">Nome do Material:</label>
+                <label for="material-nome">Código do Material:</label>
                 <i class="fas fa-cogs"></i> <!-- Ícone ao lado do campo -->
                 <select id="material-nome" name="material-nome" required>
                     <option value="">Selecione o material</option>
@@ -346,7 +351,7 @@ $resultado_transicao = $con->query($query_transicao);
 
             <!-- Código do Material -->
             <div class="input-group">
-                <label for="material-codigo">Código do Material:</label>
+                <label for="material-codigo">Descrição do Material:</label>
                 <i class="fas fa-barcode"></i> <!-- Ícone ao lado do campo -->
                 <input type="text" id="material-codigo" name="material-codigo" placeholder="preenchido automaticamente" readonly>
             </div>
@@ -433,10 +438,63 @@ $resultado_transicao = $con->query($query_transicao);
     <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
 
+<script>
+document.getElementById('material-nome').addEventListener('change', function() {
+    const nomeMaterialId = this.value; // Obtém o ID do material selecionado
+
+    // Verifica se os elementos existem antes de tentar acessá-los
+    const descricaoInput = document.getElementById('material-codigo');
+    const classificacaoInput = document.getElementById('material-classificacao');
+    const naturezaInput = document.getElementById('material-natureza');
+    const localizacaoInput = document.getElementById('material-localizacao');
+    const precoMedioInput = document.getElementById('material-preco-medio');
+    const mensagemDiv = document.getElementById('mensagem');
+
+    if (!descricaoInput || !classificacaoInput || !naturezaInput || !localizacaoInput || !precoMedioInput) {
+        console.error("Erro: Um ou mais elementos não existem no HTML.");
+        return;
+    }
+
+    // Limpa os campos e a mensagem de erro
+    descricaoInput.value = '';
+    classificacaoInput.value = '';
+    naturezaInput.value = '';
+    localizacaoInput.value = '';
+    precoMedioInput.value = '';
+    mensagemDiv.innerText = '';
+
+    if (nomeMaterialId) {
+        fetch('buscar_dados_produto.php?id=' + nomeMaterialId)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Resposta da API:", data); // Depuração
+
+                if (data.success) {
+                    setTimeout(() => {
+                        descricaoInput.value = data.descricao || ''; // Correção aqui
+                        classificacaoInput.value = data.classificacao || '';
+                        naturezaInput.value = data.natureza || '';
+                        localizacaoInput.value = data.localizacao || '';
+                        precoMedioInput.value = data.preco_medio || '';
+                    }, 300);
+                    mensagemDiv.innerText = '';
+                } else {
+                    mensagemDiv.innerText = 'Material não encontrado.';
+                }
+            })
+            .catch(err => {
+                console.error('Erro ao buscar os dados:', err);
+                mensagemDiv.innerText = 'Erro na busca. Tente novamente.';
+            });
+    } else {
+        mensagemDiv.innerText = ''; // Limpa a mensagem se nada for selecionado
+    }
+});
 
 
+</script>
 
-<script src="./src/estoque/js/select.js"></script>
+<!-- <script src="./src/estoque/js/select.js"></script> -->
 
 
 <!-- Modal para Detalhes -->

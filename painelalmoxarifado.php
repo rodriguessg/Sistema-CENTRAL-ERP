@@ -101,9 +101,9 @@ include 'verificar_quantidade_produtos.php';
     <table border="1">
         <thead>
             <tr>
-                <th>Produto</th>
+                <th>Código do Material</th>
                 <th>Quantidade</th>
-                <th>Código</th>
+                <th>Descricao</th>
                 <th>Data de Cadastro</th>
             </tr>
         </thead>
@@ -121,7 +121,7 @@ include 'verificar_quantidade_produtos.php';
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                 // Consulta SQL para buscar os últimos produtos cadastrados
-                $sql = "SELECT produto, quantidade, codigo, data_cadastro FROM produtos ORDER BY data_cadastro DESC LIMIT 5";
+                $sql = "SELECT produto, quantidade, descricao, data_cadastro FROM produtos ORDER BY data_cadastro DESC LIMIT 5";
                 $stmt = $pdo->query($sql);
 
                 // Exibindo os resultados na tabela
@@ -129,7 +129,7 @@ include 'verificar_quantidade_produtos.php';
                     echo "<tr>";
                     echo "<td>" . htmlspecialchars($row['produto']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['quantidade']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['codigo']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['descricao']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['data_cadastro']) . "</td>";
                     echo "</tr>";
                 }

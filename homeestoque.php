@@ -589,7 +589,25 @@ $resultado_transicao = $con->query($query_transicao);
 
 </div>
 
+
 <!-- FECHAMENTO DE ALOMXARIFADO MENSAL -->
+<div class="form-container" id="fechamento" style="width: 50%;
+    display: flex
+;
+    justify-content: center;
+    margin: auto;
+    margin-left: 35%;">
+    <h2>Fechamento</h2>
+    
+</div>
+
+<!-- JavaScript para Mostrar o Formulário -->
+<!-- <script>
+    // Função para mostrar o formulário de fechamento
+    function mostrarFechamento() {
+        document.getElementById('fechamento').style.display = 'block';
+    }
+</script> -->
 
 
 

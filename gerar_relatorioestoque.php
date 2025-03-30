@@ -41,7 +41,7 @@ $query = "
     SELECT 
         produto, 
         natureza, 
-        codigo, 
+        descricao, 
         contabil, 
         unidade, 
         localizacao, 
@@ -88,7 +88,7 @@ if (!empty($resultados)) {
     echo "<tr>";
     echo "<th>Produto</th>";
     echo "<th>Natureza</th>";
-    echo "<th>Código</th>";
+    echo "<th>Descrição</th>";
     echo "<th>Contábil</th>";
     echo "<th>Unidade</th>";
     echo "<th>Localização</th>";
@@ -106,7 +106,7 @@ if (!empty($resultados)) {
         echo "<tr>";
         echo "<td>" . htmlspecialchars($row['produto']) . "</td>";
         echo "<td>" . htmlspecialchars($row['natureza']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['codigo']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['descricao']) . "</td>";
         echo "<td>" . htmlspecialchars($row['contabil']) . "</td>";
         echo "<td>" . htmlspecialchars($row['unidade']) . "</td>";
         echo "<td>" . htmlspecialchars($row['localizacao']) . "</td>";

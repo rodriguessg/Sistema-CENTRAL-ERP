@@ -142,78 +142,8 @@ $resultado_transicao = $con->query($query_transicao);
         <i class="fas fa-image"></i> Galeria
     </div>
 </div>
-<div class="form-container" id="fechamento" style="display:none;">
-    <h2>Fechamento de Saídas</h2>
-    <!-- Seletor de data -->
-    <form id="formFechamento">
-        <label for="dataFechamento">Data de Fechamento:</label>
-        <input type="month" id="dataFechamento" name="dataFechamento" required>
-        <button type="submit" id="btnFechar">Realizar Fechamento</button>
-    </form>
-    <div id="resultado"></div>
-</div>
 
-<script>
-document.getElementById('formFechamento').addEventListener('submit', function(event) {
-    event.preventDefault(); // Impede o comportamento padrão de envio do formulário
-    
-    const dataFechamento = document.getElementById('dataFechamento').value; // Obtém a data selecionada
 
-    if (!dataFechamento) {
-        document.getElementById('resultado').innerHTML = '<p style="color:red;">Por favor, selecione uma data de fechamento.</p>';
-        return;
-    }
-
-    fetch('fechamento.php', { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ 
-            acao: "fechar", 
-            dataFechamento: dataFechamento 
-        }) // Envia a data de fechamento no corpo da requisição
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.erro) {
-            document.getElementById('resultado').innerHTML = `<p style="color:red;">Erro: ${data.erro}</p>`;
-        } else {
-            let tabela = `
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th>Natureza</th>
-                            <th>Total de Entradas (R$)</th>
-                            <th>Total de Saídas (R$)</th>
-                            <th>Saldo (R$)</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-
-            // Preenche as linhas da tabela com os dados retornados
-            Object.keys(data.natureza).forEach(natureza => {
-                tabela += `
-                    <tr>
-                        <td>${natureza}</td>
-                        <td>${data.natureza[natureza]}</td>
-                        <td>${data.total_saidas}</td>
-                        <td>${(parseFloat(data.natureza[natureza]) - parseFloat(data.total_saidas)).toFixed(2)}</td>
-                    </tr>`;
-            });
-
-            tabela += `
-                    </tbody>
-                </table>`;
-
-            // Exibe o conteúdo da tabela
-            document.getElementById('resultado').innerHTML = tabela;
-        }
-    })
-    .catch(error => {
-        document.getElementById('resultado').innerHTML = '<p style="color:red;">Erro de conexão</p>';
-        console.error('Erro:', error);
-    });
-});
-</script>
 
 
 
@@ -509,61 +439,6 @@ document.getElementById('formFechamento').addEventListener('submit', function(ev
     <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
 
-<script>
-document.getElementById('material-nome').addEventListener('change', function() {
-    const nomeMaterialId = this.value; // Obtém o ID do material selecionado
-
-    // Verifica se os elementos existem antes de tentar acessá-los
-    const descricaoInput = document.getElementById('material-codigo');
-    const classificacaoInput = document.getElementById('material-classificacao');
-    const naturezaInput = document.getElementById('material-natureza');
-    const localizacaoInput = document.getElementById('material-localizacao');
-    const precoMedioInput = document.getElementById('material-preco-medio');
-    const mensagemDiv = document.getElementById('mensagem');
-
-    if (!descricaoInput || !classificacaoInput || !naturezaInput || !localizacaoInput || !precoMedioInput) {
-        console.error("Erro: Um ou mais elementos não existem no HTML.");
-        return;
-    }
-
-    // Limpa os campos e a mensagem de erro
-    descricaoInput.value = '';
-    classificacaoInput.value = '';
-    naturezaInput.value = '';
-    localizacaoInput.value = '';
-    precoMedioInput.value = '';
-    mensagemDiv.innerText = '';
-
-    if (nomeMaterialId) {
-        fetch('buscar_dados_produto.php?id=' + nomeMaterialId)
-            .then(response => response.json())
-            .then(data => {
-                console.log("Resposta da API:", data); // Depuração
-
-                if (data.success) {
-                    setTimeout(() => {
-                        descricaoInput.value = data.descricao || ''; // Correção aqui
-                        classificacaoInput.value = data.classificacao || '';
-                        naturezaInput.value = data.natureza || '';
-                        localizacaoInput.value = data.localizacao || '';
-                        precoMedioInput.value = data.preco_medio || '';
-                    }, 300);
-                    mensagemDiv.innerText = '';
-                } else {
-                    mensagemDiv.innerText = 'Material não encontrado.';
-                }
-            })
-            .catch(err => {
-                console.error('Erro ao buscar os dados:', err);
-                mensagemDiv.innerText = 'Erro na busca. Tente novamente.';
-            });
-    } else {
-        mensagemDiv.innerText = ''; // Limpa a mensagem se nada for selecionado
-    }
-});
-
-
-</script>
 
 <!-- <script src="./src/estoque/js/select.js"></script> -->
 
@@ -591,7 +466,7 @@ document.getElementById('material-nome').addEventListener('change', function() {
     </div>
 </div>
 
-
+<!-- ABA PARA CONSULTAR QUANTIDADE DE MATERIAIS -->
 <div class="form-container" id="Estoque">
     <h2>Consulta de Estoque</h2>
     <label for="filtroestoque">Pesquisar Produto:</label>
@@ -666,39 +541,40 @@ document.getElementById('material-nome').addEventListener('change', function() {
     </div>
 </div>
 
+<!-- ABA PARA GERAR RELATÓRIO -->
 <div class="form-container" id="relatorio">
     <h3>Gerar Relatório</h3>
-<form id="form-relatorio" class="relatorio-form">
-    <!-- Seletor de Período -->
-    <label for="periodo">Selecione o Período:</label>
-    <div class="relatorio-group">
-        <select id="periodo" name="periodo" required onchange="toggleExercicioSelector(this.value)">
-            <option value="" disabled selected>Escolha uma opção</option>
-            <option value="semanal">Semanal</option>
-            <option value="mensal">Mensal</option>
-            <option value="anual">Anual</option>
-        </select>
-    </div>
+    <form id="form-relatorio" class="relatorio-form">
+        <!-- Seletor de Período -->
+        <label for="periodo">Selecione o Período:</label>
+        <div class="relatorio-group">
+            <select id="periodo" name="periodo" required onchange="toggleExercicioSelector(this.value)">
+                <option value="" disabled selected>Escolha uma opção</option>
+                <option value="semanal">Semanal</option>
+                <option value="mensal">Mensal</option>
+                <option value="anual">Anual</option>
+            </select>
+        </div>
 
-    <!-- Seletor de Exercício (Ano) -->
-    <label for="exercicio">Selecione o Exercício:</label>
-    <div class="relatorio-group" id="exercicio-group" style="display: none;">
-        <select id="exercicio" name="exercicio">
-            <option value="" disabled selected>Carregando...</option>
-        </select>
-    </div>
+        <!-- Seletor de Exercício (Ano) -->
+        <label for="exercicio">Selecione o Exercício:</label>
+        <div class="relatorio-group" id="exercicio-group" style="display: none;">
+            <select id="exercicio" name="exercicio">
+                <option value="" disabled selected>Carregando...</option>
+            </select>
+        </div>
 
-    <!-- Campo de Usuário Logado -->
-    <div class="relatorio-group">
-        <label for="usuario">Usuário Logado:</label>
-        <input type="text" id="usuario" name="usuario" value="" readonly>
-    </div>
+        <!-- Campo de Usuário Logado -->
+        <div class="relatorio-group">
+            <label for="usuario">Usuário Logado:</label>
+            <input type="text" id="usuario" name="usuario" value="" readonly>
+        </div>
 
-    <!-- Botão de Submissão -->
-    <div class="relatorio-group">
-        <button type="button" id="incluir_quantidade" name="incluir_quantidade" onclick="gerarRelatorio()">Gerar Relatório</button>
-    </div>
-</form>
+        <!-- Botão de Submissão -->
+        <div class="relatorio-group">
+            <button type="button" id="incluir_quantidade" name="incluir_quantidade" onclick="gerarRelatorio()">Gerar Relatório</button>
+        </div>
+    </form>
 
 
     <!-- Área para exibição do relatório gerado -->
@@ -709,9 +585,71 @@ document.getElementById('material-nome').addEventListener('change', function() {
     
     <!-- Botão de Exportação para Excel -->
     <button id="exportarExcelBtn" onclick="exportarParaExcel()" style="display: none; margin-top: 10px;">Exportar para Excel</button>
-</div>
+    </div>
 
 </div>
+
+<!-- FECHAMENTO DE ALOMXARIFADO MENSAL -->
+
+
+
+
+<!-- PREENCHE MATERIAIS PARA RETIRADA -->
+<script>
+    document.getElementById('material-nome').addEventListener('change', function() {
+    const nomeMaterialId = this.value; // Obtém o ID do material selecionado
+
+    // Verifica se os elementos existem antes de tentar acessá-los
+    const descricaoInput = document.getElementById('material-codigo');
+    const classificacaoInput = document.getElementById('material-classificacao');
+    const naturezaInput = document.getElementById('material-natureza');
+    const localizacaoInput = document.getElementById('material-localizacao');
+    const precoMedioInput = document.getElementById('material-preco-medio');
+    const mensagemDiv = document.getElementById('mensagem');
+
+    if (!descricaoInput || !classificacaoInput || !naturezaInput || !localizacaoInput || !precoMedioInput) {
+        console.error("Erro: Um ou mais elementos não existem no HTML.");
+        return;
+    }
+
+    // Limpa os campos e a mensagem de erro
+    descricaoInput.value = '';
+    classificacaoInput.value = '';
+    naturezaInput.value = '';
+    localizacaoInput.value = '';
+    precoMedioInput.value = '';
+    mensagemDiv.innerText = '';
+
+    if (nomeMaterialId) {
+        fetch('buscar_dados_produto.php?id=' + nomeMaterialId)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Resposta da API:", data); // Depuração
+
+                if (data.success) {
+                    setTimeout(() => {
+                        descricaoInput.value = data.descricao || ''; // Correção aqui
+                        classificacaoInput.value = data.classificacao || '';
+                        naturezaInput.value = data.natureza || '';
+                        localizacaoInput.value = data.localizacao || '';
+                        precoMedioInput.value = data.preco_medio || '';
+                    }, 300);
+                    mensagemDiv.innerText = '';
+                } else {
+                    mensagemDiv.innerText = 'Material não encontrado.';
+                }
+            })
+            .catch(err => {
+                console.error('Erro ao buscar os dados:', err);
+                mensagemDiv.innerText = 'Erro na busca. Tente novamente.';
+            });
+    } else {
+        mensagemDiv.innerText = ''; // Limpa a mensagem se nada for selecionado
+    }
+    });
+
+
+</script>
 <!-- AO RETIRAR ESTE SCRIPT APRESEMTA ERRO NO PREENCHIMENTO DO NOME DO USUÁRIO NO RELATÓRIO -->
 <script>
     // Exibir o seletor de exercício apenas se a opção anual for selecionada

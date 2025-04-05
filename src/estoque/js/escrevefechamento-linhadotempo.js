@@ -33,11 +33,14 @@ function carregarLinhaDoTempo() {
                 const div = document.createElement("div");
                 div.classList.add("linha-tempo-item");
 
+               
                 div.innerHTML = `
                     <div class="linha-tempo-content">
                         <strong>Data:</strong> ${fechamento.data_fechamento}<br>
-                        <strong>Saldo Total:</strong> R$ ${parseFloat(fechamento.saldo_atual).toFixed(2)}
+                        <strong>Usuário:</strong> ${fechamento.username}<br>
+                        <strong>Saldo Atual:</strong> R$ ${parseFloat(fechamento.saldo_atual).toFixed(2)}
                     </div>
+                    <button class="dots-button" onclick="abrirModal(fechamento)">&#8230;</button>
                 `;
                 linhaDoTempo.appendChild(div);
             } else {

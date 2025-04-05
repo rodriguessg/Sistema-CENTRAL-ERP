@@ -398,50 +398,87 @@ $resultado_transicao = $con->query($query_transicao);
         </div>
    
 
-    <div class="input-group">
+        <div class="input-group">
     <table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Material</th>
-            <th>Classificação</th>
-            <th>Local</th>
-            <th>Descrição</th>
-            <th>Natureza</th>
-            <th>Quantidade</th>
-            <th>Custo</th>
-            <th>Data</th>
-            <th>Entrada/Saída</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php while ($row = $resultado_transicao->fetch_assoc()) { ?>
+        <thead>
             <tr>
-                <td><?= $row['id'] ?></td>
-                <td><?= $row['produto'] ?></td>
-                <td><?= $row['classificacao'] ?></td>
-                <td><?= $row['localizacao'] ?></td>
-                <td><?= $row['descricao'] ?></td>
-                <td><?= $row['natureza'] ?></td>
-                <td><?= $row['quantidade'] ?></td>
-                <td><?= number_format($row['preco_medio'], 2, ',', '.') ?></td>
-                <td><?= $row['data'] ?></td>
-                <td class="<?= strtolower($row['tipo']) ?>"><?= $row['tipo'] ?></td>
-                <td>
-                    <button class="acoes-button editar-button">Editar</button>
-                    <button class="acoes-button excluir-button">Excluir</button>
-                </td>
+                <th>ID</th>
+                <th>Material</th>
+                <th>Classificação</th>
+                <th>Local</th>
+                <th>Descrição</th>
+                <th>Natureza</th>
+                <th>Quantidade</th>
+                <th>Custo</th>
+                <th>Data</th>
+                <th>Entrada/Saída</th>
+                <th>Ações</th>
             </tr>
-        <?php } ?>
-    </tbody>
+        </thead>
+        <tbody>
+            <?php while ($row = $resultado_transicao->fetch_assoc()) { ?>
+                <tr id="row_<?= $row['id'] ?>">
+                    <td><?= $row['id'] ?></td>
+                    <td><?= $row['produto'] ?></td>
+                    <td><?= $row['classificacao'] ?></td>
+                    <td><?= $row['localizacao'] ?></td>
+                    <td><?= $row['descricao'] ?></td>
+                    <td><?= $row['natureza'] ?></td>
+                    <td><?= $row['quantidade'] ?></td>
+                    <td><?= number_format($row['preco_medio'], 2, ',', '.') ?></td>
+                    <td><?= $row['data'] ?></td>
+                    <td class="<?= strtolower($row['tipo']) ?>"><?= $row['tipo'] ?></td>
+                    <td>
+                        <!-- <button class="acoes-button editar-button">Editar</button> -->
+                        <button class="acoes-button excluir-button" data-id="<?= $row['id'] ?>">Excluir</button>
+                    </td>
+                </tr>
+            <?php } ?>
+        </tbody>
     </table>
-    </div>
+</div>
+
     </form>
         <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
 
+<script>
+    // Adicionar evento de clique nos botões de excluir
+document.querySelectorAll('.excluir-button').forEach(button => {
+    button.addEventListener('click', function() {
+        // Pega o ID do produto a ser excluído
+        const produtoId = this.getAttribute('data-id');
 
+        // Perguntar ao usuário se ele realmente quer excluir
+        if (confirm('Tem certeza que deseja excluir este item?')) {
+            // Enviar uma requisição AJAX para excluir o produto
+            fetch('excluir_produto.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `id=${produtoId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Se a exclusão foi bem-sucedida, remover a linha da tabela
+                    const row = document.getElementById(`row_${produtoId}`);
+                    row.remove();
+                    alert('Produto excluído com sucesso!');
+                } else {
+                    alert('Erro ao excluir o produto!');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao excluir o produto:', error);
+                alert('Erro ao excluir o produto!');
+            });
+        }
+    });
+});
+
+</script>
 <!-- <script src="./src/estoque/js/select.js"></script> -->
 
 

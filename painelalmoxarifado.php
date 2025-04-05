@@ -12,6 +12,7 @@ include 'verificar_quantidade_produtos.php';
     <link rel="stylesheet" href="./src/style/style.css">
     <link rel="stylesheet" href="./src/estoque/style/painelalmoxarifado.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 <body>
@@ -199,10 +200,15 @@ include 'verificar_quantidade_produtos.php';
     </table>
     </div>
 </div>
-
+<div class="card">
+    <div class="car-estoque-pr">
+        <h2>Produto Mais Vendido e Estimativa de Estoque</h2>
+        </div>
+        <canvas id="salesChart"></canvas>
+    </div>
 </div>
 </div>
-
+<script src="./src/estoque/js/analise-estoque.js" ></script>
        
 
 <script src="./src/estoque/js/painelalmoxarifado.js"></script>

@@ -77,25 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     exit;
                 }
                 $transacaoStmt->close();
-
-                // Registro no log_eventos
-                $sql_log = "INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (?, ?, NOW())";
-                $stmt_log = $conn->prepare($sql_log);
-
-                if ($stmt_log) {
-                    $tipo_operacao = "atualizou o produto";
-                    $stmt_log->bind_param("ss", $username, $tipo_operacao);
-
-                    if ($stmt_log->execute()) {
-                        echo " Ação registrada no log com sucesso.";
-                    } else {
-                        echo "Erro ao registrar ação no log: " . $stmt_log->error;
-                    }
-
-                    $stmt_log->close();
-                } else {
-                    echo "Erro na preparação da consulta do log: " . $conn->error;
-                }
             } else {
                 echo "Erro ao atualizar a quantidade: " . $stmt_atualiza->error;
             }
@@ -139,27 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     exit;
                 }
                 $transacaoStmt->close();
-
-                // Registro no log_eventos
-                $sql_log = "INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (?, ?, NOW())";
-                $stmt_log = $conn->prepare($sql_log);
-
-                if ($stmt_log) {
-                    $tipo_operacao = "cadastrou o produto no estoque";
-                    $stmt_log->bind_param("ss", $username, $tipo_operacao);
-
-                    if ($stmt_log->execute()) {
-                        // Redirecionar para a página de sucesso
-                        header('Location: mensagem.php?mensagem=sucesso2&pagina=homeestoque.php');
-                        exit();
-                    } else {
-                        echo "Erro ao registrar ação no log: " . $stmt_log->error;
-                    }
-
-                    $stmt_log->close();
-                } else {
-                    echo "Erro na preparação da consulta do log: " . $conn->error;
-                }
             } else {
                 echo "Erro ao cadastrar o produto: " . $stmt_insere->error;
             }
@@ -170,7 +130,70 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    $stmt_verifica->close();
+    // Verifica se a natureza já existe na tabela fechamento
+    $sql_fe = "SELECT saldo_atual, total_entrada FROM fechamento WHERE natureza = ?";
+    $stmt_fe = $conn->prepare($sql_fe);
+    $stmt_fe->bind_param("s", $natureza);
+    $stmt_fe->execute();
+    $stmt_fe->store_result();
+
+    if ($stmt_fe->num_rows > 0) {
+        // Já existe um fechamento para essa natureza, atualiza os valores
+        $stmt_fe->bind_result($saldo_atual, $total_entrada_existente);
+        $stmt_fe->fetch();
+
+        // Calcula o novo total de entrada e saldo atual
+        $novo_total_entrada = $total_entrada_existente + ($quantidade * $preco_medio);
+        $novo_saldo_atual = $saldo_atual + ($quantidade * $preco_medio);
+
+        // Atualiza o fechamento
+        $sql_update_fe = "UPDATE fechamento SET total_entrada = ?, saldo_atual = ? WHERE natureza = ?";
+        $stmt_update_fe = $conn->prepare($sql_update_fe);
+        $stmt_update_fe->bind_param("dds", $novo_total_entrada, $novo_saldo_atual, $natureza);
+        if ($stmt_update_fe->execute()) {
+            echo "Fechamento atualizado com sucesso!";
+        } else {
+            echo "Erro ao atualizar fechamento: " . $stmt_update_fe->error;
+        }
+        $stmt_update_fe->close();
+    } else {
+        // Não existe um fechamento para essa natureza, insere um novo registro
+        $total_entrada = $quantidade * $preco_medio;
+        $sql_insert_fe = "INSERT INTO fechamento (natureza, total_entrada, saldo_atual, data_fechamento) VALUES (?, ?, ?, NOW())";
+        $stmt_insert_fe = $conn->prepare($sql_insert_fe);
+        $stmt_insert_fe->bind_param("sdd", $natureza, $total_entrada, $total_entrada);
+
+        if ($stmt_insert_fe->execute()) {
+            echo "Novo fechamento inserido com sucesso!";
+        } else {
+            echo "Erro ao inserir fechamento: " . $stmt_insert_fe->error;
+        }
+
+        $stmt_insert_fe->close();
+    }
+
+    $stmt_fe->close();
+
+    // Registro no log_eventos
+    $sql_log = "INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (?, ?, NOW())";
+    $stmt_log = $conn->prepare($sql_log);
+
+    if ($stmt_log) {
+        $tipo_operacao = "cadastrou ou atualizou o produto no estoque";
+        $stmt_log->bind_param("ss", $username, $tipo_operacao);
+
+        if ($stmt_log->execute()) {
+            // Redirecionar para a página de sucesso
+            header('Location: mensagem.php?mensagem=sucesso2&pagina=homeestoque.php');
+            exit();
+        } else {
+            echo "Erro ao registrar ação no log: " . $stmt_log->error;
+        }
+
+        $stmt_log->close();
+    } else {
+        echo "Erro na preparação da consulta do log: " . $conn->error;
+    }
 }
 
 // Fecha a conexão com o banco de dados

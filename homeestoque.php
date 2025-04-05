@@ -140,7 +140,7 @@ $resultado_transicao = $con->query($query_transicao);
         <i class="fas fa-file-alt"></i> Relatório
     </div>
     <div class="tab" data-tab="fechamento" onclick="showTab('fechamento')">
-        <i class="fas fa-image"></i> Galeria
+        <i class="fas fa-image"></i> Fechamento
     </div>
 </div>
 
@@ -246,12 +246,12 @@ $resultado_transicao = $con->query($query_transicao);
 
 <!-- SCRIPT FINAL - DEVE FICAR DEPOIS DOS CAMPOS -->
 
-<script>
+<!-- <script>
     function sincronizarProduto() {
         // Copia o valor selecionado do select para o campo de input
         document.getElementById("produto_input").value = document.getElementById("produto").value;
     }
-</script>
+</script> -->
 
 
 <div class="form-container" id="consulta">

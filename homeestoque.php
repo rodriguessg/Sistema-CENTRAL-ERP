@@ -762,7 +762,6 @@ $resultado_transicao = $con->query($query_transicao);
     
     <div id="linhaDoTempo"></div>
 </div>
-
 <!-- Modal de Fechamento -->
 <div id="modalFechamento" style="display: none;">
     <div id="modalFechamentoContent">

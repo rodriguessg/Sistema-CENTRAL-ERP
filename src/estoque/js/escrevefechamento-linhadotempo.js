@@ -18,18 +18,30 @@ function realizarFechamento() {
 
 // Função para carregar a linha do tempo de fechamentos
 function carregarLinhaDoTempo() {
-    fetch('obterfechamentos.php')
+    fetch('linha_do_tempo.php')  // Requisição para o backend
         .then(response => response.json())
         .then(data => {
             const linhaDoTempo = document.getElementById("linhaDoTempo");
-            linhaDoTempo.innerHTML = '';  // Limpa a linha do tempo antes de adicionar novos fechamentos
 
-            if (data.success && Array.isArray(data.fechamentos) && data.fechamentos.length > 0) {
-                data.fechamentos.forEach(fechamento => {
-                    adicionarFechamentoNaLinhaDoTempo(fechamento);
-                });
+            // Limpa a linha do tempo antes de adicionar novos fechamentos
+            linhaDoTempo.innerHTML = '';
+
+            // Exibe o saldo total, uma única vez
+            if (data.success) {
+                const fechamento = data.fechamentos[0]; // Obtém o único fechamento retornado
+
+                const div = document.createElement("div");
+                div.classList.add("linha-tempo-item");
+
+                div.innerHTML = `
+                    <div class="linha-tempo-content">
+                        <strong>Data:</strong> ${fechamento.data_fechamento}<br>
+                        <strong>Saldo Total:</strong> R$ ${parseFloat(fechamento.saldo_atual).toFixed(2)}
+                    </div>
+                `;
+                linhaDoTempo.appendChild(div);
             } else {
-                linhaDoTempo.innerHTML = '<p style="text-align: center;">Nenhum fechamento encontrado.</p>';
+                linhaDoTempo.innerHTML = '<p style="text-align: center; color: red;">Erro ao carregar os fechamentos.</p>';
             }
         })
         .catch(error => {
@@ -38,21 +50,7 @@ function carregarLinhaDoTempo() {
         });
 }
 
-// Função para adicionar um fechamento à linha do tempo
-function adicionarFechamentoNaLinhaDoTempo(fechamento) {
-    const linhaDoTempo = document.getElementById("linhaDoTempo");
-    const div = document.createElement("div");
-    div.classList.add("linha-tempo-item");
-
-    div.innerHTML = `
-        <div class="linha-tempo-content">
-            <strong>Data:</strong> ${fechamento.data_fechamento}<br>
-            <strong>Usuário:</strong> ${fechamento.username}<br> <!-- Exibe o username -->
-            <strong>Saldo Atual:</strong> R$ ${parseFloat(fechamento.saldo_atual).toFixed(2)}
-        </div>
-        <button class="dots-button" onclick="abrirModal(fechamento)">&#8230;</button>
-    `;
-    linhaDoTempo.appendChild(div);
-}
-
-
+// Carregar a linha do tempo ao carregar a página
+window.onload = function() {
+    carregarLinhaDoTempo();  // Chama a função para carregar os dados na linha do tempo
+};

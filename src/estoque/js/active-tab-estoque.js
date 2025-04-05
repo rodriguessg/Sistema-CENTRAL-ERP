@@ -1,5 +1,6 @@
 // Função para alternar entre as abas
 function showTab(tabName) {
+  carregarLinhaDoTempo(); // Atualiza a lista após o fechamento
   // Esconder todas as abas do tipo form-container
   const tabs = document.querySelectorAll(".form-container");
   tabs.forEach((tab) => (tab.style.display = "none"));

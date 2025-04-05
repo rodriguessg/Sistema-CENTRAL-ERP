@@ -1,0 +1,169 @@
+/* Container da linha do tempo */
+#linhaDoTempo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 80%;
+    margin: auto;
+    background: #fff;
+}
+
+/* Linha vertical da linha do tempo */
+#linhaDoTempo::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background: #007bff;
+    transform: translateX(-50%);
+}
+
+/* Item da linha do tempo */
+.linha-tempo-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 20px 0;
+    position: relative;
+}
+
+/* Alinhamento alternado de itens na linha do tempo */
+.linha-tempo-item:nth-child(odd) {
+    flex-direction: row-reverse;
+}
+
+/* Ponto central da linha do tempo */
+.linha-tempo-item::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 15px;
+    height: 15px;
+    background: #fff;
+    border: 3px solid #007bff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+/* Estilo do conteúdo dentro dos itens da linha do tempo */
+.linha-tempo-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    width: 45%;
+    text-align: left;
+    font-size: 14px;
+}
+
+/* Cabeçalho */
+h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Fundo escuro que aparece atrás do modal */
+#modalFechamento {
+    display: none; /* Inicialmente invisível */
+    position: fixed;
+    top: 10%; /* Ajuste o valor para mover o modal um pouco mais para cima */
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro e transparente */
+    z-index: 9998; /* Fica atrás do conteúdo do modal */
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: flex-start; /* Muda o alinhamento para um pouco mais para cima */
+    padding-top: 50px; /* Adiciona um pequeno espaço extra no topo */
+    transform: translateX(-50%);
+}
+
+/* Conteúdo do modal */
+#modalFechamentoContent {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 600px; /* Ajuste o tamanho do modal conforme necessário */
+    max-width: 90%; /* Garante que o modal não fique maior que a tela */
+    z-index: 9999; /* Modal fica na frente do fundo */
+}
+
+/* Estilo do botão de fechar */
+button {
+    margin-top: 10px;
+    padding: 8px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Estilos do botão de três pontos */
+.dots-button {
+    background-color: transparent;
+    border: none;
+    font-size: 30px;
+    color: #333;
+    cursor: pointer;
+    padding: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.dots-button:hover {
+    color: #4CAF50;  /* Altere a cor ao passar o mouse */
+}
+
+/* Media Queries para Responsividade */
+
+/* Para telas pequenas */
+@media (max-width: 768px) {
+    #linhaDoTempo {
+        width: 90%;
+    }
+
+    .linha-tempo-content {
+        width: 100%; /* Permite que o conteúdo ocupe a largura total */
+    }
+
+    #modalFechamentoContent {
+        width: 80%; /* Modal ocupa 80% da tela em dispositivos menores */
+    }
+}
+
+/* Para telas muito pequenas */
+@media (max-width: 480px) {
+    #linhaDoTempo {
+        width: 100%;
+    }
+
+    .linha-tempo-content {
+        width: 100%; /* Permite que o conteúdo ocupe a largura total */
+    }
+
+    #modalFechamentoContent {
+        width: 95%; /* Modal ocupa 95% da tela em dispositivos muito pequenos */
+    }
+
+    .dots-button {
+        font-size: 25px; /* Ajusta o tamanho do botão de três pontos para telas pequenas */
+    }
+}

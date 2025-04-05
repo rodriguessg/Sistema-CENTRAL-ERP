@@ -77,11 +77,11 @@ try {
     }
 
     // Retorna a quantidade total de produtos, produtos com 5 unidades e produtos com menos de 5 unidades
-    echo json_encode([
-        'quantidade_total' => $resultTotal['quantidade'],
-        'quantidade_5_unidades' => $result5Unidades['quantidade5'],
-        'quantidade_abaixo_5' => $stmtAbaixo5->rowCount() // Conta o número de produtos abaixo de 5
-    ]);
+    // echo json_encode([
+    //     'quantidade_total' => $resultTotal['quantidade'],
+    //     'quantidade_5_unidades' => $result5Unidades['quantidade5'],
+    //     'quantidade_abaixo_5' => $stmtAbaixo5->rowCount() // Conta o número de produtos abaixo de 5
+    // ]);
     
 } catch (PDOException $e) {
     // Em caso de erro na conexão com o banco de dados

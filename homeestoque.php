@@ -110,6 +110,7 @@ $resultado_transicao = $con->query($query_transicao);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Almoxarifado</title>
     <link rel="stylesheet" href="src/estoque/style/estoque-conteudo.css?v=3">
+        <link rel="stylesheet" href="src/estoque/style/linhadotempo.css">
 
 <!-- Font Awesome CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -370,6 +371,7 @@ $resultado_transicao = $con->query($query_transicao);
                 <i class="fas fa-flask"></i> <!-- Ícone ao lado do campo -->
                 <input type="text" id="material-natureza" name="material-natureza" placeholder="preenchido automaticamente" readonly>
             </div>
+            
 
             <!-- Localização -->
             <div class="input-group">
@@ -433,10 +435,10 @@ $resultado_transicao = $con->query($query_transicao);
             </tr>
         <?php } ?>
     </tbody>
-</table>
-</div>
-</form>
-    <div id="mensagem" style="color: red; margin-top: 10px;"></div>
+    </table>
+    </div>
+    </form>
+        <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
 
 
@@ -553,6 +555,7 @@ $resultado_transicao = $con->query($query_transicao);
                 <option value="semanal">Semanal</option>
                 <option value="mensal">Mensal</option>
                 <option value="anual">Anual</option>
+                <option value="fechamento">Fechamento</option>
             </select>
         </div>
 
@@ -561,6 +564,14 @@ $resultado_transicao = $con->query($query_transicao);
         <div class="relatorio-group" id="exercicio-group" style="display: none;">
             <select id="exercicio" name="exercicio">
                 <option value="" disabled selected>Carregando...</option>
+            </select>
+        </div>
+
+        <!-- Seletor de Mês (visível quando "Mensal" é selecionado) -->
+        <label for="mes">Selecione o Mês:</label>
+        <div class="relatorio-group" id="mes-group" style="display: none;">
+            <select id="mes" name="mes">
+                <option value="" disabled selected>Escolha um mês</option>
             </select>
         </div>
 
@@ -576,7 +587,6 @@ $resultado_transicao = $con->query($query_transicao);
         </div>
     </form>
 
-
     <!-- Área para exibição do relatório gerado -->
     <div id="resultadoRelatorio" style="margin-top: 20px;"></div>
 
@@ -585,103 +595,46 @@ $resultado_transicao = $con->query($query_transicao);
     
     <!-- Botão de Exportação para Excel -->
     <button id="exportarExcelBtn" onclick="exportarParaExcel()" style="display: none; margin-top: 10px;">Exportar para Excel</button>
-    </div>
-
 </div>
 
-
-<!-- FECHAMENTO DE ALOMXARIFADO MENSAL -->
-<div class="form-container" id="fechamento" style="width: 50%;
-    display: flex
-;
-    justify-content: center;
-    margin: auto;
-    margin-left: 35%;">
-    <h2>Fechamento</h2>
-    
-</div>
-
-<!-- JavaScript para Mostrar o Formulário -->
-<!-- <script>
-    // Função para mostrar o formulário de fechamento
-    function mostrarFechamento() {
-        document.getElementById('fechamento').style.display = 'block';
-    }
-</script> -->
-
-
-
-
-<!-- PREENCHE MATERIAIS PARA RETIRADA -->
 <script>
-    document.getElementById('material-nome').addEventListener('change', function() {
-    const nomeMaterialId = this.value; // Obtém o ID do material selecionado
-
-    // Verifica se os elementos existem antes de tentar acessá-los
-    const descricaoInput = document.getElementById('material-codigo');
-    const classificacaoInput = document.getElementById('material-classificacao');
-    const naturezaInput = document.getElementById('material-natureza');
-    const localizacaoInput = document.getElementById('material-localizacao');
-    const precoMedioInput = document.getElementById('material-preco-medio');
-    const mensagemDiv = document.getElementById('mensagem');
-
-    if (!descricaoInput || !classificacaoInput || !naturezaInput || !localizacaoInput || !precoMedioInput) {
-        console.error("Erro: Um ou mais elementos não existem no HTML.");
-        return;
-    }
-
-    // Limpa os campos e a mensagem de erro
-    descricaoInput.value = '';
-    classificacaoInput.value = '';
-    naturezaInput.value = '';
-    localizacaoInput.value = '';
-    precoMedioInput.value = '';
-    mensagemDiv.innerText = '';
-
-    if (nomeMaterialId) {
-        fetch('buscar_dados_produto.php?id=' + nomeMaterialId)
-            .then(response => response.json())
-            .then(data => {
-                console.log("Resposta da API:", data); // Depuração
-
-                if (data.success) {
-                    setTimeout(() => {
-                        descricaoInput.value = data.descricao || ''; // Correção aqui
-                        classificacaoInput.value = data.classificacao || '';
-                        naturezaInput.value = data.natureza || '';
-                        localizacaoInput.value = data.localizacao || '';
-                        precoMedioInput.value = data.preco_medio || '';
-                    }, 300);
-                    mensagemDiv.innerText = '';
-                } else {
-                    mensagemDiv.innerText = 'Material não encontrado.';
-                }
-            })
-            .catch(err => {
-                console.error('Erro ao buscar os dados:', err);
-                mensagemDiv.innerText = 'Erro na busca. Tente novamente.';
-            });
-    } else {
-        mensagemDiv.innerText = ''; // Limpa a mensagem se nada for selecionado
-    }
-    });
-
-
-</script>
-<!-- AO RETIRAR ESTE SCRIPT APRESEMTA ERRO NO PREENCHIMENTO DO NOME DO USUÁRIO NO RELATÓRIO -->
-<script>
-    // Exibir o seletor de exercício apenas se a opção anual for selecionada
+    // Função para exibir o seletor de exercício ou mês dependendo da opção selecionada
     function toggleExercicioSelector(periodo) {
+        const mesGroup = document.getElementById('mes-group');
         const exercicioGroup = document.getElementById('exercicio-group');
-        if (periodo === 'anual') {
+        
+        if (periodo === 'mensal') {
+            // Exibe o seletor de meses
+            mesGroup.style.display = 'block';
+            exercicioGroup.style.display = 'none';
+
+            // Preencher os meses
+            const meses = [
+                "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+            ];
+            
+            const mesSelect = document.getElementById('mes');
+            mesSelect.innerHTML = '<option value="" disabled selected>Escolha um mês</option>'; // Limpar o conteúdo existente
+            
+            meses.forEach((mes, index) => {
+                const option = document.createElement('option');
+                option.value = index + 1;  // O valor será o número do mês (1-12)
+                option.textContent = mes;
+                mesSelect.appendChild(option);
+            });
+        } else if (periodo === 'anual') {
+            // Exibe o seletor de exercício (ano)
+            mesGroup.style.display = 'none';
             exercicioGroup.style.display = 'block';
             fetchExercicios(); // Carregar exercícios via AJAX
         } else {
+            mesGroup.style.display = 'none';
             exercicioGroup.style.display = 'none';
         }
     }
 
-    // Função para carregar os exercícios disponíveis
+    // Função para carregar os exercícios (anos) disponíveis
     async function fetchExercicios() {
         try {
             const response = await fetch('buscar_exercicios.php');
@@ -699,6 +652,7 @@ $resultado_transicao = $con->query($query_transicao);
             console.error('Erro ao carregar exercícios:', error);
         }
     }
+
     // Preencher o campo de usuário logado dinamicamente
     document.addEventListener("DOMContentLoaded", () => {
         const usuario = "<?php echo $_SESSION['username'] ?? 'Desconhecido'; ?>";
@@ -709,7 +663,7 @@ $resultado_transicao = $con->query($query_transicao);
     async function gerarRelatorio() {
         const periodo = document.getElementById('periodo').value;
         const exercicio = document.getElementById('exercicio').value;
-        const incluirQuantidade = document.getElementById('incluir_quantidade').checked;
+        const mes = document.getElementById('mes').value;
         const usuario = document.getElementById('usuario').value;
 
         if (!periodo) {
@@ -722,6 +676,11 @@ $resultado_transicao = $con->query($query_transicao);
             return;
         }
 
+        if (periodo === 'mensal' && !mes) {
+            alert('Por favor, selecione um mês para o relatório mensal.');
+            return;
+        }
+
         try {
             const response = await fetch('gerar_relatorioestoque.php', {
                 method: 'POST',
@@ -729,7 +688,7 @@ $resultado_transicao = $con->query($query_transicao);
                 body: new URLSearchParams({
                     periodo,
                     exercicio,
-                    incluir_quantidade: incluirQuantidade ? '1' : '',
+                    mes,
                     usuario
                 })
             });
@@ -791,9 +750,104 @@ $resultado_transicao = $con->query($query_transicao);
 
         URL.revokeObjectURL(url);
     }
-
-    
 </script>
+
+
+
+<!-- FECHAMENTO DE ALOMXARIFADO MENSAL -->
+
+<div class="form-container" id="fechamento" style="display: flex; justify-content: center; margin:15%; margin-top:20px">
+    <button id="realizarFechamentoButton" onclick="realizarFechamento()">Realizar Fechamento</button>
+    <h2>Histórico de Fechamentos</h2>
+    
+    <div id="linhaDoTempo"></div>
+</div>
+
+<!-- Modal de Fechamento -->
+<div id="modalFechamento" style="display: none;">
+    <div id="modalFechamentoContent">
+        <table id="tabelaFechamentos">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Natureza</th>
+                    <th>Total Entrada</th>
+                    <th>Total Saída</th>
+                    <th>Saldo Atual</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button onclick="gerarPDF()">Imprimir PDF</button>
+        <button onclick="fecharModal()">Fechar</button>
+    </div>
+</div>
+
+
+
+<script src="./src/estoque/js/escrevefechamento-linhadotempo.js"></script>
+
+
+
+
+<!-- PREENCHE MATERIAIS PARA RETIRADA -->
+<script>
+    document.getElementById('material-nome').addEventListener('change', function() {
+    const nomeMaterialId = this.value; // Obtém o ID do material selecionado
+
+    // Verifica se os elementos existem antes de tentar acessá-los
+    const descricaoInput = document.getElementById('material-codigo');
+    const classificacaoInput = document.getElementById('material-classificacao');
+    const naturezaInput = document.getElementById('material-natureza');
+    const localizacaoInput = document.getElementById('material-localizacao');
+    const precoMedioInput = document.getElementById('material-preco-medio');
+    const mensagemDiv = document.getElementById('mensagem');
+
+    if (!descricaoInput || !classificacaoInput || !naturezaInput || !localizacaoInput || !precoMedioInput) {
+        console.error("Erro: Um ou mais elementos não existem no HTML.");
+        return;
+    }
+
+    // Limpa os campos e a mensagem de erro
+    descricaoInput.value = '';
+    classificacaoInput.value = '';
+    naturezaInput.value = '';
+    localizacaoInput.value = '';
+    precoMedioInput.value = '';
+    mensagemDiv.innerText = '';
+
+    if (nomeMaterialId) {
+        fetch('buscar_dados_produto.php?id=' + nomeMaterialId)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Resposta da API:", data); // Depuração
+
+                if (data.success) {
+                    setTimeout(() => {
+                        descricaoInput.value = data.descricao || ''; // Correção aqui
+                        classificacaoInput.value = data.classificacao || '';
+                        naturezaInput.value = data.natureza || '';
+                        localizacaoInput.value = data.localizacao || '';
+                        precoMedioInput.value = data.preco_medio || '';
+                    }, 300);
+                    mensagemDiv.innerText = '';
+                } else {
+                    mensagemDiv.innerText = 'Material não encontrado.';
+                }
+            })
+            .catch(err => {
+                console.error('Erro ao buscar os dados:', err);
+                mensagemDiv.innerText = 'Erro na busca. Tente novamente.';
+            });
+    } else {
+        mensagemDiv.innerText = ''; // Limpa a mensagem se nada for selecionado
+    }
+    });
+
+
+</script>
+<!-- AO RETIRAR ESTE SCRIPT APRESEMTA ERRO NO PREENCHIMENTO DO NOME DO USUÁRIO NO RELATÓRIO -->
+
 
 <!-- JS CÁLCULO DE PREÇO MÉDIO -->
 <script src="./src/estoque/js/calc-preco-medio.js"></script>

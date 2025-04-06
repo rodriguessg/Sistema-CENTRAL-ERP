@@ -72,9 +72,10 @@ try {
 
             case 'contratos':
                 $menuItens = [
-                    ['link' => 'painelcontratos.php', 'nome' => 'Assinatura Contratos', 'icon' => 'envelope'],
+                   
                     ['link' => 'homecontratos.php', 'nome' => 'Home', 'icon' => 'home'],
-                    ['link' => 'rh.php', 'nome' => 'Painel', 'icon' => 'cogs'],
+                    ['link' => 'painelcontratos.php', 'nome' => 'Painel', 'icon' => 'cogs'],
+                    ['link' => 'rh.php', 'nome' => 'Assinatura Contratos', 'icon' => 'envelope'],
                 ];
                 break;
 
@@ -124,8 +125,8 @@ try {
 
 
 <?php
+    
     // Supondo que a variável $setor contém o setor do usuário logado (essa variável já deve estar definida)
-    // Verifique o setor do usuário
     $setor = $_SESSION['setor']; // Supondo que o setor está armazenado na sessão
 
     // Conexão com o banco de dados
@@ -139,17 +140,33 @@ try {
         $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Verifica se o setor do usuário é "administrador" ou "estoque"
-        if ($setor == 'administrador' || $setor == 'estoque') {
-            // Consulta para pegar as notificações não lidas
+        // Verificar setores para determinar as notificações visíveis
+        if ($setor == 'administrador') {
+            // Administrador pode ver todas as notificações
             $query = "SELECT id, mensagem FROM notificacoes WHERE situacao = 'nao lida' ORDER BY data_criacao DESC";
             $stmt = $pdo->query($query);
             $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // Conta a quantidade de notificações não lidas
+            $unreadCount = count($notifications);
+        } elseif ($setor == 'estoque') {
+            // Estoque pode ver notificações de 'estoque' e 'administrador'
+            $query = "SELECT id, mensagem FROM notificacoes WHERE (situacao = 'nao lida' AND (setor = 'estoque' OR setor = 'administrador')) ORDER BY data_criacao DESC";
+            $stmt = $pdo->query($query);
+            $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $unreadCount = count($notifications);
+        } elseif ($setor == 'contratos') {
+            // Contratos pode ver notificações de 'contratos' e 'administrador'
+            $query = "SELECT id, mensagem FROM notificacoes WHERE (situacao = 'nao lida' AND (setor = 'contratos' OR setor = 'administrador')) ORDER BY data_criacao DESC";
+            $stmt = $pdo->query($query);
+            $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $unreadCount = count($notifications);
+        } elseif ($setor == 'financeiro') {
+            // Financeiro pode ver notificações de 'financeiro' e 'administrador'
+            $query = "SELECT id, mensagem FROM notificacoes WHERE (situacao = 'nao lida' AND (setor = 'financeiro' OR setor = 'administrador')) ORDER BY data_criacao DESC";
+            $stmt = $pdo->query($query);
+            $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $unreadCount = count($notifications);
         } else {
-            // Se o setor não for administrador nem estoque, definimos $unreadCount como 0
+            // Se o setor não for um dos acima, não há notificações
             $unreadCount = 0;
             $notifications = [];
         }
@@ -159,6 +176,7 @@ try {
         echo "Erro ao conectar ao banco de dados: " . $e->getMessage();
     }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">

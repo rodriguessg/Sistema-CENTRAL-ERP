@@ -1,5 +1,4 @@
 <?php
-    // contrato.php
     session_start();
     // Conexão com o banco de dados
     $dsn = 'mysql:host=localhost;dbname=gm_sicbd';
@@ -11,6 +10,20 @@
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
         die("Erro ao conectar ao banco de dados: " . $e->getMessage());
+    }
+
+    // Marcar a notificação como lida quando o usuário clicar
+    if (isset($_GET['mark_read'])) {
+        $notificationId = $_GET['mark_read'];
+
+        // Verifique se o usuário é 'contratos' para permitir marcar como lida
+        if ($_SESSION['username'] == 'contratos') {
+            $sqlMarkRead = "UPDATE notificacoes SET situacao = 'lida' WHERE id = :id";
+            $stmtMarkRead = $pdo->prepare($sqlMarkRead);
+            $stmtMarkRead->execute([':id' => $notificationId]);
+
+            $_SESSION['success'] = "Notificação marcada como lida.";
+        }
     }
 
     // Processar assinatura do contrato
@@ -35,6 +48,44 @@
         } catch (Exception $e) {
             $_SESSION['error'] = "Erro ao cadastrar contrato: " . $e->getMessage();
         }
+
+        // Agora insere a notificação apenas após o cadastro do contrato
+        $nomeContrato = $titulo; // Nome do contrato
+        $usuario = $_SESSION['username']; // Nome do usuário da sessão
+        $setor = $_SESSION['setor']; // Setor do usuário da sessão
+        $situacao = 'não lida'; // Situação como não lida
+        $dataNotificacao = date('Y-m-d H:i:s'); // Data e hora atual da notificação
+
+        // Verificar se já existe uma notificação para o mesmo contrato e usuário
+        $sqlVerificacao = "SELECT COUNT(*) FROM notificacoes WHERE username = :username AND mensagem = :mensagem";
+        $stmtVerificacao = $pdo->prepare($sqlVerificacao);
+        $stmtVerificacao->execute([
+            ':username' => $usuario,
+            ':mensagem' => $nomeContrato
+        ]);
+
+        // Se não houver uma notificação, insira a nova
+        if ($stmtVerificacao->fetchColumn() == 0) {
+            // Inserir a notificação se não existir
+            $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                               VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
+            $stmtNotificacao = $pdo->prepare($sqlNotificacao);
+
+            try {
+                $stmtNotificacao->execute([
+                    ':username' => $usuario,
+                    ':setor' => $setor,
+                    ':mensagem' => "Contrato '{$nomeContrato}' prestes a expirar.",
+                    ':situacao' => $situacao,
+                    ':data_criacao' => $dataNotificacao
+                ]);
+            } catch (Exception $e) {
+                $_SESSION['error'] = "Erro ao adicionar notificação: " . $e->getMessage();
+            }
+        } else {
+            // Se a notificação já existe, não faz nada
+            $_SESSION['info'] = "Notificação para o contrato '{$nomeContrato}' já foi registrada.";
+        }
     }
 
     // Buscar contratos próximos de expirar
@@ -44,26 +95,20 @@
     $notificacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Verifica se um ID de processo foi enviado via GET
-$processId = isset($_GET['processId']) ? $_GET['processId'] : null;
+    $processId = isset($_GET['processId']) ? $_GET['processId'] : null;
 
-// Consulta para obter os detalhes do processo com base no ID
-$processDetails = null;
-if ($processId) {
-    $sql = "SELECT * FROM gestao_contratos WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('i', $processId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    // Se um processo for encontrado, armazena os dados
-    if ($result->num_rows > 0) {
-        $processDetails = $result->fetch_assoc();
+    // Consulta para obter os detalhes do processo com base no ID
+    $processDetails = null;
+    if ($processId) {
+        $sql = "SELECT * FROM gestao_contratos WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$processId]);
+        $processDetails = $stmt->fetch(PDO::FETCH_ASSOC);
     }
-}
-
 
     include 'header.php';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -127,58 +172,9 @@ if ($processId) {
     <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')">Galeria</div> -->
 </div>
 
-<?php
-    // Conexão com o banco de dados (substitua pelos seus dados)
-    $pdo = new PDO('mysql:host=localhost;dbname=gm_sicbd', 'root', '');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"])) {
-    try {
-        // Converte os valores monetários para formato numérico correto
-        function formatarValor($valor) {
-            return floatval(str_replace(['R$', '.', ','], ['', '', '.'], trim($valor)));
-        }
-
-        $valor_contrato = isset($_POST['valor_contrato']) ? formatarValor($_POST['valor_contrato']) : 0;
-        $valor_aditivo = isset($_POST['valor_aditivo']) ? formatarValor($_POST['valor_aditivo']) : null;
-
-        // Prepara a inserção dos dados na tabela
-        $sql = "INSERT INTO gestao_contratos 
-                (titulo, SEI, objeto, gestor, gestorsb, fiscais, validade, contatos, valor_contrato, valor_aditivo, num_parcelas, descricao, situacao) 
-                VALUES 
-                (:titulo, :SEI, :objeto, :gestor, :gestorsb, :fiscais, :validade, :contatos, :valor_contrato, :valor_aditivo, :num_parcelas, :descricao, 'Ativo')";
-
-        $stmt = $pdo->prepare($sql);
-
-        // Bind dos parâmetros
-        $stmt->bindParam(':titulo', $_POST['titulo']);
-        $stmt->bindParam(':SEI', $_POST['SEI']);
-        $stmt->bindParam(':objeto', $_POST['objeto']);
-        $stmt->bindParam(':gestor', $_POST['gestor']);
-        $stmt->bindParam(':gestorsb', $_POST['gestorsb']);
-        $stmt->bindParam(':fiscais', $_POST['fiscais']);
-        $stmt->bindParam(':validade', $_POST['validade']);
-        $stmt->bindParam(':contatos', $_POST['contatos']);
-        $stmt->bindParam(':valor_contrato', $valor_contrato);
-        $stmt->bindParam(':valor_aditivo', $valor_aditivo);
-
-        // Se o contrato for parcelado, armazena o número de parcelas, senão define como NULL
-        $num_parcelas = isset($_POST['parcelamento']) ? $_POST['num_parcelas'] : null;
-        $stmt->bindParam(':num_parcelas', $num_parcelas);
-
-        $stmt->bindParam(':descricao', $_POST['descricao']);
-
-        // Executa a inserção
-        $stmt->execute();
-
-        echo "<script>alert('Contrato cadastrado com sucesso!'); window.location.href='homecontratos.php';</script>";
-    } catch (PDOException $e) {
-        echo "Erro ao cadastrar contrato: " . $e->getMessage();
-    }
- }
-?>
 <div class="form-container3" id="cadastrar" style="display:none;">
-    <form method="POST">
+    <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data">
         <div class="cadastro">
             <div class="mb-3">
                 <label for="titulo" class="form-label">Título do Contrato</label>

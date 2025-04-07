@@ -109,7 +109,7 @@ $resultado_transicao = $con->query($query_transicao);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Almoxarifado</title>
-    <link rel="stylesheet" href="src/estoque/style/estoque-conteudo.css?v=3">
+    <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
         <link rel="stylesheet" href="src/estoque/style/linhadotempo.css">
 
 <!-- Font Awesome CDN -->
@@ -203,7 +203,7 @@ $resultado_transicao = $con->query($query_transicao);
                 <i class="fas fa-box"></i>
                 <input type="text" id="unidade" name="unidade" placeholder="Unidade de medida" required>
             </div>
-            
+
             <div class="input-group">
                 <label for="localizacao">Local:</label>
                 <i class="fas fa-map-marker-alt"></i>

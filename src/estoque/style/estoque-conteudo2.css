@@ -422,7 +422,7 @@ tr:hover {
 .btn-estoque {
   display: inline-flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 8px 22px;
   font-size: 14px;
   font-weight: 600;
   border-radius: 8px;
@@ -1122,22 +1122,6 @@ tr:hover {
   background-color: #34495e; /* Cor de fundo mais escura ao passar o mouse */
   transform: translateY(-2px); /* Efeito de elevação ao passar o mouse */
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Aumenta a sombra ao passar o mouse */
-}
-
-/* Estilos para o botão Atualizar (btn-estoque) */
-.btn-estoque {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background-color: #27ae60; /* Verde escuro para o botão de atualizar */
-  color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .btn-estoque i {

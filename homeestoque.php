@@ -193,14 +193,17 @@ $resultado_transicao = $con->query($query_transicao);
                 <input type="text" id="codigo" name="codigo" placeholder="Código do produto" required readonly>
             </div>
 
+           
+        </div>
+
+        <div class="form-group">
+
             <div class="input-group">
                 <label for="unidade">Unidade:</label>
                 <i class="fas fa-box"></i>
                 <input type="text" id="unidade" name="unidade" placeholder="Unidade de medida" required>
             </div>
-        </div>
-
-        <div class="form-group">
+            
             <div class="input-group">
                 <label for="localizacao">Local:</label>
                 <i class="fas fa-map-marker-alt"></i>
@@ -276,7 +279,6 @@ $resultado_transicao = $con->query($query_transicao);
                     <th>Natureza</th> 
                     <th>Quantidade</th>
                     <th>Local</th>              
-                    
                     <th>Custo</th>
                     <th>Ações</th>
                 </tr>
@@ -531,7 +533,7 @@ document.querySelectorAll('.excluir-button').forEach(button => {
                     <th>Local</th>
                     <th> C.contabil</th>
                     <th>Quantidade</th>
-                    <th>Custo</tr>
+                    <th>Custo</th>
                     <th>PreçoMédio </th>
                 </tr>
             </thead>

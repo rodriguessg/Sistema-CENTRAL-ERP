@@ -131,6 +131,7 @@ h3 {
   position: relative; /* Necessário para o ícone dentro do campo de entrada */
   display: flex;
   align-items: center; /* Alinha o ícone e o texto do input */
+  margin-top: 10px;
 }
 
 /* Estilo do label */

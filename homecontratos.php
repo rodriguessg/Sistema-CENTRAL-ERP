@@ -1,112 +1,120 @@
 <?php
-    session_start();
-    // Conexão com o banco de dados
-    $dsn = 'mysql:host=localhost;dbname=gm_sicbd';
-    $username = 'root';
-    $password = '';
+session_start();
+
+
+// Conexão com o banco de dados
+$dsn = 'mysql:host=localhost;dbname=gm_sicbd';
+$username = 'root';
+$password = '';
+
+try {
+    $pdo = new PDO($dsn, $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erro ao conectar ao banco de dados: " . $e->getMessage());
+}
+
+// Marcar a notificação como lida quando o usuário clicar
+if (isset($_GET['mark_read'])) {
+    $notificationId = $_GET['mark_read'];
+
+    // Verifique se o usuário é 'contratos' para permitir marcar como lida
+    if ($_SESSION['username'] == 'contratos') {
+        $sqlMarkRead = "UPDATE notificacoes SET situacao = 'lida' WHERE id = :id";
+        $stmtMarkRead = $pdo->prepare($sqlMarkRead);
+        $stmtMarkRead->execute([':id' => $notificationId]);
+
+        $_SESSION['success'] = "Notificação marcada como lida.";
+    }
+}
+
+// Processar assinatura do contrato
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])) {
+    $titulo = $_POST['titulo'];
+    $descricao = $_POST['descricao'];
+    $validade = $_POST['validade'];
+    $assinatura = $_POST['assinatura'];
+
+    // Inserir contrato
+    $sql = "INSERT INTO gestao_contratos (titulo, descricao, assinatura, validade) VALUES (:titulo, :descricao, :assinatura, :validade)";
+    $stmt = $pdo->prepare($sql);
 
     try {
-        $pdo = new PDO($dsn, $username, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch (PDOException $e) {
-        die("Erro ao conectar ao banco de dados: " . $e->getMessage());
-    }
-
-    // Marcar a notificação como lida quando o usuário clicar
-    if (isset($_GET['mark_read'])) {
-        $notificationId = $_GET['mark_read'];
-
-        // Verifique se o usuário é 'contratos' para permitir marcar como lida
-        if ($_SESSION['username'] == 'contratos') {
-            $sqlMarkRead = "UPDATE notificacoes SET situacao = 'lida' WHERE id = :id";
-            $stmtMarkRead = $pdo->prepare($sqlMarkRead);
-            $stmtMarkRead->execute([':id' => $notificationId]);
-
-            $_SESSION['success'] = "Notificação marcada como lida.";
-        }
-    }
-
-    // Processar assinatura do contrato
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])) {
-        $titulo = $_POST['titulo'];
-        $descricao = $_POST['descricao'];
-        $validade = $_POST['validade'];
-        $assinatura = $_POST['assinatura'];
-
-        $sql = "INSERT INTO gestao_contratos (titulo, descricao, assinatura, validade) VALUES (:titulo, :descricao, :assinatura, :validade)";
-        $stmt = $pdo->prepare($sql);
-
-        try {
-            $stmt->execute([
-                ':titulo' => $titulo,
-                ':descricao' => $descricao,
-                ':assinatura' => $assinatura,
-                ':validade' => $validade
-            ]);
-
-            $_SESSION['success'] = "Contrato cadastrado com sucesso!";
-        } catch (Exception $e) {
-            $_SESSION['error'] = "Erro ao cadastrar contrato: " . $e->getMessage();
-        }
-
-        // Agora insere a notificação apenas após o cadastro do contrato
-        $nomeContrato = $titulo; // Nome do contrato
-        $usuario = $_SESSION['username']; // Nome do usuário da sessão
-        $setor = $_SESSION['setor']; // Setor do usuário da sessão
-        $situacao = 'não lida'; // Situação como não lida
-        $dataNotificacao = date('Y-m-d H:i:s'); // Data e hora atual da notificação
-
-        // Verificar se já existe uma notificação para o mesmo contrato e usuário
-        $sqlVerificacao = "SELECT COUNT(*) FROM notificacoes WHERE username = :username AND mensagem = :mensagem";
-        $stmtVerificacao = $pdo->prepare($sqlVerificacao);
-        $stmtVerificacao->execute([
-            ':username' => $usuario,
-            ':mensagem' => $nomeContrato
+        $stmt->execute([
+            ':titulo' => $titulo,
+            ':descricao' => $descricao,
+            ':assinatura' => $assinatura,
+            ':validade' => $validade
         ]);
 
-        // Se não houver uma notificação, insira a nova
-        if ($stmtVerificacao->fetchColumn() == 0) {
-            // Inserir a notificação se não existir
-            $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
-                               VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
-            $stmtNotificacao = $pdo->prepare($sqlNotificacao);
-
-            try {
-                $stmtNotificacao->execute([
-                    ':username' => $usuario,
-                    ':setor' => $setor,
-                    ':mensagem' => "Contrato '{$nomeContrato}' prestes a expirar.",
-                    ':situacao' => $situacao,
-                    ':data_criacao' => $dataNotificacao
-                ]);
-            } catch (Exception $e) {
-                $_SESSION['error'] = "Erro ao adicionar notificação: " . $e->getMessage();
-            }
-        } else {
-            // Se a notificação já existe, não faz nada
-            $_SESSION['info'] = "Notificação para o contrato '{$nomeContrato}' já foi registrada.";
-        }
+        $_SESSION['success'] = "Contrato cadastrado com sucesso!";
+    } catch (Exception $e) {
+        $_SESSION['error'] = "Erro ao cadastrar contrato: " . $e->getMessage();
     }
 
-    // Buscar contratos próximos de expirar
-    $notificacoes = [];
-    $sql = "SELECT * FROM gestao_contratos WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH) AND validade >= CURDATE()";
-    $stmt = $pdo->query($sql);
-    $notificacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+   // Após o cadastro do contrato, insira a notificação
+$nomeContrato = $titulo; // Nome do contrato
+$usuario = $_SESSION['username']; // Nome do usuário da sessão
+$setor = $_SESSION['setor']; // Setor do usuário da sessão
+$situacao = 'não lida'; // Situação como não lida
+$dataNotificacao = date('Y-m-d H:i:s'); // Data e hora atual da notificação
 
-    // Verifica se um ID de processo foi enviado via GET
-    $processId = isset($_GET['processId']) ? $_GET['processId'] : null;
+// Verificar se já existe uma notificação para o mesmo contrato e usuário
+$sqlVerificacao = "SELECT COUNT(*) FROM notificacoes WHERE username = :username AND mensagem = :mensagem";
+$stmtVerificacao = $pdo->prepare($sqlVerificacao);
+$stmtVerificacao->execute([
+    ':username' => $usuario,
+    ':mensagem' => "Contrato '{$nomeContrato}' prestes a expirar." // Certifique-se de que a mensagem é a que você deseja
+]);
 
-    // Consulta para obter os detalhes do processo com base no ID
-    $processDetails = null;
-    if ($processId) {
-        $sql = "SELECT * FROM gestao_contratos WHERE id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$processId]);
-        $processDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+// Se não houver uma notificação, insira a nova
+if ($stmtVerificacao->fetchColumn() == 0) {
+    // Inserir a notificação se não existir
+    $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                       VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
+    $stmtNotificacao = $pdo->prepare($sqlNotificacao);
+
+    try {
+        // Tente executar a inserção da notificação
+        $stmtNotificacao->execute([
+            ':username' => $usuario,
+            ':setor' => $setor,
+            ':mensagem' => "Contrato '{$nomeContrato}' prestes a expirar.",
+            ':situacao' => $situacao,
+            ':data_criacao' => $dataNotificacao
+        ]);
+        
+        $_SESSION['success'] = "Notificação inserida com sucesso.";
+    } catch (Exception $e) {
+        // Caso ocorra um erro, mostre uma mensagem de erro
+        $_SESSION['error'] = "Erro ao adicionar notificação: " . $e->getMessage();
     }
+} else {
+    // Se a notificação já existe, não faz nada
+    $_SESSION['info'] = "Notificação para o contrato '{$nomeContrato}' já foi registrada.";
+}
+}
 
-    include 'header.php';
+// Buscar contratos próximos de expirar
+$notificacoes = [];
+$sql = "SELECT * FROM gestao_contratos WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH) AND validade >= CURDATE()";
+$stmt = $pdo->query($sql);
+$notificacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Verifica se um ID de processo foi enviado via GET
+$processId = isset($_GET['processId']) ? $_GET['processId'] : null;
+
+// Consulta para obter os detalhes do processo com base no ID
+$processDetails = null;
+if ($processId) {
+    $sql = "SELECT * FROM gestao_contratos WHERE id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$processId]);
+    $processDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+include 'header.php';
+
 ?>
 
 
@@ -130,38 +138,7 @@
 <div class="container">
         <h1 class="text-center text-success">Gestão de Contratos</h1>
 
-        <?php if (isset($_SESSION['success'])): ?>
-            <div class="alert alert-success">
-                <?= $_SESSION['success'] ?>
-            </div>
-            <?php unset($_SESSION['success']); ?>
-        <?php endif; ?>
-
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger">
-                <?= $_SESSION['error'] ?>
-            </div>
-            <?php unset($_SESSION['error']); ?>
-        <?php endif; ?>
-
-        <!-- Notificação de contratos próximos de expirar -->
-        <div class="notification">
-            <i class="bi bi-bell-fill" style="font-size: 24px;"></i>
-            <?php if (count($notificacoes) > 0): ?>
-                <span class="notification-badge"><?= count($notificacoes) ?></span>
-            <?php endif; ?>
-        </div>
-
-        <?php if (count($notificacoes) > 0): ?>
-            <div class="alert alert-warning mt-3">
-                <strong>Contratos próximos de expirar:</strong>
-                <ul>
-                    <?php foreach ($notificacoes as $notificacao): ?>
-                        <li><?= $notificacao['titulo'] ?> (Expira em: <?= $notificacao['validade'] ?>)</li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
+   
     
         <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">Cadastro de contratos</div>
@@ -790,6 +767,14 @@ document.getElementById('editProcessForm').addEventListener('submit', function(e
         }
     }
 </script>
+<?php
+
+
+// Incluir o código que já insere as notificações
+include 'verificar_notificacoes.php';  // O código que já insere as notificações
+
+// echo "Notificações inseridas com sucesso.";
+?>
 
 </body>
 </html>

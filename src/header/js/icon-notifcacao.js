@@ -23,7 +23,7 @@
     // Função para atualizar o contador de notificações não lidas
     function getNotificationsCount() {
         // Fazer a requisição para pegar o número de notificações não lidas
-        fetch('/getNotificationsCount.php')
+        fetch('.././getNotificationsCount.php')
         .then(response => response.json())
         .then(data => {
             // Atualiza o número de notificações não lidas na interface

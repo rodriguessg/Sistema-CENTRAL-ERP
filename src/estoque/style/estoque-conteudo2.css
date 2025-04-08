@@ -1559,3 +1559,26 @@ tr:hover {
     transform: translate(-50%, -50%) scale(1);
   }
 }
+
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination a {
+  padding: 8px 16px;
+  margin: 0 5px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.pagination a:hover {
+  background-color: #0056b3;
+}
+
+.pagination span {
+  padding: 8px 16px;
+  font-size: 16px;
+}

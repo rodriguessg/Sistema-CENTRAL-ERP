@@ -72,9 +72,9 @@ try {
 
             case 'contratos':
                 $menuItens = [
-                   
-                    ['link' => 'homecontratos.php', 'nome' => 'Home', 'icon' => 'home'],
                     ['link' => 'painelcontratos.php', 'nome' => 'Painel', 'icon' => 'cogs'],
+                    ['link' => 'homecontratos.php', 'nome' => 'Home', 'icon' => 'home'],
+                    ['link' => 'calendar.php', 'nome' => 'Clendário','icon' => 'home'],
                     ['link' => 'rh.php', 'nome' => 'Assinatura Contratos', 'icon' => 'envelope'],
                 ];
                 break;

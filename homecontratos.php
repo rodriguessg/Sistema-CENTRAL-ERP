@@ -133,19 +133,19 @@ include 'header.php';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <link rel="stylesheet" href="./src/style/form-cadastro-contratos.css">
 <link rel="stylesheet" href="./src/style/notificacao.css">
+<link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
 
 <body>
 <div class="container">
-        <h1 class="text-center text-success">Gestão de Contratos</h1>
+        <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
 
    
-    
-        <div class="tabs">
+<div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">Cadastro de contratos</div>
     <div class="tab" data-tab="retirar" onclick="showTab('consultar')">Consultar contratos</div>
     <div class="tab" data-tab="levantamento" onclick="showTab('agenda')">Agendamento</div>
-     <!-- <div class="tab" data-tab="processo" onclick="showTab('processos')">Processos</div> -->
-     <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">Resumo</div> 
+     <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">Resumo</div>
+      <div class="tab" data-tab="processo" onclick="showTab('relatorio')">Relatório</div>  
     <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')">Galeria</div> -->
 </div>
 
@@ -217,10 +217,10 @@ include 'header.php';
     </form>
 </div>
 
-<script src="./src/js/cadastro_contato.js">
+<script src="./src/contratos/js/cadastro_contato.js">
 </script>
 
-<div class="form-container3" id="processos">
+<!-- <div class="form-container3" id="processos">
     <?php
     // Conexão com o banco de dados
     include 'banco.php';
@@ -238,7 +238,148 @@ include 'header.php';
             <p class="card-text display-4"><?php echo $total_processos; ?></p>
         </div>
     </div>
+</div> -->
+<div class="form-container" id="relatorio">
+    <form id="relatorio-form">
+        <label for="tipo_relatorio">Tipo de Relatório:</label>
+        <select id="tipo_relatorio" name="tipo_relatorio" required>
+            <option value="">Selecione um tipo de relatório</option>
+            <option value="pagamentos">Relatório de Pagamentos</option>
+        </select>
+
+        <div id="periodicidade-container" style="display: none;">
+            <label for="periodicidade">Periodicidade do Relatório:</label>
+            <select id="periodicidade" name="periodicidade" required>
+                <option value="completo">Relatório Completo</option>
+                <option value="mensal">Relatório Mensal</option>
+                <option value="anual">Relatório Anual</option>
+            </select>
+        </div>
+
+        <div id="contratos-container" style="display: none;">
+            <label for="contrato_titulo">Selecione o Contrato:</label>
+            <select id="contrato_titulo" name="contrato_titulo" required>
+                <option value="">Selecione um contrato</option>
+            </select>
+        </div>
+
+        <div id="parcelamentos-container" style="display: none;">
+            <!-- Tabela de Parcelamentos será exibida aqui -->
+        </div>
+
+        <button type="button" onclick="gerarRelatorio()">Gerar Relatório</button>
+    </form>
 </div>
+
+<div id="resultadoRelatorio" style="margin-top: 20px;"></div>
+
+<script>
+// Função para carregar os títulos dos contratos baseados na seleção do relatório
+document.getElementById('tipo_relatorio').addEventListener('change', function() {
+    if (this.value === 'pagamentos') {
+        // Exibir select de contratos
+        document.getElementById('contratos-container').style.display = 'block';
+        
+        // Carregar os títulos dos contratos
+        carregarContratos();
+        
+        // Exibir a periodicidade (completo, mensal, anual)
+        document.getElementById('periodicidade-container').style.display = 'block';
+    } else {
+        // Ocultar select de contratos e parcelamentos
+        document.getElementById('contratos-container').style.display = 'none';
+        document.getElementById('parcelamentos-container').style.display = 'none';
+        document.getElementById('resultadoRelatorio').innerHTML = '';  // Limpar o relatório
+        document.getElementById('periodicidade-container').style.display = 'none';
+    }
+});
+
+// Função para carregar os contratos do banco de dados via AJAX
+function carregarContratos() {
+    var tipoRelatorio = document.getElementById('tipo_relatorio').value;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'carregar_contratos.php?tipo_relatorio=' + tipoRelatorio, true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var contratos = JSON.parse(xhr.responseText);
+            var selectContratos = document.getElementById('contrato_titulo');
+            selectContratos.innerHTML = '<option value="">Selecione um contrato</option>'; // Limpar opções
+            contratos.forEach(function(contrato) {
+                var option = document.createElement('option');
+                option.value = contrato.id;
+                option.textContent = contrato.titulo;
+                selectContratos.appendChild(option);
+            });
+        }
+    };
+    xhr.send();
+}
+
+// Função para carregar os parcelamentos do contrato selecionado
+document.getElementById('contrato_titulo').addEventListener('change', function() {
+    var contratoId = this.value;
+    if (contratoId) {
+        // Carregar parcelamentos
+        carregarParcelamentos(contratoId);
+    } else {
+        document.getElementById('parcelamentos-container').style.display = 'none';
+        document.getElementById('resultadoRelatorio').innerHTML = '';  // Limpar o relatório
+    }
+});
+
+// Função para carregar os parcelamentos com base no contrato selecionado
+function carregarParcelamentos(contratoId) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'carregar_parcelamentos.php?contrato_id=' + contratoId, true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var parcelamentos = JSON.parse(xhr.responseText);
+            if (parcelamentos.length > 0) {
+                var tableHtml = '<table border="1" cellpadding="5" cellspacing="0">';
+                tableHtml += '<thead><tr><th>Parcela</th><th>Valor</th><th>Data Vencimento</th></tr></thead>';
+                tableHtml += '<tbody>';
+                parcelamentos.forEach(function(parcelamento) {
+                    tableHtml += '<tr>';
+                    tableHtml += '<td>' + parcelamento.parcela + '</td>';
+                    tableHtml += '<td>' + parcelamento.valor + '</td>';
+                    tableHtml += '<td>' + parcelamento.data_vencimento + '</td>';
+                    tableHtml += '</tr>';
+                });
+                tableHtml += '</tbody></table>';
+                document.getElementById('parcelamentos-container').innerHTML = tableHtml;
+                document.getElementById('parcelamentos-container').style.display = 'block';
+            } else {
+                document.getElementById('parcelamentos-container').innerHTML = '<p>Nenhum parcelamento encontrado para o contrato selecionado.</p>';
+                document.getElementById('parcelamentos-container').style.display = 'block';
+            }
+        }
+    };
+    xhr.send();
+}
+
+// Função para gerar o relatório (completo, mensal ou anual)
+function gerarRelatorio() {
+    var contratoId = document.getElementById('contrato_titulo').value;
+    var periodicidade = document.getElementById('periodicidade').value;
+
+    if (contratoId && periodicidade) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'gerar_relatorio.php?contrato_id=' + contratoId + '&periodicidade=' + periodicidade, true);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var resultado = xhr.responseText;
+                document.getElementById('resultadoRelatorio').innerHTML = resultado;
+            } else {
+                document.getElementById('resultadoRelatorio').innerHTML = '<p>Erro ao gerar o relatório.</p>';
+            }
+        };
+        xhr.send();
+    } else {
+        document.getElementById('resultadoRelatorio').innerHTML = '<p>Selecione um contrato e a periodicidade antes de gerar o relatório.</p>';
+    }
+}
+</script>
+
 
 <div class="form-container3" id="consultar" style="display:none;">
     <!-- Pesquisa -->
@@ -317,17 +458,7 @@ include 'header.php';
 </div>
 
 
-<!-- Container do resumo do processo
-<div class="form-container3" id="resumo_processo" style="display: none;">
-    <h2>Resumo do Processo</h2>
-    <div id="processoDetalhes"> -->
-        <!-- Os detalhes do processo serão carregados aqui
-    </div>
-    <div class="process-actions">
-        
 
-    </div>
-</div> -->
 <!-- Modal de Edição -->
 <div class="modal fade" id="editProcessModal" tabindex="-1" role="dialog" aria-labelledby="editProcessModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -390,116 +521,12 @@ include 'header.php';
         </div>
     </div>
 </div>
-
-<script>
-   // Função chamada quando o botão "Editar processo" for clicado
-function editProcess(event, contractData) {
-    // Impede que o evento de clique se propague
-    event.stopPropagation();
-
-    // Chama a função para abrir o modal e preencher as abas com os dados do contrato
-    openEditModal(contractData);
-}
-
-// Função para abrir o modal de edição e preencher os campos com os dados do contrato
-function openEditModal(contractData) {
-    // Preenche a aba de Detalhes com os dados do contrato
-    document.getElementById('contractTitulo').textContent = contractData.titulo;
-    document.getElementById('contractDescricao').textContent = contractData.descricao;
-    document.getElementById('contractValidade').textContent = contractData.validade;
-    document.getElementById('contractSituacao').textContent = contractData.situacao;
-
-    // Preenche a aba de Edição com os dados do contrato
-    document.getElementById('editTitulo').value = contractData.titulo;
-    document.getElementById('editDescricao').value = contractData.descricao;
-    document.getElementById('editValidade').value = contractData.validade;
-    document.getElementById('editSituacao').value = contractData.situacao;
-
-    // Exibe o modal
-    $('#editProcessModal').modal('show');
-}
-
-// Função para salvar as alterações
-document.getElementById('editProcessForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Previne o envio normal do formulário
-
-    // Coleta os dados do formulário
-    var updatedData = {
-        titulo: document.getElementById('editTitulo').value,
-        descricao: document.getElementById('editDescricao').value,
-        validade: document.getElementById('editValidade').value,
-        situacao: document.getElementById('editSituacao').value
-    };
-
-    // Aqui você pode fazer uma requisição para salvar os dados atualizados no banco de dados
-    // Exemplo com Fetch API:
-    /*
-    fetch('/path/to/your/api', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData),
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Fechar o modal após salvar os dados
-        $('#editProcessModal').modal('hide');
-    })
-    .catch((error) => {
-        console.error('Erro:', error);
-    });
-    */
-
-    // Fechar o modal após salvar os dados
-    $('#editProcessModal').modal('hide');
-});
+<!--  // Função editar modal -->
+<script src="./src/contratos/js/edit-process-modal.js"></script>
 
 
-</script>
 
 
-<!--  // Função chamada ao clicar na linha da tabela -->
-<script>
-    function showResumoProcesso(data) {
-        // Exibe a div do resumo do processo
-        document.getElementById('consultar').style.display = 'none'; // Esconde a lista de contratos
-        document.getElementById('resumo_processo').style.display = 'block'; // Exibe o resumo do processo
-
-        // Preenche os detalhes do processo na div
-        const processoDetalhes = document.getElementById('processoDetalhes');
-        processoDetalhes.innerHTML = `
-            <p><strong>ID:</strong> ${data.id}</p>
-            <p><strong>Título:</strong> ${data.titulo}</p>
-            <p><strong>Descrição:</strong> ${data.descricao}</p>
-            <p><strong>Validade:</strong> ${data.validade}</p>
-            <p><strong>Status:</strong> ${data.situacao}</p>
-        `;
-    }
-</script>
-
-
-<script>
-    // Função para redirecionar para a aba "resumo_processo"
-    function redirectTo(tab) {
-        // Altera a aba para "resumo_processo"
-        showTab(tab);
-    }
-
-    // Função para exibir a aba específica
-    function showTab(tabName) {
-        const tabs = document.querySelectorAll('.tab');
-        tabs.forEach(tab => {
-            if (tab.dataset.tab === tabName) {
-                tab.classList.add('active');  // Marca a aba como ativa
-            } else {
-                tab.classList.remove('active');
-            }
-        });
-        // Adicione a lógica de exibição do conteúdo da aba se necessário
-        console.log("Aba exibida: " + tabName);
-    }
-</script>
 
 
 
@@ -527,26 +554,7 @@ document.getElementById('editProcessForm').addEventListener('submit', function(e
         </div>
     </div>
 </div>
-<!-- visualizar contrato modal -->
-<script>
 
-    function openModal(contrato) {
-        document.getElementById('modalTituloContrato').innerText = contrato.titulo;
-        document.getElementById('modalDescricao').innerText = contrato.descricao;
-        document.getElementById('modalValidade').innerText = contrato.validade;
-        document.getElementById('modalSEI').innerText = contrato.SEI;
-        document.getElementById('modalGestor').innerText = contrato.gestor;
-        document.getElementById('modalFiscais').innerText = contrato.fiscais;
-        document.getElementById('modalValorContrato').innerText = contrato.valor_contrato;
-        document.getElementById('modalNumParcelas').innerText = contrato.num_parcelas ? contrato.num_parcelas : 'N/A';
-
-        var modal = new bootstrap.Modal(document.getElementById('modalContrato'));
-        modal.show();
-    }
-
-</script>
-
-<
 <!-- Modal de Configuração de Filtros -->
 <div class="modal" id="filterModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">

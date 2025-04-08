@@ -400,8 +400,8 @@ $resultado_transicao = $con->query($query_transicao);
         </div>
    
 
-        <div class="input-group">
-    <table>
+        <div class="table-container">
+    <table class="tabela-transicao">
         <thead>
             <tr>
                 <th>ID</th>

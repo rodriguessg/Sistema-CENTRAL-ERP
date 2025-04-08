@@ -29,7 +29,7 @@ $dataFechamento = $data['dataFechamento']; // Ex: 2025-03
 $sql_transacoes = "
     SELECT t.material_id, p.natureza, 
            SUM(CASE WHEN t.tipo = 'entrada' THEN t.quantidade ELSE 0 END) AS total_entrada, 
-           SUM(CASE WHEN t.tipo = 'Saída' THEN t.quantidade ELSE 0 END) AS total_saida, 
+           SUM(CASE WHEN t.tipo = 'saida' THEN t.quantidade ELSE 0 END) AS total_saida, 
            p.custo, p.quantidade AS saldo_inicial
     FROM transicao t
     JOIN produtos p ON t.material_id = p.id
@@ -83,6 +83,18 @@ foreach ($natureza as $natureza_key => $valor_total) {
     $update_stmt->bind_param("s", $natureza_key);
     $update_stmt->execute();
 }
+
+// Aqui, corrigimos o ajuste para a coluna 'total_saida' ao final de todas as transações
+// Atualizamos corretamente 'total_saida' no fechamento para todas as transações do tipo 'saida'
+$update_saida_sql = "
+    UPDATE fechamento f
+    JOIN transicao t ON f.material_id = t.material_id
+    SET f.total_saida = f.total_saida + (t.quantidade * (SELECT p.custo FROM produtos p WHERE p.id = t.material_id))
+    WHERE t.tipo = 'saida' AND DATE_FORMAT(t.data, '%Y-%m') = ?";
+
+$update_saida_stmt = $conn->prepare($update_saida_sql);
+$update_saida_stmt->bind_param("s", $dataFechamento);
+$update_saida_stmt->execute();
 
 // Retorna o resultado em formato JSON
 echo json_encode([

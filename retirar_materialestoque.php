@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Consulta para verificar se o produto existe no estoque
-    $query = "SELECT quantidade FROM produtos WHERE descricao = ?";
+    $query = "SELECT id, produto, descricao, quantidade, custo, natureza FROM produtos WHERE descricao = ?";
     $stmt = $con->prepare($query);
     $stmt->bind_param('s', $codigo);
     $stmt->execute();
@@ -25,7 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows > 0) {
         // Produto encontrado
         $produto = $result->fetch_assoc();
+        $material_id = $produto['id'];
+        $nome = $produto['produto']; // Nome do produto
+        $descricao = $produto['descricao'];
         $quantidadeAtual = (int) $produto['quantidade'];
+        $custo = (float) $produto['custo']; // Captura o custo do produto
+        $natureza = $produto['natureza']; // Captura a natureza do produto
 
         // Verifica se o estoque tem exatamente 5 unidades, caso sim, gera uma notificação
         if ($quantidadeAtual == 5) {
@@ -55,9 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($quantidadeAtual >= $quantidade) {
             // Atualiza o estoque ou remove o produto se a quantidade for igual à disponível
             if ($quantidadeAtual === $quantidade) {
-                $deleteQuery = "DELETE FROM produtos WHERE codigo = ?";
+                $deleteQuery = "DELETE FROM produtos WHERE descricao = ? AND codigo = ?";
                 $deleteStmt = $con->prepare($deleteQuery);
-                $deleteStmt->bind_param('s', $codigo);
+                $deleteStmt->bind_param('ss', $nome, $codigo);
                 $deleteStmt->execute();
                 $deleteStmt->close();
             } else {
@@ -71,9 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Registrar a transação de retirada na tabela 'transicao'
             $query_transacao = "INSERT INTO transicao (material_id, quantidade, data, tipo) 
-                                VALUES (?, ?, ?, 'Saída')";
+                                VALUES (?, ?, ?, 'Saida')";
             $transacaoStmt = $con->prepare($query_transacao);
-            $transacaoStmt->bind_param('iis', $nome, $quantidade, $data); // Aqui usamos o ID do material ($nome) e a quantidade
+            $transacaoStmt->bind_param('iis', $material_id, $quantidade, $data);
             if ($transacaoStmt->execute()) {
                 $transacaoStmt->close();
             } else {
@@ -81,36 +86,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
-            // Após a retirada, verifica se a quantidade do produto ficou abaixo de 5
-            $queryAtualizada = "SELECT quantidade FROM produtos WHERE descricao = ?";
-            $stmtAtualizada = $con->prepare($queryAtualizada);
-            $stmtAtualizada->bind_param('s', $codigo);
-            $stmtAtualizada->execute();
-            $resultAtualizada = $stmtAtualizada->get_result();
+            // Verifica e atualiza a tabela de fechamento com o total de saída e saldo atual
+            // Ajuste aqui para usar 'natureza' para identificar o material
+            $stmt_fe = $con->prepare("SELECT saldo_atual, total_saida FROM fechamento WHERE natureza = ?");
+            $stmt_fe->bind_param('s', $natureza);
+            $stmt_fe->execute();
+            $stmt_fe->store_result();
 
-            if ($resultAtualizada->num_rows > 0) {
-                $produtoAtualizado = $resultAtualizada->fetch_assoc();
-                $quantidadeRestante = (int) $produtoAtualizado['quantidade'];
+            if ($stmt_fe->num_rows > 0) {
+                // Já existe um fechamento para essa natureza, atualiza os valores
+                $stmt_fe->bind_result($saldo_atual, $total_saida_existente);
+                $stmt_fe->fetch();
 
-                // Se a quantidade restante for inferior a 5, insere a notificação
-                if ($quantidadeRestante < 5) {
-                    session_start(); // Inicia a sessão para pegar os dados do usuário
-                    $username = $_SESSION['username']; // Nome do usuário da sessão
-                    $setor = $_SESSION['setor']; // Setor do usuário da sessão
-                    $mensagem = "O produto '$nome' chegou ao limite mínimo de 5 unidades.";
+                // Calcula o novo total de saída (adiciona a saída do produto)
+                $novo_total_saida = $total_saida_existente + ($quantidade * $custo);
 
-                    // Inserir a notificação no banco de dados
-                    $notificacaoQuery = "INSERT INTO notificacoes (username, setor, mensagem, situacao) 
-                                         VALUES (?, ?, ?, 'nao lida')";
-                    $notificacaoStmt = $con->prepare($notificacaoQuery);
-                    $notificacaoStmt->bind_param('sss', $username, $setor, $mensagem);
-                    if ($notificacaoStmt->execute()) {
-                        $notificacaoStmt->close();
-                    } else {
-                        echo "Erro ao inserir notificação: " . $con->error;
-                        exit;
-                    }
+                // Calcula o novo saldo atual (diminui o valor da saída)
+                $novo_saldo_atual = $saldo_atual - ($quantidade * $custo);  // Decrease saldo atual
+
+                // Atualiza o fechamento
+                $sql_update_fe = "UPDATE fechamento SET total_saida = ?, saldo_atual = ? WHERE natureza = ?";
+                $stmt_update_fe = $con->prepare($sql_update_fe);
+                $stmt_update_fe->bind_param("dds", $novo_total_saida, $novo_saldo_atual, $natureza);
+                if ($stmt_update_fe->execute()) {
+                    echo "Fechamento atualizado com sucesso!";
+                } else {
+                    echo "Erro ao atualizar fechamento: " . $stmt_update_fe->error;
                 }
+                $stmt_update_fe->close();
+            } else {
+                // Não existe um fechamento para essa natureza, insere um novo registro
+                $total_saida = $quantidade * $custo;  // Valor da saída calculado pela quantidade * custo
+                $sql_insert_fe = "INSERT INTO fechamento (natureza, total_saida, saldo_atual, custo, data_fechamento) 
+                                  VALUES (?, ?, ?, ?, NOW())";
+                $stmt_insert_fe = $con->prepare($sql_insert_fe);
+                $stmt_insert_fe->bind_param("sdds", $natureza, $total_saida, $total_saida, $custo);
+                if ($stmt_insert_fe->execute()) {
+                    echo "Novo fechamento inserido com sucesso!";
+                } else {
+                    echo "Erro ao inserir fechamento: " . $stmt_insert_fe->error;
+                }
+                $stmt_insert_fe->close();
             }
 
             // Redireciona com mensagem de sucesso

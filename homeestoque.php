@@ -34,6 +34,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <?php
+// Conectar ao banco de dados
+include 'banco.php';
+
+// Obter todos os produtos com quantidade e estoque mínimo
+$query_produtos = "SELECT id, produto, quantidade, estoque_minimo FROM produtos";
+$resultado_produtos = $con->query($query_produtos);
+
+// Checar se algum produto atingiu o estoque mínimo
+while ($produto = $resultado_produtos->fetch_assoc()) {
+    if ($produto['quantidade'] <= $produto['estoque_minimo']) {
+        // Definir a data e hora atuais
+        $data_criacao = date('Y-m-d H:i:s');
+
+        // Verificar se já existe uma notificação para este produto
+        $query_notificacao_existente = "SELECT * FROM notificacoes WHERE mensagem LIKE '%{$produto['produto']}%' AND situacao = 'nao lida'";
+        $resultado_notificacao = $con->query($query_notificacao_existente);
+
+        // Se não existir notificação para este produto, insere uma nova
+        if ($resultado_notificacao->num_rows == 0) {
+            // Inserir notificação na tabela "notificacoes"
+            $username = 'estoque';
+            $setor = 'estoque';
+            $mensagem = "#".$produto['produto']." chegou ao seu limite de estoque.";
+            $situacao = 'nao lida';
+            
+            $query_notificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                                  VALUES ('$username', '$setor', '$mensagem', '$situacao', '$data_criacao')";
+            $con->query($query_notificacao);
+        }
+        
+        // Gerar ordem de compra
+        $query_ordem_compra = "INSERT INTO ordens_compra (produto_id, quantidade, data_criacao) 
+                               VALUES ('{$produto['id']}', '{$produto['estoque_minimo']}', '$data_criacao')";
+        $con->query($query_ordem_compra);
+    }
+}
+?>
+
+
+<?php
 // Conexão com o banco de dados
 $host = 'localhost';
 $user = 'root';

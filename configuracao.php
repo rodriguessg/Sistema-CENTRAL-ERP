@@ -41,6 +41,7 @@ if ($resultado_config->num_rows > 0) {
 include 'header.php'; // Inclui o cabeçalho
 ?>
 
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -72,6 +73,55 @@ include 'header.php'; // Inclui o cabeçalho
 
                 <button type="submit">Salvar Configurações</button>
             </form>
+        </div>
+        <div class="form-container">
+        <?php
+// Conexão com o banco de dados
+include 'banco.php';
+
+// Obter todos os produtos
+$query_produtos = "SELECT id, classificacao, quantidade, estoque_minimo FROM produtos";
+$resultado_produtos = $con->query($query_produtos);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Atualizar o estoque mínimo de cada produto
+    foreach ($_POST['estoque_minimo'] as $produto_id => $estoque_minimo) {
+        $estoque_minimo = (int)$estoque_minimo;
+        $query_update = "UPDATE produtos SET estoque_minimo = $estoque_minimo WHERE id = $produto_id";
+        $con->query($query_update);
+    }
+    echo "Configurações de estoque mínimo atualizadas com sucesso!";
+}
+?>
+
+<form method="POST">
+    <table>
+        <thead>
+            <tr>
+                <th>Classificação</th>
+                <th>Quantidade Atual</th>
+                <th>Estoque Mínimo</th>
+            </tr>
+        </thead>
+        <!-- <tbody style="display: block; max-height: 200px; overflow-y: auto; display: block; height: 200px; width: 100%; overflow-x: hidden; overflow-y: scroll;"> -->
+        <tbody>
+            <?php while ($produto = $resultado_produtos->fetch_assoc()) { ?>
+                <tr>
+                    <!-- Exibe a classificação do produto -->
+                    <td><?= $produto['classificacao'] ?></td>
+                    
+                    <!-- Exibe a quantidade atual do produto -->
+                    <td><?= $produto['quantidade'] ?></td>
+                    
+                    <!-- Campo para definir o estoque mínimo -->
+                    <td><input type="number" name="estoque_minimo[<?= $produto['id'] ?>]" value="<?= $produto['estoque_minimo'] ?>" min="0"></td>
+                </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+    <button type="submit">Salvar Configurações</button>
+</form>
+
         </div>
 
         <!-- Alteração de Tema -->

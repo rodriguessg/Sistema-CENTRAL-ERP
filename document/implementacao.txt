@@ -1,0 +1,3 @@
+configuracao de parÂmetros
+
+analise este arquivo, especificamente homeestoque.php. Verifique possibilidades de implementar  em configuaracao.php  o estoque minimo, campo para digitar estoque minino de todo os produtos da tabela produtos  conforme a coluna quantidade. Se a configuracao estiver aplicada, o produto que chegar ao estoque minimo, precisa inserir a informacao na tabela notificacoes  com username "estoque", setor "estoque" mensagem #nome do produto, chegou ao se limite, situacao "nao lida", data_criacao. " adicione também uma ordem de compra  do produto

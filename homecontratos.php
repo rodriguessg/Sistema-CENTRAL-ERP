@@ -133,19 +133,19 @@ include 'header.php';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <link rel="stylesheet" href="./src/style/form-cadastro-contratos.css">
 <link rel="stylesheet" href="./src/style/notificacao.css">
+<link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
 
 <body>
 <div class="container">
-        <h1 class="text-center text-success">Gestão de Contratos</h1>
+        <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
 
    
-    
-        <div class="tabs">
+<div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">Cadastro de contratos</div>
     <div class="tab" data-tab="retirar" onclick="showTab('consultar')">Consultar contratos</div>
     <div class="tab" data-tab="levantamento" onclick="showTab('agenda')">Agendamento</div>
-     <!-- <div class="tab" data-tab="processo" onclick="showTab('processos')">Processos</div> -->
-     <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">Resumo</div> 
+     <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">Resumo</div>
+      <!-- <div class="tab" data-tab="processo" onclick="showTab('processos')">Processos</div> --> 
     <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')">Galeria</div> -->
 </div>
 
@@ -217,7 +217,7 @@ include 'header.php';
     </form>
 </div>
 
-<script src="./src/js/cadastro_contato.js">
+<script src="./src/contratos/js/cadastro_contato.js">
 </script>
 
 <div class="form-container3" id="processos">
@@ -317,17 +317,7 @@ include 'header.php';
 </div>
 
 
-<!-- Container do resumo do processo
-<div class="form-container3" id="resumo_processo" style="display: none;">
-    <h2>Resumo do Processo</h2>
-    <div id="processoDetalhes"> -->
-        <!-- Os detalhes do processo serão carregados aqui
-    </div>
-    <div class="process-actions">
-        
 
-    </div>
-</div> -->
 <!-- Modal de Edição -->
 <div class="modal fade" id="editProcessModal" tabindex="-1" role="dialog" aria-labelledby="editProcessModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -390,116 +380,12 @@ include 'header.php';
         </div>
     </div>
 </div>
-
-<script>
-   // Função chamada quando o botão "Editar processo" for clicado
-function editProcess(event, contractData) {
-    // Impede que o evento de clique se propague
-    event.stopPropagation();
-
-    // Chama a função para abrir o modal e preencher as abas com os dados do contrato
-    openEditModal(contractData);
-}
-
-// Função para abrir o modal de edição e preencher os campos com os dados do contrato
-function openEditModal(contractData) {
-    // Preenche a aba de Detalhes com os dados do contrato
-    document.getElementById('contractTitulo').textContent = contractData.titulo;
-    document.getElementById('contractDescricao').textContent = contractData.descricao;
-    document.getElementById('contractValidade').textContent = contractData.validade;
-    document.getElementById('contractSituacao').textContent = contractData.situacao;
-
-    // Preenche a aba de Edição com os dados do contrato
-    document.getElementById('editTitulo').value = contractData.titulo;
-    document.getElementById('editDescricao').value = contractData.descricao;
-    document.getElementById('editValidade').value = contractData.validade;
-    document.getElementById('editSituacao').value = contractData.situacao;
-
-    // Exibe o modal
-    $('#editProcessModal').modal('show');
-}
-
-// Função para salvar as alterações
-document.getElementById('editProcessForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Previne o envio normal do formulário
-
-    // Coleta os dados do formulário
-    var updatedData = {
-        titulo: document.getElementById('editTitulo').value,
-        descricao: document.getElementById('editDescricao').value,
-        validade: document.getElementById('editValidade').value,
-        situacao: document.getElementById('editSituacao').value
-    };
-
-    // Aqui você pode fazer uma requisição para salvar os dados atualizados no banco de dados
-    // Exemplo com Fetch API:
-    /*
-    fetch('/path/to/your/api', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData),
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Fechar o modal após salvar os dados
-        $('#editProcessModal').modal('hide');
-    })
-    .catch((error) => {
-        console.error('Erro:', error);
-    });
-    */
-
-    // Fechar o modal após salvar os dados
-    $('#editProcessModal').modal('hide');
-});
+<!--  // Função editar modal -->
+<script src="./src/contratos/js/edit-process-modal.js"></script>
 
 
-</script>
 
 
-<!--  // Função chamada ao clicar na linha da tabela -->
-<script>
-    function showResumoProcesso(data) {
-        // Exibe a div do resumo do processo
-        document.getElementById('consultar').style.display = 'none'; // Esconde a lista de contratos
-        document.getElementById('resumo_processo').style.display = 'block'; // Exibe o resumo do processo
-
-        // Preenche os detalhes do processo na div
-        const processoDetalhes = document.getElementById('processoDetalhes');
-        processoDetalhes.innerHTML = `
-            <p><strong>ID:</strong> ${data.id}</p>
-            <p><strong>Título:</strong> ${data.titulo}</p>
-            <p><strong>Descrição:</strong> ${data.descricao}</p>
-            <p><strong>Validade:</strong> ${data.validade}</p>
-            <p><strong>Status:</strong> ${data.situacao}</p>
-        `;
-    }
-</script>
-
-
-<script>
-    // Função para redirecionar para a aba "resumo_processo"
-    function redirectTo(tab) {
-        // Altera a aba para "resumo_processo"
-        showTab(tab);
-    }
-
-    // Função para exibir a aba específica
-    function showTab(tabName) {
-        const tabs = document.querySelectorAll('.tab');
-        tabs.forEach(tab => {
-            if (tab.dataset.tab === tabName) {
-                tab.classList.add('active');  // Marca a aba como ativa
-            } else {
-                tab.classList.remove('active');
-            }
-        });
-        // Adicione a lógica de exibição do conteúdo da aba se necessário
-        console.log("Aba exibida: " + tabName);
-    }
-</script>
 
 
 
@@ -527,26 +413,7 @@ document.getElementById('editProcessForm').addEventListener('submit', function(e
         </div>
     </div>
 </div>
-<!-- visualizar contrato modal -->
-<script>
 
-    function openModal(contrato) {
-        document.getElementById('modalTituloContrato').innerText = contrato.titulo;
-        document.getElementById('modalDescricao').innerText = contrato.descricao;
-        document.getElementById('modalValidade').innerText = contrato.validade;
-        document.getElementById('modalSEI').innerText = contrato.SEI;
-        document.getElementById('modalGestor').innerText = contrato.gestor;
-        document.getElementById('modalFiscais').innerText = contrato.fiscais;
-        document.getElementById('modalValorContrato').innerText = contrato.valor_contrato;
-        document.getElementById('modalNumParcelas').innerText = contrato.num_parcelas ? contrato.num_parcelas : 'N/A';
-
-        var modal = new bootstrap.Modal(document.getElementById('modalContrato'));
-        modal.show();
-    }
-
-</script>
-
-<
 <!-- Modal de Configuração de Filtros -->
 <div class="modal" id="filterModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">

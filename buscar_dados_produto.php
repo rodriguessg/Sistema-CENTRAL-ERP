@@ -1,18 +1,21 @@
 <?php
-include 'banco.php';  // Inclua seu arquivo de conexão com o banco
+// Conexão com o banco de dados
+include 'banco.php'; 
 
+// Verifica se o parâmetro id foi enviado via GET
 if (isset($_GET['id'])) {
-    $idProduto = $_GET['id'];
+    $id = $_GET['id'];
 
-    // Consulta para buscar os dados do produto
+    // Consulta para obter os dados do produto com o ID
     $query = "SELECT descricao, classificacao, natureza, localizacao, preco_medio FROM produtos WHERE id = ?";
     $stmt = $con->prepare($query);
-    $stmt->bind_param("i", $idProduto);
+    $stmt->bind_param('i', $id);  // 'i' para tipo integer
     $stmt->execute();
-    $resultado = $stmt->get_result();
+    $result = $stmt->get_result();
 
-    if ($resultado->num_rows > 0) {
-        $produto = $resultado->fetch_assoc();
+    // Verifica se o produto foi encontrado
+    if ($result->num_rows > 0) {
+        $produto = $result->fetch_assoc();
         echo json_encode([
             'success' => true,
             'descricao' => $produto['descricao'],
@@ -26,5 +29,8 @@ if (isset($_GET['id'])) {
     }
 
     $stmt->close();
+    $con->close();
+} else {
+    echo json_encode(['success' => false]);
 }
 ?>

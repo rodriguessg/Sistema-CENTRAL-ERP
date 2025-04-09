@@ -1,6 +1,5 @@
 /* Para garantir que o Font Awesome esteja disponível */
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
-
 /* Importação das fontes */
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap");
@@ -22,9 +21,9 @@ body {
 /* Container principal - "Caderno" */
 .caderno {
   display: flex; /* Flexbox para alinhamento do menu e conteúdo */
-  margin-left: 300px; /* Deixa espaço para o menu lateral */
-  padding: 20px;
-  width: 80%;
+  margin-left: 280px; /* Deixa espaço para o menu lateral */
+  padding: 10px;
+  width: 85%;
   flex-direction: column;
 }
 
@@ -132,6 +131,8 @@ h3 {
   display: flex;
   align-items: center; /* Alinha o ícone e o texto do input */
   margin-top: 10px;
+  overflow-x: auto;
+  border-radius: 10px;
 }
 
 /* Estilo do label */
@@ -705,13 +706,6 @@ tr:hover {
 
 /* modal de informaçoes */
 
-/* Para garantir que o Font Awesome esteja disponível */
-@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
-
-/* Importação das fontes */
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap");
-
 /* Estilo Geral */
 * {
   margin: 0;
@@ -726,18 +720,8 @@ body {
   padding: 0;
 }
 
-/* Container principal - "Caderno" */
-.caderno {
-  display: flex; /* Flexbox para alinhamento do menu e conteúdo */
-  margin-left: 300px; /* Deixa espaço para o menu lateral */
-  padding: 20px;
-  width: 80%;
-  flex-direction: column;
-}
-
 /* Container para as Tabs e o Conteúdo */
 
-/* Estilo geral das abas */
 /* Estilo geral das abas */
 .tabs {
   display: flex;
@@ -829,15 +813,6 @@ h3 {
   border-radius: 12px;
   margin: 20px 0px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Estilo para cada campo de input */
-.input-group {
-  width: 48%; /* 2 inputs por linha */
-  margin-bottom: 12px;
-  position: relative; /* Necessário para o ícone dentro do campo de entrada */
-  display: flex;
-  align-items: center; /* Alinha o ícone e o texto do input */
 }
 
 /* Estilo do label */
@@ -1583,4 +1558,27 @@ tr:hover {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
+}
+
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination a {
+  padding: 8px 16px;
+  margin: 0 5px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.pagination a:hover {
+  background-color: #0056b3;
+}
+
+.pagination span {
+  padding: 8px 16px;
+  font-size: 16px;
 }

@@ -47,6 +47,7 @@ function preencherTabela(dados) {
         <td>${dado.quantidade}</td>
         <td>${dado.localizacao}</td>
         <td>${dado.custo}</td>
+        <td>${dado.preco_medio}</td>
         <td class="actions">
             <button class="btn-estoque1" onclick="abrirModalDetalhes('${dado.id}')">
                 <i class="fas fa-info-circle"></i> + Detalhes

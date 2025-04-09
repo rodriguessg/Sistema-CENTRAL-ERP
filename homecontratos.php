@@ -136,7 +136,7 @@ include 'header.php';
 <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
 
 <body>
-<div class="container">
+<div class="caderno">
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
 
    

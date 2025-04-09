@@ -34,46 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <?php
-// Conectar ao banco de dados
-include 'banco.php';
-
-// Obter todos os produtos com quantidade e estoque mínimo
-$query_produtos = "SELECT id, produto, quantidade, estoque_minimo FROM produtos";
-$resultado_produtos = $con->query($query_produtos);
-
-// Checar se algum produto atingiu o estoque mínimo
-while ($produto = $resultado_produtos->fetch_assoc()) {
-    if ($produto['quantidade'] <= $produto['estoque_minimo']) {
-        // Definir a data e hora atuais
-        $data_criacao = date('Y-m-d H:i:s');
-
-        // Verificar se já existe uma notificação para este produto
-        $query_notificacao_existente = "SELECT * FROM notificacoes WHERE mensagem LIKE '%{$produto['produto']}%' AND situacao = 'nao lida'";
-        $resultado_notificacao = $con->query($query_notificacao_existente);
-
-        // Se não existir notificação para este produto, insere uma nova
-        if ($resultado_notificacao->num_rows == 0) {
-            // Inserir notificação na tabela "notificacoes"
-            $username = 'estoque';
-            $setor = 'estoque';
-            $mensagem = "#".$produto['produto']." chegou ao seu limite de estoque.";
-            $situacao = 'nao lida';
-            
-            $query_notificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
-                                  VALUES ('$username', '$setor', '$mensagem', '$situacao', '$data_criacao')";
-            $con->query($query_notificacao);
-        }
-        
-        // Gerar ordem de compra
-        $query_ordem_compra = "INSERT INTO ordens_compra (produto_id, quantidade, data_criacao) 
-                               VALUES ('{$produto['id']}', '{$produto['estoque_minimo']}', '$data_criacao')";
-        $con->query($query_ordem_compra);
-    }
-}
-?>
-
-
-<?php
 // Conexão com o banco de dados
 $host = 'localhost';
 $user = 'root';
@@ -143,6 +103,8 @@ $query_transicao = "SELECT t.id, p.produto, p.classificacao, p.localizacao, p.de
 $resultado_transicao = $con->query($query_transicao);
 ?>
 
+
+
 <!DOCTYPE html>
 <html lang="Pt-br">
 <head>
@@ -150,14 +112,18 @@ $resultado_transicao = $con->query($query_transicao);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Almoxarifado</title>
     <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
-        <link rel="stylesheet" href="src/estoque/style/linhadotempo.css">
+    <link rel="stylesheet" href="src/estoque/style/linhadotempo.css">
 
 <!-- Font Awesome CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 
 
+<style>
+        
+    </style>
 </head>
 <body>
     
@@ -177,7 +143,7 @@ $resultado_transicao = $con->query($query_transicao);
         <i class="fas fa-minus-circle"></i> Retirar material
     </div>
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
-        <i class="fas fa-file-alt"></i> Relatório
+        <i class="fas fa-file-alt"></i> Relatórios
     </div>
     <div class="tab" data-tab="fechamento" onclick="showTab('fechamento')">
         <i class="fas fa-image"></i> Fechamento
@@ -220,6 +186,12 @@ $resultado_transicao = $con->query($query_transicao);
                 <i class="fas fa-flask"></i>
                 <input type="text" id="natureza" name="natureza" placeholder="Digite a natureza do produto" required readonly>
             </div>
+            <!-- validade -->
+            <div class="input-group">
+                <label for="material-DATA">Validade:</label>
+                <i class="fas fa-flask"></i> <!-- Ícone ao lado do campo -->
+                <input type="text" id="material-natureza" name="material-natureza" placeholder="preenchido automaticamente" readonly>
+            </div>
 
             <div class="input-group">
                 <label for="contabil">Contábil:</label>
@@ -233,17 +205,14 @@ $resultado_transicao = $con->query($query_transicao);
                 <input type="text" id="codigo" name="codigo" placeholder="Código do produto" required readonly>
             </div>
 
-           
-        </div>
-
-        <div class="form-group">
-
             <div class="input-group">
                 <label for="unidade">Unidade:</label>
                 <i class="fas fa-box"></i>
                 <input type="text" id="unidade" name="unidade" placeholder="Unidade de medida" required>
             </div>
+        </div>
 
+        <div class="form-group">
             <div class="input-group">
                 <label for="localizacao">Local:</label>
                 <i class="fas fa-map-marker-alt"></i>
@@ -289,12 +258,6 @@ $resultado_transicao = $con->query($query_transicao);
 
 <!-- SCRIPT FINAL - DEVE FICAR DEPOIS DOS CAMPOS -->
 
-<!-- <script>
-    function sincronizarProduto() {
-        // Copia o valor selecionado do select para o campo de input
-        document.getElementById("produto_input").value = document.getElementById("produto").value;
-    }
-</script> -->
 
 
 <div class="form-container" id="consulta">
@@ -313,13 +276,14 @@ $resultado_transicao = $con->query($query_transicao);
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Material</th>
+                    <th>Código</th>
                     <th>Classificação</th>                   
                     <th>Descricao</th> 
                     <th>Natureza</th> 
                     <th>Quantidade</th>
                     <th>Local</th>              
                     <th>Custo</th>
+                    <th>Preço Médio</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -348,6 +312,7 @@ $resultado_transicao = $con->query($query_transicao);
                              <td>{$row['natureza']}</td>
                              <td>{$row['quantidade']}</td>
                              <td>{$row['custo']}</td>
+                              <td>{$row['preco_medio']}</td>
                               </tr>";
                     }
                 } else {
@@ -439,9 +404,42 @@ $resultado_transicao = $con->query($query_transicao);
                 <button class="btn-submit" type="submit">Retirar</button>
         </div>
    
+        <?php
+// Conectar ao banco de dados
+$conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
 
-        <div class="input-group">
-    <table>
+// Verifique a conexão
+if ($conn->connect_error) {
+    die("Falha na conexão: " . $conn->connect_error);
+}
+
+// Defina o número de itens por página
+$itens_por_pagina = 5;
+
+// Obtenha a página atual, caso contrário defina como 1
+$pagina_atual = isset($_GET['pagina']) ? $_GET['pagina'] : 1;
+
+// Calcule o índice inicial para a consulta
+$inicio = ($pagina_atual - 1) * $itens_por_pagina;
+
+// Consulta para obter os dados de transição com informações do produto (usando JOIN)
+$query = "
+    SELECT t.id, t.material_id, t.quantidade, t.data, t.tipo, 
+           p.produto, p.classificacao, p.natureza, p.contabil, p.descricao, p.unidade, 
+           p.localizacao, p.custo, p.quantidade AS produto_quantidade, p.nf, p.preco_medio, p.tipo_operacao
+    FROM transicao t
+    LEFT JOIN produtos p ON t.material_id = p.id
+    LIMIT $inicio, $itens_por_pagina
+";
+$resultado_transicao = $conn->query($query);
+
+// Obtenha o total de registros para calcular o número de páginas
+$total_registros = $conn->query("SELECT COUNT(*) FROM transicao")->fetch_row()[0];
+$total_paginas = ceil($total_registros / $itens_por_pagina);
+?>
+
+<div class="table-container">
+    <table class="tabela-transicao">
         <thead>
             <tr>
                 <th>ID</th>
@@ -471,57 +469,34 @@ $resultado_transicao = $con->query($query_transicao);
                     <td><?= $row['data'] ?></td>
                     <td class="<?= strtolower($row['tipo']) ?>"><?= $row['tipo'] ?></td>
                     <td>
-                        <!-- <button class="acoes-button editar-button">Editar</button> -->
                         <button class="acoes-button excluir-button" data-id="<?= $row['id'] ?>">Excluir</button>
                     </td>
                 </tr>
             <?php } ?>
         </tbody>
     </table>
+
+    <!-- Navegação de páginas -->
+    <div class="pagination">
+    <a href="?pagina=1#">&laquo; Primeira</a>
+    <a href="?pagina=<?= $pagina_atual > 1 ? $pagina_atual - 1 : 1 ?>#">Anterior</a>
+    <span>Página <?= $pagina_atual ?> de <?= $total_paginas ?></span>
+    <a href="?pagina=<?= $pagina_atual < $total_paginas ? $pagina_atual + 1 : $total_paginas ?>#">Próxima</a>
+    <a href="?pagina=<?= $total_paginas ?>#">Última &raquo;</a>
 </div>
+
+
+</div>
+
+<?php
+// Fechar a conexão com o banco de dados
+$conn->close();
+?>
+
 
     </form>
         <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
-
-<script>
-    // Adicionar evento de clique nos botões de excluir
-document.querySelectorAll('.excluir-button').forEach(button => {
-    button.addEventListener('click', function() {
-        // Pega o ID do produto a ser excluído
-        const produtoId = this.getAttribute('data-id');
-
-        // Perguntar ao usuário se ele realmente quer excluir
-        if (confirm('Tem certeza que deseja excluir este item?')) {
-            // Enviar uma requisição AJAX para excluir o produto
-            fetch('excluir_produto.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `id=${produtoId}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Se a exclusão foi bem-sucedida, remover a linha da tabela
-                    const row = document.getElementById(`row_${produtoId}`);
-                    row.remove();
-                    alert('Produto excluído com sucesso!');
-                } else {
-                    alert('Erro ao excluir o produto!');
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao excluir o produto:', error);
-                alert('Erro ao excluir o produto!');
-            });
-        }
-    });
-});
-
-</script>
-<!-- <script src="./src/estoque/js/select.js"></script> -->
 
 
 <!-- Modal para Detalhes -->
@@ -565,18 +540,19 @@ document.querySelectorAll('.excluir-button').forEach(button => {
     <div class="table-container">
         <h3>Lista de Produtos</h3>
         <table class="tabela-estoque">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Produto</th>
-                    <th>Classificação</th>
-                    <th>Local</th>
-                    <th> C.contabil</th>
-                    <th>Quantidade</th>
-                    <th>Custo</th>
-                    <th>PreçoMédio </th>
-                </tr>
-            </thead>
+        <thead>
+    <tr>
+        <th>ID</th>
+        <th>Código</th>
+        <th>Classificação</th>
+        <th>Local</th>
+        <th>C. Contabil</th>
+        <th>Quantidade</th>
+        <th>Custo</th>
+        <th>Preço Médio</th>
+    </tr>
+</thead>
+
             <tbody id="tabelaestoque">
                 <?php
                 // Função para conectar ao banco de dados
@@ -621,6 +597,40 @@ document.querySelectorAll('.excluir-button').forEach(button => {
         </table>
     </div>
 </div>
+<!-- FECHAMENTO DE ALOMXARIFADO MENSAL -->
+
+<div class="form-container" id="fechamento" style="display: flex; justify-content: center; margin:15%; margin-top:20px">
+    <button id="realizarFechamentoButton" onclick="realizarFechamento()">Realizar Fechamento</button>
+    <h2>Histórico de Fechamentos</h2>
+    
+    <div id="linhaDoTempo"></div>
+</div>
+
+<!-- Modal de Fechamento -->
+<div id="modalFechamento" style="display: none;">
+    <div id="modalFechamentoContent">
+        <table id="tabelaFechamentos">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Natureza</th>
+                    <th>Total Entrada</th>
+                    <th>Total Saída</th>
+                    <th>Saldo Atual</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button onclick="gerarPDF()">Imprimir PDF</button>
+        <button onclick="fecharModal()">Fechar</button>
+    </div>
+</div>
+
+
+
+<script src="./src/estoque/js/escrevefechamento-linhadotempo.js"></script>
+
+
 
 <!-- ABA PARA GERAR RELATÓRIO -->
 <div class="form-container" id="relatorio">
@@ -833,100 +843,6 @@ document.querySelectorAll('.excluir-button').forEach(button => {
 
 
 
-<!-- FECHAMENTO DE ALOMXARIFADO MENSAL -->
-
-<div class="form-container" id="fechamento" style="display: flex; justify-content: center; margin:15%; margin-top:20px">
-    <button id="realizarFechamentoButton" onclick="realizarFechamento()">Realizar Fechamento</button>
-    <h2>Histórico de Fechamentos</h2>
-    
-    <div id="linhaDoTempo"></div>
-</div>
-<!-- Modal de Fechamento -->
-<div id="modalFechamento" style="display: none;">
-    <div id="modalFechamentoContent">
-        <table id="tabelaFechamentos">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Natureza</th>
-                    <th>Total Entrada</th>
-                    <th>Total Saída</th>
-                    <th>Saldo Atual</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <button onclick="gerarPDF()">Imprimir PDF</button>
-        <button onclick="fecharModal()">Fechar</button>
-    </div>
-</div>
-
-
-
-<script src="./src/estoque/js/escrevefechamento-linhadotempo.js"></script>
-
-
-
-
-<!-- PREENCHE MATERIAIS PARA RETIRADA -->
-<script>
-    document.getElementById('material-nome').addEventListener('change', function() {
-    const nomeMaterialId = this.value; // Obtém o ID do material selecionado
-
-    // Verifica se os elementos existem antes de tentar acessá-los
-    const descricaoInput = document.getElementById('material-codigo');
-    const classificacaoInput = document.getElementById('material-classificacao');
-    const naturezaInput = document.getElementById('material-natureza');
-    const localizacaoInput = document.getElementById('material-localizacao');
-    const precoMedioInput = document.getElementById('material-preco-medio');
-    const mensagemDiv = document.getElementById('mensagem');
-
-    if (!descricaoInput || !classificacaoInput || !naturezaInput || !localizacaoInput || !precoMedioInput) {
-        console.error("Erro: Um ou mais elementos não existem no HTML.");
-        return;
-    }
-
-    // Limpa os campos e a mensagem de erro
-    descricaoInput.value = '';
-    classificacaoInput.value = '';
-    naturezaInput.value = '';
-    localizacaoInput.value = '';
-    precoMedioInput.value = '';
-    mensagemDiv.innerText = '';
-
-    if (nomeMaterialId) {
-        fetch('buscar_dados_produto.php?id=' + nomeMaterialId)
-            .then(response => response.json())
-            .then(data => {
-                console.log("Resposta da API:", data); // Depuração
-
-                if (data.success) {
-                    setTimeout(() => {
-                        descricaoInput.value = data.descricao || ''; // Correção aqui
-                        classificacaoInput.value = data.classificacao || '';
-                        naturezaInput.value = data.natureza || '';
-                        localizacaoInput.value = data.localizacao || '';
-                        precoMedioInput.value = data.preco_medio || '';
-                    }, 300);
-                    mensagemDiv.innerText = '';
-                } else {
-                    mensagemDiv.innerText = 'Material não encontrado.';
-                }
-            })
-            .catch(err => {
-                console.error('Erro ao buscar os dados:', err);
-                mensagemDiv.innerText = 'Erro na busca. Tente novamente.';
-            });
-    } else {
-        mensagemDiv.innerText = ''; // Limpa a mensagem se nada for selecionado
-    }
-    });
-
-
-</script>
-<!-- AO RETIRAR ESTE SCRIPT APRESEMTA ERRO NO PREENCHIMENTO DO NOME DO USUÁRIO NO RELATÓRIO -->
-
-
 <!-- JS CÁLCULO DE PREÇO MÉDIO -->
 <script src="./src/estoque/js/calc-preco-medio.js"></script>
 <!-- JS DE PAGINA E FILTRO DA TABELA-ESTOQUE -->
@@ -934,7 +850,7 @@ document.querySelectorAll('.excluir-button').forEach(button => {
 
 <!-- PREENCHIMENTO AUTOMÁTICO RETIRADA DE PRODUTO -->
  <script src="./src/estoque/js/preencher-produto-retiradacodigoantigo.js"></script>
-<!-- <script src="./src/estoque/js/preencher-produto-retirada.js"></script> -->
+
 <!--  JS PREENHE OS DETALHES DA LINHA SELECIONADA NO MODAL -->
 <script src="./src/estoque/js/modal-estoque.js"></script>
 

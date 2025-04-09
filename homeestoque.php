@@ -404,51 +404,99 @@ $resultado_transicao = $con->query($query_transicao);
                 <button class="btn-submit" type="submit">Retirar</button>
         </div>
    
+        <?php
+// Conectar ao banco de dados
+$conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
 
-    <div class="table-container">
-    <table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Código</th>
-            <th>Classificação</th>
-            <th>Local</th>
-            <th>Descrição</th>
-            <th>Natureza</th>
-            <th>Quantidade</th>
-            <th>Custo</th>
-            <th>Data</th>
-            <th>Entrada/Saída</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php while ($row = $resultado_transicao->fetch_assoc()) { ?>
+// Verifique a conexão
+if ($conn->connect_error) {
+    die("Falha na conexão: " . $conn->connect_error);
+}
+
+// Defina o número de itens por página
+$itens_por_pagina = 5;
+
+// Obtenha a página atual, caso contrário defina como 1
+$pagina_atual = isset($_GET['pagina']) ? $_GET['pagina'] : 1;
+
+// Calcule o índice inicial para a consulta
+$inicio = ($pagina_atual - 1) * $itens_por_pagina;
+
+// Consulta para obter os dados de transição com informações do produto (usando JOIN)
+$query = "
+    SELECT t.id, t.material_id, t.quantidade, t.data, t.tipo, 
+           p.produto, p.classificacao, p.natureza, p.contabil, p.descricao, p.unidade, 
+           p.localizacao, p.custo, p.quantidade AS produto_quantidade, p.nf, p.preco_medio, p.tipo_operacao
+    FROM transicao t
+    LEFT JOIN produtos p ON t.material_id = p.id
+    LIMIT $inicio, $itens_por_pagina
+";
+$resultado_transicao = $conn->query($query);
+
+// Obtenha o total de registros para calcular o número de páginas
+$total_registros = $conn->query("SELECT COUNT(*) FROM transicao")->fetch_row()[0];
+$total_paginas = ceil($total_registros / $itens_por_pagina);
+?>
+
+<div class="table-container">
+    <table class="tabela-transicao">
+        <thead>
             <tr>
-                <td><?= $row['id'] ?></td>
-                <td><?= $row['produto'] ?></td>
-                <td><?= $row['classificacao'] ?></td>
-                <td><?= $row['localizacao'] ?></td>
-                <td><?= $row['descricao'] ?></td>
-                <td><?= $row['natureza'] ?></td>
-                <td><?= $row['quantidade'] ?></td>
-                <td><?= number_format($row['preco_medio'], 2, ',', '.') ?></td>
-                <td><?= $row['data'] ?></td>
-                <td class="<?= strtolower($row['tipo']) ?>"><?= $row['tipo'] ?></td>
-                <td>
-                    <button class="acoes-button editar-button">Editar</button>
-                    <button class="acoes-button excluir-button">Excluir</button>
-                </td>
+                <th>ID</th>
+                <th>Material</th>
+                <th>Classificação</th>
+                <th>Local</th>
+                <th>Descrição</th>
+                <th>Natureza</th>
+                <th>Quantidade</th>
+                <th>Custo</th>
+                <th>Data</th>
+                <th>Entrada/Saída</th>
+                <th>Ações</th>
             </tr>
-        <?php } ?>
-    </tbody>
+        </thead>
+        <tbody>
+            <?php while ($row = $resultado_transicao->fetch_assoc()) { ?>
+                <tr id="row_<?= $row['id'] ?>">
+                    <td><?= $row['id'] ?></td>
+                    <td><?= $row['produto'] ?></td>
+                    <td><?= $row['classificacao'] ?></td>
+                    <td><?= $row['localizacao'] ?></td>
+                    <td><?= $row['descricao'] ?></td>
+                    <td><?= $row['natureza'] ?></td>
+                    <td><?= $row['quantidade'] ?></td>
+                    <td><?= number_format($row['preco_medio'], 2, ',', '.') ?></td>
+                    <td><?= $row['data'] ?></td>
+                    <td class="<?= strtolower($row['tipo']) ?>"><?= $row['tipo'] ?></td>
+                    <td>
+                        <button class="acoes-button excluir-button" data-id="<?= $row['id'] ?>">Excluir</button>
+                    </td>
+                </tr>
+            <?php } ?>
+        </tbody>
     </table>
-    </div>
-    </form>
-        <div id="mensagem" style="color: red; margin-top: 10px;"></div>
+
+    <!-- Navegação de páginas -->
+    <div class="pagination">
+    <a href="?pagina=1#">&laquo; Primeira</a>
+    <a href="?pagina=<?= $pagina_atual > 1 ? $pagina_atual - 1 : 1 ?>#">Anterior</a>
+    <span>Página <?= $pagina_atual ?> de <?= $total_paginas ?></span>
+    <a href="?pagina=<?= $pagina_atual < $total_paginas ? $pagina_atual + 1 : $total_paginas ?>#">Próxima</a>
+    <a href="?pagina=<?= $total_paginas ?>#">Última &raquo;</a>
 </div>
 
 
+</div>
+
+<?php
+// Fechar a conexão com o banco de dados
+$conn->close();
+?>
+
+
+    </form>
+        <div id="mensagem" style="color: red; margin-top: 10px;"></div>
+</div>
 
 
 <!-- Modal para Detalhes -->

@@ -34,46 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <?php
-// Conectar ao banco de dados
-include 'banco.php';
-
-// Obter todos os produtos com quantidade e estoque mínimo
-$query_produtos = "SELECT id, produto, quantidade, estoque_minimo FROM produtos";
-$resultado_produtos = $con->query($query_produtos);
-
-// Checar se algum produto atingiu o estoque mínimo
-while ($produto = $resultado_produtos->fetch_assoc()) {
-    if ($produto['quantidade'] <= $produto['estoque_minimo']) {
-        // Definir a data e hora atuais
-        $data_criacao = date('Y-m-d H:i:s');
-
-        // Verificar se já existe uma notificação para este produto
-        $query_notificacao_existente = "SELECT * FROM notificacoes WHERE mensagem LIKE '%{$produto['produto']}%' AND situacao = 'nao lida'";
-        $resultado_notificacao = $con->query($query_notificacao_existente);
-
-        // Se não existir notificação para este produto, insere uma nova
-        if ($resultado_notificacao->num_rows == 0) {
-            // Inserir notificação na tabela "notificacoes"
-            $username = 'estoque';
-            $setor = 'estoque';
-            $mensagem = "#".$produto['produto']." chegou ao seu limite de estoque.";
-            $situacao = 'nao lida';
-            
-            $query_notificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
-                                  VALUES ('$username', '$setor', '$mensagem', '$situacao', '$data_criacao')";
-            $con->query($query_notificacao);
-        }
-        
-        // Gerar ordem de compra
-        $query_ordem_compra = "INSERT INTO ordens_compra (produto_id, quantidade, data_criacao) 
-                               VALUES ('{$produto['id']}', '{$produto['estoque_minimo']}', '$data_criacao')";
-        $con->query($query_ordem_compra);
-    }
-}
-?>
-
-
-<?php
 // Conexão com o banco de dados
 $host = 'localhost';
 $user = 'root';
@@ -440,42 +400,8 @@ $resultado_transicao = $con->query($query_transicao);
         </div>
    
 
-        <?php
-// Conectar ao banco de dados
-$conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
-
-// Verifique a conexão
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
-}
-
-// Defina o número de itens por página
-$itens_por_pagina = 5;
-
-// Obtenha a página atual, caso contrário defina como 1
-$pagina_atual = isset($_GET['pagina']) ? $_GET['pagina'] : 1;
-
-// Calcule o índice inicial para a consulta
-$inicio = ($pagina_atual - 1) * $itens_por_pagina;
-
-// Consulta para obter os dados de transição com informações do produto (usando JOIN)
-$query = "
-    SELECT t.id, t.material_id, t.quantidade, t.data, t.tipo, 
-           p.produto, p.classificacao, p.natureza, p.contabil, p.descricao, p.unidade, 
-           p.localizacao, p.custo, p.quantidade AS produto_quantidade, p.nf, p.preco_medio, p.tipo_operacao
-    FROM transicao t
-    LEFT JOIN produtos p ON t.material_id = p.id
-    LIMIT $inicio, $itens_por_pagina
-";
-$resultado_transicao = $conn->query($query);
-
-// Obtenha o total de registros para calcular o número de páginas
-$total_registros = $conn->query("SELECT COUNT(*) FROM transicao")->fetch_row()[0];
-$total_paginas = ceil($total_registros / $itens_por_pagina);
-?>
-
-<div class="table-container">
-    <table class="tabela-transicao">
+        <div class="input-group">
+    <table>
         <thead>
             <tr>
                 <th>ID</th>
@@ -505,30 +431,14 @@ $total_paginas = ceil($total_registros / $itens_por_pagina);
                     <td><?= $row['data'] ?></td>
                     <td class="<?= strtolower($row['tipo']) ?>"><?= $row['tipo'] ?></td>
                     <td>
+                        <!-- <button class="acoes-button editar-button">Editar</button> -->
                         <button class="acoes-button excluir-button" data-id="<?= $row['id'] ?>">Excluir</button>
                     </td>
                 </tr>
             <?php } ?>
         </tbody>
     </table>
-
-    <!-- Navegação de páginas -->
-    <div class="pagination">
-    <a href="?pagina=1#">&laquo; Primeira</a>
-    <a href="?pagina=<?= $pagina_atual > 1 ? $pagina_atual - 1 : 1 ?>#">Anterior</a>
-    <span>Página <?= $pagina_atual ?> de <?= $total_paginas ?></span>
-    <a href="?pagina=<?= $pagina_atual < $total_paginas ? $pagina_atual + 1 : $total_paginas ?>#">Próxima</a>
-    <a href="?pagina=<?= $total_paginas ?>#">Última &raquo;</a>
 </div>
-
-
-</div>
-
-<?php
-// Fechar a conexão com o banco de dados
-$conn->close();
-?>
-
 
     </form>
         <div id="mensagem" style="color: red; margin-top: 10px;"></div>
@@ -981,7 +891,6 @@ document.querySelectorAll('.excluir-button').forEach(button => {
 <script src="./src/estoque/js/calc-preco-medio.js"></script>
 <!-- JS DE PAGINA E FILTRO DA TABELA-ESTOQUE -->
 <script src="./src/estoque/js/paginacao-filtro.js"></script>
-<script src="./src/estoque/js/retirada-pagina.js"></script>
 
 <!-- PREENCHIMENTO AUTOMÁTICO RETIRADA DE PRODUTO -->
  <script src="./src/estoque/js/preencher-produto-retiradacodigoantigo.js"></script>

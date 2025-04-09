@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 29-Mar-2025 às 15:42
+-- Tempo de geração: 08-Abr-2025 às 22:46
 -- Versão do servidor: 10.4.32-MariaDB
 -- versão do PHP: 8.2.12
 
@@ -35,33 +35,6 @@ CREATE TABLE `agendamentos` (
   `email` varchar(255) DEFAULT NULL,
   `cor` varchar(7) NOT NULL DEFAULT '#ff0000'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Extraindo dados da tabela `agendamentos`
---
-
-INSERT INTO `agendamentos` (`id`, `nome`, `descricao`, `data_g`, `email`, `cor`) VALUES
-(1, 'Computador Dell', 'e', '2025-01-29', 'gabrielsouza.workti@gmail.com', '#ff0000'),
-(2, 'Computador Dell', 'e', '2025-01-29', 'gabrielsouza.workti@gmail.com', '#ff0000'),
-(3, 'Computador Dell', 'e', '2025-01-29', 'gabrielsouza.workti@gmail.com', '#ff0000'),
-(4, 'Computador Dell', 'e', '2025-01-29', 'gabrielsouza.workti@gmail.com', '#ff0000'),
-(5, 'teste', 'teste de agendamento de lembrete de contrato', '2025-01-29', 'gabrielsouza.workti@gmail.com', '#ff0000'),
-(6, 'teste', 'teste de agendamento de lembrete de contrato', '2025-01-29', 'gabrielsouza.workti@gmail.com', '#ff0000'),
-(7, 'teste', 'teste de agendamento de tarefa', '2025-01-31', 'gabrielsouza.workti@gmail.com', '#ff0000'),
-(8, 'teste 4', 'teste 4', '2025-01-29', 'gabrielsouza.workti@gmail.com', '#ff0000'),
-(9, 'SOLICITAR NOVA GUIA ', 'SOLICITAR NOVA GUIA ', '2025-01-29', 'gabrielsouza.workti@gmail.com', '#ff0000'),
-(10, 'TESTE', ' t5est', '2025-03-07', 'gabrielzsouzarodrigues@gmail.com', '#ff0000'),
-(11, 'TESTE', ' t5est', '2025-03-07', 'gabrielzsouzarodrigues@gmail.com', '#ff0000'),
-(12, 'TESTE', ' t5est', '2025-03-07', 'gabrielzsouzarodrigues@gmail.com', '#ff0000'),
-(13, 'TESTE', ' t5est', '2025-03-07', 'gabrielzsouzarodrigues@gmail.com', '#ff0000'),
-(14, 'TESTE', ' t5est', '2025-03-07', 'gabrielzsouzarodrigues@gmail.com', '#ff0000'),
-(15, 'TESTE', ' t5est', '2025-03-07', 'gabrielzsouzarodrigues@gmail.com', '#ff0000'),
-(16, 'TESTE', ' t5est', '2025-03-07', 'gabrielzsouzarodrigues@gmail.com', '#ff0000'),
-(17, 'MONITOR', 'teste', '2025-03-22', 'gabrielzsouzarodrigues@gmail.com', '#ff0000'),
-(18, 'MONITOR', 't', '2025-03-07', 'gabrielzsouzarodrigues@gmail.com', '#ff0000'),
-(19, 'MONITOR', 't', '2025-03-07', 'gabrielzsouzarodrigues@gmail.com', '#ff0000'),
-(20, 'TESTE', 'r', '2025-03-07', 'gabrielzsouzarodrigues@gmail.com', '#ff0000'),
-(21, 'MONITOR', 'r', '2025-03-22', 'gabrielzsouzarodrigues@gmail.com', '#ff0000');
 
 -- --------------------------------------------------------
 
@@ -106,6 +79,20 @@ CREATE TABLE `configuracoes` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `contratos_parcelas`
+--
+
+CREATE TABLE `contratos_parcelas` (
+  `id` int(11) NOT NULL,
+  `contrato_id` int(11) DEFAULT NULL,
+  `mes` int(11) DEFAULT NULL,
+  `ano` int(11) DEFAULT NULL,
+  `valor` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `controle_transicao`
 --
 
@@ -119,7 +106,8 @@ CREATE TABLE `controle_transicao` (
 --
 
 INSERT INTO `controle_transicao` (`id`, `mes`) VALUES
-(1, '2025-03');
+(1, '2025-03'),
+(2, '2025-04');
 
 -- --------------------------------------------------------
 
@@ -150,32 +138,82 @@ CREATE TABLE `fechamento` (
   `id` int(11) NOT NULL,
   `data_fechamento` date NOT NULL,
   `natureza` varchar(255) NOT NULL,
+  `classificacao` varchar(220) NOT NULL,
+  `saldo_anterior` decimal(10,2) NOT NULL,
   `total_entrada` decimal(10,2) NOT NULL,
   `total_saida` decimal(10,2) NOT NULL,
   `saldo_atual` decimal(10,2) NOT NULL,
-  `custo` decimal(10,2) NOT NULL
+  `custo` decimal(10,2) NOT NULL,
+  `status` varchar(220) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Extraindo dados da tabela `fechamento`
 --
 
-INSERT INTO `fechamento` (`id`, `data_fechamento`, `natureza`, `total_entrada`, `total_saida`, `saldo_atual`, `custo`) VALUES
-(1, '0000-00-00', 'escritório', 0.00, 6.00, 132.00, 2.00),
-(2, '0000-00-00', '333903003', 0.00, 105.05, 66574.17, 26.26),
-(3, '0000-00-00', '333903005', 0.00, 6.17, 66.64, 1.23),
-(4, '0000-00-00', '333903010', 6494.00, 0.00, 438968.43, 32.80),
-(5, '0000-00-00', 'escritório', 0.00, 6.00, 396.00, 2.00),
-(6, '0000-00-00', 'ADFSDF', 0.00, 12.00, -6.00, 6.00),
-(7, '0000-00-00', '333903003', 0.00, 105.05, 1814940.56, 26.26),
-(8, '0000-00-00', '333903005', 0.00, 6.17, 149.31, 1.23),
-(9, '0000-00-00', '333903010', 6494.00, 0.00, 14836240.90, 32.80),
-(10, '0000-00-00', 'escritório', 0.00, 6.00, 1188.00, 2.00),
-(11, '0000-00-00', 'ADFSDF', 0.00, 12.00, -42.00, 6.00),
-(12, '0000-00-00', '333903003', 0.00, 2468.63, 49474193.94, 26.26),
-(13, '0000-00-00', '333903005', 0.00, 6.17, 333.18, 1.23),
-(14, '0000-00-00', '333903010', 6494.00, 0.00, 99999999.99, 32.80),
-(15, '0000-00-00', '333903003', 1115.13, 0.00, 2230.26, 32.80);
+INSERT INTO `fechamento` (`id`, `data_fechamento`, `natureza`, `classificacao`, `saldo_anterior`, `total_entrada`, `total_saida`, `saldo_atual`, `custo`, `status`) VALUES
+(1, '2025-04-02', '333903001', 'Material cama mesa Banho/Copa e Cozinha', 6537.00, 0.00, 1097.84, 5439.46, 0.00, 'Pendente'),
+(2, '2025-04-02', '333903002', 'Artigos para Limpeza, Higiêne e Toalete', 19167.00, 0.00, 1663.80, 17503.12, 0.00, 'Pendente'),
+(4, '2025-04-02', '333903005', 'Artigos em Geral e Impressos para Expediente, Escritorio', 14678.00, 0.00, 779.28, 13899.11, 0.00, 'Pendente'),
+(5, '2025-04-02', '333903008', 'Material Radiológico Fotografico,Cinematográfico, de Gravação e Comunicação', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(6, '2025-04-02', '333903010', 'Material Eletrico,material para conservação e manutenção de Bens', 7066.00, 432.71, 1660.84, 5837.93, 0.00, 'Pendente'),
+(7, '2025-04-02', '333903011', 'Material para manutenção e conservação de Bens móveis', 157765.00, 0.00, 429.00, 157335.90, 0.00, 'Pendente'),
+(8, '2025-04-02', '333903020', 'Produtos Alimentícios e Bebidas', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(9, '2025-04-02', '333903021', 'Matérias Primas', 59061.00, 0.00, 0.00, 59061.49, 0.00, 'Pendente'),
+(10, '2025-04-02', '333903023', 'Material de Informatica', 913.00, 0.00, 65.19, 847.82, 0.00, 'Pendente'),
+(11, '2025-04-02', '333903030', 'Material para manutenção de Veículo', 795.00, 0.00, 0.00, 795.34, 0.00, 'Pendente'),
+(12, '2025-04-02', '333903033', 'Material para Sinalização Visual e Outros', 681.00, 0.00, 0.00, 680.65, 0.00, 'Pendente'),
+(13, '2025-04-02', '333903042', 'Material Eletrico e Eletrônico', 114463.00, 0.00, 1393.32, 113069.61, 0.00, 'Pendente'),
+(14, '2025-04-02', '344903010', 'Mat. Eletr. Mat. P/ Conserv. e Manut. de Bens Imoveis; Sinaliz. e Demarc', 6555.00, 0.00, 0.00, 6554.64, 0.00, 'Pendente'),
+(15, '2025-04-02', '344903011', 'Material para manutenção e conservação de Bens móveis', 7836.00, 0.00, 0.00, 7836.20, 0.00, 'Pendente'),
+(16, '2025-04-02', '344905206', 'Outros Equipamentos', 148.00, 0.00, 0.00, 147.80, 0.00, 'Pendente'),
+(17, '2025-04-02', '344905212', 'Utensilios de Copa, Cozinha, Dormitorio e Enfermaria', 320.00, 0.00, 0.00, 320.00, 0.00, 'Pendente'),
+(18, '2025-04-02', '344905217', 'Equipamento para áudio, Vídeo e Foto', 25444.00, 0.00, 0.00, 25443.80, 0.00, 'Pendente'),
+(19, '2025-04-02', '344905220', 'Maquinas, Ferramentas e Utensilios de Oficina', 34.00, 0.00, 0.00, 34.45, 0.00, 'Pendente'),
+(20, '2025-04-02', '344905238', 'Equipamento e Material Permanente ( Material de T.I.C )', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `fechamentos`
+--
+
+CREATE TABLE `fechamentos` (
+  `id` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `natureza` varchar(220) NOT NULL,
+  `saldo_anterior` decimal(10,2) NOT NULL,
+  `total_entrada` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total_saida` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `saldo_atual` decimal(10,2) NOT NULL,
+  `data_fechamento` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `fechamentos`
+--
+
+INSERT INTO `fechamentos` (`id`, `username`, `natureza`, `saldo_anterior`, `total_entrada`, `total_saida`, `saldo_atual`, `data_fechamento`) VALUES
+(0, 'PAULO', '333903001', 6537.00, 0.00, 1097.84, 5439.46, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903002', 19167.00, 0.00, 1663.80, 17503.12, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903003', 62944.00, 327.99, 1814.37, 61458.06, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903005', 14678.00, 0.00, 779.28, 13899.11, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903008', 0.00, 0.00, 0.00, 0.00, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903010', 7066.00, 0.00, 794.00, 6272.06, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903011', 157765.00, 30.00, 429.00, 157365.90, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903020', 0.00, 0.00, 0.00, 0.00, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903021', 59061.00, 0.00, 0.00, 59061.49, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903023', 913.00, 0.00, 65.19, 847.82, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903030', 795.00, 0.00, 0.00, 795.34, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903033', 681.00, 0.00, 0.00, 680.65, '2025-04-07 14:25:09'),
+(0, 'PAULO', '333903042', 114463.00, 0.00, 1393.32, 113069.61, '2025-04-07 14:25:09'),
+(0, 'PAULO', '344903010', 6555.00, 0.00, 0.00, 6554.64, '2025-04-07 14:25:09'),
+(0, 'PAULO', '344903011', 7836.00, 0.00, 0.00, 7836.20, '2025-04-07 14:25:09'),
+(0, 'PAULO', '344905206', 148.00, 0.00, 0.00, 147.80, '2025-04-07 14:25:09'),
+(0, 'PAULO', '344905212', 320.00, 0.00, 0.00, 320.00, '2025-04-07 14:25:09'),
+(0, 'PAULO', '344905217', 25444.00, 0.00, 0.00, 25443.80, '2025-04-07 14:25:09'),
+(0, 'PAULO', '344905220', 34.00, 0.00, 0.00, 34.45, '2025-04-07 14:25:09'),
+(0, 'PAULO', '344905238', 0.00, 0.00, 0.00, 0.00, '2025-04-07 14:25:09');
 
 -- --------------------------------------------------------
 
@@ -229,18 +267,7 @@ CREATE TABLE `gestao_contratos` (
 --
 
 INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `contatos`, `valor_contrato`, `valor_aditivo`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`) VALUES
-(1, 'CLARO', '20231600/889', 'TESTE', 'GABRIEL', 'MAIK', 'CELSO', '2025-03-15', '40028922', 5.00, 0.00, 10, 'TESTE', 'Ativo', '2025-03-07 13:18:45'),
-(2, 'DELL', '20231600/890', 'TESTE', 'GABRIEL', 'MAIK', 'ALTAMIR', '2025-04-01', '40028922', 15.00, 0.00, 20, 'TESTE', 'Ativo', '2025-03-07 13:21:19'),
-(3, 'UNIFORMES', '20231600/891', 'TESTE', 'GABRIEL', 'MAIK', 'ALEXANDRE', '2026-01-30', '40028922', 15.00, 0.00, 10, 'TESTE', 'Ativo', '2025-03-07 13:49:02'),
-(4, 'CONTRATO DE PRESTAÇÃO DE  SERVIDORES', '20231600/892', 'TESTE', 'GABRIEL', 'MAIK', 'ALEXANDRE', '2025-03-29', '40028922', 15000.00, 0.00, 5, '12', 'Ativo', '2025-03-07 13:52:10'),
-(5, 'CONTRATO DE PRESTAÇÃO DE  SERVIDORES', '20231600/893', 'TESTE', 'GABRIEL', 'MAIK', 'CARUSO', '2027-02-10', '40028922', 15000.00, 0.00, 360, 'TESTE', 'Ativo', '2025-03-10 11:36:52'),
-(6, 'CONTRATO DE PRESTAÇÃO DE  SERVIDORES', '20231600/894', 'TESTE', 'GABRIEL', 'MAIK', 'CARUSO', '2027-09-10', '40028922', 500000.00, 0.00, 46, 'teste', 'Ativo', '2025-03-10 11:48:05'),
-(7, 'CONTRATO DE PRESTAÇÃO DE  SERVIDORES', '20231600/895', 'TESTE', 'GABRIEL', 'MAIK', 'CARUSO', '2027-07-17', '40028922', 500000.00, 0.00, 34, '1', 'Ativo', '2025-03-10 12:02:42'),
-(8, 'CONTRATO DE PRESTAÇÃO DE  SERVIDORES', '20231600/896', 'TESTE', 'GABRIEL', 'MAIK', 'ALEXANDRE', '2025-03-11', '40028922', 15000.00, 0.00, 0, 'te', 'Ativo', '2025-03-10 12:03:25'),
-(9, 'CONTRATO DE PRESTAÇÃO DE  SERVIDORES', '20231600/889', 'TESTE', 'GABRIEL', 'MAIK', 'ALEXANDRE', '2025-03-11', '40028922', 15000.00, 0.00, 0, '3', 'Ativo', '2025-03-10 12:09:02'),
-(10, 'CONTRATO DE PRESTAÇÃO DE  SERVIDORES', '20231600/894', 'TESTE', 'GABRIEL', 'MAIK', 'CELSO', '2025-03-10', '40028922', 15000.00, 0.00, 0, 'tetst', 'Ativo', '2025-03-10 12:19:26'),
-(11, 'CONTRATO DE PRESTAÇÃO DE  SERVIDORES', '20231600/889', 'TESTE', 'GABRIEL', 'MAIK', 'ALEXANDRE', '2025-03-31', '40028922', 15000.00, 0.00, 0, 'test', 'Ativo', '2025-03-10 12:20:09'),
-(12, 'CONTRATO DE PRESTAÇÃO DE  SERVIDORES', '20231600/889', 'TESTE', 'GABRIEL', 'MAIK', 'CARUSO', '2025-03-31', '40028922', 15000.00, 0.00, 0, '6y', 'Ativo', '2025-03-10 12:20:47');
+(1, 'contrato de aluguel de impressoras ', '20231600/894', 'TESTE', 'GABRIEL', 'MAIK', 'CARUSO', '2025-04-07', '40028922', 5000.00, 0.00, 3, '1', 'Ativo', '2025-04-08 01:06:04');
 
 -- --------------------------------------------------------
 
@@ -496,7 +523,38 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (586, 'MASTER', 'Login bem-sucedido', '2025-03-29 12:34:33'),
 (587, 'MASTER', 'cadastrou o produto no estoque', '2025-03-29 14:01:13'),
 (588, 'PAULO', 'Login bem-sucedido', '2025-03-29 14:01:50'),
-(589, 'PAULO', 'cadastrou o produto no estoque', '2025-03-29 14:40:57');
+(589, 'PAULO', 'cadastrou o produto no estoque', '2025-03-29 14:40:57'),
+(590, 'MASTER', 'atualizou o produto', '2025-04-05 16:30:04'),
+(591, 'MASTER', 'atualizou o produto', '2025-04-05 16:30:22'),
+(592, 'MASTER', 'cadastrou o produto no estoque', '2025-04-05 16:30:42'),
+(593, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-06 10:08:31'),
+(594, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-06 10:12:57'),
+(595, 'CONTRATOS', 'Login bem-sucedido', '2025-04-06 11:01:04'),
+(596, 'MASTER', 'Login bem-sucedido', '2025-04-06 11:16:23'),
+(597, 'PAULO', 'Login bem-sucedido', '2025-04-06 11:48:23'),
+(598, 'MASTER', 'Login bem-sucedido', '2025-04-06 11:53:21'),
+(599, 'PAULO', 'Login bem-sucedido', '2025-04-06 12:12:57'),
+(600, 'CONTRATOS', 'Login bem-sucedido', '2025-04-06 12:24:06'),
+(601, 'PAULO', 'Login bem-sucedido', '2025-04-07 17:22:38'),
+(602, 'CONTRATOS', 'Login bem-sucedido', '2025-04-07 17:25:51'),
+(603, 'PAULO', 'Login bem-sucedido', '2025-04-08 11:49:38'),
+(604, 'PAULO', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 11:52:20'),
+(605, 'MASTER', 'Login bem-sucedido', '2025-04-08 13:23:09'),
+(606, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 13:52:57'),
+(607, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 14:03:01'),
+(608, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 14:10:39'),
+(609, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 14:13:47'),
+(610, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 14:41:55'),
+(611, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 14:53:34'),
+(612, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 14:56:27'),
+(613, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 15:02:11'),
+(614, 'MASTER', 'Login falhou: Senha inválida', '2025-04-08 15:03:33'),
+(615, 'MASTER', 'Login bem-sucedido', '2025-04-08 15:03:47'),
+(616, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 15:42:02'),
+(617, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 20:04:42'),
+(618, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 20:22:26'),
+(619, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 20:28:39'),
+(620, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 20:29:46');
 
 -- --------------------------------------------------------
 
@@ -572,38 +630,122 @@ CREATE TABLE `notificacoes` (
 --
 
 INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `data_criacao`) VALUES
-(5, 'PAULO', 'estoque', 'O produto \'PROJETOR\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-17 18:04:45'),
-(9, 'MASTER', 'administrador', 'O produto \'PROJETOR\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-17 18:28:10'),
-(18, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-17 18:44:32'),
-(102, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10L212\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-18 12:18:45'),
-(103, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-18 12:18:45'),
-(242, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 14:21:06'),
-(243, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 14:25:14'),
-(244, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 14:29:14'),
-(245, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 14:41:57'),
-(246, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:54:20'),
-(247, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:55:31'),
-(248, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:55:36'),
-(249, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:55:38'),
-(250, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:55:52'),
-(251, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:57:58'),
-(252, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:58:00'),
-(253, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:58:06'),
-(254, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'lida', '2025-03-25 16:58:15'),
-(255, 'PAULO', 'estoque', 'O produto \'78\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:19:08'),
-(256, 'PAULO', 'estoque', 'O produto \'70\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-25 17:28:15'),
-(257, 'PAULO', 'estoque', 'O produto \'70\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-25 17:28:30'),
-(258, 'PAULO', 'estoque', 'O produto \'70\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-25 17:29:53'),
-(259, 'PAULO', 'estoque', 'O produto \'78\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:30:11'),
-(260, 'PAULO', 'estoque', 'O produto \'78\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:33:13'),
-(261, 'PAULO', 'estoque', 'O produto \'75\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:45:44'),
-(262, 'PAULO', 'estoque', 'O produto \'75\' chegou ao limite mínimo de 5 unidades.', 'lida', '2025-03-25 17:46:15'),
-(263, 'MASTER', 'administrador', 'O produto \'69\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-28 20:31:38'),
-(264, 'MASTER', 'administrador', 'O produto \'69\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-28 20:31:45'),
-(265, 'MASTER', 'administrador', 'O produto \'70\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'lida', '2025-03-28 20:32:08'),
-(266, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-29 14:01:53'),
-(267, 'PAULO', 'estoque', 'O produto \'PROJETOR\' está com 4 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-03-29 14:01:53'),
-(268, 'PAULO', 'estoque', 'O produto \'82\' chegou ao limite mínimo de 5 unidades.', 'nao lida', '2025-03-29 14:39:21');
+(353, 'CONTRATOS', 'contratos', 'Contrato \'Contrato A\' com validade em 2025-04-07 prestes a expirar.', 'lida', '2025-04-07 22:22:20'),
+(354, 'CONTRATOS', 'contratos', 'Contrato \'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA\' com validade em 2025-04-08 prestes a expirar.', 'lida', '2025-04-07 22:22:20'),
+(355, 'CONTRATOS', 'contratos', 'Contrato \'Contrato A\' com validade em 2025-04-08 prestes a expirar.', 'lida', '2025-04-07 22:22:20'),
+(356, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-04-07 17:22:43'),
+(357, 'PAULO', 'estoque', 'O produto \'PROJETOR\' está com 4 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-04-07 17:22:45'),
+(358, 'CONTRATOS', 'contratos', 'Contrato \'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA\' com validade em 2025-04-07 prestes a expirar.', 'lida', '2025-04-08 05:59:38'),
+(359, 'CONTRATOS', 'contratos', 'Contrato \'contrato de aluguel de impressoras \' com validade em 2025-04-07 prestes a expirar.', 'lida', '2025-04-08 06:06:05'),
+(360, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-04-08 11:49:42'),
+(361, 'PAULO', 'estoque', 'O produto \'PROJETOR\' está com 4 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-04-08 11:49:42'),
+(362, 'PAULO', 'estoque', 'O produto \'69\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'nao lida', '2025-04-08 12:13:34'),
+(363, 'PAULO', 'estoque', 'O produto \'71\' chegou ao limite mínimo de 5 unidades.', 'nao lida', '2025-04-08 12:52:30'),
+(364, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:46'),
+(365, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:46'),
+(366, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:55'),
+(367, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:55'),
+(368, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:56'),
+(369, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:56'),
+(370, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:57'),
+(371, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:57'),
+(372, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:22:59'),
+(373, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:59'),
+(374, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:23:14'),
+(375, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:23:14'),
+(376, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:27:29'),
+(377, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:27:30'),
+(378, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:27:33'),
+(379, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:27:33'),
+(380, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:47:07'),
+(381, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:47:07'),
+(382, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:11'),
+(383, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:11'),
+(384, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:26'),
+(385, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:26'),
+(386, 'MASTER', 'administrador', 'O produto \'1\' chegou ao limite mínimo de 5 unidades.', 'nao lida', '2025-04-08 14:06:26'),
+(387, 'MASTER', 'administrador', 'O produto \'2\' chegou ao limite mínimo de 5 unidades.', 'nao lida', '2025-04-08 14:14:23');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `ordens_compra`
+--
+
+CREATE TABLE `ordens_compra` (
+  `id` int(11) NOT NULL,
+  `produto_id` int(11) NOT NULL,
+  `quantidade` int(11) NOT NULL,
+  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `ordens_compra`
+--
+
+INSERT INTO `ordens_compra` (`id`, `produto_id`, `quantidade`, `data_criacao`) VALUES
+(1, 79, 0, '2025-04-08 18:22:46'),
+(2, 82, 0, '2025-04-08 18:22:46'),
+(3, 79, 0, '2025-04-08 18:22:55'),
+(4, 82, 0, '2025-04-08 18:22:55'),
+(5, 79, 0, '2025-04-08 18:22:56'),
+(6, 82, 0, '2025-04-08 18:22:56'),
+(7, 79, 0, '2025-04-08 18:22:57'),
+(8, 82, 0, '2025-04-08 18:22:57'),
+(9, 79, 0, '2025-04-08 18:22:59'),
+(10, 82, 0, '2025-04-08 18:22:59'),
+(11, 79, 0, '2025-04-08 18:23:14'),
+(12, 82, 0, '2025-04-08 18:23:14'),
+(13, 79, 0, '2025-04-08 18:27:29'),
+(14, 82, 0, '2025-04-08 18:27:30'),
+(15, 79, 0, '2025-04-08 18:27:33'),
+(16, 82, 0, '2025-04-08 18:27:33'),
+(17, 79, 0, '2025-04-08 18:27:45'),
+(18, 82, 0, '2025-04-08 18:27:45'),
+(19, 79, 0, '2025-04-08 18:27:46'),
+(20, 82, 0, '2025-04-08 18:27:46'),
+(21, 79, 0, '2025-04-08 18:27:49'),
+(22, 82, 0, '2025-04-08 18:27:49'),
+(23, 79, 0, '2025-04-08 18:47:07'),
+(24, 82, 5, '2025-04-08 18:47:07'),
+(25, 79, 0, '2025-04-08 18:47:11'),
+(26, 82, 5, '2025-04-08 18:47:11'),
+(27, 79, 0, '2025-04-08 18:47:26'),
+(28, 82, 5, '2025-04-08 18:47:26'),
+(29, 79, 0, '0000-00-00 00:00:00'),
+(30, 82, 5, '0000-00-00 00:00:00'),
+(31, 79, 0, '0000-00-00 00:00:00'),
+(32, 82, 5, '0000-00-00 00:00:00'),
+(33, 79, 0, '0000-00-00 00:00:00'),
+(34, 82, 5, '0000-00-00 00:00:00'),
+(35, 79, 0, '0000-00-00 00:00:00'),
+(36, 82, 5, '0000-00-00 00:00:00'),
+(37, 79, 0, '0000-00-00 00:00:00'),
+(38, 82, 5, '0000-00-00 00:00:00'),
+(39, 79, 0, '0000-00-00 00:00:00'),
+(40, 82, 5, '0000-00-00 00:00:00'),
+(41, 79, 0, '0000-00-00 00:00:00'),
+(42, 82, 5, '0000-00-00 00:00:00'),
+(43, 79, 0, '2025-04-08 18:51:56'),
+(44, 82, 5, '2025-04-08 18:51:56'),
+(45, 79, 0, '2025-04-08 18:51:58'),
+(46, 82, 5, '2025-04-08 18:51:58'),
+(47, 79, 0, '2025-04-08 18:51:59'),
+(48, 82, 5, '2025-04-08 18:51:59'),
+(49, 79, 0, '2025-04-08 18:51:59'),
+(50, 82, 5, '2025-04-08 18:51:59'),
+(51, 79, 0, '2025-04-08 18:51:59'),
+(52, 82, 5, '2025-04-08 18:51:59'),
+(53, 79, 0, '2025-04-08 18:52:00'),
+(54, 82, 5, '2025-04-08 18:52:00'),
+(55, 79, 0, '2025-04-08 18:52:03'),
+(56, 82, 5, '2025-04-08 18:52:03'),
+(57, 79, 0, '2025-04-08 18:52:22'),
+(58, 82, 5, '2025-04-08 18:52:22'),
+(59, 79, 0, '2025-04-08 18:52:25'),
+(60, 82, 5, '2025-04-08 18:52:25'),
+(61, 79, 0, '2025-04-08 18:52:59'),
+(62, 82, 5, '2025-04-08 18:52:59');
 
 -- --------------------------------------------------------
 
@@ -613,12 +755,18 @@ INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `
 
 CREATE TABLE `pagamentos` (
   `id` int(11) NOT NULL,
-  `id_contrato` int(11) NOT NULL,
-  `parcela` int(11) NOT NULL,
+  `contrato_id` int(11) NOT NULL,
   `valor` decimal(10,2) NOT NULL,
   `data_pagamento` date NOT NULL,
-  `data_lancamento` timestamp NOT NULL DEFAULT current_timestamp()
+  `forma_pagamento` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `pagamentos`
+--
+
+INSERT INTO `pagamentos` (`id`, `contrato_id`, `valor`, `data_pagamento`, `forma_pagamento`) VALUES
+(1, 1, 500.00, '2025-04-07', 'cartao');
 
 -- --------------------------------------------------------
 
@@ -724,29 +872,18 @@ CREATE TABLE `produtos` (
   `nf` varchar(50) DEFAULT NULL,
   `preco_medio` decimal(10,2) DEFAULT NULL,
   `tipo_operacao` varchar(50) DEFAULT 'entrada',
-  `data_cadastro` datetime DEFAULT NULL
+  `data_cadastro` datetime DEFAULT NULL,
+  `estoque_minimo` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Extraindo dados da tabela `produtos`
 --
 
-INSERT INTO `produtos` (`id`, `produto`, `classificacao`, `natureza`, `contabil`, `descricao`, `unidade`, `localizacao`, `custo`, `quantidade`, `nf`, `preco_medio`, `tipo_operacao`, `data_cadastro`) VALUES
-(69, 'PAPEL A4w', 'TESTE', 'TESTE', '20.2200', '24716081', 'UM', 'xm2', 12.00000, 5, '', 6.00, 'retirado', '2023-01-10 15:12:03'),
-(70, 'SACO LIXO 10L212', 'TESTE', '1', '2', '24716081', 'UM', 'xm2', 21.00000, 10, '', 10.50, 'retirado', '2024-01-10 15:13:45'),
-(71, 'SACO LIXO 10LD', 'TESTE', 'W2', '20.2200', '22', '2', 'xm2', 2.00000, 2, '', 1.00, 'cadastrado', '2025-01-31 14:54:04'),
-(75, 'PROJETOR', 'TESTE', 'TESTE', '20.2200', '24452005', '123', 'xm1', 2.00000, 4, '', 0.01, 'retirado', '2025-03-17 15:11:43'),
-(76, 'CANETA AZUL', 'ESCRITÓRIO', 'escritório', '2', '3', '2', 'xm2', 2.00000, 1785, '3', 0.06, 'retirado', '2025-03-20 16:21:34'),
-(77, 'MONITOR 24 POLEGADAS', 'INFORMÁTICA', 'ESCRITÓRIO', '2025.20', '500', 'UM', 'xm1', 32.80000, 138, '1', 237.67, 'cadastrado', '2025-03-22 18:17:34'),
-(79, 'teste de custo', '3', '3', '3', '3', '3', 'xm1', 4.43000, 0, '1', 492.67, 'retirado', '2025-03-22 19:00:17'),
-(80, 'SACO LIXO 10L90', 'ESCRITÓRIO', 'TESTE123', '2', '1', 'um', 'xm2', 4.43400, 23, '1', 192.78, 'cadastrado', '2025-03-22 19:04:14'),
-(81, 'PAPEL A3', 'TESTE', '23', '1', '23q', 'um', 'xm2', 89340.00000, 198, '1', 451.21, 'cadastrado', '2025-03-22 19:10:31'),
-(82, 'PROJETOR54', 'SDFASDFAF', 'ADFSDF', 'ASDFASDF', 'ASDFASD', 'FASADF', 'xm1', 6.00000, -47, '234', 0.00, 'retirado', '2025-03-26 09:35:33'),
-(83, '42400050015', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', '42400050015', 'UM', 'xm1', 26.26200, 51360388, '3', 250.12, 'retirado', '2025-03-26 13:43:21'),
-(84, '42400050002', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', 'RESPIRADOR DESCARTAVEL TIPO CONCHA', 'UM3', 'xm1', 90.00000, 34, '2', 2.00, 'cadastrado', '2025-03-28 17:40:18'),
-(85, '75200060035', 'Artigos em Geral e Impressos para Expediente, Escritorio', '333903005', '3437.05', 'CANETA VERMELHA PONTA ARREDONDADA', 'UM', 'xm1', 1.23400, 608, '1', 36.00, 'retirado', '2025-03-28 18:01:05'),
-(86, '47100040108', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'TUBO NAO METALICO AGUA 20mm 3M ID 0061400', 'UM', 'xm1', 32.79800, 516723668, '2', 165.00, 'cadastrado', '2025-03-29 11:01:13'),
-(87, '84150078394', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', 'AVENTAL DE SEGURANÇA TIPO SOLDADOR EM RASPA ID 001', 'UM', 'xm1', 32.79800, 49476458, '2', 964.00, 'cadastrado', '2025-03-29 11:40:57');
+INSERT INTO `produtos` (`id`, `produto`, `classificacao`, `natureza`, `contabil`, `descricao`, `unidade`, `localizacao`, `custo`, `quantidade`, `nf`, `preco_medio`, `tipo_operacao`, `data_cadastro`, `estoque_minimo`) VALUES
+(1, '42400050002', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', 'RESPIRADOR DESCARTAVEL TIPO CONCHA', '2', 'xm1', 3.32300, 148, '2', 14.45, 'retirado', '2025-04-08 17:04:42', 0),
+(2, '42400050015', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', 'MASCARA RESPIRATORIA TIPO SEMI-FACIAL', 'UM', 'xm1', 4.43400, 20, '1', 192.00, 'retirado', '2025-04-08 17:22:26', 0),
+(3, '47100016581', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'TUBO NAO METALICO AGUA 40mm 3M SIGA 0040041', 'UM', 'xm1', 44.34200, 35, '1', 1.93, 'retirado', '2025-04-08 17:28:39', 0);
 
 -- --------------------------------------------------------
 
@@ -826,7 +963,7 @@ CREATE TABLE `transicao` (
   `material_id` int(11) NOT NULL,
   `quantidade` int(11) NOT NULL,
   `data` date NOT NULL,
-  `tipo` enum('Entrada','Saída') NOT NULL
+  `tipo` enum('Entrada','Saida') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -834,14 +971,14 @@ CREATE TABLE `transicao` (
 --
 
 INSERT INTO `transicao` (`id`, `material_id`, `quantidade`, `data`, `tipo`) VALUES
-(1, 83, 2, '2025-03-28', 'Saída'),
-(2, 83, 2, '2025-03-28', 'Saída'),
-(3, 76, 3, '2025-03-28', 'Saída'),
-(4, 85, 5, '2025-03-29', 'Saída'),
-(6, 86, 198, '2025-03-29', 'Entrada'),
-(7, 82, 2, '2025-03-29', 'Saída'),
-(8, 87, 34, '2025-03-29', 'Entrada'),
-(9, 83, 90, '2025-03-29', 'Saída');
+(36, 4, 3213, '2025-04-08', 'Entrada'),
+(37, 4, 23, '2025-04-08', 'Saida'),
+(38, 4, 12, '2025-04-08', 'Saida'),
+(39, 4, 1, '2025-04-08', 'Saida'),
+(40, 4, 1, '2025-04-08', 'Saida'),
+(41, 4, 1, '2025-04-08', 'Saida'),
+(42, 4, 1, '2025-04-08', 'Saida'),
+(43, 4, 1, '2025-04-08', 'Saida');
 
 -- --------------------------------------------------------
 
@@ -901,6 +1038,13 @@ ALTER TABLE `configuracoes`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Índices para tabela `contratos_parcelas`
+--
+ALTER TABLE `contratos_parcelas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `contrato_id` (`contrato_id`);
+
+--
 -- Índices para tabela `controle_transicao`
 --
 ALTER TABLE `controle_transicao`
@@ -951,11 +1095,18 @@ ALTER TABLE `notificacoes`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Índices para tabela `ordens_compra`
+--
+ALTER TABLE `ordens_compra`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `produto_id` (`produto_id`);
+
+--
 -- Índices para tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_contrato` (`id_contrato`);
+  ADD KEY `contrato_id` (`contrato_id`);
 
 --
 -- Índices para tabela `painel_config`
@@ -1026,7 +1177,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de tabela `agendamentos`
 --
 ALTER TABLE `agendamentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `codigo_atual`
@@ -1041,10 +1192,16 @@ ALTER TABLE `configuracoes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `contratos_parcelas`
+--
+ALTER TABLE `contratos_parcelas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `controle_transicao`
 --
 ALTER TABLE `controle_transicao`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `data_criacao`
@@ -1056,7 +1213,7 @@ ALTER TABLE `data_criacao`
 -- AUTO_INCREMENT de tabela `fechamento`
 --
 ALTER TABLE `fechamento`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de tabela `funcionario`
@@ -1068,25 +1225,31 @@ ALTER TABLE `funcionario`
 -- AUTO_INCREMENT de tabela `gestao_contratos`
 --
 ALTER TABLE `gestao_contratos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=590;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=621;
 
 --
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=269;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=388;
+
+--
+-- AUTO_INCREMENT de tabela `ordens_compra`
+--
+ALTER TABLE `ordens_compra`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT de tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `painel_config`
@@ -1110,7 +1273,7 @@ ALTER TABLE `permissoes`
 -- AUTO_INCREMENT de tabela `produtos`
 --
 ALTER TABLE `produtos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `setores`
@@ -1134,7 +1297,7 @@ ALTER TABLE `transferencia_historico`
 -- AUTO_INCREMENT de tabela `transicao`
 --
 ALTER TABLE `transicao`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT de tabela `usuario`
@@ -1147,10 +1310,22 @@ ALTER TABLE `usuario`
 --
 
 --
+-- Limitadores para a tabela `contratos_parcelas`
+--
+ALTER TABLE `contratos_parcelas`
+  ADD CONSTRAINT `contratos_parcelas_ibfk_1` FOREIGN KEY (`contrato_id`) REFERENCES `gestao_contratos` (`id`);
+
+--
+-- Limitadores para a tabela `ordens_compra`
+--
+ALTER TABLE `ordens_compra`
+  ADD CONSTRAINT `ordens_compra_ibfk_1` FOREIGN KEY (`produto_id`) REFERENCES `produtos` (`id`);
+
+--
 -- Limitadores para a tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
-  ADD CONSTRAINT `fk_contrato` FOREIGN KEY (`id_contrato`) REFERENCES `gestao_contratos` (`id`);
+  ADD CONSTRAINT `pagamentos_ibfk_1` FOREIGN KEY (`contrato_id`) REFERENCES `gestao_contratos` (`id`);
 
 --
 -- Limitadores para a tabela `transicao`

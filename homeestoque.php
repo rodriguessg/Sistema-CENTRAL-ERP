@@ -34,6 +34,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <?php
+// Conectar ao banco de dados
+include 'banco.php';
+
+// Obter todos os produtos com quantidade e estoque mínimo
+$query_produtos = "SELECT id, produto, quantidade, estoque_minimo FROM produtos";
+$resultado_produtos = $con->query($query_produtos);
+
+// Checar se algum produto atingiu o estoque mínimo
+while ($produto = $resultado_produtos->fetch_assoc()) {
+    if ($produto['quantidade'] <= $produto['estoque_minimo']) {
+        // Definir a data e hora atuais
+        $data_criacao = date('Y-m-d H:i:s');
+
+        // Verificar se já existe uma notificação para este produto
+        $query_notificacao_existente = "SELECT * FROM notificacoes WHERE mensagem LIKE '%{$produto['produto']}%' AND situacao = 'nao lida'";
+        $resultado_notificacao = $con->query($query_notificacao_existente);
+
+        // Se não existir notificação para este produto, insere uma nova
+        if ($resultado_notificacao->num_rows == 0) {
+            // Inserir notificação na tabela "notificacoes"
+            $username = 'estoque';
+            $setor = 'estoque';
+            $mensagem = "#".$produto['produto']." chegou ao seu limite de estoque.";
+            $situacao = 'nao lida';
+            
+            $query_notificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                                  VALUES ('$username', '$setor', '$mensagem', '$situacao', '$data_criacao')";
+            $con->query($query_notificacao);
+        }
+        
+        // Gerar ordem de compra
+        $query_ordem_compra = "INSERT INTO ordens_compra (produto_id, quantidade, data_criacao) 
+                               VALUES ('{$produto['id']}', '{$produto['estoque_minimo']}', '$data_criacao')";
+        $con->query($query_ordem_compra);
+    }
+}
+?>
+<?php
 // Conexão com o banco de dados
 $host = 'localhost';
 $user = 'root';
@@ -377,6 +415,7 @@ $resultado_transicao = $con->query($query_transicao);
                 <label for="material-natureza">Natureza:</label>
                 <i class="fas fa-flask"></i> <!-- Ícone ao lado do campo -->
                 <input type="text" id="material-natureza" name="material-natureza" placeholder="preenchido automaticamente" readonly>
+
             </div>
             
 
@@ -498,7 +537,60 @@ $conn->close();
         <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
 
+<script>
+   document.getElementById('material-nome').addEventListener('change', function() {
+    const nomeMaterialId = this.value; // Obtém o ID do material selecionado
 
+    // Verifica se os elementos existem antes de tentar acessá-los
+    const descricaoInput = document.getElementById('material-codigo');
+    const classificacaoInput = document.getElementById('material-classificacao');
+    const naturezaInput = document.getElementById('material-natureza');
+    const localizacaoInput = document.getElementById('material-localizacao');
+    const precoMedioInput = document.getElementById('material-preco-medio');
+    const mensagemDiv = document.getElementById('mensagem');
+
+    if (!descricaoInput || !classificacaoInput || !naturezaInput || !localizacaoInput || !precoMedioInput) {
+        console.error("Erro: Um ou mais elementos não existem no HTML.");
+        return;
+    }
+
+    // Limpa os campos e a mensagem de erro
+    descricaoInput.value = '';
+    classificacaoInput.value = '';
+    naturezaInput.value = '';
+    localizacaoInput.value = '';
+    precoMedioInput.value = '';
+    mensagemDiv.innerText = '';
+
+    if (nomeMaterialId) {
+        fetch('buscar_dados_produto.php?id=' + nomeMaterialId)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Resposta da API:", data); // Depuração
+
+                if (data.success) {
+                    setTimeout(() => {
+                        descricaoInput.value = data.descricao || ''; // Correção aqui
+                        classificacaoInput.value = data.classificacao || '';
+                        naturezaInput.value = data.natureza || ''; // Preenchendo o campo "Natureza"
+                        localizacaoInput.value = data.localizacao || '';
+                        precoMedioInput.value = data.preco_medio || '';
+                    }, 300);
+                    mensagemDiv.innerText = '';
+                } else {
+                    mensagemDiv.innerText = 'Material não encontrado.';
+                }
+            })
+            .catch(err => {
+                console.error('Erro ao buscar os dados:', err);
+                mensagemDiv.innerText = 'Erro na busca. Tente novamente.';
+            });
+    } else {
+        mensagemDiv.innerText = ''; // Limpa a mensagem se nada for selecionado
+    }
+});
+
+</script>
 <!-- Modal para Detalhes -->
 <div class="modal" id="modal-detalhes">
   <div class="modal-overlay" onclick="fecharModal('modal-detalhes')"></div>
@@ -510,6 +602,44 @@ $conn->close();
   </div>
 </div>
 
+
+<script>
+    // Adicionar evento de clique nos botões de excluir
+document.querySelectorAll('.excluir-button').forEach(button => {
+    button.addEventListener('click', function() {
+        // Pega o ID do produto a ser excluído
+        const produtoId = this.getAttribute('data-id');
+
+        // Perguntar ao usuário se ele realmente quer excluir
+        if (confirm('Tem certeza que deseja excluir este item?')) {
+            // Enviar uma requisição AJAX para excluir o produto
+            fetch('excluir_produto.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `id=${produtoId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Se a exclusão foi bem-sucedida, remover a linha da tabela
+                    const row = document.getElementById(`row_${produtoId}`);
+                    row.remove();
+                    alert('Produto excluído com sucesso!');
+                } else {
+                    alert('Erro ao excluir o produto!');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao excluir o produto:', error);
+                alert('Erro ao excluir o produto!');
+            });
+        }
+    });
+});
+
+</script>
 
 <!-- Modal para Atualização -->
 <div class="modal" id="modal-atualizar">

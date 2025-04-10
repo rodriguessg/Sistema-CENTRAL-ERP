@@ -22,7 +22,7 @@ body {
 .caderno {
   display: flex; /* Flexbox para alinhamento do menu e conteúdo */
   margin-left: 280px; /* Deixa espaço para o menu lateral */
-  padding: 10px;
+  padding: 15px;
   width: 85%;
   flex-direction: column;
 }

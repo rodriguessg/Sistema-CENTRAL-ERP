@@ -118,22 +118,24 @@ include 'header.php';
 ?>
 
 
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestão de Contratos</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script> 
     
  
 </head>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<link rel="stylesheet" href="./src/style/form-cadastro-contratos.css">
-<link rel="stylesheet" href="./src/style/notificacao.css">
+<!-- <link rel="stylesheet" href="./src/style/form-cadastro-contratos.css"> -->
+<!-- <link rel="stylesheet" href="./src/style/notificacao.css"> -->
 <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
+<link rel="stylesheet" href="src/contratos/style/consultar-contratos.css">
 
 <body>
 <div class="caderno">
@@ -397,6 +399,7 @@ function gerarRelatorio() {
 
     <!-- Lista de Contratos -->
     <h2 class="text-center mt-3">Lista de Contratos</h2>
+    <div class="table-container-contratos">
     <table class="table table-bordered table-hover">
         <thead>
             <tr>
@@ -452,10 +455,12 @@ function gerarRelatorio() {
             
         }
         ?>
-
         </tbody>
     </table>
+    </div>
+    
 </div>
+
 
 
 
@@ -719,9 +724,7 @@ function gerarRelatorio() {
 </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
 <!-- Modal para exibir as tarefas -->
 <div id="taskModal" class="modal">

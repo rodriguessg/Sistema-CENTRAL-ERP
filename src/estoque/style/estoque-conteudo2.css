@@ -114,14 +114,7 @@ h3 {
   margin-bottom: 20px;
 }
 
-.form-group3 {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  border-radius: 12px;
-  margin: 20px 0px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
+
 
 /* Estilo para cada campo de input */
 .input-group {
@@ -149,7 +142,7 @@ h3 {
 .input-group input,
 .input-group select {
   width: 100%;
-  padding: 10px 16px;
+  padding: 5px 16px;
   padding-left: 35px; /* Espaço para o ícone à esquerda */
   border: 3px solid #ddd;
   border-radius: 8px;
@@ -529,18 +522,6 @@ tr:hover {
   display: block;
 }
 
-/* Estilo para os campos de input */
-.form-group3 input {
-  width: 100%;
-
-  padding: 10px 35px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  color: #333;
-  background-color: #f9f9f9;
-  transition: 0.3s;
-}
 
 /* Foco no campo de input */
 .form-group3 input:focus {
@@ -803,21 +784,6 @@ h3 {
   font-weight: bolder;
 }
 
-/* Estilo para os campos de input e select */
-.input-group input,
-.input-group select {
-  width: 100%;
-  padding: 10px 16px;
-  padding-left: 35px; /* Espaço para o ícone à esquerda */
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  color: #333;
-  background-color: #f9f9f9;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
-}
-
 /* Alinhamento do placeholder mais perto do ícone */
 .input-group input::placeholder {
   color: #777;
@@ -904,14 +870,6 @@ h3 {
   margin-top: 20px;
 }
 
-.button-group button {
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
 
 .btn-submit {
   background: linear-gradient(180deg, #2d3e50, #1a242f);
@@ -1171,18 +1129,6 @@ tr:hover {
   display: block;
 }
 
-/* Estilo para os campos de input */
-.form-group3 input {
-  width: 100%;
-
-  padding: 10px 35px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  color: #333;
-  background-color: #f9f9f9;
-  transition: 0.3s;
-}
 
 /* Foco no campo de input */
 .form-group3 input:focus {
@@ -1271,7 +1217,6 @@ tr:hover {
 
 /* Estilo para a área de resultado do relatório */
 #resultadoRelatorio {
-  margin-top: 30px;
   background-color: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);

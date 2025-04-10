@@ -146,9 +146,9 @@ include 'header.php';
 <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">Cadastro de contratos</div>
     <div class="tab" data-tab="retirar" onclick="showTab('consultar')">Consultar contratos</div>
-    <div class="tab" data-tab="levantamento" onclick="showTab('agenda')">Agendamento</div>
+    <div class="tab" data-tab="agenda" onclick="showTab('agenda')">Agendamento</div>
      <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">Resumo</div>
-      <div class="tab" data-tab="processo" onclick="showTab('relatorio')">Relatório</div>  
+      <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">Relatório</div>  
     <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')">Galeria</div> -->
 </div>
 
@@ -242,8 +242,10 @@ include 'header.php';
         </div>
         </div>
 
-        <button type="button" class="btn btn-info mt-2" onclick="toggleComplementares()">Adicionar Informações Complementares</button>
-
+        <div class="button-group" >
+        <button type="button" class="btn-submit" onclick="toggleComplementares()">Adicionar Informações Complementares</button>
+        <button type="submit" name="cadastrar_contrato" class="btn-submit" >Cadastrar Contrato</button>
+        </div>
         <div id="complementares" style="display:none;">
             <div class="mb-3">
                 <input type="checkbox" id="parcelamento" name="parcelamento" onchange="toggleParcelas()">
@@ -260,7 +262,8 @@ include 'header.php';
         </div>
 
         <input type="hidden" id="assinatura" name="assinatura">
-        <button type="submit" name="cadastrar_contrato" class="btn btn-success mt-3">Cadastrar Contrato</button>
+       
+      
     </form>
 </div>
 
@@ -318,7 +321,7 @@ include 'header.php';
     </form>
 </div>
 
-<div id="resultadoRelatorio" style="margin-top: 20px;"></div>
+<div id="resultadoRelatorio"></div>
 
 <script>
 // Função para carregar os títulos dos contratos baseados na seleção do relatório

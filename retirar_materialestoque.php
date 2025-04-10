@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Consulta para verificar se o produto existe no estoque
-    $query = "SELECT id, produto, descricao, quantidade, custo, natureza FROM produtos WHERE descricao = ?";
+    $query = "SELECT id, produto, descricao, quantidade, custo, natureza, preco_medio FROM produtos WHERE descricao = ?";
     $stmt = $con->prepare($query);
     $stmt->bind_param('s', $codigo);
     $stmt->execute();
@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $descricao = $produto['descricao'];
         $quantidadeAtual = (int) $produto['quantidade'];
         $custo = (float) $produto['custo']; // Captura o custo do produto
+        $preco_medio = (float) $produto['preco_medio']; // Captura o preço médio do produto
         $natureza = $produto['natureza']; // Captura a natureza do produto
 
         // Verifica se o estoque tem exatamente 5 unidades, caso sim, gera uma notificação
@@ -60,9 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($quantidadeAtual >= $quantidade) {
             // Atualiza o estoque ou remove o produto se a quantidade for igual à disponível
             if ($quantidadeAtual === $quantidade) {
-                $deleteQuery = "DELETE FROM produtos WHERE descricao = ? AND codigo = ?";
+                $deleteQuery = "DELETE FROM produtos WHERE descricao = ?";
                 $deleteStmt = $con->prepare($deleteQuery);
-                $deleteStmt->bind_param('ss', $nome, $codigo);
+                $deleteStmt->bind_param('s', $codigo);
                 $deleteStmt->execute();
                 $deleteStmt->close();
             } else {
@@ -99,10 +100,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt_fe->fetch();
 
                 // Calcula o novo total de saída (adiciona a saída do produto)
-                $novo_total_saida = $total_saida_existente + ($quantidade * $custo);
+                $novo_total_saida = $total_saida_existente + ($quantidade * $preco_medio);
 
                 // Calcula o novo saldo atual (diminui o valor da saída)
-                $novo_saldo_atual = $saldo_atual - ($quantidade * $custo);  // Decrease saldo atual
+                $novo_saldo_atual = $saldo_atual - ($quantidade * $preco_medio);  // Decrease saldo atual
 
                 // Atualiza o fechamento
                 $sql_update_fe = "UPDATE fechamento SET total_saida = ?, saldo_atual = ? WHERE natureza = ?";
@@ -116,11 +117,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt_update_fe->close();
             } else {
                 // Não existe um fechamento para essa natureza, insere um novo registro
-                $total_saida = $quantidade * $custo;  // Valor da saída calculado pela quantidade * custo
+                $total_saida = $quantidade * $preco_medio;  // Valor da saída calculado pela quantidade * preco_medio
                 $sql_insert_fe = "INSERT INTO fechamento (natureza, total_saida, saldo_atual, custo, data_fechamento) 
                                   VALUES (?, ?, ?, ?, NOW())";
                 $stmt_insert_fe = $con->prepare($sql_insert_fe);
-                $stmt_insert_fe->bind_param("sdds", $natureza, $total_saida, $total_saida, $custo);
+                $stmt_insert_fe->bind_param("sdds", $natureza, $total_saida, $total_saida, $preco_medio);
                 if ($stmt_insert_fe->execute()) {
                     echo "Novo fechamento inserido com sucesso!";
                 } else {

@@ -1,0 +1,234 @@
+/* Estilo geral do formulário */
+form {
+    border-radius: 8px;
+    margin: 0 auto;
+    max-width: 1200px; /* Garante que o formulário não ocupe toda a largura em telas grandes */
+    padding: 20px;
+}
+
+/* Contêiner do formulário */
+.cadastro {
+    display: flex;
+    flex-wrap: wrap; /* Garante que os grupos possam ir para a linha seguinte se necessário */
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* Estilo para os grupos (grupo1 e grupo2) */
+.grupo1, .grupo2 {
+    width: 48%; /* Cada grupo ocupa 48% da largura disponível */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Estilo das seções de entrada */
+.mb-3 {
+    margin-bottom: 15px;
+}
+
+/* Estilo dos inputs com ícones */
+.input-icon input {
+    width: 100%;
+    padding: 10px 16px;
+    padding-left: 35px; /* Espaço para o ícone à esquerda */
+    border: 3px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+/* Estilo das labels */
+.form-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* Estilo dos campos de input */
+.form-control {
+    padding: 10px;
+    padding-left: 15px; /* Espaço para o ícone */
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
+
+/* Remover o foco azul padrão e aplicar a cor de borda #777 */
+.form-control:focus {
+    border-color: #777; /* Cor da borda ao focar */
+    outline: none;
+    box-shadow: none;
+}
+
+/* Estilo para os ícones dentro do input */
+.input-icon {
+    position: relative;
+}
+
+.input-icon i {
+    position: absolute;
+    left: 10px; /* Posição do ícone dentro do campo */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 18px;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 1024px) {
+    /* Para telas médias, os grupos podem ocupar 100% da largura */
+    .grupo1, .grupo2 {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Para telas pequenas, vamos reorganizar e aumentar a largura dos inputs */
+    .input-icon input {
+        font-size: 14px; /* Ajusta o tamanho da fonte em telas menores */
+    }
+
+    .form-control {
+        width: 100%; /* Garante que os inputs ocupem toda a largura da tela */
+    }
+
+    /* Reorganiza os grupos em uma coluna */
+    .cadastro {
+        flex-direction: column;
+    }
+
+    .grupo1, .grupo2 {
+        width: 100%; /* Ambos os grupos ocupam 100% do espaço disponível */
+    }
+
+    /* Ajuste de espaçamento para melhor visualização em telas pequenas */
+    .mb-3 {
+        margin-bottom: 20px;
+    }
+}
+
+/* Responsividade para dispositivos muito pequenos, como celulares */
+@media (max-width: 480px) {
+    /* Ajuste fino para dispositivos muito pequenos */
+    .form-label {
+        font-size: 14px; /* Diminui o tamanho das labels */
+    }
+
+    .input-icon i {
+        font-size: 16px; /* Diminui o tamanho dos ícones */
+    }
+
+    .input-icon input {
+        font-size: 12px; /* Diminui o tamanho da fonte do input */
+    }
+}
+
+
+/* Estilo geral do container */
+#complementares {
+    background-color: #bbb;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    display: none; /* Inicialmente escondido */
+}
+
+/* Estilo das seções de entrada (mb-3) */
+.mb-3 {
+    margin-bottom: 20px;
+}
+
+/* Estilo dos inputs de checkbox */
+input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+/* Estilo das labels */
+.form-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* Estilo do campo de número de parcelas */
+#parcelas-container {
+    background-color: #f1f1f1;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+/* Estilo do input de número de parcelas */
+#num-parcelas {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #ffffff;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+#num-parcelas:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+textarea.form-control {
+    height: 400px;
+}
+
+/* Estilo do campo de texto (observação) */
+textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #ffffff;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Estilo para o botão de alternância */
+input[type="checkbox"]:checked + label {
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Estilo para os campos dentro do container */
+#complementares .mb-3 label {
+    color: #333;
+}
+
+/* Responsividade para telas pequenas */
+@media (max-width: 768px) {
+    #complementares {
+        padding: 15px;
+    }
+
+    .form-label {
+        font-size: 14px;
+    }
+
+    textarea, #num-parcelas {
+        font-size: 14px;
+    }
+}
+

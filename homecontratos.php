@@ -129,13 +129,14 @@ include 'header.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script> 
-    
- 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
+
 <!-- <link rel="stylesheet" href="./src/style/form-cadastro-contratos.css"> -->
 <!-- <link rel="stylesheet" href="./src/style/notificacao.css"> -->
 <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
 <link rel="stylesheet" href="src/contratos/style/consultar-contratos.css">
+<link rel="stylesheet" href="src/contratos/style/cadastro-contratos.css">
 
 <body>
 <div class="caderno">
@@ -145,60 +146,106 @@ include 'header.php';
 <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">Cadastro de contratos</div>
     <div class="tab" data-tab="retirar" onclick="showTab('consultar')">Consultar contratos</div>
-    <div class="tab" data-tab="levantamento" onclick="showTab('agenda')">Agendamento</div>
+    <div class="tab" data-tab="agenda" onclick="showTab('agenda')">Agendamento</div>
      <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">Resumo</div>
-      <div class="tab" data-tab="processo" onclick="showTab('relatorio')">Relatório</div>  
+      <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">Relatório</div>  
     <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')">Galeria</div> -->
 </div>
 
 
-<div class="form-container3" id="cadastrar" style="display:none;">
+<div class="form-container" id="cadastrar" style="display:none;">
     <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data">
-        <div class="cadastro">
-            <div class="mb-3">
-                <label for="titulo" class="form-label">Título do Contrato</label>
+    <div class="cadastro">
+        <div class="grupo1">
+         <div class="mb-3">
+            <label for="titulo" class="form-label">Título do Contrato</label>
+            <div class="input-icon">
                 <input type="text" id="titulo" name="titulo" class="form-control" required>
+                <i class="fas fa-pencil-alt"></i> <!-- Ícone dentro do input -->
             </div>
-            <div class="mb-3">
-                <label for="SEI" class="form-label">Nº SEI</label>
+         </div>
+
+        <div class="mb-3">
+            <label for="SEI" class="form-label">Nº SEI</label>
+            <div class="input-icon">
                 <input type="text" id="SEI" name="SEI" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="objeto" class="form-label">Objeto</label>
-                <input type="text" id="objeto" name="objeto" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="gestor" class="form-label">Gestor</label>
-                <input type="text" id="gestor" name="gestor" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="gestorsb" class="form-label">Gestor Substituto</label>
-                <input type="text" id="gestorsb" name="gestorsb" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="fiscais" class="form-label">Fiscais</label>
-                <input type="text" id="fiscais" name="fiscais" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="validade" class="form-label">Vigência</label>
-                <input type="date" id="validade" name="validade" class="form-control" required onchange="atualizarParcelas()">
-            </div>
-            <div class="mb-3">
-                <label for="contatos" class="form-label">Contatos</label>
-                <input type="text" id="contatos" name="contatos" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="valor-contrato" class="form-label">Valor do Contrato</label>
-                <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="valor-aditivo" class="form-label">Valor Aditivo</label>
-                <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" required>
+                <i class="fas fa-file-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
 
-        <button type="button" class="btn btn-info mt-2" onclick="toggleComplementares()">Adicionar Informações Complementares</button>
+        <div class="mb-3">
+            <label for="objeto" class="form-label">Objeto</label>
+            <div class="input-icon">
+                <input type="text" id="objeto" name="objeto" class="form-control" required>
+                <i class="fas fa-cogs"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
 
+        <div class="mb-3">
+            <label for="gestor" class="form-label">Gestor</label>
+            <div class="input-icon">
+                <input type="text" id="gestor" name="gestor" class="form-control" required>
+                <i class="fas fa-user"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="gestorsb" class="form-label">Gestor Substituto</label>
+            <div class="input-icon">
+                <input type="text" id="gestorsb" name="gestorsb" class="form-control" required>
+                <i class="fas fa-user-slash"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+        </div>
+
+        
+        <div class="grupo2">
+        <div class="mb-3">
+            <label for="fiscais" class="form-label">Fiscais</label>
+            <div class="input-icon">
+                <input type="text" id="fiscais" name="fiscais" class="form-control" required>
+                <i class="fas fa-balance-scale"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="validade" class="form-label">Vigência</label>
+            <div class="input-icon">
+                <input type="date" id="validade" name="validade" class="form-control" required onchange="atualizarParcelas()">
+                <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="contatos" class="form-label">Contatos</label>
+            <div class="input-icon">
+                <input type="text" id="contatos" name="contatos" class="form-control" required>
+                <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="valor-contrato" class="form-label">Valor do Contrato</label>
+            <div class="input-icon">
+                <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" required>
+                <i class="fas fa-dollar-sign"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="valor-aditivo" class="form-label">Valor Aditivo</label>
+            <div class="input-icon">
+                <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" required>
+                <i class="fas fa-plus-circle"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+        </div>
+        </div>
+
+        <div class="button-group" >
+        <button type="button" class="btn-submit" onclick="toggleComplementares()">Adicionar Informações Complementares</button>
+        <button type="submit" name="cadastrar_contrato" class="btn-submit" >Cadastrar Contrato</button>
+        </div>
         <div id="complementares" style="display:none;">
             <div class="mb-3">
                 <input type="checkbox" id="parcelamento" name="parcelamento" onchange="toggleParcelas()">
@@ -215,7 +262,8 @@ include 'header.php';
         </div>
 
         <input type="hidden" id="assinatura" name="assinatura">
-        <button type="submit" name="cadastrar_contrato" class="btn btn-success mt-3">Cadastrar Contrato</button>
+       
+      
     </form>
 </div>
 
@@ -273,7 +321,7 @@ include 'header.php';
     </form>
 </div>
 
-<div id="resultadoRelatorio" style="margin-top: 20px;"></div>
+<div id="resultadoRelatorio"></div>
 
 <script>
 // Função para carregar os títulos dos contratos baseados na seleção do relatório
@@ -383,7 +431,7 @@ function gerarRelatorio() {
 </script>
 
 
-<div class="form-container3" id="consultar" style="display:none;">
+<div class="form-container" id="consultar" style="display:none;">
     <!-- Pesquisa -->
     <div class="search-container my-4 text-center">
         <div class="input-group w-75 mx-auto" style="display: flex; gap:10px;">

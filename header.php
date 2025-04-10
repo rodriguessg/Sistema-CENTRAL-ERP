@@ -48,12 +48,12 @@ try {
             $menuItens = [
                 ['link' => 'painel.php', 'nome' => 'Painel', 'icon' => 'tachometer-alt'],
                 ['link' => 'homeestoque.php', 'nome' => 'Estoque', 'icon' => 'box'],
+                ['link' => 'homecontratos.php', 'nome' => 'Contratos', 'icon' => 'file-contract'],
                 ['link' => 'homefinanceiro.php', 'nome' => 'Financeiro', 'icon' => 'money-bill'],
                 ['link' => 'homepatrimonio.php', 'nome' => 'Patrimônio', 'icon' => 'building'],
                 ['link' => 'cadastro_usuario.php', 'nome' => 'Cadastrar Usuário', 'icon' => 'user-plus'],
                 ['link' => 'gerenciarpermissao.php', 'nome' => 'Usuários', 'icon' => 'key'],
                 ['link' => 'homeRh.php', 'nome' => 'Recursos H', 'icon' => 'users'],
-                ['link' => 'homecontratos.php', 'nome' => 'Contratos', 'icon' => 'file-contract'],
                 ['link' => 'log.php', 'nome' => 'LOG', 'icon' => 'users'],
                 ['link' => 'configuracao.php', 'nome' => 'Configurações', 'icon' => 'cogs'],
 

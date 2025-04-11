@@ -450,22 +450,24 @@ function gerarRelatorio() {
 <h2 class="text-center mt-3">
     <span class="icon-before fas fa-box"></span> Lista de Produtos
 </h2>
-
-
-
-
-    <!-- Pesquisa -->
-    <div class="search-bar">
+   <!-- Pesquisa -->
+<div class="search-bar">
     <div class="search-filters">
+        <!-- Campo de pesquisa por título ou descrição -->
         <input type="text" id="searchInput" class="input-field" placeholder="Digite o título ou descrição do contrato" oninput="searchContracts()">
+        
+        <!-- Filtro de status (Ativo/Inativo) -->
         <select id="statusSelect" class="input-field" onchange="searchContracts()">
             <option value="">Todos</option>
             <option value="ativo">Ativo</option>
             <option value="inativo">Inativo</option>
         </select>
+        
+        <!-- Botão para abrir o modal de filtro -->
         <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
     </div>
 </div>
+
 
 
     <!-- Lista de Contratos -->
@@ -473,12 +475,12 @@ function gerarRelatorio() {
     <table class="table table-bordered table-hover">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Validade</th>
-                <th>Status</th>
-                <th>Ações</th>
+            <th><i class="fas fa-hashtag"></i> ID</th>
+        <th><i class="fas fa-file-alt"></i> Nome</th>
+        <th><i class="fas fa-align-left"></i> Descrição</th>
+        <th><i class="fas fa-calendar-alt"></i> Validade</th>
+        <th><i class="fas fa-circle"></i> Status</th>
+        <th><i class="fas fa-cogs"></i> Ações</th>
             </tr>
         </thead>
         <tbody id="contractTableBody">
@@ -505,33 +507,87 @@ function gerarRelatorio() {
 
             $stmt->execute();
 
-                    // Exibe os resultados
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
-            echo "<td>{$row['id']}</td>";
-            echo "<td>{$row['titulo']}</td>";
-            echo "<td>{$row['descricao']}</td>";
-            echo "<td>{$row['validade']}</td>";
-            echo "<td>{$row['situacao']}</td>";
-            // O botão "Visualizar" terá um evento independente
-          // Aqui estamos passando os dados do contrato para o botão via JSON
-          echo "<td>";
-          echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
-                  <i class='fas fa-eye'></i>
-                </button>";
-          echo "<button class='btn btn-primary btn-sm' onclick='generateReport()' title='Relatório'>
-                  <i class='fas fa-file-alt'></i>
-                </button>";
-          echo "<button class='btn btn-success btn-sm' onclick='editProcess(event, " . json_encode($row) . ")' title='Editar processo'>
-                  <i class='fas fa-edit'></i>
-                </button>";
-          echo "</td>";
-          echo "</tr>";
-          
+// Exibe os resultados
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $situacao = $row['situacao'];
+    $situacaoClass = '';
+    $situacaoIcon = '';
+    $situacaoTextColor = '';
+    
+    // Verifica o valor de 'situacao' para aplicar o estilo adequado
+    if ($situacao == 'Ativo') {
+        $situacaoClass = 'Ativo'; // Classe para 'Ativo'
+        $situacaoIcon = 'fa-arrow-up'; // Ícone da seta para cima
+        $situacaoTextColor = 'green'; // Cor verde para 'Ativo'
+    } else {
+        $situacaoClass = 'Inativo'; // Classe para 'Inativo'
+        $situacaoIcon = 'fa-arrow-down'; // Ícone da seta para baixo
+        $situacaoTextColor = 'red'; // Cor vermelha para 'Inativo'
+    }
 
-            
-        }
-        ?>
+    // Formatar a data de validade
+    $validade = new DateTime($row['validade']);
+    $validadeFormatted = $validade->format('d/m/Y');
+    
+    // Adicionando uma classe para a validade estilizada
+    $validadeClass = '';
+    $validadeTextColor = '';
+    $validadeIcon = '';
+
+    // Verifica se a data é válida, expirada ou próxima de expirar
+    $today = new DateTime();
+    $oneMonthLater = clone $today;
+    $oneMonthLater->modify('+1 month'); // Cria uma data com o próximo mês
+
+    if ($validade < $today) {
+        // Data expirada
+        $validadeClass = 'expired';
+        $validadeTextColor = 'red';
+        $validadeIcon = 'fa-times-circle';
+    } elseif ($validade <= $oneMonthLater) {
+        // Data próxima de expirar
+        $validadeClass = 'approaching';
+        $validadeTextColor = 'orange';
+        $validadeIcon = 'fa-exclamation-circle';
+    } else {
+        // Data válida
+        $validadeClass = 'valid';
+        $validadeTextColor = 'green';
+        $validadeIcon = 'fa-check-circle';
+    }
+
+    echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
+    echo "<td>{$row['id']}</td>";
+    echo "<td>{$row['titulo']}</td>";
+    echo "<td>{$row['descricao']}</td>";
+
+    // Coloca a validade com a cor e o ícone correto
+    echo "<td class='$validadeClass' style='color: $validadeTextColor;'>
+            <i class='fas $validadeIcon'></i> 
+            $validadeFormatted
+          </td>";
+
+    // Coloca a situação com a cor e o ícone correto
+    echo "<td class='$situacaoClass' style='color: $situacaoTextColor;'>
+            <i class='fas $situacaoIcon'></i> 
+            $situacao
+          </td>";
+
+    // O botão "Visualizar" terá um evento independente
+    echo "<td>";
+    echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
+            <i class='fas fa-eye'></i>
+          </button>";
+    echo "<button class='btn btn-primary btn-sm' onclick='generateReport()' title='Relatório'>
+            <i class='fas fa-file-alt'></i>
+          </button>";
+    echo "<button class='btn btn-success btn-sm' onclick='editProcess(event, " . json_encode($row) . ")' title='Editar processo'>
+            <i class='fas fa-edit'></i>
+          </button>";
+    echo "</td>";
+    echo "</tr>";
+}
+?>
         </tbody>
     </table>
     </div>

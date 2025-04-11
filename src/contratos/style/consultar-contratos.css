@@ -19,11 +19,11 @@ td {
   border-top: none;
   border-bottom: 1px solid #ddd; /* linha horizontal */
   font-size: 1rem;
+  
 }
 
 /* Cabeçalho */
 .table-container-contratos th {
-  background: linear-gradient(180deg, #2d3e50, #1a242f);
   color: white;
   text-transform: uppercase;
   font-weight: bold;
@@ -239,5 +239,44 @@ h2.text-center .icon-before {
   height: 2px;
   background-color: rgba(0, 0, 0, 0.1); /* Cor preta clara */
 }
+
+
+/* Estilos para os status */
+.ativo {
+  font-weight: bold;
+  color: green; /* Cor verde para ativo */
+}
+
+.inativo {
+  font-weight: bold;
+  color: red; /* Cor vermelha para inativo */
+}
+
+/* Estilo do ícone */
+.fas.fa-arrow-up, .fas.fa-arrow-down {
+  margin-right: 5px; /* Espaçamento entre o ícone e o texto */
+}
+
+
+/* Estilo para a validade */
+.valid {
+  font-weight: bold;
+  color: green; /* Verde para data válida */
+}
+
+.approaching {
+  font-weight: bold;
+  color: orange; /* Laranja para data próxima de expirar */
+}
+
+.expired {
+  font-weight: bold;
+  color: red; /* Vermelho para data expirada */
+}
+
+.fas.fa-check-circle, .fas.fa-exclamation-circle, .fas.fa-times-circle {
+  margin-right: 5px; /* Espaçamento entre o ícone e o texto */
+}
+
 
 

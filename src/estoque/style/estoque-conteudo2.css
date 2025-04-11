@@ -350,29 +350,55 @@ table {
 }
 
 /* Remover bordas verticais e manter apenas horizontais */
-th,
-td {
+/* Estilo geral para as células (th, td) */
+th, td {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-size: 15px;
   font-weight: 500;
-  color: #111827; /* ou white, se for fundo escuro */
+  color: #111827; /* Cor do texto */
   padding: 10px;
   text-align: center;
   border-left: none;
   border-right: none;
   border-top: none;
-  border-bottom: 1px solid #ddd; /* linha horizontal */
-  font-size: 1rem;
+  border-bottom: 1px solid #ddd; /* Linha de separação horizontal */
 }
 
-/* Cabeçalho */
+/* Estilo do cabeçalho da tabela */
 th {
-  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  background: linear-gradient(180deg, #3a4a64, #28303d); /* Gradiente mais claro */
   color: white;
   text-transform: uppercase;
   font-weight: bold;
   text-align: center;
+  font-size: 16px; /* Ajuste para uma melhor legibilidade */
 }
+
+/* Adiciona os ícones ao lado do texto do cabeçalho */
+th i {
+  margin-right: 8px; /* Espaço entre o ícone e o texto */
+  color: white; /* Cor dos ícones */
+}
+
+/* Estilo dos ícones para as colunas de cabeçalho */
+th:hover {
+  background-color: #4e5b68; /* Cor mais clara ao passar o mouse */
+  cursor: pointer; /* Indicador de interatividade */
+}
+
+/* Efeito de hover para as células da tabela */
+td:hover {
+  background-color: #f1f1f1; /* Cor de fundo suave ao passar o mouse nas células */
+}
+
+/* Responsividade: ajuste dos cabeçalhos em dispositivos menores */
+@media (max-width: 768px) {
+  th, td {
+    font-size: 14px; /* Menor tamanho de fonte em telas pequenas */
+    padding: 8px; /* Menos padding para melhorar a aparência */
+  }
+}
+
 
 /* Linhas alternadas */
 tr:nth-child(even) {
@@ -965,37 +991,7 @@ h3 {
   border-radius: 10px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
 
-/* Remover bordas verticais e manter apenas horizontais */
-th,
-td {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  color: #111827; /* ou white, se for fundo escuro */
-  padding: 10px;
-  text-align: center;
-  border-left: none;
-  border-right: none;
-  border-top: none;
-  border-bottom: 1px solid #ddd; /* linha horizontal */
-  font-size: 1rem;
-}
-
-/* Cabeçalho */
-th {
-  background: linear-gradient(180deg, #2d3e50, #1a242f);
-  color: white;
-  text-transform: uppercase;
-  font-weight: bold;
-  text-align: center;
-}
 
 /* Linhas alternadas */
 tr:nth-child(even) {

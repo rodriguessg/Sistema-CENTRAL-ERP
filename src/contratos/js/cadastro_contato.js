@@ -24,10 +24,18 @@ function atualizarParcelas() {
 function calcularParcelas(dataInicial, numParcelas) {
     const parcelas = [];
     const intervalo = 30; // A cada 30 dias (aproximadamente 1 mês)
+
+    // Converter a string dataInicial para um objeto Date, caso seja uma string.
+    let data = new Date(dataInicial);
+
     for (let i = 0; i < numParcelas; i++) {
-        const novaData = new Date(dataInicial);
-        novaData.setDate(novaData.getDate() + (i * intervalo));
-        parcelas.push(novaData.toISOString().split('T')[0]); // Formata para YYYY-MM-DD
+        const novaData = new Date(data); // Copia a data inicial
+        novaData.setDate(data.getDate() + (i * intervalo)); // Adiciona 30 dias por parcela
+
+        // Formata a data para o formato YYYY-MM-DD (ISO)
+        const dataFormatada = novaData.toISOString().split('T')[0]; 
+        parcelas.push(dataFormatada);
     }
+
     return parcelas;
 }

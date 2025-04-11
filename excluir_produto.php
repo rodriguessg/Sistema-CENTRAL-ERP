@@ -29,7 +29,7 @@ if (isset($_POST['id'])) {
         $stmtSelect->fetch();
 
         // 2. Obter natureza e preco_medio do produto
-        $selectProduto = "SELECT natureza, preco_medio FROM produtos WHERE id = ?";
+        $selectProduto = "SELECT natureza, preco_medio, quantidade FROM produtos WHERE id = ?";
         $stmtProduto = $conn->prepare($selectProduto);
         if (!$stmtProduto) {
             echo json_encode(['success' => false, 'message' => 'Erro ao preparar consulta produto: ' . $conn->error]);
@@ -41,7 +41,7 @@ if (isset($_POST['id'])) {
         $stmtProduto->store_result();
 
         if ($stmtProduto->num_rows > 0) {
-            $stmtProduto->bind_result($natureza, $preco_medio);
+            $stmtProduto->bind_result($natureza, $preco_medio, $quantidade_produto);
             $stmtProduto->fetch();
 
             // 3. Calcular valor total = quantidade * preco_medio
@@ -50,13 +50,29 @@ if (isset($_POST['id'])) {
             // 4. Atualizar fechamento com base no tipo
             if ($tipo == 'Saida') {
                 $updateFechamento = "UPDATE fechamento SET total_saida = total_saida - ?, saldo_atual = saldo_atual + ? WHERE natureza = ?";
+                $updateProduto = "UPDATE produtos SET quantidade = quantidade + ? WHERE id = ?";
             } else if ($tipo == 'Entrada') {
                 $updateFechamento = "UPDATE fechamento SET total_entrada = total_entrada - ?, saldo_atual = saldo_atual - ? WHERE natureza = ?";
+                $updateProduto = "UPDATE produtos SET quantidade = quantidade - ? WHERE id = ?";
             } else {
                 echo json_encode(['success' => false, 'message' => 'Tipo de transação inválido']);
                 exit;
             }
 
+            // Atualiza a quantidade do produto
+            $stmtUpdateProduto = $conn->prepare($updateProduto);
+            if (!$stmtUpdateProduto) {
+                echo json_encode(['success' => false, 'message' => 'Erro ao preparar update na tabela de produtos']);
+                exit;
+            }
+
+            $stmtUpdateProduto->bind_param("di", $quantidade_transacao, $material_id);
+            if (!$stmtUpdateProduto->execute()) {
+                echo json_encode(['success' => false, 'message' => 'Erro ao atualizar quantidade do produto']);
+                exit;
+            }
+
+            // Atualiza o fechamento
             $stmtUpdate = $conn->prepare($updateFechamento);
             if (!$stmtUpdate) {
                 echo json_encode(['success' => false, 'message' => 'Erro ao preparar update no fechamento: ' . $conn->error]);
@@ -84,8 +100,10 @@ if (isset($_POST['id'])) {
                 echo json_encode(['success' => false, 'message' => 'Erro ao excluir transição']);
             }
 
+            // Fechando as declarações
             $stmtDelete->close();
             $stmtUpdate->close();
+            $stmtUpdateProduto->close();
         } else {
             echo json_encode(['success' => false, 'message' => 'Produto não encontrado']);
         }

@@ -39,3 +39,205 @@ tr:hover {
   background-color: #f1f1f1;
   transition: background-color 0.3s ease;
 }
+
+
+
+
+/* Remover o fundo e borda dos botões */
+button {
+  display: flex;
+  align-items: center; /* Alinha o ícone e o texto */
+  justify-content: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 50%; /* Faz os botões ficarem circulares */
+  border: none !important; /* Remove a borda forçando com !important */
+  background-color: transparent !important; /* Remover fundo forçando com !important */
+  box-shadow: none !important; /* Remove qualquer sombra que o Bootstrap possa adicionar */
+  transition: all 0.3s ease;
+  cursor: pointer;
+  margin-right: 10px;
+  position: relative;
+}
+
+/* Esconde o texto do botão */
+button span {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Mostra o texto quando passa o mouse */
+button:hover span {
+  opacity: 1;
+  visibility: visible;
+  bottom: -30px; /* Ajusta a posição do texto ao passar o mouse */
+}
+
+/* Estilo dos ícones */
+button i {
+  font-size: 18px;
+  color: black !important; /* Ícones na cor preta forçando com !important */
+}
+
+/* Efeito de hover para os ícones */
+button:hover i {
+  transform: scale(1.1); /* Leve aumento do ícone ao passar o mouse */
+}
+
+/* Estilo para o botão de Visualizar */
+.btn-info:hover {
+  color: #17a2b8 !important; /* Cor do ícone no hover forçando com !important */
+}
+
+/* Estilo para o botão de Relatório */
+.btn-primary:hover {
+  color: #007bff !important; /* Cor do ícone no hover forçando com !important */
+}
+
+/* Estilo para o botão de Editar processo */
+.btn-success:hover {
+  color: #28a745 !important; /* Cor do ícone no hover forçando com !important */
+}
+
+
+/* Estilo geral da barra de pesquisa */
+.search-bar {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilo para o container dos filtros */
+.search-filters {
+  display: flex;
+  flex-direction: column; /* Coloca os inputs e botão empilhados um abaixo do outro */
+  align-items: flex-start; /* Alinha os itens à esquerda */
+  gap: 15px; /* Espaçamento entre os elementos */
+  width: 100%; /* Garante que o container ocupe toda a largura disponível */
+}
+
+/* Estilo para os inputs e select */
+.input-field {
+  width: 100%; /* Garante que os inputs ocupem toda a largura */
+  padding: 10px 16px;
+  padding-left: 35px; /* Espaço extra à esquerda, pode ser usado para ícones ou outros elementos */
+  border: 2px solid #BBB; /* Borda cinza */
+  border-radius: 8px; /* Bordas arredondadas */
+  font-size: 16px; /* Tamanho da fonte */
+  color: #333; /* Cor do texto */
+  background-color: #f9f9f9; /* Cor de fundo */
+  transition: all 0.3s ease; /* Transição suave para alterações */
+  box-sizing: border-box; /* Garante que o padding e a borda não afetem o tamanho */
+}
+
+/* Foco nos inputs e select */
+.input-field:focus {
+  border-color: #777; /* Cor da borda quando o campo recebe foco */
+  outline: none; /* Remove o contorno padrão */
+}
+
+/* Estilo para o botão */
+.btn-filters {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: linear-gradient(180deg, #2d3e50, #1a242f) !important; /* Cor de fundo do botão */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Transição suave para mudança de cor */
+  width: auto; /* Garante que o botão tenha tamanho adequado */
+}
+
+/* Efeito de hover para o botão */
+.btn-filters:hover {
+  background-color: #5a6268; /* Cor do botão ao passar o mouse */
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .search-filters {
+    width: 100%; /* Garante que o container ocupe toda a largura */
+    gap: 20px; /* Aumenta o espaçamento entre os elementos */
+  }
+
+  .input-field {
+    width: 100%; /* Garante que os inputs ocupem toda a largura */
+  }
+
+  .btn-filters {
+    width: 100%; /* Faz com que o botão ocupe toda a largura disponível */
+  }
+}
+
+
+/* Estilo para o título h2 com ícone */
+h2.text-center {
+  display: flex; /* Flexbox para alinhar o ícone e o texto */
+  justify-content: center; /* Centraliza horizontalmente o conteúdo */
+  align-items: center; /* Alinha verticalmente o ícone e o texto */
+  font-size: 24px;
+  font-weight: bold;
+  color: #333; /* Cor do texto */
+  text-align: center; /* Garante que o texto fique centralizado */
+  padding-bottom: 5px; /* Espaçamento entre o texto e o sublinhado */
+  width: 100%; /* Garante que o título ocupe toda a largura do contêiner */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0 auto; /* Centraliza o título no contêiner */
+}
+
+/* Estilo para o ícone ao lado do texto */
+h2.text-center .icon-before {
+  margin-right: 10px; /* Espaço entre o ícone e o texto */
+  font-size: 24px; /* Tamanho do ícone */
+}
+
+
+/* Estilo para o título h2 com ícone e sublinhado */
+.icon-title {
+  font-size: 24px;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px; /* Espaçamento entre o ícone e o texto */
+  color: #333; /* Cor do texto */
+}
+
+/* Estilo para o círculo do ícone */
+.icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; /* Tamanho do círculo */
+  height: 40px; /* Tamanho do círculo */
+  background-color: black; /* Cor de fundo do círculo */
+  border-radius: 50%; /* Deixa o fundo circular */
+  color: white; /* Cor do ícone dentro do círculo */
+  font-size: 18px; /* Tamanho do ícone */
+}
+
+/* Estilo para o sublinhado (before) */
+.icon-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(0, 0, 0, 0.1); /* Cor preta clara */
+}
+
+

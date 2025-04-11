@@ -143,18 +143,33 @@ include 'header.php';
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
 
    
-<div class="tabs">
-    <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">Cadastro de contratos</div>
-    <div class="tab" data-tab="retirar" onclick="showTab('consultar')">Consultar contratos</div>
-    <div class="tab" data-tab="agenda" onclick="showTab('agenda')">Agendamento</div>
-     <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">Resumo</div>
-      <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">Relatório</div>  
-    <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')">Galeria</div> -->
+    <div class="tabs">
+    <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
+        <i class="fas fa-plus-circle"></i> Cadastro de contratos
+    </div>
+    <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
+        <i class="fas fa-search"></i> Consultar contratos
+    </div>
+    <div class="tab" data-tab="agenda" onclick="showTab('agenda')">
+        <i class="fas fa-calendar-alt"></i> Agendamento
+    </div>
+    <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">
+        <i class="fas fa-info-circle"></i> Resumo
+    </div>
+    <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
+        <i class="fas fa-file-alt"></i> Relatório
+    </div>  
+    <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
 </div>
+
 
 
 <div class="form-container" id="cadastrar" style="display:none;">
     <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data">
+    <h1 class="cadastrar-contratos">
+    <i class="fas fa-plus-circle" id="icon-cadastrar"></i> Cadastrar Contratos
+</h1>
+
     <div class="cadastro">
         <div class="grupo1">
          <div class="mb-3">
@@ -432,21 +447,28 @@ function gerarRelatorio() {
 
 
 <div class="form-container" id="consultar" style="display:none;">
+<h2 class="text-center mt-3">
+    <span class="icon-before fas fa-box"></span> Lista de Produtos
+</h2>
+
+
+
+
     <!-- Pesquisa -->
-    <div class="search-container my-4 text-center">
-        <div class="input-group w-75 mx-auto" style="display: flex; gap:10px;">
-            <input type="text" id="filterInput" class="form-control" placeholder="Digite o título ou descrição do contrato" oninput="searchContracts()" style="display: block;">
-            <select id="statusFilter" class="form-control" onchange="searchContracts()">
-                <option value="">Todos</option>
-                <option value="ativo">Ativo</option>
-                <option value="inativo">Inativo</option>
-            </select>
-            <button class="btn btn-secondary" onclick="openFilterModal()">Configurar Filtro</button>
-        </div>
+    <div class="search-bar">
+    <div class="search-filters">
+        <input type="text" id="searchInput" class="input-field" placeholder="Digite o título ou descrição do contrato" oninput="searchContracts()">
+        <select id="statusSelect" class="input-field" onchange="searchContracts()">
+            <option value="">Todos</option>
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+        </select>
+        <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
     </div>
+</div>
+
 
     <!-- Lista de Contratos -->
-    <h2 class="text-center mt-3">Lista de Contratos</h2>
     <div class="table-container-contratos">
     <table class="table table-bordered table-hover">
         <thead>
@@ -493,12 +515,19 @@ function gerarRelatorio() {
             echo "<td>{$row['situacao']}</td>";
             // O botão "Visualizar" terá um evento independente
           // Aqui estamos passando os dados do contrato para o botão via JSON
-            echo "<td>";
-            echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();'>Visualizar</button>";
-            echo "<button class='btn btn-primary btn-sm' onclick='generateReport()'>Relatório</button>";
-            echo "<button class='btn btn-success btn-sm' onclick='editProcess(event, " . json_encode($row) . ")'>Editar processo</button>";
-            echo "</td>";
-            echo "</tr>";
+          echo "<td>";
+          echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
+                  <i class='fas fa-eye'></i>
+                </button>";
+          echo "<button class='btn btn-primary btn-sm' onclick='generateReport()' title='Relatório'>
+                  <i class='fas fa-file-alt'></i>
+                </button>";
+          echo "<button class='btn btn-success btn-sm' onclick='editProcess(event, " . json_encode($row) . ")' title='Editar processo'>
+                  <i class='fas fa-edit'></i>
+                </button>";
+          echo "</td>";
+          echo "</tr>";
+          
 
             
         }

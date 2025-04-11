@@ -3,7 +3,6 @@ form {
     border-radius: 8px;
     margin: 0 auto;
     max-width: 1200px; /* Garante que o formulário não ocupe toda a largura em telas grandes */
-    padding: 20px;
 }
 
 /* Contêiner do formulário */
@@ -232,3 +231,20 @@ input[type="checkbox"]:checked + label {
     }
 }
 
+/* Estilo para o ícone */
+#icon-cadastrar {
+    margin-right: 10px; /* Espaço entre o ícone e o texto */
+    transition: transform 0.3s ease, color 0.3s ease; /* Adiciona um efeito suave de transição */
+    cursor: pointer;
+}
+
+/* Efeito de hover (quando o usuário passar o mouse sobre o ícone) */
+#icon-cadastrar:hover {
+    transform: scale(1.2); /* Aumenta o tamanho do ícone */
+    color: #007bff; /* Muda a cor do ícone */
+}
+
+.cadastrar-contratos{
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 30px;
+}

@@ -1,26 +1,22 @@
 <?php
-// Configuração de conexão com o banco de dados
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "gm_sicbd";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verifique a conexão
 if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
-// Verificar se o ID foi enviado via POST
 if (isset($_POST['id'])) {
     $id = $_POST['id'];
 
-    // 1. Buscar o 'material_id' (produto), 'natureza' e 'tipo' (entrada/saída) da tabela 'transicao'
-    $selectQuery = "SELECT material_id, tipo FROM transicao WHERE id = ?";
+    // 1. Buscar material_id, tipo e quantidade da transição
+    $selectQuery = "SELECT material_id, tipo, quantidade FROM transicao WHERE id = ?";
     $stmtSelect = $conn->prepare($selectQuery);
     if (!$stmtSelect) {
-        echo json_encode(['success' => false, 'message' => 'Erro ao preparar a consulta: ' . $conn->error]);
+        echo json_encode(['success' => false, 'message' => 'Erro ao preparar consulta: ' . $conn->error]);
         exit;
     }
 
@@ -29,88 +25,96 @@ if (isset($_POST['id'])) {
     $stmtSelect->store_result();
 
     if ($stmtSelect->num_rows > 0) {
-        $stmtSelect->bind_result($material_id, $tipo);
+        $stmtSelect->bind_result($material_id, $tipo, $quantidade_transacao);
         $stmtSelect->fetch();
 
-        // 2. Obter a 'natureza' associada ao 'material_id' (produto) na tabela 'produtos'
-        $selectNaturezaQuery = "SELECT natureza FROM produtos WHERE id = ?";
-        $stmtSelectNatureza = $conn->prepare($selectNaturezaQuery);
-        if (!$stmtSelectNatureza) {
-            echo json_encode(['success' => false, 'message' => 'Erro ao preparar a consulta para natureza: ' . $conn->error]);
+        // 2. Obter natureza e preco_medio do produto
+        $selectProduto = "SELECT natureza, preco_medio, quantidade FROM produtos WHERE id = ?";
+        $stmtProduto = $conn->prepare($selectProduto);
+        if (!$stmtProduto) {
+            echo json_encode(['success' => false, 'message' => 'Erro ao preparar consulta produto: ' . $conn->error]);
             exit;
         }
 
-        $stmtSelectNatureza->bind_param("i", $material_id);
-        $stmtSelectNatureza->execute();
-        $stmtSelectNatureza->store_result();
+        $stmtProduto->bind_param("i", $material_id);
+        $stmtProduto->execute();
+        $stmtProduto->store_result();
 
-        if ($stmtSelectNatureza->num_rows > 0) {
-            $stmtSelectNatureza->bind_result($natureza);
-            $stmtSelectNatureza->fetch();
+        if ($stmtProduto->num_rows > 0) {
+            $stmtProduto->bind_result($natureza, $preco_medio, $quantidade_produto);
+            $stmtProduto->fetch();
 
-            // 3. Atualizar a tabela 'fechamento' baseado no tipo da transação (entrada ou saída)
+            // 3. Calcular valor total = quantidade * preco_medio
+            $valor_total = $quantidade_transacao * $preco_medio;
+
+            // 4. Atualizar fechamento com base no tipo
             if ($tipo == 'Saida') {
-                // Se for saída, subtrai da coluna 'total_saida' e ajusta o 'saldo_atual'
-                $updateFechamentoQuery = "UPDATE fechamento SET total_saida = total_saida - (SELECT quantidade FROM transicao WHERE id = ?), saldo_atual = saldo_atual + (SELECT quantidade FROM transicao WHERE id = ?) WHERE natureza = ?";
+                $updateFechamento = "UPDATE fechamento SET total_saida = total_saida - ?, saldo_atual = saldo_atual + ? WHERE natureza = ?";
+                $updateProduto = "UPDATE produtos SET quantidade = quantidade + ? WHERE id = ?";
             } else if ($tipo == 'Entrada') {
-                // Se for entrada, subtrai da coluna 'total_entrada' e ajusta o 'saldo_atual'
-                $updateFechamentoQuery = "UPDATE fechamento SET total_entrada = total_entrada - (SELECT quantidade FROM transicao WHERE id = ?), saldo_atual = saldo_atual - (SELECT quantidade FROM transicao WHERE id = ?) WHERE natureza = ?";
-            }
-
-            $stmtUpdateFechamento = $conn->prepare($updateFechamentoQuery);
-            if (!$stmtUpdateFechamento) {
-                echo json_encode(['success' => false, 'message' => 'Erro ao preparar a consulta para atualização no fechamento: ' . $conn->error]);
-                exit;
-            }
-
-            $stmtUpdateFechamento->bind_param("iis", $id, $id, $natureza);
-            if ($stmtUpdateFechamento->execute()) {
-                // Exclusão bem-sucedida da tabela 'fechamento'
+                $updateFechamento = "UPDATE fechamento SET total_entrada = total_entrada - ?, saldo_atual = saldo_atual - ? WHERE natureza = ?";
+                $updateProduto = "UPDATE produtos SET quantidade = quantidade - ? WHERE id = ?";
             } else {
-                echo json_encode(['success' => false, 'message' => 'Erro ao atualizar entrada ou saída no fechamento']);
-                $stmtSelect->close();
-                $conn->close();
+                echo json_encode(['success' => false, 'message' => 'Tipo de transação inválido']);
                 exit;
             }
+
+            // Atualiza a quantidade do produto
+            $stmtUpdateProduto = $conn->prepare($updateProduto);
+            if (!$stmtUpdateProduto) {
+                echo json_encode(['success' => false, 'message' => 'Erro ao preparar update na tabela de produtos']);
+                exit;
+            }
+
+            $stmtUpdateProduto->bind_param("di", $quantidade_transacao, $material_id);
+            if (!$stmtUpdateProduto->execute()) {
+                echo json_encode(['success' => false, 'message' => 'Erro ao atualizar quantidade do produto']);
+                exit;
+            }
+
+            // Atualiza o fechamento
+            $stmtUpdate = $conn->prepare($updateFechamento);
+            if (!$stmtUpdate) {
+                echo json_encode(['success' => false, 'message' => 'Erro ao preparar update no fechamento: ' . $conn->error]);
+                exit;
+            }
+
+            $stmtUpdate->bind_param("dds", $valor_total, $valor_total, $natureza);
+            if (!$stmtUpdate->execute()) {
+                echo json_encode(['success' => false, 'message' => 'Erro ao atualizar fechamento']);
+                exit;
+            }
+
+            // 5. Excluir transição
+            $deleteTransicao = "DELETE FROM transicao WHERE id = ?";
+            $stmtDelete = $conn->prepare($deleteTransicao);
+            if (!$stmtDelete) {
+                echo json_encode(['success' => false, 'message' => 'Erro ao preparar exclusão da transição']);
+                exit;
+            }
+
+            $stmtDelete->bind_param("i", $id);
+            if ($stmtDelete->execute()) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Erro ao excluir transição']);
+            }
+
+            // Fechando as declarações
+            $stmtDelete->close();
+            $stmtUpdate->close();
+            $stmtUpdateProduto->close();
         } else {
-            echo json_encode(['success' => false, 'message' => 'Produto não encontrado na tabela produtos']);
-            $stmtSelect->close();
-            $conn->close();
-            exit;
+            echo json_encode(['success' => false, 'message' => 'Produto não encontrado']);
         }
 
-        // 4. Excluir o produto da tabela 'transicao' com base no 'id'
-        $sql = "DELETE FROM transicao WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            echo json_encode(['success' => false, 'message' => 'Erro ao preparar a consulta para exclusão na transição: ' . $conn->error]);
-            exit;
-        }
-
-        $stmt->bind_param("i", $id);
-
-        // Executar a consulta de exclusão
-        if ($stmt->execute()) {
-            // Se a exclusão foi bem-sucedida, retornar um sucesso
-            echo json_encode(['success' => true]);
-        } else {
-            // Caso ocorra algum erro
-            echo json_encode(['success' => false, 'message' => 'Erro ao excluir o produto da transição: ' . $conn->error]);
-        }
-
-        // Fechar os statements
-        $stmt->close();
-        $stmtSelect->close();
-        $stmtSelectNatureza->close();
-        $stmtUpdateFechamento->close();
+        $stmtProduto->close();
     } else {
-        echo json_encode(['success' => false, 'message' => 'Produto não encontrado na transição']);
-        $stmtSelect->close();
-        $conn->close();
-        exit;
+        echo json_encode(['success' => false, 'message' => 'Transação não encontrada']);
     }
+
+    $stmtSelect->close();
 }
 
-// Fechar a conexão
 $conn->close();
 ?>

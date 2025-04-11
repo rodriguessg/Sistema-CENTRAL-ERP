@@ -72,20 +72,20 @@ if ($periodo === 'fechamento') {
             echo "<tr>
                     <td>" . htmlspecialchars($fechamento['natureza']) . "</td>
                     <td>" . htmlspecialchars($fechamento['classificacao']) . "</td>
-                    <td>R$ " . number_format($fechamento['saldo_anterior'], 2, ',', '.') . "</td>
-                    <td>R$ " . number_format($fechamento['total_entrada'], 2, ',', '.') . "</td>
-                    <td>R$ " . number_format($fechamento['total_saida'], 2, ',', '.') . "</td>
-                    <td>R$ " . number_format($fechamento['saldo_atual'], 2, ',', '.') . "</td>
+                    <td>R$ " . number_format($fechamento['saldo_anterior'], 5) . "</td>
+                    <td>R$ " . number_format($fechamento['total_entrada'], 5,',', '.') . "</td>
+                    <td>R$ " . number_format($fechamento['total_saida'], 5, ',', '.') . "</td>
+                    <td>R$ " . number_format($fechamento['saldo_atual'], 5, ',', '.') . "</td>
                 </tr>";
         }
 
         // Linha com os totais
         echo "<tr style='font-weight: bold;'>
                 <td colspan='2'>Total</td>
-                <td>R$ " . number_format($totalSaldoAnterior, 2, ',', '.') . "</td>
-                <td>R$ " . number_format($totalEntrada, 2, ',', '.') . "</td>
-                <td>R$ " . number_format($totalSaida, 2, ',', '.') . "</td>
-                <td>R$ " . number_format($totalSaldoAtual, 2, ',', '.') . "</td>
+                <td>R$ " . number_format($totalSaldoAnterior, 5, ',', '.') . "</td>
+                <td>R$ " . number_format($totalEntrada, 5,) . "</td>
+                <td>R$ " . number_format($totalSaida, 5, '.', '.') . "</td>
+                <td>R$ " . number_format($totalSaldoAtual, 5, '.', '.') . "</td>
               </tr>";
 
         echo "</tbody></table>";
@@ -147,7 +147,7 @@ if ($periodo === 'fechamento') {
                     <td>" . htmlspecialchars($row['localizacao']) . "</td>
                     <td>R$ " . number_format($row['custo'], 2, ',', '.') . "</td>
                     <td>" . htmlspecialchars($row['quantidade']) . "</td>
-                    <td>R$ " . number_format($row['preco_medio'], 2, ',', '.') . "</td>
+                    <td>R$ " . number_format($row['preco_medio'], 5, ',', '.') . "</td>
                     <td>" . htmlspecialchars($row['nf']) . "</td>
                     <td>" . date('d/m/Y', strtotime($row['data_cadastro'])) . "</td>
                   </tr>";

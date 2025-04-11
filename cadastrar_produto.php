@@ -26,14 +26,39 @@ $username = $_SESSION['username'];
 // Verifica se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Captura os dados do formulário
-    $produto = $_POST['produto'];  // Produto selecionado no campo select
-    $classificacao = $_POST['classificacao'];
-    $natureza = $_POST['natureza'];
-    $contabil = $_POST['contabil'];
-    $descricao = $_POST['descricao']; // Descrição do produto (campo preenchido automaticamente)
-    $unidade = $_POST['unidade'];
-    $localizacao = $_POST['localizacao'];
-    $custo = $_POST['custo'];
+$produto = $_POST['produto'];  // Produto selecionado no campo select
+$classificacao = $_POST['classificacao'];
+$natureza = $_POST['natureza'];
+$contabil = $_POST['contabil'];
+$descricao = $_POST['descricao']; // Descrição do produto (campo preenchido automaticamente)
+$unidade = $_POST['unidade'];
+$localizacao = $_POST['localizacao'];
+
+// Garantir que o valor de custo seja numérico e com precisão
+$custo = $_POST['custo'];  
+$preco_medio = $_POST['preco_medio'];
+
+// 1. Remover qualquer ponto de milhar e substituir a vírgula por ponto
+$custo = str_replace('.', '', $custo);  // Remove ponto de milhar, se houver
+$custo = str_replace(',', '.', $custo); // Substitui a vírgula por ponto decimal
+
+$preco_medio = str_replace('.', '', $preco_medio); // Remove ponto de milhar, se houver
+$preco_medio = str_replace(',', '.', $preco_medio); // Substitui a vírgula por ponto decimal
+
+// 2. Garantir que o valor seja numérico (tipo float)
+$custo = (float) $custo; // Converte para float
+$preco_medio = (float) $preco_medio; // Converte para float
+
+// Verifique se o valor de custo e preco_medio são numéricos válidos
+if (!is_numeric($custo) || !is_numeric($preco_medio)) {
+    echo "Erro: O valor de custo ou preço médio não é válido!";
+    exit;
+}
+
+// Agora, $custo e $preco_medio são números decimais no formato correto
+// O restante do código continua como está...
+
+    
     $quantidade = $_POST['quantidade'];
     $preco_medio = $_POST['preco_medio'];
     $nf = $_POST['nf'];
@@ -101,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $descricao,  // Descrição do produto
                 $unidade,
                 $localizacao,
-                $custo,
+                $custo,  // Mantém o valor de custo com precisão
                 $quantidade,
                 $preco_medio,
                 $nf

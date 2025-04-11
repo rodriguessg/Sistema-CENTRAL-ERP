@@ -361,7 +361,9 @@ $resultado_transicao = $con->query($query_transicao);
 </div>
 
 <div class="form-container" id="retirar">
+
     <h3>Retirar Material do Estoque</h3>
+    
     <form id="retirar-form" action="retirar_materialestoque.php" method="POST">
         <div class="form-group3">
             <!-- Select para o Nome do Material -->
@@ -435,44 +437,47 @@ $resultado_transicao = $con->query($query_transicao);
             </div>
         </div>
         <div class="button-group">
-                <button class="btn-submit" type="submit">Retirar</button>
-        </div>
+    <button class="btn-submit" type="submit">Retirar</button>
+    <button class="btn-export" id="btnExportPDF">Exportar para PDF</button>
+  
+</div>
+
    
-        <?php
-// Conectar ao banco de dados
-$conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
+<?php
+    // Conectar ao banco de dados
+    $conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
 
-// Verifique a conexão
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
-}
+    // Verifique a conexão
+    if ($conn->connect_error) {
+        die("Falha na conexão: " . $conn->connect_error);
+    }
 
-// Defina o número de itens por página
-$itens_por_pagina = 5;
+    // Defina o número de itens por página
+    $itens_por_pagina = 3;
 
-// Obtenha a página atual, caso contrário defina como 1
-$pagina_atual = isset($_GET['pagina']) ? $_GET['pagina'] : 1;
+    // Obtenha a página atual, caso contrário defina como 1
+    $pagina_atual = isset($_GET['pagina']) ? $_GET['pagina'] : 1;
 
-// Calcule o índice inicial para a consulta
-$inicio = ($pagina_atual - 1) * $itens_por_pagina;
+    // Calcule o índice inicial para a consulta
+    $inicio = ($pagina_atual - 1) * $itens_por_pagina;
 
-// Consulta para obter os dados de transição com informações do produto (usando JOIN)
-$query = "
-    SELECT t.id, t.material_id, t.quantidade, t.data, t.tipo, 
-           p.produto, p.classificacao, p.natureza, p.contabil, p.descricao, p.unidade, 
-           p.localizacao, p.custo, p.quantidade AS produto_quantidade, p.nf, p.preco_medio, p.tipo_operacao
-    FROM transicao t
-    LEFT JOIN produtos p ON t.material_id = p.id
-    LIMIT $inicio, $itens_por_pagina
-";
-$resultado_transicao = $conn->query($query);
+    // Consulta para obter os dados de transição com informações do produto (usando JOIN)
+    $query = "
+        SELECT t.id, t.material_id, t.quantidade, t.data, t.tipo, 
+            p.produto, p.classificacao, p.natureza, p.contabil, p.descricao, p.unidade, 
+            p.localizacao, p.custo, p.quantidade AS produto_quantidade, p.nf, p.preco_medio, p.tipo_operacao
+        FROM transicao t
+        LEFT JOIN produtos p ON t.material_id = p.id
+        LIMIT $inicio, $itens_por_pagina
+    ";
+    $resultado_transicao = $conn->query($query);
 
-// Obtenha o total de registros para calcular o número de páginas
-$total_registros = $conn->query("SELECT COUNT(*) FROM transicao")->fetch_row()[0];
-$total_paginas = ceil($total_registros / $itens_por_pagina);
+    // Obtenha o total de registros para calcular o número de páginas
+    $total_registros = $conn->query("SELECT COUNT(*) FROM transicao")->fetch_row()[0];
+    $total_paginas = ceil($total_registros / $itens_por_pagina);
 ?>
 
-<div class="table-container">
+<div class="table-container" style="max-height: 500px; overflow-y: auto;">
     <table class="tabela-transicao">
         <thead>
             <tr>
@@ -499,7 +504,7 @@ $total_paginas = ceil($total_registros / $itens_por_pagina);
                     <td><?= $row['descricao'] ?></td>
                     <td><?= $row['natureza'] ?></td>
                     <td><?= $row['quantidade'] ?></td>
-                    <td><?= number_format($row['preco_medio'], 2, ',', '.') ?></td>
+                    <td><?= number_format($row['preco_medio'], 5, '.', ',') ?></td>
                     <td><?= $row['data'] ?></td>
                     <td class="<?= strtolower($row['tipo']) ?>"><?= $row['tipo'] ?></td>
                     <td>
@@ -510,14 +515,7 @@ $total_paginas = ceil($total_registros / $itens_por_pagina);
         </tbody>
     </table>
 
-    <!-- Navegação de páginas -->
-    <div class="pagination">
-    <a href="?pagina=1#">&laquo; Primeira</a>
-    <a href="?pagina=<?= $pagina_atual > 1 ? $pagina_atual - 1 : 1 ?>#">Anterior</a>
-    <span>Página <?= $pagina_atual ?> de <?= $total_paginas ?></span>
-    <a href="?pagina=<?= $pagina_atual < $total_paginas ? $pagina_atual + 1 : $total_paginas ?>#">Próxima</a>
-    <a href="?pagina=<?= $total_paginas ?>#">Última &raquo;</a>
-</div>
+    
 
 
 </div>
@@ -531,7 +529,13 @@ $conn->close();
     </form>
         <div id="mensagem" style="color: red; margin-top: 10px;"></div>
 </div>
+<script>
+    document.getElementById('btnExportPDF').addEventListener('click', function() {
+    // Redireciona para o script que gera o PDF
+    window.location.href = 'exportar_pdf_moimentacaoestoque.php';
+});
 
+</script>
 <script>
    document.getElementById('material-nome').addEventListener('change', function() {
     const nomeMaterialId = this.value; // Obtém o ID do material selecionado
@@ -597,10 +601,10 @@ $conn->close();
   </div>
 </div>
 
-
+<!--  JS ATIVA BOTÃO DE EXCLUSÃO DE LANÇAMENTO TABELA TRANSIÇÃO -->
 <script>
     // Adicionar evento de clique nos botões de excluir
-document.querySelectorAll('.excluir-button').forEach(button => {
+    document.querySelectorAll('.excluir-button').forEach(button => {
     button.addEventListener('click', function() {
         // Pega o ID do produto a ser excluído
         const produtoId = this.getAttribute('data-id');
@@ -632,7 +636,7 @@ document.querySelectorAll('.excluir-button').forEach(button => {
             });
         }
     });
-});
+    });
 
 </script>
 

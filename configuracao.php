@@ -48,7 +48,7 @@ include 'header.php'; // Inclui o cabeçalho
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações do Sistema</title>
-    <link rel="stylesheet" href="style.css"> <!-- Link para a folha de estilos -->
+    <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css"> <!-- Link para a folha de estilos -->
     <link rel="stylesheet" href="./src/style/configura.css">
 </head>
 <body>
@@ -94,33 +94,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<form method="POST">
-    <table>
-        <thead>
-            <tr>
-                <th>Classificação</th>
-                <th>Quantidade Atual</th>
-                <th>Estoque Mínimo</th>
-            </tr>
-        </thead>
-        <!-- <tbody style="display: block; max-height: 200px; overflow-y: auto; display: block; height: 200px; width: 100%; overflow-x: hidden; overflow-y: scroll;"> -->
-        <tbody>
-            <?php while ($produto = $resultado_produtos->fetch_assoc()) { ?>
+    <form method="POST">
+        <table>
+            <thead>
                 <tr>
-                    <!-- Exibe a classificação do produto -->
-                    <td><?= $produto['classificacao'] ?></td>
-                    
-                    <!-- Exibe a quantidade atual do produto -->
-                    <td><?= $produto['quantidade'] ?></td>
-                    
-                    <!-- Campo para definir o estoque mínimo -->
-                    <td><input type="number" name="estoque_minimo[<?= $produto['id'] ?>]" value="<?= $produto['estoque_minimo'] ?>" min="0"></td>
+                    <th>Classificação</th>
+                    <th>Quantidade Atual</th>
+                    <th>Estoque Mínimo</th>
                 </tr>
-            <?php } ?>
-        </tbody>
-    </table>
-    <button type="submit">Salvar Configurações</button>
-</form>
+            </thead>
+            <!-- <tbody style="display: block; max-height: 200px; overflow-y: auto; display: block; height: 200px; width: 100%; overflow-x: hidden; overflow-y: scroll;"> -->
+            <tbody>
+                <?php while ($produto = $resultado_produtos->fetch_assoc()) { ?>
+                    <tr>
+                        <!-- Exibe a classificação do produto -->
+                        <td><?= $produto['classificacao'] ?></td>
+                        
+                        <!-- Exibe a quantidade atual do produto -->
+                        <td><?= $produto['quantidade'] ?></td>
+                        
+                        <!-- Campo para definir o estoque mínimo -->
+                        <td><input type="number" name="estoque_minimo[<?= $produto['id'] ?>]" value="<?= $produto['estoque_minimo'] ?>" min="0"></td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+        <button type="submit">Salvar Configurações</button>
+    </form>
 
         </div>
 

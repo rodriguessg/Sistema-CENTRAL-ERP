@@ -25,7 +25,7 @@ function gerarCalendario($month, $year, $pdo) {
         $calendar .= '<td></td>';
     }
 
-    // Exibe os dias do mês
+    // Exibe os dias do mês CARREGA NÚMERO DE PARCELAS CONFORME ADICIONA OS CONTRATOS
     $day = 1;
     for ($i = $firstDayWeekday; $i < 7; $i++) {
         $calendar .= '<td>';

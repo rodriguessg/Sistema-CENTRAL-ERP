@@ -471,7 +471,7 @@ function gerarRelatorio() {
 
 
     <!-- Lista de Contratos -->
-    <div class="table-container-contratos">
+<div class="table-container-contratos">
     <table class="table table-bordered table-hover">
         <thead>
             <tr>

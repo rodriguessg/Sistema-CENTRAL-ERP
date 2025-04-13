@@ -310,6 +310,11 @@ include 'header.php';
         <select id="tipo_relatorio" name="tipo_relatorio" required>
             <option value="">Selecione um tipo de relatório</option>
             <option value="pagamentos">Relatório de Pagamentos</option>
+            <option value="resumo_processos">Resumo de Andamentos de Processos e Pagamentos</option>
+            <option value="relatorio_financeiro">Relatório Financeiro</option>
+            <option value="compromissos_acordo">Compromissos de Acordo</option>
+            <option value="tarefas">Tarefas</option>
+            <option value="prazos_contratos">Prazos de Contratos e Vigências</option>
         </select>
 
         <div id="periodicidade-container" style="display: none;">
@@ -328,122 +333,96 @@ include 'header.php';
             </select>
         </div>
 
-        <div id="parcelamentos-container" style="display: none;">
-            <!-- Tabela de Parcelamentos será exibida aqui -->
+        <div id="mes-container" style="display: none;">
+            <label for="mes">Escolha o Mês:</label>
+            <select id="mes" name="mes">
+                <option value="1">Janeiro</option>
+                <option value="2">Fevereiro</option>
+                <option value="3">Março</option>
+                <option value="4">Abril</option>
+                <option value="5">Maio</option>
+                <option value="6">Junho</option>
+                <option value="7">Julho</option>
+                <option value="8">Agosto</option>
+                <option value="9">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+            </select>
         </div>
 
+        <div id="resultadoRelatorio"></div>
         <button type="button" onclick="gerarRelatorio()">Gerar Relatório</button>
     </form>
 </div>
 
-<div id="resultadoRelatorio"></div>
-
 <script>
-// Função para carregar os títulos dos contratos baseados na seleção do relatório
 document.getElementById('tipo_relatorio').addEventListener('change', function() {
-    if (this.value === 'pagamentos') {
-        // Exibir select de contratos
-        document.getElementById('contratos-container').style.display = 'block';
-        
-        // Carregar os títulos dos contratos
-        carregarContratos();
-        
-        // Exibir a periodicidade (completo, mensal, anual)
-        document.getElementById('periodicidade-container').style.display = 'block';
-    } else {
-        // Ocultar select de contratos e parcelamentos
-        document.getElementById('contratos-container').style.display = 'none';
-        document.getElementById('parcelamentos-container').style.display = 'none';
-        document.getElementById('resultadoRelatorio').innerHTML = '';  // Limpar o relatório
-        document.getElementById('periodicidade-container').style.display = 'none';
+    const tipoRelatorio = this.value;
+    const mesContainer = document.getElementById('mes-container');
+    const contratosContainer = document.getElementById('contratos-container');
+    const periodicidadeContainer = document.getElementById('periodicidade-container');
+    const mesSelect = document.getElementById('mes');
+    
+    // Escondendo elementos padrão
+    contratosContainer.style.display = 'none';
+    periodicidadeContainer.style.display = 'none';
+    mesContainer.style.display = 'none';
+    
+    // Exibindo componentes específicos baseados no tipo de relatório
+    if (tipoRelatorio === 'pagamentos') {
+        contratosContainer.style.display = 'block';
+        periodicidadeContainer.style.display = 'block';
+    } else if (tipoRelatorio === 'relatorio_financeiro') {
+        contratosContainer.style.display = 'block';
+        mesContainer.style.display = 'block';
+    } else if (tipoRelatorio === 'prazos_contratos') {
+        contratosContainer.style.display = 'block';
+    } else if (tipoRelatorio === 'resumo_processos' || tipoRelatorio === 'compromissos_acordo' || tipoRelatorio === 'tarefas') {
+        contratosContainer.style.display = 'none';
+        mesContainer.style.display = 'none';
+        periodicidadeContainer.style.display = 'none';
     }
 });
 
-// Função para carregar os contratos do banco de dados via AJAX
-function carregarContratos() {
-    var tipoRelatorio = document.getElementById('tipo_relatorio').value;
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'carregar_contratos.php?tipo_relatorio=' + tipoRelatorio, true);
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            var contratos = JSON.parse(xhr.responseText);
-            var selectContratos = document.getElementById('contrato_titulo');
-            selectContratos.innerHTML = '<option value="">Selecione um contrato</option>'; // Limpar opções
-            contratos.forEach(function(contrato) {
-                var option = document.createElement('option');
-                option.value = contrato.id;
-                option.textContent = contrato.titulo;
-                selectContratos.appendChild(option);
-            });
-        }
-    };
-    xhr.send();
-}
-
-// Função para carregar os parcelamentos do contrato selecionado
-document.getElementById('contrato_titulo').addEventListener('change', function() {
-    var contratoId = this.value;
-    if (contratoId) {
-        // Carregar parcelamentos
-        carregarParcelamentos(contratoId);
-    } else {
-        document.getElementById('parcelamentos-container').style.display = 'none';
-        document.getElementById('resultadoRelatorio').innerHTML = '';  // Limpar o relatório
-    }
-});
-
-// Função para carregar os parcelamentos com base no contrato selecionado
-function carregarParcelamentos(contratoId) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'carregar_parcelamentos.php?contrato_id=' + contratoId, true);
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            var parcelamentos = JSON.parse(xhr.responseText);
-            if (parcelamentos.length > 0) {
-                var tableHtml = '<table border="1" cellpadding="5" cellspacing="0">';
-                tableHtml += '<thead><tr><th>Parcela</th><th>Valor</th><th>Data Vencimento</th></tr></thead>';
-                tableHtml += '<tbody>';
-                parcelamentos.forEach(function(parcelamento) {
-                    tableHtml += '<tr>';
-                    tableHtml += '<td>' + parcelamento.parcela + '</td>';
-                    tableHtml += '<td>' + parcelamento.valor + '</td>';
-                    tableHtml += '<td>' + parcelamento.data_vencimento + '</td>';
-                    tableHtml += '</tr>';
-                });
-                tableHtml += '</tbody></table>';
-                document.getElementById('parcelamentos-container').innerHTML = tableHtml;
-                document.getElementById('parcelamentos-container').style.display = 'block';
-            } else {
-                document.getElementById('parcelamentos-container').innerHTML = '<p>Nenhum parcelamento encontrado para o contrato selecionado.</p>';
-                document.getElementById('parcelamentos-container').style.display = 'block';
-            }
-        }
-    };
-    xhr.send();
-}
-
-// Função para gerar o relatório (completo, mensal ou anual)
+// Função para gerar relatório com base nas escolhas
 function gerarRelatorio() {
-    var contratoId = document.getElementById('contrato_titulo').value;
-    var periodicidade = document.getElementById('periodicidade').value;
+    const tipoRelatorio = document.getElementById('tipo_relatorio').value;
+    const contratoId = document.getElementById('contrato_titulo').value;
+    const mes = document.getElementById('mes').value;
+    const periodicidade = document.getElementById('periodicidade').value;
 
-    if (contratoId && periodicidade) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'gerar_relatorio.php?contrato_id=' + contratoId + '&periodicidade=' + periodicidade, true);
+    let url = '';
+
+    if (tipoRelatorio === 'pagamentos') {
+        url = `gerar_relatorio.php?contrato_id=${contratoId}&periodicidade=${periodicidade}`;
+    } else if (tipoRelatorio === 'resumo_processos') {
+        url = `gerar_resumo_processos.php`;
+    } else if (tipoRelatorio === 'relatorio_financeiro') {
+        url = `gerar_relatorio_financeiro.php?contrato_id=${contratoId}&mes=${mes}`;
+    } else if (tipoRelatorio === 'compromissos_acordo') {
+        url = `gerar_compromissos_acordo.php`;
+    } else if (tipoRelatorio === 'tarefas') {
+        url = `gerar_tarefas.php`;
+    } else if (tipoRelatorio === 'prazos_contratos') {
+        url = `gerar_prazos_contratos.php`;
+    }
+
+    if (url) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
         xhr.onload = function() {
             if (xhr.status === 200) {
-                var resultado = xhr.responseText;
-                document.getElementById('resultadoRelatorio').innerHTML = resultado;
+                document.getElementById('resultadoRelatorio').innerHTML = xhr.responseText;
             } else {
                 document.getElementById('resultadoRelatorio').innerHTML = '<p>Erro ao gerar o relatório.</p>';
             }
         };
         xhr.send();
-    } else {
-        document.getElementById('resultadoRelatorio').innerHTML = '<p>Selecione um contrato e a periodicidade antes de gerar o relatório.</p>';
     }
 }
 </script>
+
 
 
 <div class="form-container" id="consultar" style="display:none;">

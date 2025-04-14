@@ -728,8 +728,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 <script src="./src/js/filtroModal.js"></script>
 
 <!-- Lista de Agendamentos -->
-<div class="container mt-5">
-        <div class="form-container3 " id="agenda" style="display:flex;">
+<div>
+        <div class="form-container " id="agenda">
             <!-- Formulário de Agendamento -->
             <div class="form-left  ">
                 <h3>Agendar Tarefa</h3>
@@ -920,6 +920,8 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
 
 // echo "Notificações inseridas com sucesso.";
 ?>
+<!-- Ícone de Loading -->
+<div class="loading" style="display:none;"></div>
 
 </body>
 </html>

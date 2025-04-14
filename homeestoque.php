@@ -728,14 +728,12 @@ $conn->close();
 </div>
 <!-- FECHAMENTO DE ALOMXARIFADO MENSAL -->
 
-<div class="form-container" id="fechamento" style="display: flex; justify-content: center; margin:15%; margin-top:20px">
+<div class="form-container" id="fechamento">
     <button id="realizarFechamentoButton" onclick="realizarFechamento()">Realizar Fechamento</button>
     <h2>Histórico de Fechamentos</h2>
     
     <div id="linhaDoTempo"></div>
-</div>
-
-<!-- Modal de Fechamento -->
+                     <!-- Modal de Fechamento -->
 <div id="modalFechamento" style="display: none;">
     <div id="modalFechamentoContent">
         <table id="tabelaFechamentos">
@@ -755,7 +753,9 @@ $conn->close();
     </div>
 </div>
 
+           
 
+</div>
 
 <script src="./src/estoque/js/escrevefechamento-linhadotempo.js"></script>
 
@@ -986,6 +986,8 @@ $conn->close();
 <!-- JS ATIVAÇÃO DAS ABAS -->
 <script src="./src/estoque/js/active-tab-estoque.js"></script>
 
+<!-- Ícone de Loading -->
+<div class="loading" style="display:none;"></div>
 
 </body>
 </html>

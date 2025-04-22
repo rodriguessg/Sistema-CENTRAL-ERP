@@ -116,74 +116,46 @@ include 'header.php';
         </div>
 
         <?= gerarCalendario($currentMonth, $currentYear, $pdo); ?>
-
     </div>
 
-    <!-- Sidebar para exibir compromissos -->
+    <!-- Formulário para adicionar evento -->
     <div class="sidebar">
-        <h3>Agenda</h3>
-
-        <!-- Controle para colaboradores ou grupos -->
-        <div class="form-group">
-            <label for="collaborators">Colaboradores ou grupos:</label>
-            <select id="collaborators" class="form-control">
-                <option value="">Clique para adicionar</option>
-                <!-- Adicione opções de colaboradores ou grupos aqui -->
-            </select>
-        </div>
-
-        <!-- Filtros de Visualização -->
-        <div class="form-group">
-            <h4>Visualizar:</h4>
-            <label>
-                <input type="checkbox" id="task-planning" checked> Planejamento de tarefas do prazo
-            </label><br>
-            <label>
-                <input type="checkbox" id="deadline-terms" checked> Término de prazos
-            </label><br>
-            <label>
-                <input type="checkbox" id="canceled-commitments" checked> Compromissos cancelados
-            </label><br>
-        </div>
-
-        <!-- Categorias -->
-        <div class="form-group">
-            <h4>Categorias:</h4>
-            <div class="novo">
-                <label>
-                    <input type="checkbox" class="category" id="category-geral" checked> Geral
-                </label><br>
-                <a href="">novo</a>
+        <h3>Adicionar Evento</h3>
+        <form method="POST">
+            <div class="form-group">
+                <label for="titulo">Título:</label>
+                <input type="text" name="titulo" id="titulo" required>
             </div>
-            <div class="novo">
-                <label>
-                    <input type="checkbox" class="category" id="category-audiencia" checked> AUDIÊNCIA
-                </label><br>
-                <a href=""><i class="fa-regular fa-pen-to-square"></i></a>
-                <i class="fa-regular fa-trash-can"></i>
+            <div class="form-group">
+                <label for="descricao">Descrição:</label>
+                <textarea name="descricao" id="descricao"></textarea>
             </div>
-            <div class="novo">
-                <label>
-                    <input type="checkbox" class="category" id="category-escritorio" checked> ESCRITÓRIO
-                </label><br>
+            <div class="form-group">
+                <label for="data">Data:</label>
+                <input type="date" name="data" id="data" required>
             </div>
-            <label>
-                <input type="checkbox" class="category" id="category-ligacao" checked> LIGAÇÃO
-            </label><br>
-            <label>
-                <input type="checkbox" class="category" id="category-oab" checked> OAB
-            </label><br>
-            <label>
-                <input type="checkbox" class="category" id="category-reuniao" checked> REUNIÃO
-            </label><br>
-            <label>
-                <input type="checkbox" class="category" id="category-urgente" checked> URGENTE
-            </label><br>
-        </div>
-
-        <div class="event-list" id="event-list">
-            <!-- Eventos serão exibidos aqui -->
-        </div>
+            <div class="form-group">
+                <label for="hora">Hora:</label>
+                <input type="time" name="hora" id="hora" required>
+            </div>
+            <div class="form-group">
+                <label for="categoria">Categoria:</label>
+                <select name="categoria" id="categoria">
+                    <option value="geral">Geral</option>
+                    <option value="audiencia">Audiência</option>
+                    <option value="escritorio">Escritório</option>
+                    <option value="ligacao">Ligação</option>
+                    <option value="oab">OAB</option>
+                    <option value="reuniao">Reunião</option>
+                    <option value="urgente">Urgente</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="cor">Cor (em formato hexadecimal):</label>
+                <input type="color" name="cor" id="cor" value="#ff0000">
+            </div>
+            <button type="submit" name="add_event">Adicionar Evento</button>
+        </form>
     </div>
 </div>
 

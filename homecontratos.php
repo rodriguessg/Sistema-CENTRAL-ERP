@@ -813,23 +813,34 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function preencherTabelaPagamentos(dados) {
-    const tabela = document.querySelector('#relatorio-pagamentos tbody');
-    tabela.innerHTML = ''; // Limpa a tabela antes de preencher
+  const tabela = document.querySelector('#relatorio-pagamentos tbody');
+  tabela.innerHTML = ''; // Limpa a tabela antes de preencher
 
-    const contratos = Array.isArray(dados) ? dados : [dados];
-    contratos.forEach(contrato => {
+  const contratos = Array.isArray(dados) ? dados : [dados];
+  contratos.forEach(contrato => {
+    // Verifica se há pagamentos
+    if (contrato.pagamentos && Array.isArray(contrato.pagamentos) && contrato.pagamentos.length > 0) {
+      // Para cada pagamento, cria uma nova linha
+      contrato.pagamentos.forEach(pagamento => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${contrato.titulo || 'N/A'}</td>
+          <td>${formatDate(pagamento.data_pagamento)}</td>
+        `;
+        tabela.appendChild(tr);
+      });
+    } else {
+      // Se não houver pagamentos, exibe uma linha com mensagem
       const tr = document.createElement('tr');
-      const pagamentos = contrato.pagamentos && Array.isArray(contrato.pagamentos)
-        ? contrato.pagamentos.map(pagamento => formatDate(pagamento.data_pagamento)).join(', ')
-        : 'Nenhum';
       tr.innerHTML = `
         <td>${contrato.titulo || 'N/A'}</td>
-        <td>${pagamentos}</td>
+        <td>Nenhum pagamento</td>
       `;
       tabela.appendChild(tr);
-    });
-    document.getElementById('relatorio-pagamentos-tabela').style.display = 'block';
-  }
+    }
+  });
+  document.getElementById('relatorio-pagamentos-tabela').style.display = 'block';
+}
 
   function preencherTabelaMensal(dados) {
     const tabela = document.querySelector('#relatorio-mensal tbody');

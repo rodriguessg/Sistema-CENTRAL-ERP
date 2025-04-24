@@ -262,13 +262,6 @@ h3 {
   outline: none;
 }
 
-/* Botões de ação */
-.button-group {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
 .button-group button {
   padding: 10px 20px;
   font-size: 16px;
@@ -798,14 +791,6 @@ h3 {
   color: #333;
   font-weight: 600;
   font-family: "Open Sans", sans-serif; /* Usando Open Sans no título */
-}
-
-/* Estilo para os grupos de inputs */
-.form-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 20px;
 }
 
 .form-group3 {

@@ -164,6 +164,7 @@ $conn->close();
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 </head>
 
@@ -342,18 +343,19 @@ $conn->close();
 <!-- Formulário para selecionar contrato e tipo de relatório -->
 
 <div class="form-container" id="relatorio">
+<h2><i class="fas fa-file-alt"></i> Gerar Relatório</h2>
   <form id="relatorio-form">
     <div class="form-group">
-      <div class="input-group">
+      <div class="input-group-contratos">
         <!-- Seletor de contrato -->
-        <label for="tipo_relatorio">Nome do Contrato</label>
+        <label for="tipo_relatorio"><i class="fas fa-folder-open"></i> Nome do Contrato</label>
         <select name="contrato" id="tipo_relatorio" onchange="mostrarTipoRelatorio()">
           <option value="">Selecione o Contrato</option>
           <?php echo $options; ?> <!-- Supondo que $options seja preenchido com contratos -->
         </select>
 
         <!-- Novo seletor para relatórios de todos os contratos -->
-        <label for="relatorio_todos">Relatório de Todos os Contratos</label>
+        <label for="relatorio_todos"><i class="fas fa-globe"></i> Relatório de Todos os Contratos</label>
         <select name="relatorio_todos" id="relatorio_todos" onchange="mostrarCamposRelatorioTodos()">
           <option value="">Selecione o Tipo de Relatório</option>
           <option value="mensal_todos">Relatório Mensal (Todos os Contratos)</option>
@@ -362,7 +364,7 @@ $conn->close();
 
         <!-- Seletor de tipo de relatório (inicialmente oculto, para contratos individuais) -->
         <div id="tipo-relatorio-container" style="display: none;">
-          <label for="relatorio_tipo">Relatório por Contratos</label>
+        <label for="relatorio_tipo"><i class="fas fa-chart-line"></i> Relatório por Contratos</label>
           <select name="relatorio_tipo" id="relatorio_tipo" onchange="mostrarCamposRelatorio()">
             <option value="completo">Relatório Completo</option>
             <option value="compromissos_futuros">Compromissos Futuros</option>
@@ -374,23 +376,24 @@ $conn->close();
 
         <!-- Seletor de mês (oculto inicialmente, usado por ambos) -->
         <div id="mes-container" style="display: none;">
-          <label for="mes">Selecione o Mês</label>
+        <label for="mes"><i class="fas fa-calendar"></i> Selecione o Mês</label>
           <select name="mes" id="mes"></select>
         </div>
 
         <!-- Seletor de ano (oculto inicialmente, usado por ambos) -->
         <div id="ano-container" style="display: none;">
-          <label for="ano">Selecione o Ano</label>
+        <label for="ano"><i class="fas fa-calendar"></i> Selecione o Ano</label>
           <select name="ano" id="ano"></select>
         </div>
-
-        <!-- Botão para gerar o relatório -->
-        <button type="button" id="gerar-relatorio" onclick="gerarRelatorio()">Gerar Relatório</button>
-
-        <!-- Botão para exportar PDF (mantido no HTML, mas sem funcionalidade no JS) -->
-        <button class="btn-export" id="btnExportPDF">Exportar para PDF</button>
       </div>
     </div>
+      <div class="button-group">
+       <!-- Botão para gerar o relatório -->
+        <button class="btn-submit" type="button" id="gerar-relatorio" onclick="gerarRelatorio()">Gerar Relatório</button>
+
+        <!-- Botão para exportar PDF (mantido no HTML, mas sem funcionalidade no JS) -->
+        <button class="btn-submit" id="btnExportPDF">Exportar para PDF</button>
+      </div>
   </form>
 
   <!-- Tabelas para Relatórios -->

@@ -1,9 +1,43 @@
-/* Estilo geral do formulário */
-form {
-    border-radius: 8px;
-    margin: 0 auto;
-    max-width: 1200px; /* Garante que o formulário não ocupe toda a largura em telas grandes */
+.input-group-contratos {
+    width: 50%;
+    margin-bottom: 10px;
+    position: relative;
+    align-items: center;
+    overflow-x: auto;
+    border-radius: 10px;
+    gap: 5px;
+    background-color: #bbb;
+    padding: 10px 20px 20px 20px;
+    margin-top: 10px;
 }
+
+  
+  /* Estilo do label */
+  .input-group-contratos label {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 10px;
+    font-family: "Open Sans", sans-serif;
+    font-weight: bolder;
+    margin-top: 10px;
+  }
+  
+  /* Estilo para os campos de input e select */
+  .input-group-contratos input,
+  .input-group-contratos select {
+    width: 100%;
+    padding: 5px 16px;
+    padding-left: 35px; /* Espaço para o ícone à esquerda */
+    border: 3px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+  }
+  
 
 /* Contêiner do formulário */
 .cadastro {

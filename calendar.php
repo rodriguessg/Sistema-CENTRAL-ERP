@@ -388,64 +388,29 @@ include 'header.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendário Interativo com Agendamento</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="./src/contratos/style/calendar.css">
+    <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
    
 </head>
 <body>
-<div class="calendar-container">
-    <!-- Messages -->
-    <div id="messages" aria-live="polite" style="width: 100%;">
-        <?php foreach ($messages as $msg): ?>
-            <div class="message message-<?= $msg['type'] ?>">
-                <?= htmlspecialchars($msg['text']) ?>
-            </div>
-        <?php endforeach; ?>
-    </div>
-
-    <!-- Calendar and Daily Events -->
-    <div style="display: flex; flex-wrap: wrap; flex: 1; gap: 20px;">
-        <!-- Calendar -->
-        <div class="calendar-section">
-            <div class="calendar-header">
-                <button id="prev-month" data-url="<?= $navigation['prevMonthLink'] ?>" aria-label="Mês anterior">Anterior</button>
-                <h2 id="month-year" aria-live="polite"><?= date("F Y", strtotime("$currentYear-$currentMonth-01")) ?></h2>
-                <button id="next-month" data-url="<?= $navigation['nextMonthLink'] ?>" aria-label="Próximo mês">Próximo</button>
-            </div>
-            <?= gerarCalendario($currentMonth, $currentYear, $eventos, $selectedDay); ?>
+<div class="caderno">
+<!-- Messages -->
+<div id="messages" aria-live="polite">
+    <?php foreach ($messages as $msg): ?>
+        <div class="msg msg-<?= $msg['type'] ?>">
+            <?= htmlspecialchars($msg['text']) ?>
         </div>
+    <?php endforeach; ?>
+</div>
 
-        <!-- Daily Events Preview -->
-        <div class="daily-events">
-            <h3>Eventos do Dia <?= sprintf("%02d/%02d/%04d", $selectedDay, $currentMonth, $currentYear) ?></h3>
-            <?php if (empty($dailyEvents)): ?>
-                <p>Nenhum evento para este dia.</p>
-            <?php else: ?>
-                <?php foreach ($dailyEvents as $event): ?>
-                    <div class="daily-event">
-                        <div class="event-color-bar" style="background-color: <?= htmlspecialchars($event['cor']) ?>;"></div>
-                        <div class="daily-event-content">
-                            <div class="daily-event-info">
-                                <strong><?= htmlspecialchars($event['titulo']) ?></strong>
-                                <small>das <?= htmlspecialchars($event['hora']) ?></small>
-                            </div>
-                            <div class="daily-event-menu">
-                                <i class="fas fa-bars menu-icon"></i>
-                                <div class="dropdown-menu">
-                                    <a href="#" class="edit-link" data-id="<?= $event['id'] ?>"><i class="fas fa-edit"></i> Editar</a>
-                                    <a href="#" class="delete-link" data-id="<?= $event['id'] ?>"><i class="fas fa-trash"></i> Excluir</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
-    </div>
+<!-- Calendar and Daily Events -->
+<div class="calendar-and-events">
 
-    <!-- Sidebar for Adding/Editing Events and Categories -->
-    <div class="sidebar">
-        <h3 id="form-title">Adicionar Evento</h3>
+    <!-- Formulário de adicionar evento -->
+    <div class="event-sidebar">
         <form id="event-form" method="POST">
+            <h3 id="form-title"><i class="fas fa-plus-circle"></i> Adicionar Evento</h3>
             <input type="hidden" name="action" id="form-action" value="add_event">
             <input type="hidden" name="event_id" id="event-id">
             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
@@ -460,12 +425,12 @@ include 'header.php';
             <div class="form-group input-with-icon">
                 <label for="data">Data</label>
                 <input type="date" name="data" id="data" required aria-required="true" value="<?= sprintf("%04d-%02d-%02d", $currentYear, $currentMonth, $selectedDay) ?>">
-                <!-- <i class="fas fa-calendar-alt"></i> -->
+                <i class="fas fa-calendar-alt"></i>
             </div>
             <div class="form-group input-with-icon">
                 <label for="hora">Tempo</label>
                 <input type="time" name="hora" id="hora" required aria-required="true">
-                <!-- <i class="fas fa-clock"></i> -->
+                <i class="fas fa-clock"></i>
             </div>
             <div class="form-group">
                 <label for="categoria">Categoria</label>
@@ -502,12 +467,12 @@ include 'header.php';
                 </label>
             </div>
             <div class="form-actions">
-                <button type="submit" id="submit-btn">Adicionar Evento</button>
+                <button type="submit" id="submit-btn"><i class="fas fa-check-circle"></i> Adicionar Evento</button>
                 <button type="button" class="cancel-btn" id="cancel-btn" style="display: none;">Cancelar</button>
             </div>
         </form>
 
-        <button id="toggle-category-form">Adicionar nova categoria</button>
+        <button id="toggle-category-form"><i class="fas fa-tags"></i> Adicionar nova categoria</button>
         <form id="add-category-form" method="POST">
             <input type="hidden" name="action" value="add_category">
             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
@@ -515,10 +480,53 @@ include 'header.php';
                 <label for="new_category">Nova Categoria:</label>
                 <input type="text" name="new_category" id="new_category" placeholder="Digite o nome da categoria">
             </div>
-            <button type="submit">Adicionar Categoria</button>
+            <button type="submit"><i class="fas fa-plus"></i> Adicionar Categoria</button>
         </form>
     </div>
+
+    <!-- Calendário -->
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <button id="prev-month" data-url="<?= $navigation['prevMonthLink'] ?>" aria-label="Mês anterior">
+                <i class="fas fa-arrow-left"></i> Anterior
+            </button>
+            <h2 id="month-year" aria-live="polite"><?= date("F Y", strtotime("$currentYear-$currentMonth-01")) ?></h2>
+            <button id="next-month" data-url="<?= $navigation['nextMonthLink'] ?>" aria-label="Próximo mês">
+                Próximo <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        <?= gerarCalendario($currentMonth, $currentYear, $eventos, $selectedDay); ?>
+    </div>
+
+    <!-- Eventos do dia -->
+    <div class="daily-events-preview">
+        <h3>Eventos do Dia <?= sprintf("%02d/%02d/%04d", $selectedDay, $currentMonth, $currentYear) ?></h3>
+        <?php if (empty($dailyEvents)): ?>
+            <p>Nenhum evento para este dia.</p>
+        <?php else: ?>
+            <?php foreach ($dailyEvents as $event): ?>
+                <div class="daily-event">
+                    <div class="event-color-bar" style="background-color: <?= htmlspecialchars($event['cor']) ?>;"></div>
+                    <div class="daily-event-content">
+                        <div class="daily-event-info">
+                            <strong><?= htmlspecialchars($event['titulo']) ?></strong>
+                            <small>das <?= htmlspecialchars($event['hora']) ?></small>
+                        </div>
+                        <div class="daily-event-menu">
+                                <i class="fas fa-bars menu-icon"></i>
+                                <div class="dropdown-menu">
+                                    <a href="#" class="edit-link" data-id="<?= $event['id'] ?>"><i class="fas fa-edit"></i> Editar</a>
+                                    <a href="#" class="delete-link" data-id="<?= $event['id'] ?>"><i class="fas fa-trash"></i> Excluir</a>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
 </div>
+
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>

@@ -74,7 +74,7 @@ try {
                 $menuItens = [
                     ['link' => 'painelcontratos.php', 'nome' => 'Painel', 'icon' => 'cogs'],
                     ['link' => 'homecontratos.php', 'nome' => 'Home', 'icon' => 'home'],
-                    ['link' => 'calendar.php', 'nome' => 'Clendário','icon' => 'home'],
+                    ['link' => 'calendar.php', 'nome' => 'Calendário', 'icon' => 'calendar-alt'],
                     ['link' => 'rh.php', 'nome' => 'Assinatura Contratos', 'icon' => 'envelope'],
                 ];
                 break;

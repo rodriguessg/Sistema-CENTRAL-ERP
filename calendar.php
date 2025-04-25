@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $stmtNotif = $pdo->prepare($sqlNotif);
                         $stmtNotif->execute([
                             'username' => $_SESSION['username'],
-                            'setor' => 'Geral',
+                            'setor' => 'contratos',
                             'mensagem' => $mensagem,
                             'situacao' => 'Não lida',
                             'data_criacao' => $createdAt
@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $stmtNotif = $pdo->prepare($sqlNotif);
                         $stmtNotif->execute([
                             'username' => $_SESSION['username'],
-                            'setor' => 'Geral',
+                            'setor' => 'contratos',
                             'mensagem' => $mensagem,
                             'situacao' => 'Não lida',
                             'data_criacao' => $createdAt
@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $mail = new PHPMailer(true);
                         try {
                             // Disable verbose debug output
-                            $mail->SMTPDebug = 0; // Debug desativado
+                            $mail->SMTPDebug = 0;
 
                             // Server settings
                             $mail->isSMTP();
@@ -210,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $stmtNotif = $pdo->prepare($sqlNotif);
                 $stmtNotif->execute([
                     'username' => $_SESSION['username'],
-                    'setor' => 'Geral',
+                    'setor' => 'contratos',
                     'mensagem' => $mensagem,
                     'situacao' => 'Não lida',
                     'data_criacao' => date('Y-m-d H:i:s')
@@ -225,10 +225,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $messages[] = ['type' => 'error', 'text' => 'Digite o nome da nova categoria.'];
                 }
             }
+
+            // Redirecionar após processar o formulário para evitar reenvio (padrão PRG)
+            if (empty($messages) || !in_array('error', array_column($messages, 'type'))) {
+                $redirectParams = [
+                    'month' => $currentMonth,
+                    'year' => $currentYear,
+                    'day' => $selectedDay
+                ];
+                if ($categoryFilter) $redirectParams['category'] = $categoryFilter;
+                if ($searchQuery) $redirectParams['search'] = $searchQuery;
+
+                // Armazenar mensagens na sessão para exibir após o redirecionamento
+                $_SESSION['messages'] = $messages;
+
+                // Redirecionar
+                $redirectUrl = 'calendar.php?' . http_build_query($redirectParams);
+                header("Location: $redirectUrl");
+                exit();
+            }
         } catch (PDOException $e) {
             $messages[] = ['type' => 'error', 'text' => 'Erro no banco de dados: ' . htmlspecialchars($e->getMessage())];
         }
     }
+}
+
+// Recuperar mensagens da sessão, se houver
+if (isset($_SESSION['messages'])) {
+    $messages = $_SESSION['messages'];
+    unset($_SESSION['messages']);
 }
 
 // Fetch events for the month and selected day
@@ -364,7 +389,7 @@ include 'header.php';
     <title>Calendário Interativo com Agendamento</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="./src/contratos/style/calendar.css">
-    
+   
 </head>
 <body>
 <div class="calendar-container">

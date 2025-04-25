@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $stmtNotif = $pdo->prepare($sqlNotif);
                         $stmtNotif->execute([
                             'username' => $_SESSION['username'],
-                            'setor' => 'contratos',
+                            'setor' => 'Geral',
                             'mensagem' => $mensagem,
                             'situacao' => 'Não lida',
                             'data_criacao' => $createdAt
@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $stmtNotif = $pdo->prepare($sqlNotif);
                         $stmtNotif->execute([
                             'username' => $_SESSION['username'],
-                            'setor' => 'contratos',
+                            'setor' => 'Geral',
                             'mensagem' => $mensagem,
                             'situacao' => 'Não lida',
                             'data_criacao' => $createdAt
@@ -153,14 +153,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     if ($enviarEmail && $emailDestinatario) {
                         $mail = new PHPMailer(true);
                         try {
+                            // Disable verbose debug output
+                            $mail->SMTPDebug = 0; // Debug desativado
+
                             // Server settings
                             $mail->isSMTP();
                             $mail->Host = 'smtps2.webmail.rj.gov.br';
                             $mail->SMTPAuth = true;
                             $mail->Username = 'impressora@central.rj.gov.br';
                             $mail->Password = 'central@123';
-                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Use SSL for port 443
-                           $mail->Port = 465;
+                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Use SSL for port 465
+                            $mail->Port = 465;
 
                             // Recipients
                             $mail->setFrom('impressora@central.rj.gov.br', 'Sistema de Eventos');
@@ -207,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $stmtNotif = $pdo->prepare($sqlNotif);
                 $stmtNotif->execute([
                     'username' => $_SESSION['username'],
-                    'setor' => 'contratos',
+                    'setor' => 'Geral',
                     'mensagem' => $mensagem,
                     'situacao' => 'Não lida',
                     'data_criacao' => date('Y-m-d H:i:s')
@@ -217,8 +220,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             } elseif ($_POST['action'] === 'add_category') {
                 $newCategory = filter_input(INPUT_POST, 'new_category', FILTER_SANITIZE_STRING);
                 if ($newCategory) {
-                    // Aqui você pode salvar a nova categoria em uma tabela de categorias, se existir
-                    // Como não foi especificada uma tabela de categorias, apenas a usaremos dinamicamente
                     $messages[] = ['type' => 'success', 'text' => "Categoria '$newCategory' adicionada com sucesso!"];
                 } else {
                     $messages[] = ['type' => 'error', 'text' => 'Digite o nome da nova categoria.'];
@@ -352,7 +353,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'add_category'
         $categories[$categoryKey] = $newCategory;
     }
 }
- include 'header.php';
+include 'header.php';
 ?>
 
 <!DOCTYPE html>
@@ -363,6 +364,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'add_category'
     <title>Calendário Interativo com Agendamento</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="./src/contratos/style/calendar.css">
+    
 </head>
 <body>
 <div class="calendar-container">

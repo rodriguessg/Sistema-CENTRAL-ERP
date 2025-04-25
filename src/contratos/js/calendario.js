@@ -1,4 +1,3 @@
-
 $(document).ready(function() {
     // Toggle category form visibility
     $('#toggle-category-form').click(function() {
@@ -122,5 +121,14 @@ $(document).ready(function() {
                 `
             }).appendTo('body').submit();
         }
+    });
+
+    // Substituir o texto do evento por ícones no calendário
+    $('.day-cell').each(function() {
+        var eventContent = $(this).find('.evento');
+        eventContent.each(function() {
+            var icon = $('<i>').addClass('fas fa-calendar-day'); // Exemplo de ícone
+            $(this).empty().append(icon); // Remove o texto e adiciona o ícone
+        });
     });
 });

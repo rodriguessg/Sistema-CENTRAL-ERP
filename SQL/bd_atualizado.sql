@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.2
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 08-Abr-2025 às 22:46
+-- Tempo de geração: 25-Abr-2025 às 13:35
 -- Versão do servidor: 10.4.32-MariaDB
 -- versão do PHP: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de dados: `gm_sicbd`
+-- Banco de dados: `gm_sicbd`
 --
 
 -- --------------------------------------------------------
@@ -34,6 +34,18 @@ CREATE TABLE `agendamentos` (
   `data_g` date DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `cor` varchar(7) NOT NULL DEFAULT '#ff0000'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `categorias`
+--
+
+CREATE TABLE `categorias` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `cor` varchar(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -90,6 +102,16 @@ CREATE TABLE `contratos_parcelas` (
   `valor` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Extraindo dados da tabela `contratos_parcelas`
+--
+
+INSERT INTO `contratos_parcelas` (`id`, `contrato_id`, `mes`, `ano`, `valor`) VALUES
+(1, 4, 5, 2025, 125000.00),
+(2, 4, 6, 2025, 125000.00),
+(3, 4, 7, 2025, 125000.00),
+(4, 4, 8, 2025, 125000.00);
+
 -- --------------------------------------------------------
 
 --
@@ -127,6 +149,55 @@ CREATE TABLE `data_criacao` (
 
 INSERT INTO `data_criacao` (`id`, `tabela`, `data_criacao`) VALUES
 (1, 'exemplo_tabela', '2024-12-30 00:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `emails_salvos`
+--
+
+CREATE TABLE `emails_salvos` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `criado_em` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `emails_salvos`
+--
+
+INSERT INTO `emails_salvos` (`id`, `email`, `username`, `criado_em`) VALUES
+(1, 'grodrigues@central.rj.gov.br', 'CONTRATOS', '2025-04-25 02:30:34'),
+(4, 'maikgtx2@gmail.com', 'CONTRATOS', '2025-04-25 02:54:18');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `eventos`
+--
+
+CREATE TABLE `eventos` (
+  `id` int(11) NOT NULL,
+  `titulo` varchar(255) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `data` date NOT NULL,
+  `hora` time NOT NULL,
+  `categoria` varchar(50) NOT NULL,
+  `cor` varchar(7) DEFAULT NULL,
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `eventos`
+--
+
+INSERT INTO `eventos` (`id`, `titulo`, `descricao`, `data`, `hora`, `categoria`, `cor`, `criado_em`) VALUES
+(1, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 's', '2025-04-16', '08:47:00', 'escritorio', '#d4d4d4', '2025-04-22 11:46:47'),
+(2, 'Estoque', 'informações de pesquisa de produtos', '2025-04-22', '09:11:00', 'escritorio', '#50f771', '2025-04-22 12:05:19'),
+(4, 'Contrato A', 'teste', '2025-04-22', '09:11:00', 'geral', '#ff7a33', '2025-04-22 12:10:39'),
+(6, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', '', '2025-04-23', '07:56:00', 'ligacao', '#000000', '2025-04-23 10:56:42'),
+(21, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'teste', '2025-04-24', '21:54:00', 'urgente', '#ff0000', '2025-04-25 06:07:22');
 
 -- --------------------------------------------------------
 
@@ -259,15 +330,19 @@ CREATE TABLE `gestao_contratos` (
   `num_parcelas` int(11) DEFAULT NULL,
   `descricao` text NOT NULL,
   `situacao` enum('Ativo','Inativo','Encerrado') NOT NULL DEFAULT 'Ativo',
-  `data_cadastro` timestamp NOT NULL DEFAULT current_timestamp()
+  `data_cadastro` timestamp NOT NULL DEFAULT current_timestamp(),
+  `setor` enum('administrador','estoque','patrimonio','financeiro','contratos') NOT NULL DEFAULT 'contratos'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Extraindo dados da tabela `gestao_contratos`
 --
 
-INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `contatos`, `valor_contrato`, `valor_aditivo`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`) VALUES
-(1, 'contrato de aluguel de impressoras ', '20231600/894', 'TESTE', 'GABRIEL', 'MAIK', 'CARUSO', '2025-04-07', '40028922', 5000.00, 0.00, 3, '1', 'Ativo', '2025-04-08 01:06:04');
+INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `contatos`, `valor_contrato`, `valor_aditivo`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`, `setor`) VALUES
+(1, 'Contrato de Manutenção 2024', 'SEI-001/2024', 'Manutenção de equipamentos', 'João Silva', 'Maria Oliveira', 'José Santos', '2024-12-31', 'contato@manutencao.com', 18000.00, 2000.00, 12, 'Contrato para manutenção anual de equipamentos de TI.', 'Ativo', '2024-01-01 03:00:00', 'contratos'),
+(2, 'Contrato de Consultoria TI', 'SEI-002/2024', 'Consultoria em TI', 'Ana Costa', 'Pedro Souza', 'Mariana Lopes', '2024-08-31', 'consultoria@ti.com', 12000.00, NULL, 6, 'Consultoria para implementação de sistemas.', 'Encerrado', '2024-03-01 03:00:00', 'contratos'),
+(3, 'Contrato de Locação de Equipamentos', 'SEI-003/2023', 'Locação de equipamentos', 'Carlos Mendes', 'Luiza Almeida', 'Rafael Lima', '2025-05-31', 'locacao@equip.com', 19200.00, 5000.00, 24, 'Locação de equipamentos para eventos.', 'Ativo', '2023-06-01 03:00:00', 'contratos'),
+(4, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', '20231600/8898', 'TESTE', 'GABRIEL', 'MAIK', 'CELSO', '2025-04-24', '40028922', 500000.00, 0.00, 4, 'teste', 'Ativo', '2025-04-25 00:09:12', 'contratos');
 
 -- --------------------------------------------------------
 
@@ -554,7 +629,18 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (617, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 20:04:42'),
 (618, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 20:22:26'),
 (619, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 20:28:39'),
-(620, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 20:29:46');
+(620, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-04-08 20:29:46'),
+(621, 'MASTER', 'Login bem-sucedido', '2025-04-13 04:44:59'),
+(622, 'CONTRATOS', 'Login bem-sucedido', '2025-04-13 04:46:24'),
+(623, 'MASTER', 'Login bem-sucedido', '2025-04-18 10:35:12'),
+(624, 'CONTRATOS', 'Login bem-sucedido', '2025-04-21 10:22:03'),
+(625, 'MASTER', 'Login bem-sucedido', '2025-04-22 11:12:01'),
+(626, 'CONTRATOS', 'Login bem-sucedido', '2025-04-22 11:12:22'),
+(627, 'MASTER', 'Login bem-sucedido', '2025-04-23 16:50:09'),
+(628, 'PAULO', 'Login bem-sucedido', '2025-04-23 16:51:29'),
+(629, 'CONTRATOS', 'Login bem-sucedido', '2025-04-23 16:52:56'),
+(630, 'CONTRATOS', 'Login bem-sucedido', '2025-04-24 23:24:15'),
+(631, 'MASTER', 'Login bem-sucedido', '2025-04-25 00:57:29');
 
 -- --------------------------------------------------------
 
@@ -657,14 +743,54 @@ INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `
 (377, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:27:30'),
 (378, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:27:33'),
 (379, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:27:33'),
-(380, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:47:07'),
+(380, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:07'),
 (381, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:47:07'),
 (382, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:11'),
 (383, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:11'),
 (384, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:26'),
 (385, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:26'),
-(386, 'MASTER', 'administrador', 'O produto \'1\' chegou ao limite mínimo de 5 unidades.', 'nao lida', '2025-04-08 14:06:26'),
-(387, 'MASTER', 'administrador', 'O produto \'2\' chegou ao limite mínimo de 5 unidades.', 'nao lida', '2025-04-08 14:14:23');
+(388, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 04:30:36'),
+(389, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 04:46:47'),
+(390, 'CONTRATOS', 'Geral', 'Evento excluído: ', 'nao lida', '2025-04-25 04:48:28'),
+(391, 'CONTRATOS', 'Geral', 'Evento atualizado: Estoque', 'nao lida', '2025-04-25 04:54:37'),
+(392, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 04:59:15'),
+(393, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 04:59:33'),
+(394, 'CONTRATOS', 'Geral', 'Evento atualizado: Contrato A', 'nao lida', '2025-04-25 05:02:34'),
+(395, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:05:31'),
+(396, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:05:35'),
+(397, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:06:00'),
+(398, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:06:57'),
+(399, 'CONTRATOS', 'contratos', 'Contrato \'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA\' com validade em 2025-04-24 prestes a expirar.', 'nao lida', '2025-04-25 05:09:14'),
+(400, 'CONTRATOS', 'contratos', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:11:44'),
+(401, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:26:39'),
+(402, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:30:34'),
+(403, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:31:35'),
+(404, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:32:35'),
+(405, 'CONTRATOS', 'contratos', 'Novo evento criado: teste', 'nao lida', '2025-04-25 05:35:15'),
+(406, 'CONTRATOS', 'contratos', 'Novo evento criado: teste', 'nao lida', '2025-04-25 05:36:25'),
+(407, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:36:46'),
+(408, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:38:16'),
+(409, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:38:50'),
+(410, 'CONTRATOS', 'Geral', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:45:27'),
+(411, 'CONTRATOS', 'Geral', 'Novo evento criado: Contrato A', 'nao lida', '2025-04-25 05:46:31'),
+(412, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:47:16'),
+(413, 'CONTRATOS', 'Geral', 'Evento excluído: teste', 'nao lida', '2025-04-25 05:49:22'),
+(414, 'CONTRATOS', 'Geral', 'Evento excluído: teste', 'nao lida', '2025-04-25 05:49:45'),
+(415, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:49:50'),
+(416, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:49:59'),
+(417, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:50:09'),
+(418, 'CONTRATOS', 'Geral', 'Evento excluído: Contrato A', 'nao lida', '2025-04-25 05:50:14'),
+(419, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:50:46'),
+(420, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:50:52'),
+(421, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:50:55'),
+(422, 'CONTRATOS', 'Geral', 'Novo evento criado: UPDATE CONTRATOS', 'nao lida', '2025-04-25 05:53:01'),
+(423, 'CONTRATOS', 'Geral', 'Evento excluído: UPDATE CONTRATOS', 'nao lida', '2025-04-25 05:53:29'),
+(424, 'CONTRATOS', 'Geral', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:54:18'),
+(425, 'CONTRATOS', 'Geral', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 06:01:36'),
+(426, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 06:07:22'),
+(427, 'CONTRATOS', 'contratos', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 06:07:40'),
+(428, 'CONTRATOS', 'contratos', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 06:19:15'),
+(429, 'CONTRATOS', 'contratos', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 06:19:21');
 
 -- --------------------------------------------------------
 
@@ -755,18 +881,30 @@ INSERT INTO `ordens_compra` (`id`, `produto_id`, `quantidade`, `data_criacao`) V
 
 CREATE TABLE `pagamentos` (
   `id` int(11) NOT NULL,
-  `contrato_id` int(11) NOT NULL,
-  `valor` decimal(10,2) NOT NULL,
+  `contrato_titulo` varchar(255) NOT NULL,
   `data_pagamento` date NOT NULL,
-  `forma_pagamento` varchar(50) NOT NULL
+  `valor` decimal(15,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Extraindo dados da tabela `pagamentos`
 --
 
-INSERT INTO `pagamentos` (`id`, `contrato_id`, `valor`, `data_pagamento`, `forma_pagamento`) VALUES
-(1, 1, 500.00, '2025-04-07', 'cartao');
+INSERT INTO `pagamentos` (`id`, `contrato_titulo`, `data_pagamento`, `valor`) VALUES
+(1, 'Contrato de Manutenção 2024', '2024-01-15', 1500.00),
+(2, 'Contrato de Manutenção 2024', '2024-02-15', 1500.00),
+(3, 'Contrato de Manutenção 2024', '2024-03-15', 1500.00),
+(4, 'Contrato de Manutenção 2024', '2024-04-15', 1500.00),
+(5, 'Contrato de Manutenção 2024', '2024-05-15', 1500.00),
+(6, 'Contrato de Consultoria TI', '2024-03-10', 2000.00),
+(7, 'Contrato de Consultoria TI', '2024-04-10', 2000.00),
+(8, 'Contrato de Consultoria TI', '2024-05-10', 2000.00),
+(9, 'Contrato de Consultoria TI', '2024-06-10', 2000.00),
+(10, 'Contrato de Locação de Equipamentos', '2023-06-20', 800.00),
+(11, 'Contrato de Locação de Equipamentos', '2023-07-20', 800.00),
+(12, 'Contrato de Locação de Equipamentos', '2024-01-20', 800.00),
+(13, 'Contrato de Locação de Equipamentos', '2024-02-20', 800.00),
+(14, 'Contrato de Locação de Equipamentos', '2024-03-20', 800.00);
 
 -- --------------------------------------------------------
 
@@ -1015,6 +1153,20 @@ INSERT INTO `usuario` (`id`, `username`, `senha`, `matricula`, `email`, `setor`,
 (10, 'CONTRATOS', '$2y$10$QG5qwt6JfD48s1.YqqS.M.7SUz/p5hBt4SiKnABpKiMN1cGLctEiW', '00', 'asscon@central.rj.gov.br', 'contratos', 'contratos', 'ativo', 'default.png', 1, '2025-03-25 11:43:45'),
 (11, 'MARCO', '$2y$10$V/PS4I1wx9viy9zkpuUMKO7B4AUC/PIRBI.ZZI6LYSvbSBDlQhAIi', '919', 'GERGEP@CENTRAL.RJ.GOV.BR', 'financeiro', 'SUPERINTENDENTE', 'ativo', 'default.png', 1, NULL);
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `vencimentos_futuros`
+--
+
+CREATE TABLE `vencimentos_futuros` (
+  `id` int(11) NOT NULL,
+  `contrato_titulo` varchar(255) NOT NULL,
+  `tipo_vencimento` enum('Petição','Certidão') NOT NULL,
+  `data_vencimento` date NOT NULL,
+  `descricao` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Índices para tabelas despejadas
 --
@@ -1023,6 +1175,12 @@ INSERT INTO `usuario` (`id`, `username`, `senha`, `matricula`, `email`, `setor`,
 -- Índices para tabela `agendamentos`
 --
 ALTER TABLE `agendamentos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Índices para tabela `categorias`
+--
+ALTER TABLE `categorias`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1058,6 +1216,19 @@ ALTER TABLE `data_criacao`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Índices para tabela `emails_salvos`
+--
+ALTER TABLE `emails_salvos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_email_user` (`email`,`username`);
+
+--
+-- Índices para tabela `eventos`
+--
+ALTER TABLE `eventos`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Índices para tabela `fechamento`
 --
 ALTER TABLE `fechamento`
@@ -1074,7 +1245,8 @@ ALTER TABLE `funcionario`
 -- Índices para tabela `gestao_contratos`
 --
 ALTER TABLE `gestao_contratos`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `titulo_unique` (`titulo`);
 
 --
 -- Índices para tabela `log_eventos`
@@ -1106,7 +1278,7 @@ ALTER TABLE `ordens_compra`
 --
 ALTER TABLE `pagamentos`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `contrato_id` (`contrato_id`);
+  ADD KEY `contrato_titulo` (`contrato_titulo`);
 
 --
 -- Índices para tabela `painel_config`
@@ -1170,6 +1342,13 @@ ALTER TABLE `usuario`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Índices para tabela `vencimentos_futuros`
+--
+ALTER TABLE `vencimentos_futuros`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `contrato_titulo` (`contrato_titulo`);
+
+--
 -- AUTO_INCREMENT de tabelas despejadas
 --
 
@@ -1177,6 +1356,12 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de tabela `agendamentos`
 --
 ALTER TABLE `agendamentos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `categorias`
+--
+ALTER TABLE `categorias`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -1195,7 +1380,7 @@ ALTER TABLE `configuracoes`
 -- AUTO_INCREMENT de tabela `contratos_parcelas`
 --
 ALTER TABLE `contratos_parcelas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `controle_transicao`
@@ -1208,6 +1393,18 @@ ALTER TABLE `controle_transicao`
 --
 ALTER TABLE `data_criacao`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `emails_salvos`
+--
+ALTER TABLE `emails_salvos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de tabela `eventos`
+--
+ALTER TABLE `eventos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de tabela `fechamento`
@@ -1225,19 +1422,19 @@ ALTER TABLE `funcionario`
 -- AUTO_INCREMENT de tabela `gestao_contratos`
 --
 ALTER TABLE `gestao_contratos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=621;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=632;
 
 --
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=388;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=430;
 
 --
 -- AUTO_INCREMENT de tabela `ordens_compra`
@@ -1249,7 +1446,7 @@ ALTER TABLE `ordens_compra`
 -- AUTO_INCREMENT de tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de tabela `painel_config`
@@ -1306,6 +1503,12 @@ ALTER TABLE `usuario`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
+-- AUTO_INCREMENT de tabela `vencimentos_futuros`
+--
+ALTER TABLE `vencimentos_futuros`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- Restrições para despejos de tabelas
 --
 
@@ -1316,22 +1519,16 @@ ALTER TABLE `contratos_parcelas`
   ADD CONSTRAINT `contratos_parcelas_ibfk_1` FOREIGN KEY (`contrato_id`) REFERENCES `gestao_contratos` (`id`);
 
 --
--- Limitadores para a tabela `ordens_compra`
---
-ALTER TABLE `ordens_compra`
-  ADD CONSTRAINT `ordens_compra_ibfk_1` FOREIGN KEY (`produto_id`) REFERENCES `produtos` (`id`);
-
---
 -- Limitadores para a tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
-  ADD CONSTRAINT `pagamentos_ibfk_1` FOREIGN KEY (`contrato_id`) REFERENCES `gestao_contratos` (`id`);
+  ADD CONSTRAINT `pagamentos_ibfk_1` FOREIGN KEY (`contrato_titulo`) REFERENCES `gestao_contratos` (`titulo`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `transicao`
+-- Limitadores para a tabela `vencimentos_futuros`
 --
-ALTER TABLE `transicao`
-  ADD CONSTRAINT `transicao_ibfk_1` FOREIGN KEY (`material_id`) REFERENCES `produtos` (`id`) ON DELETE CASCADE;
+ALTER TABLE `vencimentos_futuros`
+  ADD CONSTRAINT `vencimentos_futuros_ibfk_1` FOREIGN KEY (`contrato_titulo`) REFERENCES `gestao_contratos` (`titulo`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

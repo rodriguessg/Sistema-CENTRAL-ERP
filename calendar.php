@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+// Simulação de usuário logado (em um ambiente real, isso viria de um sistema de autenticação)
+$_SESSION['username'] = isset($_SESSION['username']) ? $_SESSION['username'] : 'usuario_logado';
+
 // Generate CSRF token for form security
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -14,17 +17,20 @@ try {
     die("Erro de conexão com o banco de dados: " . htmlspecialchars($e->getMessage()));
 }
 
-// Get month and year from GET or default to current
+// Get month, year, and selected day from GET or default to current
 $currentMonth = isset($_GET['month']) ? (int)$_GET['month'] : (int)date("m");
 $currentYear = isset($_GET['year']) ? (int)$_GET['year'] : (int)date("Y");
+$selectedDay = isset($_GET['day']) ? (int)$_GET['day'] : (int)date("d");
 $categoryFilter = isset($_GET['category']) ? $_GET['category'] : '';
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Validate month and year
+// Validate month, year, and day
 if ($currentMonth < 1 || $currentMonth > 12) $currentMonth = (int)date("m");
 if ($currentYear < 1970 || $currentYear > 9999) $currentYear = (int)date("Y");
+$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
+if ($selectedDay < 1 || $selectedDay > $daysInMonth) $selectedDay = (int)date("d");
 
-// Handle form submissions (Add/Edit/Delete events)
+// Handle form submissions (Add/Edit/Delete events, Add category)
 $messages = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
@@ -43,9 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $messages[] = ['type' => 'error', 'text' => 'Preencha todos os campos obrigatórios.'];
                 } else {
                     $datetime = "$data $hora";
+                    $createdAt = date('Y-m-d H:i:s');
+
                     if ($_POST['action'] === 'add_event') {
-                        $sql = "INSERT INTO eventos (titulo, descricao, data, hora, categoria, cor) 
-                                VALUES (:titulo, :descricao, :data, :hora, :categoria, :cor)";
+                        // Insert into eventos
+                        $sql = "INSERT INTO eventos (titulo, descricao, data, hora, categoria, cor, criado_em) 
+                                VALUES (:titulo, :descricao, :data, :hora, :categoria, :cor, :criado_em)";
                         $stmt = $pdo->prepare($sql);
                         $stmt->execute([
                             'titulo' => $titulo,
@@ -53,11 +62,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             'data' => $datetime,
                             'hora' => $hora,
                             'categoria' => $categoria,
-                            'cor' => $cor
+                            'cor' => $cor,
+                            'criado_em' => $createdAt
                         ]);
+
+                        // Insert into notificacoes
+                        $eventId = $pdo->lastInsertId();
+                        $mensagem = "Novo evento criado: $titulo";
+                        $sqlNotif = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                                     VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
+                        $stmtNotif = $pdo->prepare($sqlNotif);
+                        $stmtNotif->execute([
+                            'username' => $_SESSION['username'],
+                            'setor' => 'Geral',
+                            'mensagem' => $mensagem,
+                            'situacao' => 'Não lida',
+                            'data_criacao' => $createdAt
+                        ]);
+
                         $messages[] = ['type' => 'success', 'text' => 'Evento adicionado com sucesso!'];
                     } else {
                         $id = (int)$_POST['event_id'];
+                        // Update eventos
                         $sql = "UPDATE eventos SET titulo = :titulo, descricao = :descricao, data = :data, 
                                 hora = :hora, categoria = :categoria, cor = :cor WHERE id = :id";
                         $stmt = $pdo->prepare($sql);
@@ -70,15 +96,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             'cor' => $cor,
                             'id' => $id
                         ]);
+
+                        // Insert notification for update
+                        $mensagem = "Evento atualizado: $titulo";
+                        $sqlNotif = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                                     VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
+                        $stmtNotif = $pdo->prepare($sqlNotif);
+                        $stmtNotif->execute([
+                            'username' => $_SESSION['username'],
+                            'setor' => 'Geral',
+                            'mensagem' => $mensagem,
+                            'situacao' => 'Não lida',
+                            'data_criacao' => $createdAt
+                        ]);
+
                         $messages[] = ['type' => 'success', 'text' => 'Evento atualizado com sucesso!'];
                     }
                 }
             } elseif ($_POST['action'] === 'delete_event') {
                 $id = (int)$_POST['event_id'];
+                // Fetch event title before deletion for notification
+                $sqlFetch = "SELECT titulo FROM eventos WHERE id = :id";
+                $stmtFetch = $pdo->prepare($sqlFetch);
+                $stmtFetch->execute(['id' => $id]);
+                $event = $stmtFetch->fetch(PDO::FETCH_ASSOC);
+                $titulo = $event['titulo'];
+
+                // Delete from eventos
                 $sql = "DELETE FROM eventos WHERE id = :id";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute(['id' => $id]);
+
+                // Insert notification for deletion
+                $mensagem = "Evento excluído: $titulo";
+                $sqlNotif = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                             VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
+                $stmtNotif = $pdo->prepare($sqlNotif);
+                $stmtNotif->execute([
+                    'username' => $_SESSION['username'],
+                    'setor' => 'Geral',
+                    'mensagem' => $mensagem,
+                    'situacao' => 'Não lida',
+                    'data_criacao' => date('Y-m-d H:i:s')
+                ]);
+
                 $messages[] = ['type' => 'success', 'text' => 'Evento excluído com sucesso!'];
+            } elseif ($_POST['action'] === 'add_category') {
+                $newCategory = filter_input(INPUT_POST, 'new_category', FILTER_SANITIZE_STRING);
+                if ($newCategory) {
+                    // Aqui você pode salvar a nova categoria em uma tabela de categorias, se existir
+                    // Como não foi especificada uma tabela de categorias, apenas a usaremos dinamicamente
+                    $messages[] = ['type' => 'success', 'text' => "Categoria '$newCategory' adicionada com sucesso!"];
+                } else {
+                    $messages[] = ['type' => 'error', 'text' => 'Digite o nome da nova categoria.'];
+                }
             }
         } catch (PDOException $e) {
             $messages[] = ['type' => 'error', 'text' => 'Erro no banco de dados: ' . htmlspecialchars($e->getMessage())];
@@ -86,36 +157,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 }
 
-// Fetch all parcels and events for the month
+// Fetch events for the month and selected day
 try {
-    $sql_parcelas = "SELECT titulo, valor_contrato AS valor, validade, num_parcelas 
-                     FROM gestao_contratos 
-                     WHERE MONTH(validade) = :mes AND YEAR(validade) = :ano AND num_parcelas > 0";
-    $stmt_parcelas = $pdo->prepare($sql_parcelas);
-    $stmt_parcelas->execute(['mes' => $currentMonth, 'ano' => $currentYear]);
-    $contratos = $stmt_parcelas->fetchAll(PDO::FETCH_ASSOC);
-
-    $sql_eventos = "SELECT id, titulo, cor, DAY(data) AS day, categoria 
-                    FROM eventos 
-                    WHERE MONTH(data) = :mes AND YEAR(data) = :ano";
+    $sqlEventos = "SELECT id, titulo, cor, DAY(data) AS day, categoria, hora, descricao 
+                   FROM eventos 
+                   WHERE MONTH(data) = :mes AND YEAR(data) = :ano";
     if ($categoryFilter) {
-        $sql_eventos .= " AND categoria = :categoria";
+        $sqlEventos .= " AND categoria = :categoria";
     }
     if ($searchQuery) {
-        $sql_eventos .= " AND (titulo LIKE :search OR descricao LIKE :search)";
+        $sqlEventos .= " AND (titulo LIKE :search OR descricao LIKE :search)";
     }
-    $stmt_eventos = $pdo->prepare($sql_eventos);
+    $stmtEventos = $pdo->prepare($sqlEventos);
     $params = ['mes' => $currentMonth, 'ano' => $currentYear];
     if ($categoryFilter) $params['categoria'] = $categoryFilter;
     if ($searchQuery) $params['search'] = "%$searchQuery%";
-    $stmt_eventos->execute($params);
-    $eventos = $stmt_eventos->fetchAll(PDO::FETCH_ASSOC);
+    $stmtEventos->execute($params);
+    $eventos = $stmtEventos->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch events for the selected day
+    $selectedDate = sprintf("%04d-%02d-%02d", $currentYear, $currentMonth, $selectedDay);
+    $sqlDailyEvents = "SELECT id, titulo, cor, hora, categoria, descricao 
+                       FROM eventos 
+                       WHERE DATE(data) = :selected_date";
+    $stmtDailyEvents = $pdo->prepare($sqlDailyEvents);
+    $stmtDailyEvents->execute(['selected_date' => $selectedDate]);
+    $dailyEvents = $stmtDailyEvents->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $messages[] = ['type' => 'error', 'text' => 'Erro ao buscar dados: ' . htmlspecialchars($e->getMessage())];
+    $messages[] = ['type' => 'error', 'text' => 'Erro ao buscar eventos: ' . htmlspecialchars($e->getMessage())];
 }
 
 // Function to generate the calendar
-function gerarCalendario($month, $year, $contratos, $eventos) {
+function gerarCalendario($month, $year, $eventos, $selectedDay) {
     $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
     $firstDayOfMonth = strtotime("$year-$month-01");
     $firstDayWeekday = (int)date("w", $firstDayOfMonth);
@@ -138,24 +211,9 @@ function gerarCalendario($month, $year, $contratos, $eventos) {
             $calendar .= '</tr><tr>';
         }
 
-        $calendar .= "<td role='gridcell' aria-label='Dia $day'>";
+        $isSelected = $day == $selectedDay ? ' selected-day' : '';
+        $calendar .= "<td role='gridcell' class='day-cell$isSelected' data-day='$day' aria-label='Dia $day'>";
         $calendar .= "<span class='day-number'>$day</span>";
-
-        // Display parcels
-        foreach ($contratos as $contrato) {
-            $validade = strtotime($contrato['validade']);
-            $startMonth = (int)date('m', $validade);
-            $startYear = (int)date('Y', $validade);
-            $parcelamentoMes = (($year - $startYear) * 12) + ($month - $startMonth);
-            if ($parcelamentoMes >= 0 && $parcelamentoMes < $contrato['num_parcelas']) {
-                $parcelValue = $contrato['valor'] / $contrato['num_parcelas'];
-                $calendar .= "<div class='parcela' aria-label='Parcela do contrato {$contrato['titulo']}'>";
-                $calendar .= "<strong>" . htmlspecialchars($contrato['titulo']) . "</strong><br>";
-                $calendar .= "Parcela $parcelamentoMes de {$contrato['num_parcelas']}<br>";
-                $calendar .= "Valor: R$ " . number_format($parcelValue, 2, ',', '.');
-                $calendar .= "</div>";
-            }
-        }
 
         // Display events
         foreach ($eventos as $evento) {
@@ -181,13 +239,13 @@ function gerarCalendario($month, $year, $contratos, $eventos) {
 }
 
 // Generate navigation links
-function generateNavigation($currentMonth, $currentYear, $categoryFilter, $searchQuery) {
+function generateNavigation($currentMonth, $currentYear, $categoryFilter, $searchQuery, $selectedDay) {
     $previousMonth = $currentMonth == 1 ? 12 : $currentMonth - 1;
     $previousYear = $currentMonth == 1 ? $currentYear - 1 : $currentYear;
     $nextMonth = $currentMonth == 12 ? 1 : $currentMonth + 1;
     $nextYear = $currentMonth == 12 ? $currentYear + 1 : $currentYear;
 
-    $params = [];
+    $params = ['day' => $selectedDay];
     if ($categoryFilter) $params['category'] = $categoryFilter;
     if ($searchQuery) $params['search'] = $searchQuery;
 
@@ -200,25 +258,44 @@ function generateNavigation($currentMonth, $currentYear, $categoryFilter, $searc
     ];
 }
 
-$navigation = generateNavigation($currentMonth, $currentYear, $categoryFilter, $searchQuery);
+$navigation = generateNavigation($currentMonth, $currentYear, $categoryFilter, $searchQuery, $selectedDay);
+
+// Predefined categories
+$categories = [
+    'geral' => 'Geral',
+    'audiencia' => 'Audiência',
+    'escritorio' => 'Escritório',
+    'ligacao' => 'Ligação',
+    'oab' => 'OAB',
+    'reuniao' => 'Reunião',
+    'urgente' => 'Urgente'
+];
+
+// Add new category if submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'add_category') {
+    $newCategory = filter_input(INPUT_POST, 'new_category', FILTER_SANITIZE_STRING);
+    if ($newCategory) {
+        $categoryKey = strtolower(str_replace(' ', '_', $newCategory));
+        $categories[$categoryKey] = $newCategory;
+    }
+}
 include 'header.php';
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário Interativo com Filtros</title>
+    <title>Calendário Interativo com Agendamento</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="./src/contratos/style/calendar.css">
+    
 </head>
 <body>
 <div class="calendar-container">
     <!-- Messages -->
-    <div id="messages" aria-live="polite">
+    <div id="messages" aria-live="polite" style="width: 100%;">
         <?php foreach ($messages as $msg): ?>
             <div class="message message-<?= $msg['type'] ?>">
                 <?= htmlspecialchars($msg['text']) ?>
@@ -226,135 +303,195 @@ include 'header.php';
         <?php endforeach; ?>
     </div>
 
-    <!-- Filters -->
-    <div class="filters">
-        <form id="filter-form" method="GET">
-            <div class="form-group">
-                <label for="category">Filtrar por Categoria:</label>
-                <select name="category" id="category">
-                    <option value="">Todas</option>
-                    <option value="geral" <?= $categoryFilter === 'geral' ? 'selected' : '' ?>>Geral</option>
-                    <option value="audiencia" <?= $categoryFilter === 'audiencia' ? 'selected' : '' ?>>Audiência</option>
-                    <option value="escritorio" <?= $categoryFilter === 'escritorio' ? 'selected' : '' ?>>Escritório</option>
-                    <option value="ligacao" <?= $categoryFilter === 'ligacao' ? 'selected' : '' ?>>Ligação</option>
-                    <option value="oab" <?= $categoryFilter === 'oab' ? 'selected' : '' ?>>OAB</option>
-                    <option value="reuniao" <?= $categoryFilter === 'reuniao' ? 'selected' : '' ?>>Reunião</option>
-                    <option value="urgente" <?= $categoryFilter === 'urgente' ? 'selected' : '' ?>>Urgente</option>
-                </select>
+    <!-- Calendar and Daily Events -->
+    <div style="display: flex; flex-wrap: wrap; flex: 1; gap: 20px;">
+        <!-- Calendar -->
+        <div class="calendar-section">
+            <div class="calendar-header">
+                <button id="prev-month" data-url="<?= $navigation['prevMonthLink'] ?>" aria-label="Mês anterior">Anterior</button>
+                <h2 id="month-year" aria-live="polite"><?= date("F Y", strtotime("$currentYear-$currentMonth-01")) ?></h2>
+                <button id="next-month" data-url="<?= $navigation['nextMonthLink'] ?>" aria-label="Próximo mês">Próximo</button>
             </div>
-            <div class="form-group">
-                <label for="search">Pesquisar:</label>
-                <input type="text" name="search" id="search" value="<?= htmlspecialchars($searchQuery) ?>" placeholder="Título ou descrição">
-            </div>
-            <input type="hidden" name="month" value="<?= $currentMonth ?>">
-            <input type="hidden" name="year" value="<?= $currentYear ?>">
-            <button type="submit">Filtrar</button>
-        </form>
-    </div>
-
-    <!-- Calendar -->
-    <div class="calendar">
-        <div class="calendar-header">
-            <button id="prev-month" data-url="<?= $navigation['prevMonthLink'] ?>" aria-label="Mês anterior">Anterior</button>
-            <h2 id="month-year" aria-live="polite"><?= date("F Y", strtotime("$currentYear-$currentMonth-01")) ?></h2>
-            <button id="next-month" data-url="<?= $navigation['nextMonthLink'] ?>" aria-label="Próximo mês">Próximo</button>
+            <?= gerarCalendario($currentMonth, $currentYear, $eventos, $selectedDay); ?>
         </div>
-        <?= gerarCalendario($currentMonth, $currentYear, $contratos, $eventos); ?>
+
+        <!-- Daily Events Preview -->
+        <div class="daily-events">
+            <h3>Eventos do Dia <?= sprintf("%02d/%02d/%04d", $selectedDay, $currentMonth, $currentYear) ?></h3>
+            <?php if (empty($dailyEvents)): ?>
+                <p>Nenhum evento para este dia.</p>
+            <?php else: ?>
+                <?php foreach ($dailyEvents as $event): ?>
+                    <div class="daily-event">
+                        <div class="daily-event-info">
+                            <strong><?= htmlspecialchars($event['titulo']) ?></strong>
+                            <small>das <?= htmlspecialchars($event['hora']) ?></small>
+                        </div>
+                        <div class="daily-event-menu">
+                            <i class="fas fa-bars menu-icon"></i>
+                            <div class="dropdown-menu">
+                                <a href="#" class="edit-link" data-id="<?= $event['id'] ?>"><i class="fas fa-edit"></i> Editar</a>
+                                <a href="#" class="delete-link" data-id="<?= $event['id'] ?>"><i class="fas fa-trash"></i> Excluir</a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
     </div>
 
-    <!-- Sidebar for adding events -->
+    <!-- Sidebar for Adding/Editing Events and Categories -->
     <div class="sidebar">
-        <h3>Adicionar Evento</h3>
-        <form id="add-event-form" method="POST">
-            <input type="hidden" name="action" value="add_event">
+        <h3 id="form-title">Adicionar Evento</h3>
+        <form id="event-form" method="POST">
+            <input type="hidden" name="action" id="form-action" value="add_event">
+            <input type="hidden" name="event_id" id="event-id">
             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
             <div class="form-group">
-                <label for="titulo">Título:</label>
+                <label for="titulo">Título</label>
                 <input type="text" name="titulo" id="titulo" required aria-required="true">
             </div>
             <div class="form-group">
-                <label for="descricao">Descrição:</label>
+                <label for="descricao">Descrição</label>
                 <textarea name="descricao" id="descricao" aria-describedby="desc-help"></textarea>
-                <small id="desc-help">Opcional</small>
             </div>
-            <div class="form-group">
-                <label for="data">Data:</label>
-                <input type="date" name="data" id="data" required aria-required="true">
+            <div class="form-group input-with-icon">
+                <label for="data">Data</label>
+                <input type="date" name="data" id="data" required aria-required="true" value="<?= sprintf("%04d-%02d-%02d", $currentYear, $currentMonth, $selectedDay) ?>">
+                <!-- <i class="fas fa-calendar-alt"></i> -->
             </div>
-            <div class="form-group">
-                <label for="hora">Hora:</label>
+            <div class="form-group input-with-icon">
+                <label for="hora">Tempo</label>
                 <input type="time" name="hora" id="hora" required aria-required="true">
+                <!-- <i class="fas fa-clock"></i> -->
             </div>
             <div class="form-group">
-                <label for="categoria">Categoria:</label>
+                <label for="categoria">Categoria</label>
                 <select name="categoria" id="categoria" required aria-required="true">
-                    <option value="geral">Geral</option>
-                    <option value="audiencia">Audiência</option>
-                    <option value="escritorio">Escritório</option>
-                    <option value="ligacao">Ligação</option>
-                    <option value="oab">OAB</option>
-                    <option value="reuniao">Reunião</option>
-                    <option value="urgente">Urgente</option>
+                    <?php foreach ($categories as $key => $label): ?>
+                        <option value="<?= htmlspecialchars($key) ?>"><?= htmlspecialchars($label) ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="form-group">
-                <label for="cor">Cor:</label>
-                <input type="color" name="cor" id="cor" value="#ff0000" aria-describedby="color-help">
-                <small id="color-help">Escolha uma cor para o evento</small>
+                <label for="cor">Cor</label>
+                <input type="color" name="cor" id="cor" value="#ff0000" required aria-required="true">
             </div>
-            <button type="submit">Adicionar Evento</button>
+            <div class="form-actions">
+                <button type="submit" id="submit-btn">Adicionar Evento</button>
+                <button type="button" class="cancel-btn" id="cancel-btn" style="display: none;">Cancelar</button>
+            </div>
         </form>
-    </div>
 
-    <!-- Modal for editing events -->
-    <div id="edit-event-modal" class="modal" role="dialog" aria-labelledby="edit-modal-title" aria-hidden="true">
-        <div class="modal-content">
-            <h3 id="edit-modal-title">Editar Evento</h3>
-            <form id="edit-event-form" method="POST">
-                <input type="hidden" name="action" value="edit_event">
-                <input type="hidden" name="event_id" id="edit-event-id">
-                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                <div class="form-group">
-                    <label for="edit-titulo">Título:</label>
-                    <input type="text" name="titulo" id="edit-titulo" required aria-required="true">
-                </div>
-                <div class="form-group">
-                    <label for="edit-descricao">Descrição:</label>
-                    <textarea name="descricao" id="edit-descricao"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="edit-data">Data:</label>
-                    <input type="date" name="data" id="edit-data" required aria-required="true">
-                </div>
-                <div class="form-group">
-                    <label for="edit-hora">Hora:</label>
-                    <input type="time" name="hora" id="edit-hora" required aria-required="true">
-                </div>
-                <div class="form-group">
-                    <label for="edit-categoria">Categoria:</label>
-                    <select name="categoria" id="edit-categoria" required aria-required="true">
-                        <option value="geral">Geral</option>
-                        <option value="audiencia">Audiência</option>
-                        <option value="escritorio">Escritório</option>
-                        <option value="ligacao">Ligação</option>
-                        <option value="oab">OAB</option>
-                        <option value="reuniao">Reunião</option>
-                        <option value="urgente">Urgente</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="edit-cor">Cor:</label>
-                    <input type="color" name="cor" id="edit-cor" value="#ff0000">
-                </div>
-                <button type="submit">Salvar Alterações</button>
-                <button type="button" id="delete-event-btn">Excluir Evento</button>
-                <button type="button" id="close-modal-btn">Fechar</button>
-            </form>
-        </div>
+        <button id="toggle-category-form">Adicionar nova categoria</button>
+        <form id="add-category-form" method="POST">
+            <input type="hidden" name="action" value="add_category">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            <div class="form-group">
+                <label for="new_category">Nova Categoria:</label>
+                <input type="text" name="new_category" id="new_category" placeholder="Digite o nome da categoria">
+            </div>
+            <button type="submit">Adicionar Categoria</button>
+        </form>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="./src/js/calendario.js"></script>
+<script>
+    $(document).ready(function() {
+        // Toggle category form visibility
+        $('#toggle-category-form').click(function() {
+            $('#add-category-form').toggle();
+        });
+
+        // Navigation buttons
+        $('#prev-month, #next-month').click(function() {
+            window.location.href = $(this).data('url');
+        });
+
+        // Select day to view events
+        $('.day-cell').click(function() {
+            const day = $(this).data('day');
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('day', day);
+            window.location.search = urlParams.toString();
+        });
+
+        // Toggle dropdown menu
+        $('.menu-icon').click(function(e) {
+            e.stopPropagation();
+            const $dropdown = $(this).siblings('.dropdown-menu');
+            $('.dropdown-menu').not($dropdown).hide();
+            $dropdown.toggle();
+        });
+
+        // Hide dropdown when clicking outside
+        $(document).click(function() {
+            $('.dropdown-menu').hide();
+        });
+
+        // Open edit form in sidebar
+        $('.edit-link, .evento').click(function(e) {
+            e.preventDefault();
+            const eventId = $(this).data('id');
+            $.ajax({
+                url: 'fetch_event.php',
+                method: 'POST',
+                data: { event_id: eventId },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        // Update form for editing
+                        $('#form-title').text('Editar Evento');
+                        $('#form-action').val('edit_event');
+                        $('#event-id').val(data.id);
+                        $('#titulo').val(data.titulo);
+                        $('#descricao').val(data.descricao);
+                        $('#data').val(data.data.split(' ')[0]);
+                        $('#hora').val(data.hora);
+                        $('#categoria').val(data.categoria);
+                        $('#cor').val(data.cor);
+                        $('#submit-btn').text('Evento de atualização');
+                        $('#cancel-btn').show();
+                    }
+                },
+                error: function() {
+                    alert('Erro ao carregar o evento.');
+                }
+            });
+        });
+
+        // Reset form to "Add Event" state
+        $('#cancel-btn').click(function() {
+            $('#form-title').text('Adicionar Evento');
+            $('#form-action').val('add_event');
+            $('#event-id').val('');
+            $('#event-form')[0].reset();
+            $('#data').val('<?= sprintf("%04d-%02d-%02d", $currentYear, $currentMonth, $selectedDay) ?>');
+            $('#cor').val('#ff0000'); // Reset color to default
+            $('#submit-btn').text('Adicionar Evento');
+            $('#cancel-btn').hide();
+        });
+
+        // Delete event from daily events preview
+        $('.delete-link').click(function(e) {
+            e.preventDefault();
+            if (confirm('Tem certeza que deseja excluir este evento?')) {
+                const eventId = $(this).data('id');
+                $('<form>', {
+                    method: 'POST',
+                    action: window.location.href,
+                    html: `
+                        <input type="hidden" name="action" value="delete_event">
+                        <input type="hidden" name="event_id" value="${eventId}">
+                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                    `
+                }).appendTo('body').submit();
+            }
+        });
+    });
+</script>
 </body>
 </html>

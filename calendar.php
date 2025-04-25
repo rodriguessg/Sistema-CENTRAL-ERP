@@ -155,12 +155,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         try {
                             // Server settings
                             $mail->isSMTP();
-                            $mail->Host = 'central.rj.gov.br';
+                            $mail->Host = 'smtps2.webmail.rj.gov.br';
                             $mail->SMTPAuth = true;
                             $mail->Username = 'impressora@central.rj.gov.br';
                             $mail->Password = 'central@123';
                             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Use SSL for port 443
-                            $mail->Port = 443;
+                           $mail->Port = 465;
 
                             // Recipients
                             $mail->setFrom('impressora@central.rj.gov.br', 'Sistema de Eventos');

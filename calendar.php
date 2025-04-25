@@ -9,6 +9,14 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+// Include PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src/Exception.php';
+require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src/PHPMailer.php';
+require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src/SMTP.php';
+
 // Database connection
 try {
     $pdo = new PDO('mysql:host=localhost;dbname=gm_sicbd', 'root', '');
@@ -30,6 +38,17 @@ if ($currentYear < 1970 || $currentYear > 9999) $currentYear = (int)date("Y");
 $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
 if ($selectedDay < 1 || $selectedDay > $daysInMonth) $selectedDay = (int)date("d");
 
+// Fetch saved emails for the current user
+try {
+    $sqlEmails = "SELECT email FROM emails_salvos WHERE username = :username ORDER BY criado_em DESC";
+    $stmtEmails = $pdo->prepare($sqlEmails);
+    $stmtEmails->execute(['username' => $_SESSION['username']]);
+    $savedEmails = $stmtEmails->fetchAll(PDO::FETCH_COLUMN);
+} catch (PDOException $e) {
+    $savedEmails = [];
+    $messages[] = ['type' => 'error', 'text' => 'Erro ao buscar e-mails salvos: ' . htmlspecialchars($e->getMessage())];
+}
+
 // Handle form submissions (Add/Edit/Delete events, Add category)
 $messages = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -44,12 +63,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $hora = filter_input(INPUT_POST, 'hora', FILTER_SANITIZE_STRING);
                 $categoria = filter_input(INPUT_POST, 'categoria', FILTER_SANITIZE_STRING);
                 $cor = filter_input(INPUT_POST, 'cor', FILTER_SANITIZE_STRING);
+                $enviarEmail = isset($_POST['enviar_email']) ? 1 : 0;
+                $emailDestinatario = filter_input(INPUT_POST, 'email_destinatario', FILTER_SANITIZE_EMAIL);
+                $salvarEmail = isset($_POST['salvar_email']) ? 1 : 0;
 
                 if (!$titulo || !$data || !$hora || !$categoria || !$cor) {
                     $messages[] = ['type' => 'error', 'text' => 'Preencha todos os campos obrigatórios.'];
+                } elseif ($enviarEmail && !$emailDestinatario) {
+                    $messages[] = ['type' => 'error', 'text' => 'Digite um e-mail válido para enviar o evento.'];
                 } else {
                     $datetime = "$data $hora";
                     $createdAt = date('Y-m-d H:i:s');
+
+                    // Save email if requested
+                    if ($enviarEmail && $salvarEmail && $emailDestinatario) {
+                        $sqlSaveEmail = "INSERT IGNORE INTO emails_salvos (email, username, criado_em) 
+                                         VALUES (:email, :username, :criado_em)";
+                        $stmtSaveEmail = $pdo->prepare($sqlSaveEmail);
+                        $stmtSaveEmail->execute([
+                            'email' => $emailDestinatario,
+                            'username' => $_SESSION['username'],
+                            'criado_em' => $createdAt
+                        ]);
+                    }
 
                     if ($_POST['action'] === 'add_event') {
                         // Insert into eventos
@@ -74,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $stmtNotif = $pdo->prepare($sqlNotif);
                         $stmtNotif->execute([
                             'username' => $_SESSION['username'],
-                            'setor' => 'Geral',
+                            'setor' => 'contratos',
                             'mensagem' => $mensagem,
                             'situacao' => 'Não lida',
                             'data_criacao' => $createdAt
@@ -104,13 +140,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $stmtNotif = $pdo->prepare($sqlNotif);
                         $stmtNotif->execute([
                             'username' => $_SESSION['username'],
-                            'setor' => 'Geral',
+                            'setor' => 'contratos',
                             'mensagem' => $mensagem,
                             'situacao' => 'Não lida',
                             'data_criacao' => $createdAt
                         ]);
 
                         $messages[] = ['type' => 'success', 'text' => 'Evento atualizado com sucesso!'];
+                    }
+
+                    // Send email if requested
+                    if ($enviarEmail && $emailDestinatario) {
+                        $mail = new PHPMailer(true);
+                        try {
+                            // Server settings
+                            $mail->isSMTP();
+                            $mail->Host = 'central.rj.gov.br';
+                            $mail->SMTPAuth = true;
+                            $mail->Username = 'impressora@central.rj.gov.br';
+                            $mail->Password = 'central@123';
+                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Use SSL for port 443
+                            $mail->Port = 443;
+
+                            // Recipients
+                            $mail->setFrom('impressora@central.rj.gov.br', 'Sistema de Eventos');
+                            $mail->addAddress($emailDestinatario);
+
+                            // Content
+                            $mail->isHTML(true);
+                            $mail->Subject = 'Detalhes do Evento: ' . $titulo;
+                            $mail->Body = "
+                                <h2>Detalhes do Evento</h2>
+                                <p><strong>Título:</strong> $titulo</p>
+                                <p><strong>Descrição:</strong> $descricao</p>
+                                <p><strong>Data e Hora:</strong> $data às $hora</p>
+                                <p><strong>Categoria:</strong> $categoria</p>
+                                <p><strong>Cor:</strong> <span style='color: $cor;'>$cor</span></p>
+                            ";
+                            $mail->AltBody = "Detalhes do Evento\nTítulo: $titulo\nDescrição: $descricao\nData e Hora: $data às $hora\nCategoria: $categoria\nCor: $cor";
+
+                            $mail->send();
+                            $messages[] = ['type' => 'success', 'text' => 'E-mail enviado com sucesso para ' . htmlspecialchars($emailDestinatario) . '!'];
+                        } catch (Exception $e) {
+                            $messages[] = ['type' => 'error', 'text' => 'Erro ao enviar o e-mail: ' . htmlspecialchars($mail->ErrorInfo)];
+                        }
                     }
                 }
             } elseif ($_POST['action'] === 'delete_event') {
@@ -134,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $stmtNotif = $pdo->prepare($sqlNotif);
                 $stmtNotif->execute([
                     'username' => $_SESSION['username'],
-                    'setor' => 'Geral',
+                    'setor' => 'contratos',
                     'mensagem' => $mensagem,
                     'situacao' => 'Não lida',
                     'data_criacao' => date('Y-m-d H:i:s')
@@ -279,7 +352,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'add_category'
         $categories[$categoryKey] = $newCategory;
     }
 }
-include 'header.php';
+ include 'header.php';
 ?>
 
 <!DOCTYPE html>
@@ -290,7 +363,6 @@ include 'header.php';
     <title>Calendário Interativo com Agendamento</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="./src/contratos/style/calendar.css">
-    
 </head>
 <body>
 <div class="calendar-container">
@@ -323,15 +395,18 @@ include 'header.php';
             <?php else: ?>
                 <?php foreach ($dailyEvents as $event): ?>
                     <div class="daily-event">
-                        <div class="daily-event-info">
-                            <strong><?= htmlspecialchars($event['titulo']) ?></strong>
-                            <small>das <?= htmlspecialchars($event['hora']) ?></small>
-                        </div>
-                        <div class="daily-event-menu">
-                            <i class="fas fa-bars menu-icon"></i>
-                            <div class="dropdown-menu">
-                                <a href="#" class="edit-link" data-id="<?= $event['id'] ?>"><i class="fas fa-edit"></i> Editar</a>
-                                <a href="#" class="delete-link" data-id="<?= $event['id'] ?>"><i class="fas fa-trash"></i> Excluir</a>
+                        <div class="event-color-bar" style="background-color: <?= htmlspecialchars($event['cor']) ?>;"></div>
+                        <div class="daily-event-content">
+                            <div class="daily-event-info">
+                                <strong><?= htmlspecialchars($event['titulo']) ?></strong>
+                                <small>das <?= htmlspecialchars($event['hora']) ?></small>
+                            </div>
+                            <div class="daily-event-menu">
+                                <i class="fas fa-bars menu-icon"></i>
+                                <div class="dropdown-menu">
+                                    <a href="#" class="edit-link" data-id="<?= $event['id'] ?>"><i class="fas fa-edit"></i> Editar</a>
+                                    <a href="#" class="delete-link" data-id="<?= $event['id'] ?>"><i class="fas fa-trash"></i> Excluir</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -376,6 +451,28 @@ include 'header.php';
             <div class="form-group">
                 <label for="cor">Cor</label>
                 <input type="color" name="cor" id="cor" value="#ff0000" required aria-required="true">
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="enviar_email" id="enviar-email">
+                    Enviar por e-mail
+                </label>
+            </div>
+            <div class="form-group" id="email-field">
+                <label for="email_destinatario">E-mail do Destinatário</label>
+                <select name="email_destinatario" id="email-destinatario">
+                    <option value="">Selecione ou digite um e-mail</option>
+                    <?php foreach ($savedEmails as $email): ?>
+                        <option value="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <input type="email" name="email_destinatario" id="email-destinatario-input" placeholder="Digite o e-mail">
+            </div>
+            <div class="form-group" id="salvar-email-field">
+                <label>
+                    <input type="checkbox" name="salvar_email" id="salvar-email">
+                    Salvar este e-mail para eventos futuros
+                </label>
             </div>
             <div class="form-actions">
                 <button type="submit" id="submit-btn">Adicionar Evento</button>
@@ -430,6 +527,27 @@ include 'header.php';
             $('.dropdown-menu').hide();
         });
 
+        // Toggle email field visibility
+        $('#enviar-email').change(function() {
+            if ($(this).is(':checked')) {
+                $('#email-field, #salvar-email-field').show();
+            } else {
+                $('#email-field, #salvar-email-field').hide();
+                $('#email-destinatario').val('');
+                $('#email-destinatario-input').val('');
+                $('#salvar-email').prop('checked', false);
+            }
+        });
+
+        // Toggle between select and input for email
+        $('#email-destinatario').change(function() {
+            if ($(this).val() === '') {
+                $('#email-destinatario-input').show().focus();
+            } else {
+                $('#email-destinatario-input').hide();
+            }
+        });
+
         // Open edit form in sidebar
         $('.edit-link, .evento').click(function(e) {
             e.preventDefault();
@@ -453,6 +571,11 @@ include 'header.php';
                         $('#hora').val(data.hora);
                         $('#categoria').val(data.categoria);
                         $('#cor').val(data.cor);
+                        $('#enviar-email').prop('checked', false);
+                        $('#email-field, #salvar-email-field').hide();
+                        $('#email-destinatario').val('');
+                        $('#email-destinatario-input').val('');
+                        $('#salvar-email').prop('checked', false);
                         $('#submit-btn').text('Evento de atualização');
                         $('#cancel-btn').show();
                     }
@@ -471,6 +594,11 @@ include 'header.php';
             $('#event-form')[0].reset();
             $('#data').val('<?= sprintf("%04d-%02d-%02d", $currentYear, $currentMonth, $selectedDay) ?>');
             $('#cor').val('#ff0000'); // Reset color to default
+            $('#enviar-email').prop('checked', false);
+            $('#email-field, #salvar-email-field').hide();
+            $('#email-destinatario').val('');
+            $('#email-destinatario-input').val('');
+            $('#salvar-email').prop('checked', false);
             $('#submit-btn').text('Adicionar Evento');
             $('#cancel-btn').hide();
         });

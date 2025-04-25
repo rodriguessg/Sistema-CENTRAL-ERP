@@ -429,14 +429,12 @@ include 'header.php';
       <div class="form-group input-with-icon">
         <label for="data">Data</label>
         <input type="date" name="data" id="data" required aria-required="true" value="<?= sprintf("%04d-%02d-%02d", $currentYear, $currentMonth, $selectedDay) ?>">
-        <i class="fas fa-calendar-alt"></i>
       </div>
 
       <!-- Tempo -->
       <div class="form-group input-with-icon">
         <label for="hora">Tempo</label>
         <input type="time" name="hora" id="hora" required aria-required="true">
-        <i class="fas fa-clock"></i>
       </div>
 
       <!-- Categoria -->

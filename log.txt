@@ -1,0 +1,5 @@
+PHP Fatal error:  Uncaught PDOException: could not find driver in C:\xampp\htdocs\Sistema-CENTRAL-ERP\enviar_relatorios_agendados.php:8
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\enviar_relatorios_agendados.php(8): PDO->__construct()
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\enviar_relatorios_agendados.php on line 8

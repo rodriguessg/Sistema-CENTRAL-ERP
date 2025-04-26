@@ -165,6 +165,7 @@ $conn->close();
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
 
 </head>
 
@@ -343,675 +344,830 @@ $conn->close();
 <!-- Formulário para selecionar contrato e tipo de relatório -->
 
 <div class="form-container" id="relatorio">
-<h2><i class="fas fa-file-alt"></i> Gerar Relatório</h2>
-  <form id="relatorio-form">
-    <div class="form-group">
-      <div class="input-group-contratos">
-        <!-- Seletor de contrato -->
-        <label for="tipo_relatorio"><i class="fas fa-folder-open"></i> Nome do Contrato</label>
-        <select name="contrato" id="tipo_relatorio" onchange="mostrarTipoRelatorio()">
-          <option value="">Selecione o Contrato</option>
-          <?php echo $options; ?> <!-- Supondo que $options seja preenchido com contratos -->
-        </select>
+    <h2><i class="fas fa-file-alt"></i> Gerar Relatório</h2>
+    <form id="relatorio-form">
+        <div class="form-group">
+            <div class="input-group-contratos">
+                <!-- Seletor de contrato -->
+                <div style="flex: 1;">
+                    <label for="tipo_relatorio"><i class="fas fa-folder-open"></i> Nome do Contrato</label>
+                    <select name="contrato" id="tipo_relatorio" onchange="mostrarTipoRelatorio()">
+                        <option value="">Selecione o Contrato</option>
+                        <?php echo $options; ?>
+                    </select>
+                </div>
 
-        <!-- Novo seletor para relatórios de todos os contratos -->
-        <label for="relatorio_todos"><i class="fas fa-globe"></i> Relatório de Todos os Contratos</label>
-        <select name="relatorio_todos" id="relatorio_todos" onchange="mostrarCamposRelatorioTodos()">
-          <option value="">Selecione o Tipo de Relatório</option>
-          <option value="mensal_todos">Relatório Mensal (Todos os Contratos)</option>
-          <option value="anual_todos">Relatório Anual (Todos os Contratos)</option>
-        </select>
+                <!-- Seletor para relatórios de todos os contratos -->
+                <div style="flex: 1;">
+                    <label for="relatorio_todos"><i class="fas fa-globe"></i> Relatório de Todos os Contratos</label>
+                    <select name="relatorio_todos" id="relatorio_todos" onchange="mostrarCamposRelatorioTodos()">
+                        <option value="">Selecione o Tipo de Relatório</option>
+                        <option value="mensal_todos">Relatório Mensal (Todos os Contratos)</option>
+                        <option value="anual_todos">Relatório Anual (Todos os Contratos)</option>
+                    </select>
+                </div>
 
-        <!-- Seletor de tipo de relatório (inicialmente oculto, para contratos individuais) -->
-        <div id="tipo-relatorio-container" style="display: none;">
-        <label for="relatorio_tipo"><i class="fas fa-chart-line"></i> Relatório por Contratos</label>
-          <select name="relatorio_tipo" id="relatorio_tipo" onchange="mostrarCamposRelatorio()">
-            <option value="completo">Relatório Completo</option>
-            <option value="compromissos_futuros">Compromissos Futuros</option>
-            <option value="pagamentos">Relatório de Pagamentos</option>
-            <option value="mensal">Relatório Mensal</option>
-            <option value="anual">Relatório Anual</option>
-          </select>
+                <!-- Seletor de tipo de relatório (inicialmente oculto, para contratos individuais) -->
+                <div id="tipo-relatorio-container" style="display: none; flex: 1;">
+                    <label for="relatorio_tipo"><i class="fas fa-chart-line"></i> Relatório por Contratos</label>
+                    <select name="relatorio_tipo" id="relatorio_tipo" onchange="mostrarCamposRelatorio()">
+                        <option value="completo">Relatório Completo</option>
+                        <option value="compromissos_futuros">Compromissos Futuros</option>
+                        <option value="pagamentos">Relatório de Pagamentos</option>
+                        <option value="mensal">Relatório Mensal</option>
+                        <option value="anual">Relatório Anual</option>
+                    </select>
+                </div>
+
+                <!-- Seletor de mês (oculto inicialmente, usado por ambos) -->
+                <div id="mes-container" style="display: none; flex: 1;">
+                    <label for="mes"><i class="fas fa-calendar"></i> Selecione o Mês</label>
+                    <select name="mes" id="mes"></select>
+                </div>
+
+                <!-- Seletor de ano (oculto inicialmente, usado por ambos) -->
+                <div id="ano-container" style="display: none; flex: 1;">
+                    <label for="ano"><i class="fas fa-calendar"></i> Selecione o Ano</label>
+                    <select name="ano" id="ano"></select>
+                </div>
+            </div>
         </div>
 
-        <!-- Seletor de mês (oculto inicialmente, usado por ambos) -->
-        <div id="mes-container" style="display: none;">
-        <label for="mes"><i class="fas fa-calendar"></i> Selecione o Mês</label>
-          <select name="mes" id="mes"></select>
+        <!-- Seção para agendamento de relatórios -->
+        <div id="agendamento-container">
+            <h3><i class="fas fa-clock"></i> Agendar Relatório</h3>
+            <div class="email-group">
+                <div style="flex: 1;">
+                    <label for="email_destinatario_select">E-mails Salvos</label>
+                    <select id="email_destinatario_select" name="email_destinatario_select" onchange="atualizarCampoEmail()">
+                        <option value="">Selecione um e-mail salvo</option>
+                        <?php echo $options_emails; ?>
+                        <option value="novo">Digitar novo e-mail</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label for="email_destinatario">E-mail do Destinatário</label>
+                    <input type="email" id="email_destinatario" name="email_destinatario" placeholder="Digite o e-mail" required>
+                    <label style="display: none;" id="salvar_email_label">
+                        <input type="checkbox" id="salvar_email" name="salvar_email"> Salvar este e-mail para uso futuro
+                    </label>
+                </div>
+            </div>
+            <label for="periodicidade">Periodicidade</label>
+            <select id="periodicidade" name="periodicidade">
+                <option value="diario">Diário</option>
+                <option value="semanal">Semanal</option>
+                <option value="mensal">Mensal</option>
+            </select>
+            <button type="button" class="btn-submit" onclick="agendarRelatorio()">Agendar Relatório</button>
         </div>
 
-        <!-- Seletor de ano (oculto inicialmente, usado por ambos) -->
-        <div id="ano-container" style="display: none;">
-        <label for="ano"><i class="fas fa-calendar"></i> Selecione o Ano</label>
-          <select name="ano" id="ano"></select>
+        <div class="button-group">
+            <!-- Botão para gerar o relatório -->
+            <button class="btn-submit" type="button" id="gerar-relatorio" onclick="gerarRelatorio()">Gerar Relatório</button>
+            <!-- Botões para exportação -->
+            <button class="btn-submit" type="button" id="btnExportPDF" onclick="exportarPDF()">Exportar para PDF</button>
+            <button class="btn-submit" type="button" id="btnExportCSV" onclick="exportarCSV()">Exportar para CSV</button>
         </div>
-      </div>
+    </form>
+
+    <!-- Tabelas para Relatórios -->
+    <div id="relatorio-completo-tabela" style="display: none;">
+        <table id="relatorio-completo" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Vigência</th>
+                    <th>Gestor</th>
+                    <th>Gestor Substituto</th>
+                    <th>Situação</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Data de Cadastro</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
-      <div class="button-group">
-       <!-- Botão para gerar o relatório -->
-        <button class="btn-submit" type="button" id="gerar-relatorio" onclick="gerarRelatorio()">Gerar Relatório</button>
 
-        <!-- Botão para exportar PDF (mantido no HTML, mas sem funcionalidade no JS) -->
-        <button class="btn-submit" id="btnExportPDF">Exportar para PDF</button>
-      </div>
-  </form>
+    <div id="compromissos-futuros-tabela" style="display: none;">
+        <table id="compromissos-futuros" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Vigência</th>
+                    <th>Gestor</th>
+                    <th>Gestor Substituto</th>
+                    <th>Situação</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Evento</th>
+                    <th>Descrição</th>
+                    <th>Data</th>
+                    <th>Hora</th>
+                    <th>Categoria</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
-  <!-- Tabelas para Relatórios -->
+    <div id="relatorio-pagamentos-tabela" style="display: none;">
+        <table id="relatorio-pagamentos" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Pagamentos Efetuados</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
-  <!-- Tabela para Relatório Completo -->
-  <div id="relatorio-completo-tabela" style="display: none;">
-    <table id="relatorio-completo" style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th>Título do Contrato</th>
-          <th>Vigência</th>
-          <th>Gestor</th>
-          <th>Gestor Substituto</th>
-          <th>Situação</th>
-          <th>Nº de Parcelas</th>
-          <th>Data de Cadastro</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Dados serão preenchidos via JavaScript -->
-      </tbody>
-    </table>
-  </div>
+    <div id="relatorio-mensal-tabela" style="display: none;">
+        <table id="relatorio-mensal" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Histórico de Pagamentos (Data)</th>
+                    <th>Histórico de Pagamentos (Valor)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
-  <!-- Tabela para Compromissos Futuros -->
-  <div id="compromissos-futuros-tabela" style="display: none;">
-    <table id="compromissos-futuros" style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th>Título do Contrato</th>
-          <th>Vigência</th>
-          <th>Gestor</th>
-          <th>Gestor Substituto</th>
-          <th>Situação</th>
-          <th>Nº de Parcelas</th>
-          <th>Próximos Pagamentos</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Dados serão preenchidos via JavaScript -->
-      </tbody>
-    </table>
-  </div>
+    <div id="relatorio-anual-tabela" style="display: none;">
+        <table id="relatorio-anual" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Ano</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Total Pago no Ano</th>
+                    <th>Quantidade de Pagamentos</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
-  <!-- Tabela para Relatório de Pagamentos -->
-  <div id="relatorio-pagamentos-tabela" style="display: none;">
-    <table id="relatorio-pagamentos" style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th>Título do Contrato</th>
-          <th>Pagamentos Efetuados</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Dados serão preenchidos via JavaScript -->
-      </tbody>
-    </table>
-  </div>
+    <div id="relatorio-mensal-todos-tabela" style="display: none;">
+        <table id="relatorio-mensal-todos" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Histórico de Pagamentos (Data)</th>
+                    <th>Histórico de Pagamentos (Valor)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
-  <!-- Tabela para Relatório Mensal -->
-  <div id="relatorio-mensal-tabela" style="display: none;">
-    <table id="relatorio-mensal" style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th>Título do Contrato</th>
-          <th>Nº de Parcelas</th>
-          <th>Histórico de Pagamentos (Data)</th>
-          <th>Histórico de Pagamentos (Valor)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Dados serão preenchidos via JavaScript -->
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Tabela para Relatório Anual -->
-  <div id="relatorio-anual-tabela" style="display: none;">
-    <table id="relatorio-anual" style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th>Título do Contrato</th>
-          <th>Ano</th>
-          <th>Nº de Parcelas</th>
-          <th>Total Pago no Ano</th>
-          <th>Quantidade de Pagamentos</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Dados serão preenchidos via JavaScript -->
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Tabela para Relatório Mensal de Todos os Contratos -->
-  <div id="relatorio-mensal-todos-tabela" style="display: none;">
-    <table id="relatorio-mensal-todos" style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th>Título do Contrato</th>
-          <th>Nº de Parcelas</th>
-          <th>Histórico de Pagamentos (Data)</th>
-          <th>Histórico de Pagamentos (Valor)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Dados serão preenchidos via JavaScript -->
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Tabela para Relatório Anual de Todos os Contratos -->
-  <div id="relatorio-anual-todos-tabela" style="display: none;">
-    <table id="relatorio-anual-todos" style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th>Título do Contrato</th>
-          <th>Ano</th>
-          <th>Nº de Parcelas</th>
-          <th>Total Pago no Ano</th>
-          <th>Quantidade de Pagamentos</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Dados serão preenchidos via JavaScript -->
-      </tbody>
-    </table>
-  </div>
+    <div id="relatorio-anual-todos-tabela" style="display: none;">
+        <table id="relatorio-anual-todos" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Ano</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Total Pago no Ano</th>
+                    <th>Quantidade de Pagamentos</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Função para formatar valores monetários
-  function formatCurrency(value) {
-    const num = value ? parseFloat(value) : 0; // Converte para número, usa 0 se inválido
-    return `R$ ${num.toFixed(2)}`;
-  }
-
-  // Função para formatar datas no formato DD/MM/YYYY
-  function formatDate(dateStr) {
-    if (!dateStr) return 'N/A';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
-  }
-
-  // Função para mostrar ou esconder o campo de tipo de relatório
-  function mostrarTipoRelatorio() {
-    const contratoSelect = document.getElementById('tipo_relatorio');
-    const relatorioTodosSelect = document.getElementById('relatorio_todos');
-    const tipoRelatorioContainer = document.getElementById('tipo-relatorio-container');
-    const mesContainer = document.getElementById('mes-container');
-    const anoContainer = document.getElementById('ano-container');
-
-    // Reseta os campos quando o contrato é alterado
-    tipoRelatorioContainer.style.display = 'none';
-    mesContainer.style.display = 'none';
-    anoContainer.style.display = 'none';
-    relatorioTodosSelect.value = ''; // Reseta o seletor de todos os contratos
-    document.getElementById('relatorio_tipo').value = 'completo'; // Reseta o tipo de relatório
-
-    if (contratoSelect.value) {
-      tipoRelatorioContainer.style.display = 'block';
-    }
-  }
-
-  // Função para mostrar os campos específicos de cada tipo de relatório (todos os contratos)
-  function mostrarCamposRelatorioTodos() {
-    const relatorioTodos = document.getElementById('relatorio_todos').value;
-    const tipoRelatorioContainer = document.getElementById('tipo-relatorio-container');
-    const mesContainer = document.getElementById('mes-container');
-    const anoContainer = document.getElementById('ano-container');
-    const contratoSelect = document.getElementById('tipo_relatorio');
-
-    // Reseta os campos quando o relatório de todos é selecionado
-    tipoRelatorioContainer.style.display = 'none';
-    mesContainer.style.display = 'none';
-    anoContainer.style.display = 'none';
-    contratoSelect.value = ''; // Reseta o seletor de contrato individual
-    document.getElementById('relatorio_tipo').value = 'completo'; // Reseta o tipo de relatório
-
-    if (relatorioTodos === 'mensal_todos') {
-      mesContainer.style.display = 'block';
-      carregarMeses();
-    } else if (relatorioTodos === 'anual_todos') {
-      anoContainer.style.display = 'block';
-      carregarAnos();
-    }
-  }
-
-  // Função para mostrar os campos específicos de cada tipo de relatório (contratos individuais)
-  function mostrarCamposRelatorio() {
-    const relatorioTipo = document.getElementById('relatorio_tipo').value;
-    const mesContainer = document.getElementById('mes-container');
-    const anoContainer = document.getElementById('ano-container');
-
-    // Esconde todos os campos extras inicialmente
-    mesContainer.style.display = 'none';
-    anoContainer.style.display = 'none';
-
-    // Exibe o campo de mês ou ano com base no tipo de relatório
-    if (relatorioTipo === 'mensal') {
-      mesContainer.style.display = 'block';
-      carregarMeses();
-    } else if (relatorioTipo === 'anual') {
-      anoContainer.style.display = 'block';
-      carregarAnos();
-    }
-  }
-
-  // Função para preencher o seletor de meses
-  function carregarMeses() {
-    const mesSelect = document.getElementById('mes');
-    mesSelect.innerHTML = '<option value="">Selecione o Mês</option>'; // Limpa os meses existentes e adiciona opção padrão
-    const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-    
-    meses.forEach((mes, index) => {
-      const option = document.createElement('option');
-      option.value = index + 1; // Adiciona o número do mês
-      option.textContent = mes; // Exibe o nome do mês
-      mesSelect.appendChild(option);
-    });
-  }
-
-  // Função para preencher o seletor de anos
-  function carregarAnos() {
-    const anoSelect = document.getElementById('ano');
-    anoSelect.innerHTML = '<option value="">Selecione o Ano</option>'; // Limpa os anos existentes e adiciona opção padrão
-    const anoAtual = new Date().getFullYear();
-    const anos = [anoAtual - 2, anoAtual - 1, anoAtual, anoAtual + 1, anoAtual + 2]; // 2 anos anteriores e 2 anos futuros
-    
-    anos.forEach(ano => {
-      const option = document.createElement('option');
-      option.value = ano; // Define o valor como o ano
-      option.textContent = ano; // Exibe o ano
-      anoSelect.appendChild(option);
-    });
-  }
-
-  // Função para gerar o relatório
-  function gerarRelatorio() {
-    const contrato = document.getElementById('tipo_relatorio').value;
-    const relatorioTodos = document.getElementById('relatorio_todos').value;
-
-    // Verifica se é um relatório de todos os contratos
-    if (relatorioTodos) {
-      gerarRelatorioTodos();
-      return;
+    // Função para formatar valores monetários
+    function formatCurrency(value) {
+        const num = value ? parseFloat(value) : 0;
+        return `R$ ${num.toFixed(2)}`;
     }
 
-    // Lógica para relatórios de contratos individuais
-    if (!contrato) {
-      alert('Por favor, selecione o contrato.');
-      return;
+    // Função para formatar datas no formato DD/MM/YYYY
+    function formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
     }
 
-    const tipoRelatorio = document.getElementById('relatorio_tipo').value;
-    if (!tipoRelatorio) {
-      alert('Por favor, selecione o tipo de relatório.');
-      return;
+    // Função para formatar horas no formato HH:MM
+    function formatTime(timeStr) {
+        if (!timeStr) return 'N/A';
+        return timeStr;
     }
 
-    let params = 'contrato=' + encodeURIComponent(contrato) + '&relatorio_tipo=' + encodeURIComponent(tipoRelatorio);
-    if (tipoRelatorio === 'mensal') {
-      const mes = document.getElementById('mes').value;
-      if (!mes) {
-        alert('Por favor, selecione o mês.');
-        return;
-      }
-      params += '&mes=' + encodeURIComponent(mes);
-    } else if (tipoRelatorio === 'anual') {
-      const ano = document.getElementById('ano').value;
-      if (!ano) {
-        alert('Por favor, selecione o ano.');
-        return;
-      }
-      params += '&ano=' + encodeURIComponent(ano);
-    }
+    // Função para atualizar o campo de e-mail com base no seletor
+    function atualizarCampoEmail() {
+        const emailSelect = document.getElementById('email_destinatario_select');
+        const emailInput = document.getElementById('email_destinatario');
+        const salvarEmailLabel = document.getElementById('salvar_email_label');
 
-    // Requisição AJAX para buscar os dados do contrato
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'processar_relatorio.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send(params);
-
-    xhr.onload = function () {
-      console.log('Status HTTP:', xhr.status);
-      console.log('Resposta do servidor:', xhr.responseText);
-      if (xhr.status === 200) {
-        try {
-          const resposta = JSON.parse(xhr.responseText);
-          if (resposta.sucesso) {
-            resetTabelas();
-            const dados = Array.isArray(resposta.dados) ? resposta.dados : [resposta.dados];
-            if (tipoRelatorio === 'completo') {
-              preencherTabelaCompleta(dados);
-            } else if (tipoRelatorio === 'compromissos_futuros') {
-              preencherCompromissosFuturos(dados);
-            } else if (tipoRelatorio === 'pagamentos') {
-              preencherTabelaPagamentos(dados);
-            } else if (tipoRelatorio === 'mensal') {
-              preencherTabelaMensal(dados);
-            } else if (tipoRelatorio === 'anual') {
-              preencherTabelaAnual(dados);
-            }
-          } else {
-            alert(resposta.mensagem || 'Erro ao gerar o relatório.');
-          }
-        } catch (e) {
-          console.error('Erro ao processar a resposta JSON:', e);
-          alert('Erro ao processar os dados. Resposta inesperada: ' + xhr.responseText);
+        if (emailSelect.value === 'novo') {
+            emailInput.value = '';
+            emailInput.disabled = false;
+            salvarEmailLabel.style.display = 'block';
+        } else if (emailSelect.value) {
+            emailInput.value = emailSelect.value;
+            emailInput.disabled = true;
+            salvarEmailLabel.style.display = 'none';
+        } else {
+            emailInput.value = '';
+            emailInput.disabled = false;
+            salvarEmailLabel.style.display = 'block';
         }
-      } else {
-        alert('Erro ao gerar relatório. Status HTTP: ' + xhr.status + '\nResposta: ' + xhr.responseText);
-      }
-    };
-  }
-
-  // Função para gerar relatório de todos os contratos
-  function gerarRelatorioTodos() {
-    const relatorioTodos = document.getElementById('relatorio_todos').value;
-    if (!relatorioTodos) {
-      alert('Por favor, selecione o tipo de relatório.');
-      return;
     }
 
-    let params = 'relatorio_tipo=' + encodeURIComponent(relatorioTodos);
-    if (relatorioTodos === 'mensal_todos') {
-      const mes = document.getElementById('mes').value;
-      if (!mes) {
-        alert('Por favor, selecione o mês.');
-        return;
-      }
-      params += '&mes=' + encodeURIComponent(mes);
-    } else if (relatorioTodos === 'anual_todos') {
-      const ano = document.getElementById('ano').value;
-      if (!ano) {
-        alert('Por favor, selecione o ano.');
-        return;
-      }
-      params += '&ano=' + encodeURIComponent(ano);
-    }
+    // Função para mostrar ou esconder o campo de tipo de relatório
+    function mostrarTipoRelatorio() {
+        const contratoSelect = document.getElementById('tipo_relatorio');
+        const relatorioTodosSelect = document.getElementById('relatorio_todos');
+        const tipoRelatorioContainer = document.getElementById('tipo-relatorio-container');
+        const mesContainer = document.getElementById('mes-container');
+        const anoContainer = document.getElementById('ano-container');
 
-    // Requisição AJAX para buscar os dados de todos os contratos
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'processar_relatorio_todos.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send(params);
+        tipoRelatorioContainer.style.display = 'none';
+        mesContainer.style.display = 'none';
+        anoContainer.style.display = 'none';
+        relatorioTodosSelect.value = '';
+        document.getElementById('relatorio_tipo').value = 'completo';
 
-    xhr.onload = function () {
-      console.log('Status HTTP:', xhr.status);
-      console.log('Resposta do servidor:', xhr.responseText);
-      if (xhr.status === 200) {
-        try {
-          const resposta = JSON.parse(xhr.responseText);
-          if (resposta.sucesso) {
-            resetTabelas();
-            const dados = Array.isArray(resposta.dados) ? resposta.dados : [resposta.dados];
-            if (relatorioTodos === 'mensal_todos') {
-              preencherTabelaMensalTodos(dados);
-            } else if (relatorioTodos === 'anual_todos') {
-              preencherTabelaAnualTodos(dados);
-            }
-          } else {
-            alert(resposta.mensagem || 'Erro ao gerar o relatório.');
-          }
-        } catch (e) {
-          console.error('Erro ao processar a resposta JSON:', e);
-          alert('Erro ao processar os dados. Resposta inesperada: ' + xhr.responseText);
+        if (contratoSelect.value) {
+            tipoRelatorioContainer.style.display = 'block';
         }
-      } else {
-        alert('Erro ao gerar relatório. Status HTTP: ' + xhr.status + '\nResposta: ' + xhr.responseText);
-      }
-    };
-  }
-
-  // Funções auxiliares para preencher as tabelas específicas
-  function preencherTabelaCompleta(dados) {
-    const tabela = document.querySelector('#relatorio-completo tbody');
-    tabela.innerHTML = ''; // Limpa a tabela antes de preencher
-
-    const contratos = Array.isArray(dados) ? dados : [dados];
-    contratos.forEach(contrato => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${contrato.titulo || 'N/A'}</td>
-        <td>${formatDate(contrato.validade)}</td>
-        <td>${contrato.gestor || 'N/A'}</td>
-        <td>${contrato.gestorsb || 'N/A'}</td>
-        <td>${contrato.situacao || 'N/A'}</td>
-        <td>${contrato.num_parcelas ?? 'N/A'}</td>
-        <td>${formatDate(contrato.data_cadastro)}</td>
-      `;
-      tabela.appendChild(tr);
-    });
-    document.getElementById('relatorio-completo-tabela').style.display = 'block';
-  }
-
-  function preencherCompromissosFuturos(dados) {
-    const tabela = document.querySelector('#compromissos-futuros tbody');
-    tabela.innerHTML = ''; // Limpa a tabela antes de preencher
-
-    const contratos = Array.isArray(dados) ? dados : [dados];
-    contratos.forEach(contrato => {
-      const tr = document.createElement('tr');
-      const proximosPagamentos = contrato.proximos_pagamentos && Array.isArray(contrato.proximos_pagamentos)
-        ? contrato.proximos_pagamentos.map(formatDate).join(', ')
-        : 'Nenhum';
-      tr.innerHTML = `
-        <td>${contrato.titulo || 'N/A'}</td>
-        <td>${formatDate(contrato.validade)}</td>
-        <td>${contrato.gestor || 'N/A'}</td>
-        <td>${contrato.gestorsb || 'N/A'}</td>
-        <td>${contrato.situacao || 'N/A'}</td>
-        <td>${contrato.num_parcelas ?? 'N/A'}</td>
-        <td>${proximosPagamentos}</td>
-      `;
-      tabela.appendChild(tr);
-    });
-    document.getElementById('compromissos-futuros-tabela').style.display = 'block';
-  }
-
-  function preencherTabelaPagamentos(dados) {
-  const tabela = document.querySelector('#relatorio-pagamentos tbody');
-  tabela.innerHTML = ''; // Limpa a tabela antes de preencher
-
-  const contratos = Array.isArray(dados) ? dados : [dados];
-  contratos.forEach(contrato => {
-    // Verifica se há pagamentos
-    if (contrato.pagamentos && Array.isArray(contrato.pagamentos) && contrato.pagamentos.length > 0) {
-      // Para cada pagamento, cria uma nova linha
-      contrato.pagamentos.forEach(pagamento => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${contrato.titulo || 'N/A'}</td>
-          <td>${formatDate(pagamento.data_pagamento)}</td>
-        `;
-        tabela.appendChild(tr);
-      });
-    } else {
-      // Se não houver pagamentos, exibe uma linha com mensagem
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${contrato.titulo || 'N/A'}</td>
-        <td>Nenhum pagamento</td>
-      `;
-      tabela.appendChild(tr);
     }
-  });
-  document.getElementById('relatorio-pagamentos-tabela').style.display = 'block';
-}
 
-  function preencherTabelaMensal(dados) {
-    const tabela = document.querySelector('#relatorio-mensal tbody');
-    tabela.innerHTML = ''; // Limpa a tabela antes de preencher
+    // Função para mostrar os campos específicos de cada tipo de relatório (todos os contratos)
+    function mostrarCamposRelatorioTodos() {
+        const relatorioTodos = document.getElementById('relatorio_todos').value;
+        const tipoRelatorioContainer = document.getElementById('tipo-relatorio-container');
+        const mesContainer = document.getElementById('mes-container');
+        const anoContainer = document.getElementById('ano-container');
+        const contratoSelect = document.getElementById('tipo_relatorio');
 
-    const contratos = Array.isArray(dados) ? dados : [dados];
-    contratos.forEach(contrato => {
-      // Calcula as parcelas restantes
-      const numPagamentos = contrato.pagamentos && Array.isArray(contrato.pagamentos) ? contrato.pagamentos.length : 0;
-      const parcelasRestantes = (contrato.num_parcelas ?? 0) - numPagamentos;
+        tipoRelatorioContainer.style.display = 'none';
+        mesContainer.style.display = 'none';
+        anoContainer.style.display = 'none';
+        contratoSelect.value = '';
+        document.getElementById('relatorio_tipo').value = 'completo';
 
-      // Verifica se há pagamentos
-      if (contrato.pagamentos && Array.isArray(contrato.pagamentos) && contrato.pagamentos.length > 0) {
-        // Para cada pagamento, cria uma nova linha
-        contrato.pagamentos.forEach(pagamento => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${contrato.titulo || 'N/A'}</td>
-            <td>${parcelasRestantes >= 0 ? parcelasRestantes : 'N/A'}</td>
-            <td>${formatDate(pagamento.data_pagamento)}</td>
-            <td>${formatCurrency(pagamento.valor)}</td>
-          `;
-          tabela.appendChild(tr);
+        if (relatorioTodos === 'mensal_todos') {
+            mesContainer.style.display = 'block';
+            carregarMeses();
+        } else if (relatorioTodos === 'anual_todos') {
+            anoContainer.style.display = 'block';
+            carregarAnos();
+        }
+    }
+
+    // Função para mostrar os campos específicos de cada tipo de relatório (contratos individuais)
+    function mostrarCamposRelatorio() {
+        const relatorioTipo = document.getElementById('relatorio_tipo').value;
+        const mesContainer = document.getElementById('mes-container');
+        const anoContainer = document.getElementById('ano-container');
+
+        mesContainer.style.display = 'none';
+        anoContainer.style.display = 'none';
+
+        if (relatorioTipo === 'mensal') {
+            mesContainer.style.display = 'block';
+            carregarMeses();
+        } else if (relatorioTipo === 'anual') {
+            anoContainer.style.display = 'block';
+            carregarAnos();
+        }
+    }
+
+    // Função para preencher o seletor de meses
+    function carregarMeses() {
+        const mesSelect = document.getElementById('mes');
+        mesSelect.innerHTML = '<option value="">Selecione o Mês</option>';
+        const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        
+        meses.forEach((mes, index) => {
+            const option = document.createElement('option');
+            option.value = index + 1;
+            option.textContent = mes;
+            mesSelect.appendChild(option);
         });
-      } else {
-        // Se não houver pagamentos, exibe uma linha com mensagem
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${contrato.titulo || 'N/A'}</td>
-          <td>${contrato.num_parcelas ?? 'N/A'}</td>
-          <td colspan="2">Nenhum pagamento</td>
-        `;
-        tabela.appendChild(tr);
-      }
-    });
-    document.getElementById('relatorio-mensal-tabela').style.display = 'block';
-  }
+    }
 
-  function preencherTabelaAnual(dados) {
-    const tabela = document.querySelector('#relatorio-anual tbody');
-    tabela.innerHTML = ''; // Limpa a tabela antes de preencher
-
-    const contratos = Array.isArray(dados) ? dados : [dados];
-    contratos.forEach(contrato => {
-      if (contrato.anos && Array.isArray(contrato.anos)) {
-        contrato.anos.forEach(ano => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${contrato.titulo || 'N/A'}</td>
-            <td>${ano.ano || 'N/A'}</td>
-            <td>${contrato.num_parcelas ?? 'N/A'}</td>
-            <td>${formatCurrency(ano.total_pago)}</td>
-            <td>${ano.quantidade_pagamentos ?? '0'}</td>
-          `;
-          tabela.appendChild(tr);
+    // Função para preencher o seletor de anos
+    function carregarAnos() {
+        const anoSelect = document.getElementById('ano');
+        anoSelect.innerHTML = '<option value="">Selecione o Ano</option>';
+        const anoAtual = new Date().getFullYear();
+        const anos = [anoAtual - 2, anoAtual - 1, anoAtual, anoAtual + 1, anoAtual + 2];
+        
+        anos.forEach(ano => {
+            const option = document.createElement('option');
+            option.value = ano;
+            option.textContent = ano;
+            anoSelect.appendChild(option);
         });
-      } else {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${contrato.titulo || 'N/A'}</td>
-          <td colspan="4">Nenhum dado disponível para este ano.</td>
-        `;
-        tabela.appendChild(tr);
-      }
-    });
-    document.getElementById('relatorio-anual-tabela').style.display = 'block';
-  }
+    }
 
-  function preencherTabelaMensalTodos(dados) {
-    const tabela = document.querySelector('#relatorio-mensal-todos tbody');
-    tabela.innerHTML = ''; // Limpa a tabela antes de preencher
+    // Função para gerar o relatório
+    function gerarRelatorio() {
+        const contrato = document.getElementById('tipo_relatorio').value;
+        const relatorioTodos = document.getElementById('relatorio_todos').value;
 
-    const contratos = Array.isArray(dados) ? dados : [dados];
-    contratos.forEach(contrato => {
-      // Calcula as parcelas restantes
-      const numPagamentos = contrato.pagamentos && Array.isArray(contrato.pagamentos) ? contrato.pagamentos.length : 0;
-      const parcelasRestantes = (contrato.num_parcelas ?? 0) - numPagamentos;
+        if (relatorioTodos) {
+            gerarRelatorioTodos();
+            return;
+        }
 
-      // Verifica se há pagamentos
-      if (contrato.pagamentos && Array.isArray(contrato.pagamentos) && contrato.pagamentos.length > 0) {
-        // Para cada pagamento, cria uma nova linha
-        contrato.pagamentos.forEach(pagamento => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${contrato.titulo || 'N/A'}</td>
-            <td>${parcelasRestantes >= 0 ? parcelasRestantes : 'N/A'}</td>
-            <td>${formatDate(pagamento.data_pagamento)}</td>
-            <td>${formatCurrency(pagamento.valor)}</td>
-          `;
-          tabela.appendChild(tr);
+        if (!contrato) {
+            alert('Por favor, selecione o contrato.');
+            return;
+        }
+
+        const tipoRelatorio = document.getElementById('relatorio_tipo').value;
+        if (!tipoRelatorio) {
+            alert('Por favor, selecione o tipo de relatório.');
+            return;
+        }
+
+        let params = 'contrato=' + encodeURIComponent(contrato) + '&relatorio_tipo=' + encodeURIComponent(tipoRelatorio);
+        if (tipoRelatorio === 'mensal') {
+            const mes = document.getElementById('mes').value;
+            if (!mes) {
+                alert('Por favor, selecione o mês.');
+                return;
+            }
+            params += '&mes=' + encodeURIComponent(mes);
+        } else if (tipoRelatorio === 'anual') {
+            const ano = document.getElementById('ano').value;
+            if (!ano) {
+                alert('Por favor, selecione o ano.');
+                return;
+            }
+            params += '&ano=' + encodeURIComponent(ano);
+        }
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'processar_relatorio.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send(params);
+
+        xhr.onload = function () {
+            console.log('Status HTTP:', xhr.status);
+            console.log('Resposta do servidor:', xhr.responseText);
+            if (xhr.status === 200) {
+                try {
+                    const resposta = JSON.parse(xhr.responseText);
+                    if (resposta.sucesso) {
+                        resetTabelas();
+                        const dados = Array.isArray(resposta.dados) ? resposta.dados : [resposta.dados];
+                        if (tipoRelatorio === 'completo') {
+                            preencherTabelaCompleta(dados);
+                        } else if (tipoRelatorio === 'compromissos_futuros') {
+                            preencherCompromissosFuturos(dados);
+                        } else if (tipoRelatorio === 'pagamentos') {
+                            preencherTabelaPagamentos(dados);
+                        } else if (tipoRelatorio === 'mensal') {
+                            preencherTabelaMensal(dados);
+                        } else if (tipoRelatorio === 'anual') {
+                            preencherTabelaAnual(dados);
+                        }
+                    } else {
+                        alert(resposta.mensagem || 'Erro ao gerar o relatório.');
+                    }
+                } catch (e) {
+                    console.error('Erro ao processar a resposta JSON:', e);
+                    alert('Erro ao processar os dados. Resposta inesperada: ' + xhr.responseText);
+                }
+            } else {
+                alert('Erro ao gerar relatório. Status HTTP: ' + xhr.status + '\nResposta: ' + xhr.responseText);
+            }
+        };
+    }
+
+    // Função para gerar relatório de todos os contratos
+    function gerarRelatorioTodos() {
+        const relatorioTodos = document.getElementById('relatorio_todos').value;
+        if (!relatorioTodos) {
+            alert('Por favor, selecione o tipo de relatório.');
+            return;
+        }
+
+        let params = 'relatorio_tipo=' + encodeURIComponent(relatorioTodos);
+        if (relatorioTodos === 'mensal_todos') {
+            const mes = document.getElementById('mes').value;
+            if (!mes) {
+                alert('Por favor, selecione o mês.');
+                return;
+            }
+            params += '&mes=' + encodeURIComponent(mes);
+        } else if (relatorioTodos === 'anual_todos') {
+            const ano = document.getElementById('ano').value;
+            if (!ano) {
+                alert('Por favor, selecione o ano.');
+                return;
+            }
+            params += '&ano=' + encodeURIComponent(ano);
+        }
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'processar_relatorio_todos.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send(params);
+
+        xhr.onload = function () {
+            console.log('Status HTTP:', xhr.status);
+            console.log('Resposta do servidor:', xhr.responseText);
+            if (xhr.status === 200) {
+                try {
+                    const resposta = JSON.parse(xhr.responseText);
+                    if (resposta.sucesso) {
+                        resetTabelas();
+                        const dados = Array.isArray(resposta.dados) ? resposta.dados : [resposta.dados];
+                        if (relatorioTodos === 'mensal_todos') {
+                            preencherTabelaMensalTodos(dados);
+                        } else if (relatorioTodos === 'anual_todos') {
+                            preencherTabelaAnualTodos(dados);
+                        }
+                    } else {
+                        alert(resposta.mensagem || 'Erro ao gerar o relatório.');
+                    }
+                } catch (e) {
+                    console.error('Erro ao processar a resposta JSON:', e);
+                    alert('Erro ao processar os dados. Resposta inesperada: ' + xhr.responseText);
+                }
+            } else {
+                alert('Erro ao gerar relatório. Status HTTP: ' + xhr.status + '\nResposta: ' + xhr.responseText);
+            }
+        };
+    }
+
+    // Função para agendar relatório
+    function agendarRelatorio() {
+        const contrato = document.getElementById('tipo_relatorio').value;
+        const relatorioTodos = document.getElementById('relatorio_todos').value;
+        const tipoRelatorio = document.getElementById('relatorio_tipo').value;
+        const mes = document.getElementById('mes').value;
+        const ano = document.getElementById('ano').value;
+        const email = document.getElementById('email_destinatario').value;
+        const salvarEmail = document.getElementById('salvar_email').checked;
+        const periodicidade = document.getElementById('periodicidade').value;
+
+        if (!email) {
+            alert('Por favor, informe o e-mail do destinatário.');
+            return;
+        }
+        if (!periodicidade) {
+            alert('Por favor, selecione a periodicidade.');
+            return;
+        }
+
+        let params = 'email=' + encodeURIComponent(email) + '&periodicidade=' + encodeURIComponent(periodicidade);
+        if (salvarEmail) {
+            params += '&salvar_email=1';
+        }
+        if (relatorioTodos) {
+            params += '&relatorio_todos=' + encodeURIComponent(relatorioTodos);
+            if (relatorioTodos === 'mensal_todos' && mes) {
+                params += '&mes=' + encodeURIComponent(mes);
+            } else if (relatorioTodos === 'anual_todos' && ano) {
+                params += '&ano=' + encodeURIComponent(ano);
+            }
+        } else {
+            if (!contrato || !tipoRelatorio) {
+                alert('Por favor, selecione o contrato e o tipo de relatório.');
+                return;
+            }
+            params += '&contrato=' + encodeURIComponent(contrato) + '&relatorio_tipo=' + encodeURIComponent(tipoRelatorio);
+            if (tipoRelatorio === 'mensal' && mes) {
+                params += '&mes=' + encodeURIComponent(mes);
+            } else if (tipoRelatorio === 'anual' && ano) {
+                params += '&ano=' + encodeURIComponent(ano);
+            }
+        }
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'agendar_relatorio.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send(params);
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                try {
+                    const resposta = JSON.parse(xhr.responseText);
+                    if (resposta.sucesso) {
+                        alert('Relatório agendado com sucesso!');
+                        if (salvarEmail && resposta.email_salvo) {
+                            // Adicionar o e-mail ao seletor de e-mails salvos
+                            const emailSelect = document.getElementById('email_destinatario_select');
+                            const option = document.createElement('option');
+                            option.value = email;
+                            option.textContent = email;
+                            emailSelect.insertBefore(option, emailSelect.lastElementChild);
+                        }
+                    } else {
+                        alert(resposta.mensagem || 'Erro ao agendar o relatório.');
+                    }
+                } catch (e) {
+                    alert('Erro ao processar a resposta: ' + xhr.responseText);
+                }
+            } else {
+                alert('Erro ao agendar relatório. Status HTTP: ' + xhr.status);
+            }
+        };
+    }
+
+    // Função para exportar para PDF
+    function exportarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const tabelaVisivel = document.querySelector('div[id$="-tabela"][style*="block"] table');
+        if (!tabelaVisivel) {
+            alert('Nenhum relatório gerado para exportar.');
+            return;
+        }
+
+        const tipoRelatorio = tabelaVisivel.id;
+        doc.text(`Relatório ${tipoRelatorio.replace('-', ' ').toUpperCase()}`, 10, 10);
+        doc.autoTable({ html: tabelaVisivel });
+        doc.save(`relatorio_${tipoRelatorio}.pdf`);
+    }
+
+    // Função para exportar para CSV
+    function exportarCSV() {
+        const tabelaVisivel = document.querySelector('div[id$="-tabela"][style*="block"] table');
+        if (!tabelaVisivel) {
+            alert('Nenhum relatório gerado para exportar.');
+            return;
+        }
+
+        const tipoRelatorio = tabelaVisivel.id;
+        const rows = tabelaVisivel.querySelectorAll('tr');
+        const data = [];
+
+        rows.forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('th, td').forEach(cell => {
+                rowData.push(cell.innerText);
+            });
+            data.push(rowData);
         });
-      } else {
-        // Se não houver pagamentos, exibe uma linha com mensagem
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${contrato.titulo || 'N/A'}</td>
-          <td>${contrato.num_parcelas ?? 'N/A'}</td>
-          <td colspan="2">Nenhum pagamento</td>
-        `;
-        tabela.appendChild(tr);
-      }
-    });
-    document.getElementById('relatorio-mensal-todos-tabela').style.display = 'block';
-  }
 
-  function preencherTabelaAnualTodos(dados) {
-    const tabela = document.querySelector('#relatorio-anual-todos tbody');
-    tabela.innerHTML = ''; // Limpa a tabela antes de preencher
+        const csv = Papa.unparse(data);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `relatorio_${tipoRelatorio}.csv`;
+        link.click();
+    }
 
-    const contratos = Array.isArray(dados) ? dados : [dados];
-    contratos.forEach(contrato => {
-      if (contrato.anos && Array.isArray(contrato.anos)) {
-        contrato.anos.forEach(ano => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${contrato.titulo || 'N/A'}</td>
-            <td>${ano.ano || 'N/A'}</td>
-            <td>${contrato.num_parcelas ?? 'N/A'}</td>
-            <td>${formatCurrency(ano.total_pago)}</td>
-            <td>${ano.quantidade_pagamentos ?? '0'}</td>
-          `;
-          tabela.appendChild(tr);
+    // Funções auxiliares para preencher as tabelas específicas
+    function preencherTabelaCompleta(dados) {
+        const tabela = document.querySelector('#relatorio-completo tbody');
+        tabela.innerHTML = '';
+
+        const contratos = Array.isArray(dados) ? dados : [dados];
+        contratos.forEach(contrato => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${contrato.titulo || 'N/A'}</td>
+                <td>${formatDate(contrato.validade)}</td>
+                <td>${contrato.gestor || 'N/A'}</td>
+                <td>${contrato.gestorsb || 'N/A'}</td>
+                <td>${contrato.situacao || 'N/A'}</td>
+                <td>${contrato.num_parcelas ?? 'N/A'}</td>
+                <td>${formatDate(contrato.data_cadastro)}</td>
+            `;
+            tabela.appendChild(tr);
         });
-      } else {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${contrato.titulo || 'N/A'}</td>
-          <td colspan="4">Nenhum dado disponível para este ano.</td>
-        `;
-        tabela.appendChild(tr);
-      }
-    });
-    document.getElementById('relatorio-anual-todos-tabela').style.display = 'block';
-  }
+        document.getElementById('relatorio-completo-tabela').style.display = 'block';
+    }
 
-  // Função para resetar as tabelas
-  function resetTabelas() {
-    const tabelasIds = [
-      'relatorio-completo',
-      'compromissos-futuros',
-      'relatorio-pagamentos',
-      'relatorio-mensal',
-      'relatorio-anual',
-      'relatorio-mensal-todos',
-      'relatorio-anual-todos'
-    ];
-    tabelasIds.forEach(id => {
-      document.getElementById(`${id}-tabela`).style.display = 'none';
-    });
+    function preencherCompromissosFuturos(dados) {
+        const tabela = document.querySelector('#compromissos-futuros tbody');
+        tabela.innerHTML = '';
 
-    // Limpa o conteúdo das tabelas
-    document.querySelector('#relatorio-completo tbody').innerHTML = '';
-    document.querySelector('#compromissos-futuros tbody').innerHTML = '';
-    document.querySelector('#relatorio-pagamentos tbody').innerHTML = '';
-    document.querySelector('#relatorio-mensal tbody').innerHTML = '';
-    document.querySelector('#relatorio-anual tbody').innerHTML = '';
-    document.querySelector('#relatorio-mensal-todos tbody').innerHTML = '';
-    document.querySelector('#relatorio-anual-todos tbody').innerHTML = '';
-  }
+        const contratos = Array.isArray(dados) ? dados : [dados];
+        contratos.forEach(contrato => {
+            if (contrato.proximos_eventos && Array.isArray(contrato.proximos_eventos) && contrato.proximos_eventos.length > 0) {
+                contrato.proximos_eventos.forEach(evento => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${contrato.titulo || 'N/A'}</td>
+                        <td>${formatDate(contrato.validade)}</td>
+                        <td>${contrato.gestor || 'N/A'}</td>
+                        <td>${contrato.gestorsb || 'N/A'}</td>
+                        <td>${contrato.situacao || 'N/A'}</td>
+                        <td>${contrato.num_parcelas ?? 'N/A'}</td>
+                        <td>${evento.titulo || 'N/A'}</td>
+                        <td>${evento.descricao || 'N/A'}</td>
+                        <td>${formatDate(evento.data)}</td>
+                        <td>${formatTime(evento.hora)}</td>
+                        <td>${evento.categoria || 'N/A'}</td>
+                    `;
+                    tabela.appendChild(tr);
+                });
+            } else {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${contrato.titulo || 'N/A'}</td>
+                    <td>${formatDate(contrato.validade)}</td>
+                    <td>${contrato.gestor || 'N/A'}</td>
+                    <td>${contrato.gestorsb || 'N/A'}</td>
+                    <td>${contrato.situacao || 'N/A'}</td>
+                    <td>${contrato.num_parcelas ?? 'N/A'}</td>
+                    <td colspan="5">Nenhum evento futuro</td>
+                `;
+                tabela.appendChild(tr);
+            }
+        });
+        document.getElementById('compromissos-futuros-tabela').style.display = 'block';
+    }
 
-  // Expor funções globais para serem chamadas pelo HTML
-  window.mostrarTipoRelatorio = mostrarTipoRelatorio;
-  window.mostrarCamposRelatorioTodos = mostrarCamposRelatorioTodos;
-  window.mostrarCamposRelatorio = mostrarCamposRelatorio;
-  window.gerarRelatorio = gerarRelatorio;
+    function preencherTabelaPagamentos(dados) {
+        const tabela = document.querySelector('#relatorio-pagamentos tbody');
+        tabela.innerHTML = '';
+
+        const contratos = Array.isArray(dados) ? dados : [dados];
+        contratos.forEach(contrato => {
+            if (contrato.pagamentos && Array.isArray(contrato.pagamentos) && contrato.pagamentos.length > 0) {
+                contrato.pagamentos.forEach(pagamento => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${contrato.titulo || 'N/A'}</td>
+                        <td>${formatDate(pagamento.data_pagamento)}</td>
+                    `;
+                    tabela.appendChild(tr);
+                });
+            } else {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${contrato.titulo || 'N/A'}</td>
+                    <td>Nenhum pagamento</td>
+                `;
+                tabela.appendChild(tr);
+            }
+        });
+        document.getElementById('relatorio-pagamentos-tabela').style.display = 'block';
+    }
+
+    function preencherTabelaMensal(dados) {
+        const tabela = document.querySelector('#relatorio-mensal tbody');
+        tabela.innerHTML = '';
+
+        const contratos = Array.isArray(dados) ? dados : [dados];
+        contratos.forEach(contrato => {
+            const numPagamentos = contrato.pagamentos && Array.isArray(contrato.pagamentos) ? contrato.pagamentos.length : 0;
+            const parcelasRestantes = (contrato.num_parcelas ?? 0) - numPagamentos;
+
+            if (contrato.pagamentos && Array.isArray(contrato.pagamentos) && contrato.pagamentos.length > 0) {
+                contrato.pagamentos.forEach(pagamento => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${contrato.titulo || 'N/A'}</td>
+                        <td>${parcelasRestantes >= 0 ? parcelasRestantes : 'N/A'}</td>
+                        <td>${formatDate(pagamento.data_pagamento)}</td>
+                        <td>${formatCurrency(pagamento.valor)}</td>
+                    `;
+                    tabela.appendChild(tr);
+                });
+            } else {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${contrato.titulo || 'N/A'}</td>
+                    <td>${contrato.num_parcelas ?? 'N/A'}</td>
+                    <td colspan="2">Nenhum pagamento</td>
+                `;
+                tabela.appendChild(tr);
+            }
+        });
+        document.getElementById('relatorio-mensal-tabela').style.display = 'block';
+    }
+
+    function preencherTabelaAnual(dados) {
+        const tabela = document.querySelector('#relatorio-anual tbody');
+        tabela.innerHTML = '';
+
+        const contratos = Array.isArray(dados) ? dados : [dados];
+        contratos.forEach(contrato => {
+            if (contrato.anos && Array.isArray(contrato.anos)) {
+                contrato.anos.forEach(ano => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${contrato.titulo || 'N/A'}</td>
+                        <td>${ano.ano || 'N/A'}</td>
+                        <td>${contrato.num_parcelas ?? 'N/A'}</td>
+                        <td>${formatCurrency(ano.total_pago)}</td>
+                        <td>${ano.quantidade_pagamentos ?? '0'}</td>
+                    `;
+                    tabela.appendChild(tr);
+                });
+            } else {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${contrato.titulo || 'N/A'}</td>
+                    <td colspan="4">Nenhum dado disponível para este ano.</td>
+                `;
+                tabela.appendChild(tr);
+            }
+        });
+        document.getElementById('relatorio-anual-tabela').style.display = 'block';
+    }
+
+    function preencherTabelaMensalTodos(dados) {
+        const tabela = document.querySelector('#relatorio-mensal-todos tbody');
+        tabela.innerHTML = '';
+
+        const contratos = Array.isArray(dados) ? dados : [dados];
+        contratos.forEach(contrato => {
+            const numPagamentos = contrato.pagamentos && Array.isArray(contrato.pagamentos) ? contrato.pagamentos.length : 0;
+            const parcelasRestantes = (contrato.num_parcelas ?? 0) - numPagamentos;
+
+            if (contrato.pagamentos && Array.isArray(contrato.pagamentos) && contrato.pagamentos.length > 0) {
+                contrato.pagamentos.forEach(pagamento => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${contrato.titulo || 'N/A'}</td>
+                        <td>${parcelasRestantes >= 0 ? parcelasRestantes : 'N/A'}</td>
+                        <td>${formatDate(pagamento.data_pagamento)}</td>
+                        <td>${formatCurrency(pagamento.valor)}</td>
+                    `;
+                    tabela.appendChild(tr);
+                });
+            } else {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${contrato.titulo || 'N/A'}</td>
+                    <td>${contrato.num_parcelas ?? 'N/A'}</td>
+                    <td colspan="2">Nenhum pagamento</td>
+                `;
+                tabela.appendChild(tr);
+            }
+        });
+        document.getElementById('relatorio-mensal-todos-tabela').style.display = 'block';
+    }
+
+    function preencherTabelaAnualTodos(dados) {
+        const tabela = document.querySelector('#relatorio-anual-todos tbody');
+        tabela.innerHTML = '';
+
+        const contratos = Array.isArray(dados) ? dados : [dados];
+        contratos.forEach(contrato => {
+            if (contrato.anos && Array.isArray(contrato.anos)) {
+                contrato.anos.forEach(ano => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${contrato.titulo || 'N/A'}</td>
+                        <td>${ano.ano || 'N/A'}</td>
+                        <td>${contrato.num_parcelas ?? 'N/A'}</td>
+                        <td>${formatCurrency(ano.total_pago)}</td>
+                        <td>${ano.quantidade_pagamentos ?? '0'}</td>
+                    `;
+                    tabela.appendChild(tr);
+                });
+            } else {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${contrato.titulo || 'N/A'}</td>
+                    <td colspan="4">Nenhum dado disponível para este ano.</td>
+                `;
+                tabela.appendChild(tr);
+            }
+        });
+        document.getElementById('relatorio-anual-todos-tabela').style.display = 'block';
+    }
+
+    // Função para resetar as tabelas
+    function resetTabelas() {
+        const tabelasIds = [
+            'relatorio-completo',
+            'compromissos-futuros',
+            'relatorio-pagamentos',
+            'relatorio-mensal',
+            'relatorio-anual',
+            'relatorio-mensal-todos',
+            'relatorio-anual-todos'
+        ];
+        tabelasIds.forEach(id => {
+            document.getElementById(`${id}-tabela`).style.display = 'none';
+            document.querySelector(`#${id} tbody`).innerHTML = '';
+        });
+    }
+
+    // Expor funções globais para serem chamadas pelo HTML
+    window.mostrarTipoRelatorio = mostrarTipoRelatorio;
+    window.mostrarCamposRelatorioTodos = mostrarCamposRelatorioTodos;
+    window.mostrarCamposRelatorio = mostrarCamposRelatorio;
+    window.gerarRelatorio = gerarRelatorio;
+    window.agendarRelatorio = agendarRelatorio;
+    window.exportarPDF = exportarPDF;
+    window.exportarCSV = exportarCSV;
+    window.atualizarCampoEmail = atualizarCampoEmail;
 });
 </script>
-
 
 
 

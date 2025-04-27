@@ -4,10 +4,10 @@ session_start();
 // Simulação de usuário logado (em um ambiente real, isso viria de um sistema de autenticação)
 $_SESSION['username'] = isset($_SESSION['username']) ? $_SESSION['username'] : 'usuario_logado';
 
-// Generate CSRF token for form security
-if (!isset($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
+// // Generate CSRF token for form security
+// if (!isset($_SESSION['csrf_token'])) {
+//     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+// }
 
 // Include PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
@@ -52,9 +52,9 @@ try {
 // Handle form submissions (Add/Edit/Delete events, Add category)
 $messages = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $messages[] = ['type' => 'error', 'text' => 'Erro de validação CSRF.'];
-    } else {
+    // if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    //     $messages[] = ['type' => 'error', 'text' => 'Erro de validação CSRF.'];
+    // } else {
         try {
             if ($_POST['action'] === 'add_event' || $_POST['action'] === 'edit_event') {
                 $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
@@ -248,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $messages[] = ['type' => 'error', 'text' => 'Erro no banco de dados: ' . htmlspecialchars($e->getMessage())];
         }
     }
-}
+
 
 // Recuperar mensagens da sessão, se houver
 if (isset($_SESSION['messages'])) {
@@ -411,7 +411,7 @@ include 'header.php';
       <h3><i class="fas fa-plus-circle"></i> Adicionar Evento</h3>
       <input type="hidden" name="action" id="form-action" value="add_event">
       <input type="hidden" name="event_id" id="event-id">
-      <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+      <!-- <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>"> -->
 
       <!-- Título -->
       <div class="form-group">
@@ -490,7 +490,7 @@ include 'header.php';
     <button id="toggle-category-form"><i class="fas fa-tags"></i> Adicionar nova categoria</button>
     <form id="add-category-form" method="POST">
       <input type="hidden" name="action" value="add_category">
-      <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+      <!-- <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>"> -->
       <div class="form-group">
         <label for="new_category">Nova Categoria:</label>
         <input type="text" name="new_category" id="new_category" placeholder="Digite o nome da categoria">

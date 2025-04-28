@@ -6,9 +6,6 @@
 
 /* Estilo Geral */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
   font-family: "Roboto", sans-serif; /* Usando a fonte Roboto */
 }
 body {
@@ -735,13 +732,6 @@ tr:hover {
 
 /* modal de informaçoes */
 
-/* Estilo Geral */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Roboto", sans-serif; /* Usando a fonte Roboto */
-}
 body {
   background-color: rgb(217 217 217 / 90%);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;

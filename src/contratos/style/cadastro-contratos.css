@@ -63,7 +63,7 @@
 /* Estilo dos inputs com ícones */
 .input-icon input {
     width: 100%;
-    padding: 10px 16px;
+    padding: 2px 16px;
     padding-left: 35px; /* Espaço para o ícone à esquerda */
     border: 3px solid #ddd;
     border-radius: 8px;

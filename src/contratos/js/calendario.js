@@ -1,8 +1,9 @@
 $(document).ready(function() {
     // Toggle category form visibility
     $('#toggle-category-form').click(function() {
-        $('#add-category-form').toggle();
+        $('#add-category-form').slideToggle('fast');
     });
+    
 
     // Navigation buttons
     $('#prev-month, #next-month').click(function() {
@@ -132,3 +133,5 @@ $(document).ready(function() {
         });
     });
 });
+
+

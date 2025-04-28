@@ -414,31 +414,31 @@ include 'header.php';
       <!-- <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>"> -->
 
       <!-- Título -->
-      <div class="form-group">
+      <div class="input-icon">
         <label for="titulo">Título</label>
         <input type="text" name="titulo" id="titulo" required aria-required="true">
       </div>
 
       <!-- Descrição -->
-      <div class="form-group">
+      <div class="input-icon">
         <label for="descricao">Descrição</label>
         <textarea name="descricao" id="descricao" aria-describedby="desc-help"></textarea>
       </div>
 
       <!-- Data -->
-      <div class="form-group input-with-icon">
+      <div class="input-icon input-with-icon">
         <label for="data">Data</label>
         <input type="date" name="data" id="data" required aria-required="true" value="<?= sprintf("%04d-%02d-%02d", $currentYear, $currentMonth, $selectedDay) ?>">
       </div>
 
       <!-- Tempo -->
-      <div class="form-group input-with-icon">
+      <div class="input-icon input-with-icon">
         <label for="hora">Tempo</label>
         <input type="time" name="hora" id="hora" required aria-required="true">
       </div>
 
       <!-- Categoria -->
-      <div class="form-group">
+      <div class="input-icon">
         <label for="categoria">Categoria</label>
         <select name="categoria" id="categoria" required aria-required="true">
           <?php foreach ($categories as $key => $label): ?>
@@ -448,21 +448,20 @@ include 'header.php';
       </div>
 
       <!-- Cor -->
-      <div class="form-group">
+      <div class="input-icon">
         <label for="cor">Cor</label>
         <input type="color" name="cor" id="cor" value="#ff0000" required aria-required="true">
       </div>
 
       <!-- Enviar por e-mail -->
-      <div class="form-group">
-        <label>
-          <input type="checkbox" name="enviar_email" id="enviar-email">
-          Enviar por e-mail
-        </label>
-      </div>
+<div class="input-icon">
+  <input type="checkbox" name="enviar_email" id="enviar-email">
+  <label for="enviar-email">Enviar por e-mail</label>
+</div>
+
 
       <!-- E-mail do destinatário -->
-      <div class="form-group" id="email-field">
+      <div class="input-icon" id="email-field">
         <label for="email_destinatario">E-mail do Destinatário</label>
         <select name="email_destinatario" id="email-destinatario">
           <option value="">Selecione ou digite um e-mail</option>
@@ -474,7 +473,7 @@ include 'header.php';
       </div>
 
       <!-- Salvar e-mail para eventos futuros -->
-      <div class="form-group" id="salvar-email-field">
+      <div class="input-icon" id="salvar-email-field">
         <label>
           <input type="checkbox" name="salvar_email" id="salvar-email">
           Salvar este e-mail para eventos futuros
@@ -483,15 +482,16 @@ include 'header.php';
 
       <div class="form-actions">
         <button type="submit" id="submit-btn"><i class="fas fa-check-circle"></i> Adicionar Evento</button>
+        
+         <button id="toggle-category-form"><i class="fas fa-tags"></i> Adicionar nova categoria</button>
         <button type="button" class="cancel-btn" id="cancel-btn" style="display: none;">Cancelar</button>
       </div>
     </form>
 
-    <button id="toggle-category-form"><i class="fas fa-tags"></i> Adicionar nova categoria</button>
     <form id="add-category-form" method="POST">
       <input type="hidden" name="action" value="add_category">
       <!-- <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>"> -->
-      <div class="form-group">
+      <div class="input-icon">
         <label for="new_category">Nova Categoria:</label>
         <input type="text" name="new_category" id="new_category" placeholder="Digite o nome da categoria">
       </div>

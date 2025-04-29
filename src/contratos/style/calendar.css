@@ -119,16 +119,7 @@
     background-color: #218838;
 }
 
-/* Container Calendário */
-.calendar-container {
-    grid-area: 1 / 2 / 3 / 3;
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 8px;
-    height: 100%;
-    box-sizing: border-box;
-}
+
 
 /* Eventos do Dia */
 .daily-events-preview {
@@ -233,3 +224,207 @@
         font-size: 13px;
     }
 }
+
+
+/* calendario de eventos */
+/* Container Calendário */
+.calendar-container {
+    grid-area: 1 / 2 / 3 / 3;
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    background-color: #ffffff;
+}
+
+/* Cabeçalho do Calendário */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #333333;
+    font-size: 18px;
+    margin-bottom: 10px;
+    background-color: #388f80; /* Cor de fundo do cabeçalho */
+    border-top-left-radius: 12px; /* Bordas superiores arredondadas */
+    border-top-right-radius: 12px; /* Bordas superiores arredondadas */
+    padding: 10px;
+}
+
+#month-year {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+}
+
+#month-year i {
+    margin-right: 10px; /* Distância entre o ícone e o mês/ano */
+}
+
+/* Botões de Navegação */
+.calendar-header button {
+    background: #45B5A9; /* Cor de fundo suave para o botão */
+    color: white;
+    font-size: 16px;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.calendar-header button:hover {
+    background-color: #388f80; /* Cor de hover */
+}
+
+.calendar-header button i {
+    font-size: 18px; /* Ícones maiores */
+}
+
+/* Estilos dos dias da semana */
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #388f80; /* Cor de fundo das semanas */
+    margin-bottom: 10px;
+}
+
+.calendar-weekdays div {
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Estilos dos dias do mês */
+.calendar-day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.day-cell {
+    background-color: #f9f9f9; /* Fundo branco para os dias */
+    padding: 20px;
+    font-size: 16px;
+    color: #444444;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative; /* Para os eventos serem posicionados dentro da célula */
+}
+
+.day-number {
+    font-weight: bold;
+}
+
+.selected-day {
+    background-color: #ddd; /* Destaque do dia selecionado */
+    color: white;
+    font-weight: bold;
+}
+
+/* Hover nos dias */
+.day-cell:hover {
+    background-color: #f1f1f1;
+    color: #ddd;
+}
+
+/* Estilos para os Eventos no Calendário */
+.evento {
+    background-color: #FF5959; /* Cor de evento vermelho */
+    border-radius: 8px;
+    color: white;
+    font-size: 12px;
+    display: inline-block;
+    padding: 8px;
+    margin-top: 5px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    position: absolute; /* Garante que o evento fique dentro da célula */
+    bottom: 5px; /* Coloca os eventos no fundo da célula */
+    left: 5px;
+    right: 5px;
+    box-sizing: border-box;
+}
+
+.evento i {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+}
+
+/* Outros tipos de eventos (cores diferentes) */
+.evento-blue {
+    background-color: #4A90E2; /* Azul */
+}
+
+.evento-green {
+    background-color: #7ED321; /* Verde */
+}
+
+.evento-black {
+    background-color: #000; /* Preto */
+}
+
+/* Ajustes de Responsividade */
+@media (max-width: 768px) {
+    .calendar-container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .calendar-header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .calendar-header button {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-container {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .calendar-weekdays div, .day-cell {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .calendar-header button {
+        font-size: 12px;
+    }
+}
+
+
+/* Estilo para as células da tabela (td) e cabeçalhos (th) */
+.calendar-table td, .calendar-table th {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #111827;
+    text-align: center;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border: 1px solid #ddd; /* Borda leve para separar as células */
+}
+
+/* Estilo específico para os cabeçalhos da tabela (th) */
+.calendar-table th {
+    background-color: #388f80; /* Cor de fundo para cabeçalhos */
+    color: #ffffff; /* Cor de texto branca para contraste */
+    font-weight: bold; /* Torna o texto em negrito */
+}
+
+

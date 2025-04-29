@@ -288,54 +288,55 @@ try {
 
 // Function to generate the calendar
 function gerarCalendario($month, $year, $eventos, $selectedDay) {
-    $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-    $firstDayOfMonth = strtotime("$year-$month-01");
-    $firstDayWeekday = (int)date("w", $firstDayOfMonth);
+  $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+  $firstDayOfMonth = strtotime("$year-$month-01");
+  $firstDayWeekday = (int)date("w", $firstDayOfMonth);
 
-    $calendar = '<table class="calendar-table" role="grid" aria-label="Calendário de Eventos">';
-    $calendar .= '<thead><tr>';
-    $calendar .= '<th scope="col">Dom</th><th scope="col">Seg</th><th scope="col">Ter</th>';
-    $calendar .= '<th scope="col">Qua</th><th scope="col">Qui</th><th scope="col">Sex</th><th scope="col">Sáb</th>';
-    $calendar .= '</tr></thead><tbody><tr>';
+  $calendar = '<table class="calendar-table" role="grid" aria-label="Calendário de Eventos">';
+  $calendar .= '<thead><tr>';
+  $calendar .= '<th scope="col">Dom</th><th scope="col">Seg</th><th scope="col">Ter</th>';
+  $calendar .= '<th scope="col">Qua</th><th scope="col">Qui</th><th scope="col">Sex</th><th scope="col">Sáb</th>';
+  $calendar .= '</tr></thead><tbody><tr>';
 
-    // Add blank days at the start
-    for ($i = 0; $i < $firstDayWeekday; $i++) {
-        $calendar .= '<td></td>';
-    }
+  // Add blank days at the start
+  for ($i = 0; $i < $firstDayWeekday; $i++) {
+      $calendar .= '<td></td>';
+  }
 
-    $day = 1;
-    $cellCount = $firstDayWeekday;
-    while ($day <= $daysInMonth) {
-        if ($cellCount % 7 === 0) {
-            $calendar .= '</tr><tr>';
-        }
+  $day = 1;
+  $cellCount = $firstDayWeekday;
+  while ($day <= $daysInMonth) {
+      if ($cellCount % 7 === 0) {
+          $calendar .= '</tr><tr>';
+      }
 
-        $isSelected = $day == $selectedDay ? ' selected-day' : '';
-        $calendar .= "<td role='gridcell' class='day-cell$isSelected' data-day='$day' aria-label='Dia $day'>";
-        $calendar .= "<span class='day-number'>$day</span>";
+      $isSelected = $day == $selectedDay ? ' selected-day' : '';
+      $calendar .= "<td role='gridcell' class='day-cell$isSelected' data-day='$day' aria-label='Dia $day'>";
+      $calendar .= "<span class='day-number'>$day</span>";
 
-        // Display events
-        foreach ($eventos as $evento) {
-            if ($evento['day'] == $day) {
-                $calendar .= "<div class='evento' style='background-color: {$evento['cor']}' data-id='{$evento['id']}' role='button' tabindex='0' aria-label='Evento: {$evento['titulo']}'>";
-                $calendar .= "<strong>" . htmlspecialchars($evento['titulo']) . "</strong>";
-                $calendar .= "</div>";
-            }
-        }
+      // Display events
+      foreach ($eventos as $evento) {
+          if ($evento['day'] == $day) {
+              $calendar .= "<div class='evento' style='background-color: {$evento['cor']}' data-id='{$evento['id']}' role='button' tabindex='0' aria-label='Evento: {$evento['titulo']}'>";
+              $calendar .= "<i class='fas fa-calendar-day'></i><strong>" . htmlspecialchars($evento['titulo']) . "</strong>";
+              $calendar .= "</div>";
+          }
+      }
 
-        $calendar .= '</td>';
-        $day++;
-        $cellCount++;
-    }
+      $calendar .= '</td>';
+      $day++;
+      $cellCount++;
+  }
 
-    // Fill remaining cells
-    while ($cellCount % 7 !== 0) {
-        $calendar .= '<td></td>';
-        $cellCount++;
-    }
-    $calendar .= '</tr></tbody></table>';
-    return $calendar;
+  // Fill remaining cells
+  while ($cellCount % 7 !== 0) {
+      $calendar .= '<td></td>';
+      $cellCount++;
+  }
+  $calendar .= '</tr></tbody></table>';
+  return $calendar;
 }
+
 
 // Generate navigation links
 function generateNavigation($currentMonth, $currentYear, $categoryFilter, $searchQuery, $selectedDay) {
@@ -499,19 +500,23 @@ include 'header.php';
     </form>
   </div>
 
-  <!-- Calendário -->
-  <div class="calendar-container">
-    <div class="calendar-header">
-      <button id="prev-month" data-url="<?= $navigation['prevMonthLink'] ?>" aria-label="Mês anterior">
-        <i class="fas fa-arrow-left"></i> Anterior
-      </button>
-      <h2 id="month-year" aria-live="polite"><?= date("F Y", strtotime("$currentYear-$currentMonth-01")) ?></h2>
-      <button id="next-month" data-url="<?= $navigation['nextMonthLink'] ?>" aria-label="Próximo mês">
-        Próximo <i class="fas fa-arrow-right"></i>
-      </button>
-    </div>
-    <?= gerarCalendario($currentMonth, $currentYear, $eventos, $selectedDay); ?>
+
+<!-- Calendário -->
+<div class="calendar-container">
+  <div class="calendar-header">
+    <button id="prev-month" data-url="<?= $navigation['prevMonthLink'] ?>" aria-label="Mês anterior">
+      <i class="fas fa-chevron-left"></i> Anterior
+    </button>
+    <h2 id="month-year" aria-live="polite">
+      <i class="fas fa-calendar-alt"></i> <?= date("F Y", strtotime("$currentYear-$currentMonth-01")) ?>
+    </h2>
+    <button id="next-month" data-url="<?= $navigation['nextMonthLink'] ?>" aria-label="Próximo mês">
+      Próximo <i class="fas fa-chevron-right"></i>
+    </button>
   </div>
+  <?= gerarCalendario($currentMonth, $currentYear, $eventos, $selectedDay); ?>
+</div>
+
 
   <!-- Eventos do Dia -->
   <div class="daily-events-preview">

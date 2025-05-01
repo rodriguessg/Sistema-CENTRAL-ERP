@@ -344,7 +344,7 @@ include 'header.php';
                             <tr>
                                 <th>Contrato</th>
                                 <th>Fornecedor</th>
-                                <th>Tipo</th>
+                                <!-- <th>Tipo</th> -->
                                 <th>Término</th>
                                 <th>Valência</th>
                                 <th>Status</th>
@@ -357,10 +357,10 @@ include 'header.php';
                                     $status_class = $row['status'] == 'Ativo' ? 'status-ativo' : 'status-expirado';
                                     echo "<tr>
                                             <td>" . htmlspecialchars($row['id']) . "</td>
-                                            <td>" . htmlspecialchars($row['fornecedor']) . "</td>
-                                            <td>" . htmlspecialchars($row['tipo']) . "</td>
+                                            <td>" . htmlspecialchars($row['titulo']) . "</td>
+                                           
                                             <td>" . date('d/m/Y', strtotime($row['validade'])) . "</td>
-                                            <td>R$ " . number_format($row['valor'], 2, ',', '.') . "</td>
+                                            <td>R$ " . number_format($row['valor_contrato'], 2, ',', '.') . "</td>
                                             <td class='$status_class'>" . $row['status'] . "</td>
                                           </tr>";
                                 }

@@ -1,8 +1,7 @@
 <?php
 session_start();
 
-
-// Conexão com o banco de dados
+// Configuração e conexão com o banco de dados (usando PDO)
 $dsn = 'mysql:host=localhost;dbname=gm_sicbd';
 $username = 'root';
 $password = '';
@@ -14,143 +13,134 @@ try {
     die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }
 
-// Marcar a notificação como lida quando o usuário clicar
-if (isset($_GET['mark_read'])) {
-    $notificationId = $_GET['mark_read'];
+// Função para redirecionar com mensagem
+function setMessageAndRedirect($type, $message, $location) {
+    $_SESSION[$type] = $message;
+    header("Location: $location");
+    exit;
+}
 
-    // Verifique se o usuário é 'contratos' para permitir marcar como lida
-    if ($_SESSION['username'] == 'contratos') {
+// Marcar notificação como lida
+if (isset($_GET['mark_read']) && $_SESSION['username'] === 'contratos') {
+    $notificationId = filter_var($_GET['mark_read'], FILTER_VALIDATE_INT);
+    if ($notificationId === false) {
+        setMessageAndRedirect('error', 'ID de notificação inválido.', 'index.php');
+    }
+
+    try {
         $sqlMarkRead = "UPDATE notificacoes SET situacao = 'lida' WHERE id = :id";
         $stmtMarkRead = $pdo->prepare($sqlMarkRead);
-        $stmtMarkRead->execute([':id' => $notificationId]);
-
-        $_SESSION['success'] = "Notificação marcada como lida.";
+        $stmtMarkRead->execute(['id' => $notificationId]);
+        setMessageAndRedirect('success', 'Notificação marcada como lida.', 'index.php');
+    } catch (PDOException $e) {
+        setMessageAndRedirect('error', 'Erro ao marcar notificação: ' . $e->getMessage(), 'index.php');
     }
 }
 
-// Processar assinatura do contrato
+// Processar cadastro de contrato
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])) {
-    $titulo = $_POST['titulo'];
-    $descricao = $_POST['descricao'];
-    $validade = $_POST['validade'];
-    $assinatura = $_POST['assinatura'];
+    $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
+    $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING);
+    $validade = filter_input(INPUT_POST, 'validade', FILTER_SANITIZE_STRING);
+    $assinatura = filter_input(INPUT_POST, 'assinatura', FILTER_SANITIZE_STRING);
+
+    if (!$titulo || !$validade || !$assinatura) {
+        setMessageAndRedirect('error', 'Campos obrigatórios não preenchidos.', 'cadastro_contrato.php');
+    }
 
     // Inserir contrato
-    $sql = "INSERT INTO gestao_contratos (titulo, descricao, assinatura, validade) VALUES (:titulo, :descricao, :assinatura, :validade)";
-    $stmt = $pdo->prepare($sql);
-
     try {
+        $sql = "INSERT INTO gestao_contratos (titulo, descricao, assinatura, validade) 
+                VALUES (:titulo, :descricao, :assinatura, :validade)";
+        $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            ':titulo' => $titulo,
-            ':descricao' => $descricao,
-            ':assinatura' => $assinatura,
-            ':validade' => $validade
+            'titulo' => $titulo,
+            'descricao' => $descricao,
+            'assinatura' => $assinatura,
+            'validade' => $validade
         ]);
 
-        $_SESSION['success'] = "Contrato cadastrado com sucesso!";
-    } catch (Exception $e) {
-        $_SESSION['error'] = "Erro ao cadastrar contrato: " . $e->getMessage();
+        // Inserir notificação
+        $usuario = $_SESSION['username'];
+        $setor = $_SESSION['setor'];
+        $mensagem = "Contrato '{$titulo}' prestes a expirar.";
+        $situacao = 'não lida';
+        $dataNotificacao = date('Y-m-d H:i:s');
+
+        // Verificar se já existe uma notificação
+        $sqlVerificacao = "SELECT COUNT(*) FROM notificacoes WHERE username = :username AND mensagem = :mensagem";
+        $stmtVerificacao = $pdo->prepare($sqlVerificacao);
+        $stmtVerificacao->execute(['username' => $usuario, 'mensagem' => $mensagem]);
+
+        if ($stmtVerificacao->fetchColumn() == 0) {
+            $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                               VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
+            $stmtNotificacao = $pdo->prepare($sqlNotificacao);
+            $stmtNotificacao->execute([
+                'username' => $usuario,
+                'setor' => $setor,
+                'mensagem' => $mensagem,
+                'situacao' => $situacao,
+                'data_criacao' => $dataNotificacao
+            ]);
+        }
+
+        setMessageAndRedirect('success', 'Contrato cadastrado com sucesso!', 'index.php');
+    } catch (PDOException $e) {
+        setMessageAndRedirect('error', 'Erro ao cadastrar contrato: ' . $e->getMessage(), 'cadastro_contrato.php');
     }
-
-   // Após o cadastro do contrato, insira a notificação
-$nomeContrato = $titulo; // Nome do contrato
-$usuario = $_SESSION['username']; // Nome do usuário da sessão
-$setor = $_SESSION['setor']; // Setor do usuário da sessão
-$situacao = 'não lida'; // Situação como não lida
-$dataNotificacao = date('Y-m-d H:i:s'); // Data e hora atual da notificação
-
-// Verificar se já existe uma notificação para o mesmo contrato e usuário
-$sqlVerificacao = "SELECT COUNT(*) FROM notificacoes WHERE username = :username AND mensagem = :mensagem";
-$stmtVerificacao = $pdo->prepare($sqlVerificacao);
-$stmtVerificacao->execute([
-    ':username' => $usuario,
-    ':mensagem' => "Contrato '{$nomeContrato}' prestes a expirar." // Certifique-se de que a mensagem é a que você deseja
-]);
-
-// Se não houver uma notificação, insira a nova
-if ($stmtVerificacao->fetchColumn() == 0) {
-    // Inserir a notificação se não existir
-    $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
-                       VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
-    $stmtNotificacao = $pdo->prepare($sqlNotificacao);
-
-    try {
-        // Tente executar a inserção da notificação
-        $stmtNotificacao->execute([
-            ':username' => $usuario,
-            ':setor' => $setor,
-            ':mensagem' => "Contrato '{$nomeContrato}' prestes a expirar.",
-            ':situacao' => $situacao,
-            ':data_criacao' => $dataNotificacao
-        ]);
-        
-        $_SESSION['success'] = "Notificação inserida com sucesso.";
-    } catch (Exception $e) {
-        // Caso ocorra um erro, mostre uma mensagem de erro
-        $_SESSION['error'] = "Erro ao adicionar notificação: " . $e->getMessage();
-    }
-} else {
-    // Se a notificação já existe, não faz nada
-    $_SESSION['info'] = "Notificação para o contrato '{$nomeContrato}' já foi registrada.";
-}
 }
 
 // Buscar contratos próximos de expirar
 $notificacoes = [];
-$sql = "SELECT * FROM gestao_contratos WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH) AND validade >= CURDATE()";
-$stmt = $pdo->query($sql);
-$notificacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+try {
+    $sqlNotificacoes = "SELECT * FROM gestao_contratos 
+                        WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH) 
+                        AND validade >= CURDATE()";
+    $stmtNotificacoes = $pdo->query($sqlNotificacoes);
+    $notificacoes = $stmtNotificacoes->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $_SESSION['error'] = "Erro ao buscar notificações: " . $e->getMessage();
+}
 
-// Verifica se um ID de processo foi enviado via GET
-$processId = isset($_GET['processId']) ? $_GET['processId'] : null;
-
-// Consulta para obter os detalhes do processo com base no ID
+// Buscar detalhes do processo
 $processDetails = null;
-if ($processId) {
-    $sql = "SELECT * FROM gestao_contratos WHERE id = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$processId]);
-    $processDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+if (isset($_GET['processId'])) {
+    $processId = filter_var($_GET['processId'], FILTER_VALIDATE_INT);
+    if ($processId !== false) {
+        try {
+            $sqlProcesso = "SELECT * FROM gestao_contratos WHERE id = :id";
+            $stmtProcesso = $pdo->prepare($sqlProcesso);
+            $stmtProcesso->execute(['id' => $processId]);
+            $processDetails = $stmtProcesso->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            $_SESSION['error'] = "Erro ao buscar detalhes do processo: " . $e->getMessage();
+        }
+    }
+}
+
+// Buscar contratos para o dropdown
+$options = "";
+try {
+    $sqlContratos = "SELECT titulo FROM gestao_contratos";
+    $stmtContratos = $pdo->query($sqlContratos);
+    $contratos = $stmtContratos->fetchAll(PDO::FETCH_ASSOC);
+
+    if ($contratos) {
+        foreach ($contratos as $contrato) {
+            $titulo = htmlspecialchars($contrato['titulo'], ENT_QUOTES, 'UTF-8');
+            $options .= "<option value=\"$titulo\">$titulo</option>";
+        }
+    } else {
+        $options = "<option value=\"\">Nenhum contrato encontrado</option>";
+    }
+} catch (PDOException $e) {
+    $_SESSION['error'] = "Erro ao buscar contratos: " . $e->getMessage();
+    $options = "<option value=\"\">Erro ao carregar contratos</option>";
 }
 
 include 'header.php';
-
 ?>
-<?php
-// Configuração da conexão com o banco de dados
-$host = 'localhost'; // Seu host do banco de dados
-$user = 'root';      // Seu usuário do banco de dados
-$pass = '';          // Sua senha do banco de dados
-$db   = 'gm_sicbd'; // Nome do banco de dados
-
-// Conectar ao banco de dados
-$conn = new mysqli($host, $user, $pass, $db);
-
-// Verificar se a conexão foi bem-sucedida
-if ($conn->connect_error) {
-    die("Erro na conexão: " . $conn->connect_error);
-}
-
-// Consultar os contratos na tabela gestao_contratos
-$sql = "SELECT titulo FROM gestao_contratos";
-$result = $conn->query($sql);
-
-// Verificar se há resultados
-$options = "";
-if ($result->num_rows > 0) {
-    // Preencher as opções do select
-    while ($row = $result->fetch_assoc()) {
-        $titulo = $row['titulo'];
-        $options .= "<option value=\"$titulo\">$titulo</option>";
-    }
-} else {
-    $options = "<option value=\"\">Nenhum contrato encontrado</option>";
-}
-
-// Fechar a conexão com o banco de dados
-$conn->close();
-?>
-
 
 
 
@@ -187,9 +177,9 @@ $conn->close();
     <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
         <i class="fas fa-search"></i> Consultar contratos
     </div>
-    <div class="tab" data-tab="agenda" onclick="showTab('agenda')">
+    <!-- <div class="tab" data-tab="agenda" onclick="showTab('agenda')">
         <i class="fas fa-calendar-alt"></i> Agendamento
-    </div>
+    </div> -->
     <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">
         <i class="fas fa-info-circle"></i> Resumo
     </div>
@@ -372,7 +362,7 @@ $conn->close();
                     <label for="relatorio_tipo"><i class="fas fa-chart-line"></i> Relatório por Contratos</label>
                     <select name="relatorio_tipo" id="relatorio_tipo" onchange="mostrarCamposRelatorio()">
                         <option value="completo">Relatório Completo</option>
-                        <option value="compromissos_futuros">Compromissos Futuros</option>
+                        <!-- <option value="compromissos_futuros">Compromissos Futuros</option> -->
                         <option value="pagamentos">Relatório de Pagamentos</option>
                         <option value="mensal">Relatório Mensal</option>
                         <option value="anual">Relatório Anual</option>
@@ -394,7 +384,7 @@ $conn->close();
         </div>
 
         <!-- Seção para agendamento de relatórios -->
-        <div id="agendamento-container">
+        <!-- <div id="agendamento-container">
             <h3><i class="fas fa-clock"></i> Agendar Relatório</h3>
             <div class="email-group">
                 <div style="flex: 1;">
@@ -420,7 +410,7 @@ $conn->close();
                 <option value="mensal">Mensal</option>
             </select>
             <button type="button" class="btn-submit" onclick="agendarRelatorio()">Agendar Relatório</button>
-        </div>
+        </div> -->
 
         <div class="button-group">
             <!-- Botão para gerar o relatório -->
@@ -946,46 +936,46 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('relatorio-completo-tabela').style.display = 'block';
     }
 
-    function preencherCompromissosFuturos(dados) {
-        const tabela = document.querySelector('#compromissos-futuros tbody');
-        tabela.innerHTML = '';
+    // function preencherCompromissosFuturos(dados) {
+    //     const tabela = document.querySelector('#compromissos-futuros tbody');
+    //     tabela.innerHTML = '';
 
-        const contratos = Array.isArray(dados) ? dados : [dados];
-        contratos.forEach(contrato => {
-            if (contrato.proximos_eventos && Array.isArray(contrato.proximos_eventos) && contrato.proximos_eventos.length > 0) {
-                contrato.proximos_eventos.forEach(evento => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${contrato.titulo || 'N/A'}</td>
-                        <td>${formatDate(contrato.validade)}</td>
-                        <td>${contrato.gestor || 'N/A'}</td>
-                        <td>${contrato.gestorsb || 'N/A'}</td>
-                        <td>${contrato.situacao || 'N/A'}</td>
-                        <td>${contrato.num_parcelas ?? 'N/A'}</td>
-                        <td>${evento.titulo || 'N/A'}</td>
-                        <td>${evento.descricao || 'N/A'}</td>
-                        <td>${formatDate(evento.data)}</td>
-                        <td>${formatTime(evento.hora)}</td>
-                        <td>${evento.categoria || 'N/A'}</td>
-                    `;
-                    tabela.appendChild(tr);
-                });
-            } else {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${contrato.titulo || 'N/A'}</td>
-                    <td>${formatDate(contrato.validade)}</td>
-                    <td>${contrato.gestor || 'N/A'}</td>
-                    <td>${contrato.gestorsb || 'N/A'}</td>
-                    <td>${contrato.situacao || 'N/A'}</td>
-                    <td>${contrato.num_parcelas ?? 'N/A'}</td>
-                    <td colspan="5">Nenhum evento futuro</td>
-                `;
-                tabela.appendChild(tr);
-            }
-        });
-        document.getElementById('compromissos-futuros-tabela').style.display = 'block';
-    }
+    //     const contratos = Array.isArray(dados) ? dados : [dados];
+    //     contratos.forEach(contrato => {
+    //         if (contrato.proximos_eventos && Array.isArray(contrato.proximos_eventos) && contrato.proximos_eventos.length > 0) {
+    //             contrato.proximos_eventos.forEach(evento => {
+    //                 const tr = document.createElement('tr');
+    //                 tr.innerHTML = `
+    //                     <td>${contrato.titulo || 'N/A'}</td>
+    //                     <td>${formatDate(contrato.validade)}</td>
+    //                     <td>${contrato.gestor || 'N/A'}</td>
+    //                     <td>${contrato.gestorsb || 'N/A'}</td>
+    //                     <td>${contrato.situacao || 'N/A'}</td>
+    //                     <td>${contrato.num_parcelas ?? 'N/A'}</td>
+    //                     <td>${evento.titulo || 'N/A'}</td>
+    //                     <td>${evento.descricao || 'N/A'}</td>
+    //                     <td>${formatDate(evento.data)}</td>
+    //                     <td>${formatTime(evento.hora)}</td>
+    //                     <td>${evento.categoria || 'N/A'}</td>
+    //                 `;
+    //                 tabela.appendChild(tr);
+    //             });
+    //         } else {
+    //             const tr = document.createElement('tr');
+    //             tr.innerHTML = `
+    //                 <td>${contrato.titulo || 'N/A'}</td>
+    //                 <td>${formatDate(contrato.validade)}</td>
+    //                 <td>${contrato.gestor || 'N/A'}</td>
+    //                 <td>${contrato.gestorsb || 'N/A'}</td>
+    //                 <td>${contrato.situacao || 'N/A'}</td>
+    //                 <td>${contrato.num_parcelas ?? 'N/A'}</td>
+    //                 <td colspan="5">Nenhum evento futuro</td>
+    //             `;
+    //             tabela.appendChild(tr);
+    //         }
+    //     });
+    //     document.getElementById('compromissos-futuros-tabela').style.display = 'block';
+    // }
 
     function preencherTabelaPagamentos(dados) {
         const tabela = document.querySelector('#relatorio-pagamentos tbody');
@@ -1454,147 +1444,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 </div>
 <script src="./src/js/filtroModal.js"></script>
 
-<!-- Lista de Agendamentos -->
-<div>
-        <div class="form-container " id="agenda">
-            <!-- Formulário de Agendamento -->
-            <div class="form-left  ">
-                <h3>Agendar Tarefa</h3>
-                <form id="formAgendamento" method="POST" action="salvar_agendamento.php">
-
-                    <!-- Campo: Nome -->
-                    <div class="form-group mb-3">
-                        <label for="nome">Nome</label>
-                        <input type="text" id="nome" name="nome" class="form-control" placeholder="Digite o nome" required>
-                    </div>
-                    <!-- Campo: Descrição -->
-                    <div class="form-group mb-3">
-                        <label for="descricao">Descrição</label>
-                        <textarea id="descricao" name="descricao" class="form-control" placeholder="Digite a descrição" rows="3" required></textarea>
-                    </div>
-                    <!-- Campo: Data -->
-                    <div class="form-group mb-3">
-                        <label for="data_g">Data</label>
-                        <input type="date" id="data_g" name="data_g" class="form-control" required>
-                    </div>
-                    <!-- Campo: E-mail -->
-                    <div class="form-group mb-3">
-                        <label for="email">E-mail para Envio</label>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="Digite o e-mail" required>
-                    </div>
-                    <!-- Botão: Salvar -->
-                    <button type="submit" class="btn btn-primary w-50">Salvar Agendamento</button>
-                </form>
-            </div>
-
-<?php
-        // Conexão com o banco de dados
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "gm_sicbd";
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        if ($conn->connect_error) {
-            die("Conexão falhou: " . $conn->connect_error);
-        }
-        // Recuperando os agendamentos do banco de dados
-        $sql = "SELECT id, nome, descricao, data_g, email FROM agendamentos";
-        $result = $conn->query($sql);
-        $agendamentos = [];
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                $data = $row['data_g'];
-                $agendamentos[$data][] = $row; // Organiza os agendamentos por data
-            }
-        }
-        $conn->close();
-?>
-
-
-<div class="form-right">
-    <h3>Agendamentos de <?php echo date("F Y"); ?></h3> <!-- Exibe o mês e ano atual -->
-    <div id="agendamentos" style="max-height: 500px; overflow-y: auto;">
-        <div class="calendar-container">
-            <?php
-            // Exibindo o mês atual
-            $currentMonth = date("m");
-            $currentYear = date("Y");
-
-            // Número de dias no mês atual
-            $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
-
-            // Começo do mês (dia da semana)
-            $firstDayOfMonth = strtotime("$currentYear-$currentMonth-01");
-            $firstDayWeekday = date("w", $firstDayOfMonth); // 0 (Domingo) a 6 (Sábado)
-
-            // Cabeçalho da agenda
-            echo '<table class="calendar-table">';
-            echo '<tr>';
-            echo '<th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th>';
-            echo '</tr><tr>';
-
-            // Adiciona os dias em branco no início do mês
-            for ($i = 0; $i < $firstDayWeekday; $i++) {
-                echo '<td></td>';
-            }
-
-            // Exibe os dias do mês
-            $day = 1;
-            for ($i = $firstDayWeekday; $i < 7; $i++) {
-                echo '<td>';
-                echo '<span class="day-number" data-day="' . $day . '">' . $day . '</span>'; // Dia interativo
-                $currentDate = "$currentYear-$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT);
-
-                // Verifica se há agendamentos para esse dia
-                if (isset($agendamentos[$currentDate])) {
-                    echo '<div class="task-indicator" style="background-color: blue; color: white; font-size: 10px;">Tarefa Agendada</div>';
-                }
-
-                echo '</td>';
-                $day++;
-            }
-            echo '</tr>';
-
-            // Preenche o restante dos dias do mês
-            while ($day <= $daysInMonth) {
-                echo '<tr>';
-                for ($i = 0; $i < 7; $i++) {
-                    if ($day <= $daysInMonth) {
-                        $currentDate = "$currentYear-$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT);
-                        echo '<td>';
-                        echo '<span class="day-number" data-day="' . $day . '">' . $day . '</span>'; // Dia interativo
-
-                        // Verifica se há agendamentos para esse dia
-                        if (isset($agendamentos[$currentDate])) {
-                            echo '<div class="task-indicator" style="background-color: blue; color: white; font-size: 10px;">Tarefa Agendada</div>';
-                        }
-
-                        echo '</td>';
-                        $day++;
-                    } else {
-                        echo '<td></td>';
-                    }
-                }
-                echo '</tr>';
-            }
-            echo '</table>';
-            ?>
-        </div>
-    </div>
-</div>
-</div>
-</div>
-
-
-
-<!-- Modal para exibir as tarefas -->
-<div id="taskModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h4>Agendamentos do Dia</h4>
-        <div id="taskDetails"></div> <!-- Exibe as tarefas do dia selecionado -->
-    </div>
-</div>
+<!--  -->
 
 <script src="./src/js/active.js"></script>
 

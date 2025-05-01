@@ -288,54 +288,55 @@ try {
 
 // Function to generate the calendar
 function gerarCalendario($month, $year, $eventos, $selectedDay) {
-    $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-    $firstDayOfMonth = strtotime("$year-$month-01");
-    $firstDayWeekday = (int)date("w", $firstDayOfMonth);
+  $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+  $firstDayOfMonth = strtotime("$year-$month-01");
+  $firstDayWeekday = (int)date("w", $firstDayOfMonth);
 
-    $calendar = '<table class="calendar-table" role="grid" aria-label="Calendário de Eventos">';
-    $calendar .= '<thead><tr>';
-    $calendar .= '<th scope="col">Dom</th><th scope="col">Seg</th><th scope="col">Ter</th>';
-    $calendar .= '<th scope="col">Qua</th><th scope="col">Qui</th><th scope="col">Sex</th><th scope="col">Sáb</th>';
-    $calendar .= '</tr></thead><tbody><tr>';
+  $calendar = '<table class="calendar-table" role="grid" aria-label="Calendário de Eventos">';
+  $calendar .= '<thead><tr>';
+  $calendar .= '<th scope="col">Dom</th><th scope="col">Seg</th><th scope="col">Ter</th>';
+  $calendar .= '<th scope="col">Qua</th><th scope="col">Qui</th><th scope="col">Sex</th><th scope="col">Sáb</th>';
+  $calendar .= '</tr></thead><tbody><tr>';
 
-    // Add blank days at the start
-    for ($i = 0; $i < $firstDayWeekday; $i++) {
-        $calendar .= '<td></td>';
-    }
+  // Add blank days at the start
+  for ($i = 0; $i < $firstDayWeekday; $i++) {
+      $calendar .= '<td></td>';
+  }
 
-    $day = 1;
-    $cellCount = $firstDayWeekday;
-    while ($day <= $daysInMonth) {
-        if ($cellCount % 7 === 0) {
-            $calendar .= '</tr><tr>';
-        }
+  $day = 1;
+  $cellCount = $firstDayWeekday;
+  while ($day <= $daysInMonth) {
+      if ($cellCount % 7 === 0) {
+          $calendar .= '</tr><tr>';
+      }
 
-        $isSelected = $day == $selectedDay ? ' selected-day' : '';
-        $calendar .= "<td role='gridcell' class='day-cell$isSelected' data-day='$day' aria-label='Dia $day'>";
-        $calendar .= "<span class='day-number'>$day</span>";
+      $isSelected = $day == $selectedDay ? ' selected-day' : '';
+      $calendar .= "<td role='gridcell' class='day-cell$isSelected' data-day='$day' aria-label='Dia $day'>";
+      $calendar .= "<span class='day-number'>$day</span>";
 
-        // Display events
-        foreach ($eventos as $evento) {
-            if ($evento['day'] == $day) {
-                $calendar .= "<div class='evento' style='background-color: {$evento['cor']}' data-id='{$evento['id']}' role='button' tabindex='0' aria-label='Evento: {$evento['titulo']}'>";
-                $calendar .= "<strong>" . htmlspecialchars($evento['titulo']) . "</strong>";
-                $calendar .= "</div>";
-            }
-        }
+      // Display events
+      foreach ($eventos as $evento) {
+          if ($evento['day'] == $day) {
+              $calendar .= "<div class='evento' style='background-color: {$evento['cor']}' data-id='{$evento['id']}' role='button' tabindex='0' aria-label='Evento: {$evento['titulo']}'>";
+              $calendar .= "<i class='fas fa-calendar-day'></i><strong>" . htmlspecialchars($evento['titulo']) . "</strong>";
+              $calendar .= "</div>";
+          }
+      }
 
-        $calendar .= '</td>';
-        $day++;
-        $cellCount++;
-    }
+      $calendar .= '</td>';
+      $day++;
+      $cellCount++;
+  }
 
-    // Fill remaining cells
-    while ($cellCount % 7 !== 0) {
-        $calendar .= '<td></td>';
-        $cellCount++;
-    }
-    $calendar .= '</tr></tbody></table>';
-    return $calendar;
+  // Fill remaining cells
+  while ($cellCount % 7 !== 0) {
+      $calendar .= '<td></td>';
+      $cellCount++;
+  }
+  $calendar .= '</tr></tbody></table>';
+  return $calendar;
 }
+
 
 // Generate navigation links
 function generateNavigation($currentMonth, $currentYear, $categoryFilter, $searchQuery, $selectedDay) {
@@ -414,31 +415,31 @@ include 'header.php';
       <!-- <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>"> -->
 
       <!-- Título -->
-      <div class="form-group">
+      <div class="input-icon">
         <label for="titulo">Título</label>
         <input type="text" name="titulo" id="titulo" required aria-required="true">
       </div>
 
       <!-- Descrição -->
-      <div class="form-group">
+      <div class="input-icon">
         <label for="descricao">Descrição</label>
         <textarea name="descricao" id="descricao" aria-describedby="desc-help"></textarea>
       </div>
 
       <!-- Data -->
-      <div class="form-group input-with-icon">
+      <div class="input-icon input-with-icon">
         <label for="data">Data</label>
         <input type="date" name="data" id="data" required aria-required="true" value="<?= sprintf("%04d-%02d-%02d", $currentYear, $currentMonth, $selectedDay) ?>">
       </div>
 
       <!-- Tempo -->
-      <div class="form-group input-with-icon">
+      <div class="input-icon input-with-icon">
         <label for="hora">Tempo</label>
         <input type="time" name="hora" id="hora" required aria-required="true">
       </div>
 
       <!-- Categoria -->
-      <div class="form-group">
+      <div class="input-icon">
         <label for="categoria">Categoria</label>
         <select name="categoria" id="categoria" required aria-required="true">
           <?php foreach ($categories as $key => $label): ?>
@@ -448,21 +449,20 @@ include 'header.php';
       </div>
 
       <!-- Cor -->
-      <div class="form-group">
+      <div class="input-icon">
         <label for="cor">Cor</label>
         <input type="color" name="cor" id="cor" value="#ff0000" required aria-required="true">
       </div>
 
       <!-- Enviar por e-mail -->
-      <div class="form-group">
-        <label>
-          <input type="checkbox" name="enviar_email" id="enviar-email">
-          Enviar por e-mail
-        </label>
-      </div>
+<div class="input-icon">
+  <input type="checkbox" name="enviar_email" id="enviar-email">
+  <label for="enviar-email">Enviar por e-mail</label>
+</div>
+
 
       <!-- E-mail do destinatário -->
-      <div class="form-group" id="email-field">
+      <div class="input-icon" id="email-field">
         <label for="email_destinatario">E-mail do Destinatário</label>
         <select name="email_destinatario" id="email-destinatario">
           <option value="">Selecione ou digite um e-mail</option>
@@ -474,7 +474,7 @@ include 'header.php';
       </div>
 
       <!-- Salvar e-mail para eventos futuros -->
-      <div class="form-group" id="salvar-email-field">
+      <div class="input-icon" id="salvar-email-field">
         <label>
           <input type="checkbox" name="salvar_email" id="salvar-email">
           Salvar este e-mail para eventos futuros
@@ -483,15 +483,16 @@ include 'header.php';
 
       <div class="form-actions">
         <button type="submit" id="submit-btn"><i class="fas fa-check-circle"></i> Adicionar Evento</button>
+        
+         <button id="toggle-category-form"><i class="fas fa-tags"></i> Adicionar nova categoria</button>
         <button type="button" class="cancel-btn" id="cancel-btn" style="display: none;">Cancelar</button>
       </div>
     </form>
 
-    <button id="toggle-category-form"><i class="fas fa-tags"></i> Adicionar nova categoria</button>
     <form id="add-category-form" method="POST">
       <input type="hidden" name="action" value="add_category">
       <!-- <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>"> -->
-      <div class="form-group">
+      <div class="input-icon">
         <label for="new_category">Nova Categoria:</label>
         <input type="text" name="new_category" id="new_category" placeholder="Digite o nome da categoria">
       </div>
@@ -499,19 +500,23 @@ include 'header.php';
     </form>
   </div>
 
-  <!-- Calendário -->
-  <div class="calendar-container">
-    <div class="calendar-header">
-      <button id="prev-month" data-url="<?= $navigation['prevMonthLink'] ?>" aria-label="Mês anterior">
-        <i class="fas fa-arrow-left"></i> Anterior
-      </button>
-      <h2 id="month-year" aria-live="polite"><?= date("F Y", strtotime("$currentYear-$currentMonth-01")) ?></h2>
-      <button id="next-month" data-url="<?= $navigation['nextMonthLink'] ?>" aria-label="Próximo mês">
-        Próximo <i class="fas fa-arrow-right"></i>
-      </button>
-    </div>
-    <?= gerarCalendario($currentMonth, $currentYear, $eventos, $selectedDay); ?>
+
+<!-- Calendário -->
+<div class="calendar-container">
+  <div class="calendar-header">
+    <button id="prev-month" data-url="<?= $navigation['prevMonthLink'] ?>" aria-label="Mês anterior">
+      <i class="fas fa-chevron-left"></i> Anterior
+    </button>
+    <h2 id="month-year" aria-live="polite">
+      <i class="fas fa-calendar-alt"></i> <?= date("F Y", strtotime("$currentYear-$currentMonth-01")) ?>
+    </h2>
+    <button id="next-month" data-url="<?= $navigation['nextMonthLink'] ?>" aria-label="Próximo mês">
+      Próximo <i class="fas fa-chevron-right"></i>
+    </button>
   </div>
+  <?= gerarCalendario($currentMonth, $currentYear, $eventos, $selectedDay); ?>
+</div>
+
 
   <!-- Eventos do Dia -->
   <div class="daily-events-preview">

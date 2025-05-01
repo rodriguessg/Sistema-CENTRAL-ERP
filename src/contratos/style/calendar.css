@@ -1,131 +1,430 @@
-/* Container principal para 5x5 grid */
+/* Layout Principal */
 .calendar-and-events {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 5 colunas de tamanhos iguais */
-    grid-template-rows: repeat(3, 1fr); /* 5 linhas de tamanhos iguais */
-    grid-column-gap: 10px; /* Espaçamento entre as colunas */
-    grid-row-gap: 10px; /* Espaçamento entre as linhas */
-    width: 100%; /* Garante que o layout ocupe toda a largura disponível */
-  }
-  
-  /* Formulário Adicionar Evento (1ª coluna) */
-  .event-sidebar {
-    grid-area: 1 / 1 / 7 / 2; /* A primeira coluna (1 a 6) */
-    background-color: #FFFFFF;
-    padding: 15px; /* Ajuste do padding */
-    border-radius: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+
+/* Sidebar - Formulário Adicionar Evento */
+.event-sidebar {
+    grid-area: 1 / 1 / 7 / 2;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     gap: 10px;
-    height: 100%; /* Garantir que ocupe a altura total disponível */
-    box-sizing: border-box; /* Garantir que o padding não afete a altura */
-  }
-  
-  .event-sidebar h3 {
-    font-size: 1.1em;
-    color: #333;
-  }
-  
-  .form-group {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* Formulário Principal */
+#event-form {
     display: flex;
     flex-direction: column;
-    gap: 6px; /* Reduzir gap */
-  }
-  
-  .form-group label {
-    font-weight: bold;
+    gap: 10px;
+}
+
+/* Título do Formulário */
+#event-form h3 {
+    margin-bottom: 20px;
+    font-size: 22px;
     color: #333;
-    font-size: 0.9em; /* Reduzir o tamanho da fonte */
-  }
-  
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
+}
+
+/* Inputs Gerais */
+#event-form input[type="text"],
+#event-form input[type="date"],
+#event-form input[type="time"],
+#event-form input[type="email"],
+#event-form textarea,
+#event-form select,
+#event-form input[type="color"] {
     width: 100%;
-    padding: 6px; /* Ajuste do padding */
-    font-size: 0.8em; /* Reduzir o tamanho da fonte */
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
-  /* Calendário (2ª coluna, primeira linha) */
-  .calendar-container {
-    grid-area: 1 / 2 / 3 / 3; /* 1 a 3 na segunda coluna */
-    background-color: #FFFFFF;
-    border: 1px solid #ddd;
-    padding: 10px; /* Ajuste do padding */
-    border-radius: 8px;
-    height: 100%; /* Garantir que ocupe a altura total disponível */
-    box-sizing: border-box; /* Garantir que o padding não afete a altura */
-  }
-  
-  /* Eventos do Dia (3ª coluna, de 3 a 6) */
-  .daily-events-preview {
-    grid-area: 3 / 2 / 6 / 3; /* 3 a 6 na terceira coluna */
+    padding: 5px 10px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    margin-top: 5px;
+}
+
+/* Input Color Especial */
+#event-form input[type="color"] {
+    height: 40px;
+    padding: 0;
+}
+
+/* Botões Principais do Formulário */
+#submit-btn,
+#cancel-btn,
+#toggle-category-form,
+#add-category-form button {
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 10px 15px;
+    width: 50%;
+    text-align: center;
+    transition: background-color 0.3s;
+    box-sizing: border-box;
+}
+
+/* Botão Enviar */
+#submit-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+#submit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Botão Cancelar */
+#cancel-btn {
+    background-color: #dc3545;
+    color: white;
     margin-top: 10px;
+}
+
+#cancel-btn:hover {
+    background-color: #c82333;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+/* Formulário Adicionar Categoria */
+#add-category-form {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Botão Adicionar Categoria */
+#add-category-form button {
+    background-color: #28a745;
+    color: white;
+}
+
+#add-category-form button:hover {
+    background-color: #218838;
+}
+
+
+
+/* Eventos do Dia */
+.daily-events-preview {
+    grid-area: 3 / 2 / 6 / 3;
     background-color: #f9f9f9;
-    padding: 10px; /* Reduzir o padding */
+    padding: 10px;
     border-radius: 8px;
-    height: 100%; /* Garantir que ocupe a altura total disponível */
-    box-sizing: border-box; /* Garantir que o padding não afete a altura */
-  }
-  
-  /* Ícones nos campos */
-  .input-with-icon {
+    height: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+
+/* Inputs com Ícones */
+.input-with-icon {
     position: relative;
-  }
-  
-  .input-with-icon i {
+}
+
+.input-with-icon i {
     position: absolute;
-    right: 8px; /* Ajuste a posição do ícone */
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
     color: #ccc;
-    font-size: 0.9em; /* Reduzir o tamanho do ícone */
-  }
-  
-  .form-actions button {
+    font-size: 0.9em;
+}
+
+/* Campo de Email com Ícone */
+#email-field.input-icon {
+    display: grid;
+    gap: 10px;
+}
+
+.form-actions button {
     background-color: #007bff;
     color: white;
-    padding: 8px 12px; /* Ajuste do tamanho do botão */
+    padding: 8px 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    display: inline-flex;
-    gap: 6px;
-    align-items: center;
-    font-size: 0.85em; /* Reduzir o tamanho da fonte */
-  }
-  
-  .form-actions .cancel-btn {
+    font-size: 0.85em;
+    text-align: left;
+}
+
+.form-actions .cancel-btn {
     background-color: #ccc;
-  }
-  
-  .form-actions button:hover {
+}
+
+.form-actions button:hover {
     opacity: 0.9;
-  }
-  
-  /* Responsividade */
-  @media screen and (max-width: 768px) {
+}
+
+/* ========================= */
+/*          RESPONSIVO       */
+/* ========================= */
+@media (max-width: 768px) {
     .calendar-and-events {
-      grid-template-columns: 1fr; /* Em telas menores, o layout será de 1 coluna */
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
     }
-  
+
     .event-sidebar {
-      width: 100%;
-      padding: 10px;
+        grid-area: auto;
+        width: 100%;
+        height: auto;
     }
-  
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      font-size: 0.8em;
-      padding: 6px;
+
+    .calendar-container {
+        grid-area: auto;
+        width: 100%;
+        height: auto;
+        margin-top: 20px;
     }
-  
-    .form-actions button {
-      width: 100%;
-      margin-top: 8px;
+
+    .daily-events-preview {
+        grid-area: auto;
+        width: 100%;
+        height: auto;
+        margin-top: 20px;
     }
-  }
-  
+
+    #submit-btn,
+    #cancel-btn,
+    #toggle-category-form,
+    #add-category-form button {
+        width: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    #event-form h3 {
+        font-size: 18px;
+    }
+
+    #event-form input,
+    #event-form textarea,
+    #event-form select {
+        font-size: 13px;
+    }
+}
+
+
+/* calendario de eventos */
+/* Container Calendário */
+.calendar-container {
+    grid-area: 1 / 2 / 3 / 3;
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    background-color: #ffffff;
+}
+
+/* Cabeçalho do Calendário */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #333333;
+    font-size: 18px;
+    margin-bottom: 10px;
+    background-color: #388f80; /* Cor de fundo do cabeçalho */
+    border-top-left-radius: 12px; /* Bordas superiores arredondadas */
+    border-top-right-radius: 12px; /* Bordas superiores arredondadas */
+    padding: 10px;
+}
+
+#month-year {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+}
+
+#month-year i {
+    margin-right: 10px; /* Distância entre o ícone e o mês/ano */
+}
+
+/* Botões de Navegação */
+.calendar-header button {
+    background: #45B5A9; /* Cor de fundo suave para o botão */
+    color: white;
+    font-size: 16px;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.calendar-header button:hover {
+    background-color: #388f80; /* Cor de hover */
+}
+
+.calendar-header button i {
+    font-size: 18px; /* Ícones maiores */
+}
+
+/* Estilos dos dias da semana */
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #388f80; /* Cor de fundo das semanas */
+    margin-bottom: 10px;
+}
+
+.calendar-weekdays div {
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Estilos dos dias do mês */
+.calendar-day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.day-cell {
+    background-color: #f9f9f9; /* Fundo branco para os dias */
+    padding: 20px;
+    font-size: 16px;
+    color: #444444;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative; /* Para os eventos serem posicionados dentro da célula */
+}
+
+.day-number {
+    font-weight: bold;
+}
+
+.selected-day {
+    background-color: #ddd; /* Destaque do dia selecionado */
+    color: white;
+    font-weight: bold;
+}
+
+/* Hover nos dias */
+.day-cell:hover {
+    background-color: #f1f1f1;
+    color: #ddd;
+}
+
+/* Estilos para os Eventos no Calendário */
+.evento {
+    background-color: #FF5959; /* Cor de evento vermelho */
+    border-radius: 8px;
+    color: white;
+    font-size: 12px;
+    display: inline-block;
+    padding: 8px;
+    margin-top: 5px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    position: absolute; /* Garante que o evento fique dentro da célula */
+    bottom: 5px; /* Coloca os eventos no fundo da célula */
+    left: 5px;
+    right: 5px;
+    box-sizing: border-box;
+}
+
+.evento i {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+}
+
+/* Outros tipos de eventos (cores diferentes) */
+.evento-blue {
+    background-color: #4A90E2; /* Azul */
+}
+
+.evento-green {
+    background-color: #7ED321; /* Verde */
+}
+
+.evento-black {
+    background-color: #000; /* Preto */
+}
+
+/* Ajustes de Responsividade */
+@media (max-width: 768px) {
+    .calendar-container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .calendar-header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .calendar-header button {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-container {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .calendar-weekdays div, .day-cell {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .calendar-header button {
+        font-size: 12px;
+    }
+}
+
+
+/* Estilo para as células da tabela (td) e cabeçalhos (th) */
+.calendar-table td, .calendar-table th {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #111827;
+    text-align: center;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border: 1px solid #ddd; /* Borda leve para separar as células */
+}
+
+/* Estilo específico para os cabeçalhos da tabela (th) */
+.calendar-table th {
+    background-color: #388f80; /* Cor de fundo para cabeçalhos */
+    color: #ffffff; /* Cor de texto branca para contraste */
+    font-weight: bold; /* Torna o texto em negrito */
+}
+
+

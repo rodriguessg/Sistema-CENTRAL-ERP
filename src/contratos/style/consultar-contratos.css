@@ -39,11 +39,7 @@ tr:hover {
   background-color: #f1f1f1;
   transition: background-color 0.3s ease;
 }
-.input-group-contratos, .email-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
+
 .input-group-contratos label, .email-group label {
   display: block;
   margin-bottom: 5px;
@@ -60,20 +56,7 @@ tr:hover {
   font-size: 1rem;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-th, td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-th {
-  background: #007bff;
-  color: #fff;
-}
+
 #agendamento-container {
   margin-top: 20px;
   border-top: 1px solid #ddd;

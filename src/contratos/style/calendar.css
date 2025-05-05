@@ -184,15 +184,43 @@
 }
 
 /* Informações do evento */
+/* Estilo para o título e horário do evento */
 .daily-event-info {
-    font-size: 16px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     color: #333333;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espaçamento entre os elementos */
 }
 
+/* Estilo do título do evento */
+.event-title,
+.event-time {
+    display: flex;
+    align-items: center;
+}
+
+/* Estilo do ícone no título e horário do evento */
+.event-title .event-icon,
+.event-time .event-icon {
+    margin-right: 8px;
+}
+
+.event-title .event-icon {
+    font-size: 18px;
+    color: #45B5A9; /* Cor do ícone */
+}
+
+.event-time .event-icon {
+    font-size: 16px;
+    color: #7ED321; /* Cor do ícone do relógio */
+}
+
+/* Estilo para o título e horário do evento */
 .daily-event-info strong {
-    display: block;
     font-size: 18px;
     color: #222;
+    display: block;
 }
 
 .daily-event-info small {
@@ -257,7 +285,6 @@
     margin-left: 10px;
 }
 
-
 /* Responsividade para telas pequenas */
 @media (max-width: 768px) {
     .daily-events-preview {
@@ -276,6 +303,7 @@
         font-size: 16px;
     }
 }
+
 
 /* Inputs com Ícones */
 .input-with-icon {

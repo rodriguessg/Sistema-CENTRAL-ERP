@@ -520,7 +520,11 @@ include 'header.php';
 
   <!-- Eventos do Dia -->
   <div class="daily-events-preview">
-    <h3>Eventos do Dia <?= sprintf("%02d/%02d/%04d", $selectedDay, $currentMonth, $currentYear) ?></h3>
+  <h3>
+    <i class="fas fa-calendar-day" style="margin-right: 10px;"></i>
+    Eventos do Dia <?= sprintf("%02d/%02d/%04d", $selectedDay, $currentMonth, $currentYear) ?>
+</h3>
+
     <?php if (empty($dailyEvents)): ?>
       <p>Nenhum evento para este dia.</p>
     <?php else: ?>
@@ -528,10 +532,17 @@ include 'header.php';
         <div class="daily-event">
           <div class="event-color-bar" style="background-color: <?= htmlspecialchars($event['cor']) ?>;"></div>
           <div class="daily-event-content">
-            <div class="daily-event-info">
-              <strong><?= htmlspecialchars($event['titulo']) ?></strong>
-              <small>das <?= htmlspecialchars($event['hora']) ?></small>
-            </div>
+          <div class="daily-event-info">
+    <div class="event-title">
+        <i class="fas fa-calendar-alt event-icon"></i>
+        <strong><?= htmlspecialchars($event['titulo']) ?></strong>
+    </div>
+    <div class="event-time">
+        <i class="fas fa-clock event-icon"></i>
+        <small>das <?= htmlspecialchars($event['hora']) ?></small>
+    </div>
+</div>
+
             <div class="daily-event-menu">
               <i class="fas fa-bars menu-icon"></i>
               <div class="dropdown-menu">

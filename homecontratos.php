@@ -183,6 +183,9 @@ include 'header.php';
     <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">
         <i class="fas fa-info-circle"></i> Resumo
     </div>
+    <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
+            <i class="fas fa-edit"></i> Gerenciar Contratos
+        </div>
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
         <i class="fas fa-file-alt"></i> Relatórios
     </div>  
@@ -1499,7 +1502,126 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
 ?>
 <!-- Ícone de Loading -->
 <div class="loading" style="display:none;"></div>
+<!-- Dentro do body, substitua a seção da aba "gerenciar" por: -->
+<div class="form-container" id="gerenciar" style="display:none;">
+    <h2>Gerenciar Contratos</h2>
+    <button class="btn btn-success btn-sm mb-3" onclick="saveContractChanges()">Salvar Alterações</button>
+    <table id="contratosTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mês</th>
+                <th>Empenho</th>
+                <th>Tipo</th>
+                <th>Nota de Empenho</th>
+                <th>Valor do Contrato</th>
+                <th>Créditos Ativos</th>
+                <th>SEI</th>
+                <th>Nota Fiscal</th>
+                <th>Envio Pagamento</th>
+                <th>Vencimento da Fatura</th>
+                <th>Valor Liquidado</th>
+                <th>Valor Liquidado Ag</th>
+                <th>Ordem Bancária</th>
+                <th>Data de Atualização</th>
+            </tr>
+        </thead>
+        <tbody id="contratosTableBody">
+            <!-- Dados serão preenchidos dinamicamente -->
+        </tbody>
+    </table>
+</div>
 
+<script>
+    // Função para exibir o resumo do processo e abrir a aba Gerenciar Contratos
+    function showResumoProcesso(rowData) {
+        const contractData = typeof rowData === 'string' ? JSON.parse(rowData) : rowData;
+        showTab('gerenciar');
+        loadContracts(contractData);
+    }
+
+    // Função para carregar e preencher a tabela de contratos com dados do contrato clicado
+    function loadContracts(contractData) {
+        const tbody = document.getElementById('contratosTableBody');
+        tbody.innerHTML = ''; // Limpar tabela
+
+        // Criar uma linha editável com base nos dados do contrato
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="text" value="${contractData.mes || 'N/A'}" class="form-control form-control-sm" data-key="mes"></td>
+            <td><input type="text" value="${contractData.empenho || 'N/A'}" class="form-control form-control-sm" data-key="empenho"></td>
+            <td><input type="text" value="${contractData.tipo || 'N/A'}" class="form-control form-control-sm" data-key="tipo"></td>
+            <td><input type="text" value="${contractData.nota_empenho || 'N/A'}" class="form-control form-control-sm" data-key="nota_empenho"></td>
+            <td><input type="number" step="0.01" value="${contractData.valor_contrato || 0}" class="form-control form-control-sm" data-key="valor_contrato"></td>
+            <td><input type="text" value="${contractData.creditos_ativos || 'N/A'}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
+            <td><input type="text" value="${contractData.SEI || 'N/A'}" class="form-control form-control-sm" data-key="sei"></td>
+            <td><input type="text" value="${contractData.nota_fiscal || 'N/A'}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
+            <td><input type="text" value="${contractData.envio_pagamento || 'N/A'}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
+            <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
+            <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
+            <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
+            <td><input type="text" value="${contractData.ordem_bancaria || 'N/A'}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
+            <td><input type="date" value="${contractData.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
+        `;
+        tbody.appendChild(tr);
+
+        // Armazenar o ID do contrato para uso no salvamento
+        tbody.dataset.contractId = contractData.id;
+    }
+
+    // Função para salvar as alterações no contrato
+    async function saveContractChanges() {
+        const inputs = document.querySelectorAll('#contratosTableBody input');
+        const tbody = document.getElementById('contratosTableBody');
+        const contractId = tbody.dataset.contractId;
+
+        const updatedData = { id: contractId };
+        inputs.forEach(input => {
+            const key = input.getAttribute('data-key');
+            if (input.type === "number") {
+                updatedData[key] = parseFloat(input.value) || 0;
+            } else if (input.type === "date") {
+                updatedData[key] = input.value || null;
+            } else {
+                updatedData[key] = input.value || null;
+            }
+        });
+
+        try {
+            const response = await fetch('/update_contract.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                alert('Alterações salvas com sucesso!');
+            } else {
+                alert('Erro ao salvar alterações: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Erro ao salvar contrato:', error);
+            alert('Erro ao salvar alterações: ' + error.message);
+        }
+    }
+
+    // Certificar que a função showTab está definida
+    function showTab(tabId) {
+        const tabs = document.querySelectorAll('.tab');
+        const contents = document.querySelectorAll('.form-container');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        contents.forEach(content => content.style.display = 'none');
+        document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+        document.getElementById(tabId).style.display = 'block';
+    }
+</script>
 </body>
 </html>
 <?php

@@ -75,7 +75,7 @@ try {
                     ['link' => 'painelcontratos.php', 'nome' => 'Painel', 'icon' => 'cogs'],
                     ['link' => 'homecontratos.php', 'nome' => 'Home', 'icon' => 'home'],
                     ['link' => 'calendar.php', 'nome' => 'Calendário / Tarefas', 'icon' => 'calendar-alt'],
-                    ['link' => 'rh.php', 'nome' => 'Assinatura Contratos', 'icon' => 'envelope'],
+                    ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
                 ];
                 break;
 
@@ -94,7 +94,7 @@ try {
                 $menuItens = [
                     ['link' => 'homefinanceiro.php', 'nome' => 'Home', 'icon' => 'home'],
                     ['link' => 'painelfinanceiro.php', 'nome' => 'Painel', 'icon' => 'chart-line'],
-                    ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
+                    ['link' => 'rh.php', 'nome' => 'Gerador de assinatura de email', 'icon' => 'envelope'],
                     ['link' => 'perfil.php', 'nome' => 'Perfil', 'icon' => 'user'],
                     ['link' => 'sair.php', 'nome' => 'Sair', 'icon' => 'sign-out-alt'],
                 ];

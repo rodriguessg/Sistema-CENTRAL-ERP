@@ -298,6 +298,7 @@
 .daily-event-menu {
     position: relative;
     cursor: pointer;
+    margin-right: 20px;
 }
 
 .menu-icon {

@@ -18,18 +18,35 @@ $(document).ready(function() {
         window.location.search = urlParams.toString();
     });
 
-    // Toggle dropdown menu
-    $('.menu-icon').click(function(e) {
-        e.stopPropagation();
-        const $dropdown = $(this).siblings('.dropdown-menu');
-        $('.dropdown-menu').not($dropdown).hide();
-        $dropdown.toggle();
-    });
 
-    // Hide dropdown when clicking outside
-    $(document).click(function() {
-        $('.dropdown-menu').hide();
-    });
+ // Toggle dropdown menu
+$('.menu-icon').click(function(e) {
+    e.stopPropagation();  // Impede a propagação do clique para o document
+    const $dropdown = $(this).siblings('.dropdown-menu');
+
+    // Se o dropdown já estiver visível, fecha, senão abre
+    if ($dropdown.is(':visible')) {
+        $dropdown.hide();
+    } else {
+        // Esconde outros dropdowns e mostra o atual
+        $('.dropdown-menu').not($dropdown).hide();
+        $dropdown.show();  // Exibe o dropdown
+    }
+});
+
+// Fechar o dropdown ao clicar fora dele
+$(document).click(function(e) {
+    // Se o clique não for dentro do menu ou no ícone
+    if (!$(e.target).closest('.daily-event-menu').length) {
+        $('.dropdown-menu').hide();  // Esconde todos os menus
+    }
+});
+
+// Impedir que o clique dentro do dropdown feche o menu
+$('.dropdown-menu').click(function(e) {
+    e.stopPropagation();  // Impede o menu de fechar ao clicar dentro dele
+});
+
 
     // Toggle email field visibility
     $('#enviar-email').change(function() {

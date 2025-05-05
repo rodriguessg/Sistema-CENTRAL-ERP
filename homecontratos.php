@@ -184,7 +184,7 @@ include 'header.php';
         <i class="fas fa-info-circle"></i> Resumo
     </div>
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
-        <i class="fas fa-file-alt"></i> Relatório
+        <i class="fas fa-file-alt"></i> Relatórios
     </div>  
     <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
 </div>

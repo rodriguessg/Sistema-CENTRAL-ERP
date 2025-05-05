@@ -141,6 +141,7 @@ $('.dropdown-menu').click(function(e) {
         }
     });
 
+
     // Substituir o texto do evento por ícones no calendário
     $('.day-cell').each(function() {
         var eventContent = $(this).find('.evento');
@@ -149,6 +150,8 @@ $('.dropdown-menu').click(function(e) {
             $(this).empty().append(icon); // Remove o texto e adiciona o ícone
         });
     });
+
+    
 });
 
 

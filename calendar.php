@@ -318,7 +318,7 @@ function gerarCalendario($month, $year, $eventos, $selectedDay) {
       foreach ($eventos as $evento) {
           if ($evento['day'] == $day) {
               $calendar .= "<div class='evento' style='background-color: {$evento['cor']}' data-id='{$evento['id']}' role='button' tabindex='0' aria-label='Evento: {$evento['titulo']}'>";
-              $calendar .= "<i class='fas fa-calendar-day'></i><strong>" . htmlspecialchars($evento['titulo']) . "</strong>";
+              // $calendar .= "<i class='fas fa-calendar-day'></i><strong>" . htmlspecialchars($evento['titulo']) . "</strong>";
               $calendar .= "</div>";
           }
       }
@@ -548,7 +548,7 @@ include 'header.php';
 
   <div class="event-description">
     <i class="fas fa-info-circle event-icon"></i> <!-- Novo ícone -->
-    <small><?= htmlspecialchars($event['descricao']) ?></small>
+    <small> <?= htmlspecialchars($event['descricao']) ?></small>
    </div>
 </div>
 

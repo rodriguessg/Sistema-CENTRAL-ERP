@@ -25,7 +25,6 @@
 #event-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
 }
 
 /* Título do Formulário */
@@ -69,6 +68,7 @@
 }
 
 /* Botões Principais do Formulário */
+/* Botões Principais do Formulário */
 #submit-btn,
 #cancel-btn,
 #toggle-category-form,
@@ -78,23 +78,13 @@
     cursor: pointer;
     font-size: 14px;
     padding: 10px 15px;
-    width: 50%;
+    width: 100%;
     text-align: center;
-    transition: background-color 0.3s;
     box-sizing: border-box;
+    transition: background-color 0.3s ease; /* Suavizar transição para cor */
 }
 
 /* Botão Enviar */
-#submit-btn {
-    background-color: #007bff;
-    color: white;
-}
-
-#submit-btn:hover {
-    background-color: #0056b3;
-}
-
-/* Botão Cancelar */
 #cancel-btn {
     background-color: #dc3545;
     color: white;
@@ -104,6 +94,42 @@
 #cancel-btn:hover {
     background-color: #c82333;
 }
+
+/* Botões de Ação (Adicionar Categoria, etc.) */
+.form-actions button {
+    background: linear-gradient(180deg, #3a4a64, #28303d); /* Cor base */
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85em;
+    text-align: center;
+    transition: background-color 0.3s ease; /* Transição suave */
+}
+
+/* Botão de Cancelar dentro de .form-actions */
+.form-actions .cancel-btn {
+    background-color: #ccc;
+}
+
+#toggle-category-form {
+    background: linear-gradient(180deg, #3a4a64, #28303d); /* Mantém o mesmo estilo do botão de ação */
+}
+
+/* Hover: altera a cor de fundo ao passar o mouse */
+#submit-btn:hover,
+#cancel-btn:hover,
+#toggle-category-form:hover,
+#add-category-form button:hover {
+    background: linear-gradient(180deg, #2c3e50, #1a242f); /* Cor de hover mais escura */
+    transform: none; /* Garantir que não haja aumento ou alteração no tamanho */
+}
+
+
+
+/* Botão Enviar */
+
 
 .form-actions {
     display: flex;
@@ -121,12 +147,12 @@
 
 /* Botão Adicionar Categoria */
 #add-category-form button {
-    background-color: #28a745;
+    background: linear-gradient(180deg, #3a4a64, #28303d); /* Cor base */
     color: white;
 }
 
 #add-category-form button:hover {
-    background-color: #218838;
+    background-color: white;
 }
 
 
@@ -135,7 +161,7 @@
 .daily-events-preview {
     grid-area: 3 / 1 / 2 / 3;
     background-color: #f9f9f9;
-    padding: 10px;
+    padding: 20px;
     border-radius: 8px;
     height: 100%;
     box-sizing: border-box;
@@ -166,24 +192,52 @@
     display: flex;
     align-items: center;
     background-color: #ffffff;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
+    margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
+    height: auto; /* Garante que o evento ocupe a altura necessária */
+    flex-grow: 1; /* Faz o evento crescer conforme necessário */
 }
 
+/* Efeito de hover para interatividade */
 .daily-event:hover {
-    transform: translateY(-5px); /* Efeito de hover para interatividade */
+    transform: translateY(-5px);
 }
 
 /* Barra de cor do evento */
 .event-color-bar {
     width: 10px;
-    height: 60px;
-    border-radius: 5px;
-    margin-right: 20px;
+    height: 100px;
+    margin-right: 10px;
+    border-radius: 0px 3px 3px 0px;
+    background-color: #FF5959; /* Cor de exemplo */
 }
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    .event-color-bar {
+        height: 80px; /* Ajusta a altura para telas menores */
+        width: 8px;   /* Reduz a largura para telas menores */
+    }
+
+    .daily-event {
+        padding: 8px; /* Aumenta o padding para melhorar a estética em telas pequenas */
+    }
+}
+
+@media (max-width: 480px) {
+    .event-color-bar {
+        height: 60px; /* Ajusta ainda mais a altura para telas muito pequenas */
+        width: 6px;   /* Ajusta a largura para telas muito pequenas */
+    }
+
+    .daily-event {
+        flex-direction: column; /* Muda a direção para coluna em telas pequenas */
+        align-items: flex-start; /* Alinha os itens à esquerda */
+        padding: 10px; /* Aumenta o padding para melhorar o layout em dispositivos móveis */
+    }
+}
+
 
 /* Conteúdo do evento */
 .daily-event-content {
@@ -205,16 +259,18 @@
 
 /* Estilo do título do evento */
 .event-title,
-.event-time {
+.event-time,.event-description {
     display: flex;
     align-items: center;
 }
 
 /* Estilo do ícone no título e horário do evento */
-.event-title .event-icon,
-.event-time .event-icon {
-    margin-right: 8px;
+.event-title .event-icon, 
+.event-time .event-icon,
+.event-description .event-icon { /* Adicionado .event-description */
+    margin-right: 8px; /* Espaçamento entre o ícone e o texto */
 }
+
 
 .event-title .event-icon {
     font-size: 18px;
@@ -314,6 +370,66 @@
     }
 }
 
+/* Estilos gerais para o container do input */
+.input-icon {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+}
+
+/* Estilo do rótulo */
+.input-icon label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* Container para o seletor de cor */
+.color-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Estilos do input de cor */
+input[type="color"] {
+    width: 40px;
+    height: 40px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+
+
+/* Efeito de hover no input de cor */
+input[type="color"]:hover {
+    transform: scale(1.1);
+}
+
+/* Estilos responsivos para telas menores */
+@media (max-width: 768px) {
+    .input-icon {
+        width: 100%;
+    }
+
+    .color-picker-container {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    input[type="color"], .color-display {
+        width: 35px;
+        height: 35px;
+    }
+}
+
+
 
 /* Inputs com Ícones */
 .input-with-icon {
@@ -335,24 +451,7 @@
     gap: 10px;
 }
 
-.form-actions button {
-    background-color: #007bff;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.85em;
-    text-align: left;
-}
 
-.form-actions .cancel-btn {
-    background-color: #ccc;
-}
-
-.form-actions button:hover {
-    opacity: 0.9;
-}
 
 /* ========================= */
 /*          RESPONSIVO       */

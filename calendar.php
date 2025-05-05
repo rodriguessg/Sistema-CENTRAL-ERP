@@ -449,15 +449,19 @@ include 'header.php';
       </div>
 
       <!-- Cor -->
-      <div class="input-icon">
-        <label for="cor">Cor</label>
-        <input type="color" name="cor" id="cor" value="#ff0000" required aria-required="true">
-      </div>
+     <!-- Cor -->
+<div class="input-icon">
+  <label for="cor">Cor</label>
+  <div class="color-picker-container">
+    <input type="color" name="cor" id="cor" value="#ff0000" required aria-required="true">
+  </div>
+</div>
+
 
       <!-- Enviar por e-mail -->
 <div class="input-icon">
-  <input type="checkbox" name="enviar_email" id="enviar-email">
-  <label for="enviar-email">Enviar por e-mail</label>
+
+  <label for="enviar-email">  <input type="checkbox" name="enviar_email" id="enviar-email"> Enviar por e-mail</label>
 </div>
 
 
@@ -541,6 +545,11 @@ include 'header.php';
         <i class="fas fa-clock event-icon"></i>
         <small>das <?= htmlspecialchars($event['hora']) ?></small>
     </div>
+
+  <div class="event-description">
+    <i class="fas fa-info-circle event-icon"></i> <!-- Novo ícone -->
+    <small><?= htmlspecialchars($event['descricao']) ?></small>
+   </div>
 </div>
 
             <div class="daily-event-menu">

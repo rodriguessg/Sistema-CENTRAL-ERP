@@ -7,10 +7,6 @@ try {
     $pdo = new PDO('mysql:host=localhost;dbname=gm_sicbd', 'root', '');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if ($_SESSION['username'] !== 'contratos') {
-        echo json_encode(['success' => false, 'message' => 'Acesso negado.']);
-        exit;
-    }
 
     $data = json_decode(file_get_contents('php://input'), true);
 
@@ -19,8 +15,8 @@ try {
         exit;
     }
 
-    $sql = "INSERT INTO pagamentos (contrato_titulo, mes, empenho, tipo, nota_empenho, valor_contrato, creditos_ativos, sei, nota_fiscal, envio_pagamento, vencimento_fatura, valor_liquidado, valor_liquidado_ag, ordem_bancaria, data_atualizacao, data_pagamento, valor) 
-            VALUES (:contrato_titulo, :mes, :empenho, :tipo, :nota_empenho, :valor_contrato, :creditos_ativos, :sei, :nota_fiscal, :envio_pagamento, :vencimento_fatura, :valor_liquidado, :valor_liquidado_ag, :ordem_bancaria, :data_atualizacao, :data_pagamento, :valor)";
+    $sql = "INSERT INTO pagamentos (contrato_titulo, mes, empenho, tipo, nota_empenho, valor_contrato, creditos_ativos, SEI, nota_fiscal, envio_pagamento, vencimento_fatura, valor_liquidado, valor_liquidado_ag, ordem_bancaria, data_atualizacao, data_pagamento ) 
+            VALUES (:contrato_titulo, :mes, :empenho, :tipo, :nota_empenho, :valor_contrato, :creditos_ativos, :SEI, :nota_fiscal, :envio_pagamento, :vencimento_fatura, :valor_liquidado, :valor_liquidado_ag, :ordem_bancaria, :data_atualizacao, :data_pagamento )";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -31,7 +27,7 @@ try {
         ':nota_empenho' => $data['nota_empenho'] ?? null,
         ':valor_contrato' => $data['valor_contrato'] ?? 0,
         ':creditos_ativos' => $data['creditos_ativos'] ?? null,
-        ':sei' => $data['sei'] ?? null,
+        ':SEI' => $data['SEI'] ?? null,
         ':nota_fiscal' => $data['nota_fiscal'] ?? null,
         ':envio_pagamento' => $data['envio_pagamento'] ?? null,
         ':vencimento_fatura' => $data['vencimento_fatura'] ?? null,
@@ -40,7 +36,7 @@ try {
         ':ordem_bancaria' => $data['ordem_bancaria'] ?? null,
         ':data_atualizacao' => $data['data_atualizacao'] ?? null,
         ':data_pagamento' => date('Y-m-d'),
-        ':valor' => $data['valor_liquidado'] ?? 0
+        // ':valor' => $data['valor_liquidado'] ?? 0
     ]);
 
     echo json_encode(['success' => true]);

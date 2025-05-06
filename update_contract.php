@@ -19,7 +19,7 @@ try {
         exit;
     }
 
-    $sql = "UPDATE gestao_contratos SET 
+    $sql = "UPDATE pagamentos SET 
             mes = :mes,
             empenho = :empenho,
             tipo = :tipo,

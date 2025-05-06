@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($relatorio_tipo === 'mensal') {
                 // Busca todos os contratos e seus pagamentos
                 $sql = "
-                    SELECT g.titulo, g.num_parcelas, p.data_pagamento, p.valor
+                    SELECT g.titulo, g.num_parcelas, p.data_pagamento, p.valor_contrato
                     FROM gestao_contratos g
                     LEFT JOIN pagamentos p ON p.contrato_titulo = g.titulo
                     WHERE g.titulo = ?
@@ -64,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         if ($row['data_pagamento']) {
                             $contratos[$titulo]['pagamentos'][] = [
+                                'mes' => $row['mes'],
                                 'data_pagamento' => $row['data_pagamento'],
                                 'valor' => (float)$row['valor']
                             ];
@@ -82,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Busca contratos e agrega pagamentos por ano
                 $sql = "
                     SELECT g.titulo, g.num_parcelas, YEAR(p.data_pagamento) AS ano,
-                           COUNT(p.id) AS quantidade_pagamentos, SUM(p.valor) AS total_pago
+                           COUNT(p.id) AS quantidade_pagamentos, SUM( p.valor_contrato) AS total_pago
                     FROM gestao_contratos g
                     LEFT JOIN pagamentos p ON p.contrato_titulo = g.titulo
                     WHERE g.titulo = ?
@@ -168,9 +169,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
             // Relatório de Pagamentos
-            } elseif ($relatorio_tipo === 'pagamentos') {
+            } else if ($relatorio_tipo === 'pagamentos') {
+                // Busca os pagamentos associados ao contrato
                 $sql = "
-                    SELECT p.data_pagamento, p.valor
+                    SELECT p.data_pagamento, p.valor_liquidado_ag, p.mes, p.contrato_titulo
                     FROM pagamentos p
                     WHERE p.contrato_titulo = ?
                     ORDER BY p.data_pagamento
@@ -179,13 +181,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([$titulo_contrato]);
                 $pagamentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+                // Verifica se existem pagamentos
                 if ($pagamentos) {
-                    $dados = ['pagamentos' => $pagamentos];
+                    // Organizar os pagamentos por contrato
+                    $contratos = [];
+                    foreach ($pagamentos as $pagamento) {
+                        $titulo = $pagamento['contrato_titulo'];
+
+                        // Organiza os dados
+                        if (!isset($contratos[$titulo])) {
+                            $contratos[$titulo] = [
+                                'contrato_titulo' => $titulo,
+                                'pagamentos' => []
+                            ];
+                        }
+
+                        $contratos[$titulo]['pagamentos'][] = [
+                            'mes' => $pagamento['mes'],
+                            'data_pagamento' => $pagamento['data_pagamento'],
+                            'valor_liquidado_ag' => (float)$pagamento['valor_liquidado_ag']
+                        ];
+                    }
+
+                    // Converte os dados para um array indexado
+                    $dados = array_values($contratos);
                     enviarResposta(true, $dados);
                 } else {
                     enviarResposta(false, [], 'Nenhum pagamento encontrado.');
                 }
-
             } else {
                 enviarResposta(false, [], 'Tipo de relatório inválido.');
             }

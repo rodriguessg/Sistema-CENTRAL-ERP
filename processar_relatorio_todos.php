@@ -17,32 +17,37 @@ try {
             throw new Exception('Mês não especificado.');
         }
 
-        // Consulta para relatórios mensais de todos os contratos usando contrato_titulo
-        $sql = "SELECT c.titulo, c.num_parcelas, p.data_pagamento, p.valor
-                FROM gestao_contratos c
-                LEFT JOIN pagamentos p ON c.titulo = p.contrato_titulo
-                WHERE MONTH(p.data_pagamento) = :mes";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['mes' => $mes]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+       // Consulta para relatórios mensais de todos os contratos usando contrato_titulo
+$sql = "SELECT c.titulo, c.num_parcelas, p.data_pagamento, p.valor_liquidado
+FROM gestao_contratos c
+LEFT JOIN pagamentos p ON c.titulo = p.contrato_titulo
+WHERE MONTH(p.data_pagamento) = :mes";
+$stmt = $pdo->prepare($sql);
+$stmt->execute(['mes' => $mes]);
+$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Organiza os dados
-        $contratos = [];
-        foreach ($result as $row) {
-            $titulo = $row['titulo'];
-            if (!isset($contratos[$titulo])) {
-                $contratos[$titulo] = [
-                    'titulo' => $titulo,
-                    'num_parcelas' => $row['num_parcelas'],
-                    'pagamentos' => []
-                ];
-            }
-            if ($row['data_pagamento']) {
-                $contratos[$titulo]['pagamentos'][] = [
-                    'data_pagamento' => $row['data_pagamento'],
-                    'valor' => $row['valor']
-                ];
-            }
+// Organiza os dados
+$contratos = [];
+foreach ($result as $row) {
+$titulo = $row['titulo'];
+if (!isset($contratos[$titulo])) {
+$contratos[$titulo] = [
+    'titulo' => $titulo,
+    'num_parcelas' => $row['num_parcelas'],
+    'pagamentos' => []
+];
+}
+if ($row['data_pagamento']) {
+// Adiciona o pagamento com o valor liquidado
+$contratos[$titulo]['pagamentos'][] = [
+    'data_pagamento' => $row['data_pagamento'],
+    'valor_liquidado' => $row['valor_liquidado']  // Agora o valor liquidado da tabela 'pagamentos' é incluído
+];
+}
+
+
+// Agora o array $contratos contém os dados organizados com o valor_liquidado da tabela pagamentos.
+
         }
         $dados = array_values($contratos);
 
@@ -54,7 +59,7 @@ try {
 
         // Consulta para relatórios anuais de todos os contratos usando contrato_titulo
         $sql = "SELECT c.titulo, c.num_parcelas, YEAR(p.data_pagamento) as ano, 
-                       SUM(p.valor) as total_pago, COUNT(p.id) as quantidade_pagamentos
+                       SUM(p.valor_contrato) as total_pago, COUNT(p.id) as quantidade_pagamentos
                 FROM gestao_contratos c
                 LEFT JOIN pagamentos p ON c.titulo = p.contrato_titulo
                 WHERE YEAR(p.data_pagamento) = :ano

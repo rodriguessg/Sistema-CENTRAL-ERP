@@ -140,6 +140,10 @@ try {
 }
 
 include 'header.php';
+// Incluir o código que já insere as notificações
+include 'verificar_notificacoes.php';  // O código que já insere as notificações
+
+// echo "Notificações inseridas com sucesso.";
 ?>
 
 
@@ -168,8 +172,6 @@ include 'header.php';
 <body>
 <div class="caderno">
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
-
-   
     <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
         <i class="fas fa-plus-circle"></i> Cadastro de contratos
@@ -191,8 +193,6 @@ include 'header.php';
     </div>  
     <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
 </div>
-
-
 
 <div class="form-container" id="cadastrar" style="display:none;">
     <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data">
@@ -312,8 +312,7 @@ include 'header.php';
     </form>
 </div>
 
-<script src="./src/contratos/js/cadastro_contato.js">
-</script>
+<script src="./src/contratos/js/cadastro_contato.js"></script>
 
 <!-- <div class="form-container3" id="processos">
     <?php
@@ -335,6 +334,320 @@ include 'header.php';
     </div>
 </div> -->
 <!-- Formulário para selecionar contrato e tipo de relatório -->
+
+
+<div class="form-container" id="consultar" style="display:none;">
+<h2 class="text-center mt-3">
+    <span class="icon-before fas fa-box"></span> Lista de Forncedores
+</h2>
+   <!-- Pesquisa -->
+<div class="search-bar">
+    <div class="search-filters">
+        <!-- Campo de pesquisa por título ou descrição -->
+        <input type="text" id="searchInput" class="input-field" placeholder="Digite o título ou descrição do contrato" oninput="searchContracts()">
+        
+        <!-- Filtro de status (Ativo/Inativo) -->
+        <select id="statusSelect" class="input-field" onchange="searchContracts()">
+            <option value="">Todos</option>
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+        </select>
+        
+        <!-- Botão para abrir o modal de filtro -->
+        <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
+    </div>
+</div>
+
+    <!-- Lista de Contratos -->
+<div class="table-container-contratos">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+            <th><i class="fas fa-hashtag"></i> ID</th>
+        <th><i class="fas fa-file-alt"></i> Nome</th>
+        <th><i class="fas fa-align-left"></i> Descrição</th>
+        <th><i class="fas fa-calendar-alt"></i> Validade</th>
+        <th><i class="fas fa-circle"></i> Status</th>
+        <th><i class="fas fa-cogs"></i> Ações</th>
+            </tr>
+        </thead>
+        <tbody id="contractTableBody">
+            <!-- Dados carregados via PHP -->
+            <?php
+            // Conexão com o banco de dados (supondo que $pdo já esteja configurado)
+
+            // Verifica se há um filtro de situação via GET
+            $situacao = isset($_GET['situacao']) ? $_GET['situacao'] : '';
+
+            // Monta a consulta SQL com filtro opcional
+            $sql = "SELECT * FROM gestao_contratos";
+            if (!empty($situacao)) {
+                $sql .= " WHERE situacao = :situacao";
+            }
+            $sql .= " ORDER BY validade "; //DESC ORDEM DECRESCENTE 
+
+            $stmt = $pdo->prepare($sql);
+
+            // Se houver filtro, vincula o valor da situação
+            if (!empty($situacao)) {
+                $stmt->bindParam(':situacao', $situacao, PDO::PARAM_STR);
+            }
+
+            $stmt->execute();
+
+// Exibe os resultados
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $situacao = $row['situacao'];
+        $situacaoClass = '';
+        $situacaoIcon = '';
+        $situacaoTextColor = '';
+        
+        // Verifica o valor de 'situacao' para aplicar o estilo adequado
+        if ($situacao == 'Ativo') {
+            $situacaoClass = 'Ativo'; // Classe para 'Ativo'
+            $situacaoIcon = 'fa-arrow-up'; // Ícone da seta para cima
+            $situacaoTextColor = 'green'; // Cor verde para 'Ativo'
+        } else {
+            $situacaoClass = 'Inativo'; // Classe para 'Inativo'
+            $situacaoIcon = 'fa-arrow-down'; // Ícone da seta para baixo
+            $situacaoTextColor = 'red'; // Cor vermelha para 'Inativo'
+        }
+
+        // Formatar a data de validade
+        $validade = new DateTime($row['validade']);
+        $validadeFormatted = $validade->format('d/m/Y');
+        
+        // Adicionando uma classe para a validade estilizada
+        $validadeClass = '';
+        $validadeTextColor = '';
+        $validadeIcon = '';
+
+        // Verifica se a data é válida, expirada ou próxima de expirar
+        $today = new DateTime();
+        $oneMonthLater = clone $today;
+        $oneMonthLater->modify('+1 month'); // Cria uma data com o próximo mês
+
+        if ($validade < $today) {
+            // Data expirada
+            $validadeClass = 'expired';
+            $validadeTextColor = 'red';
+            $validadeIcon = 'fa-times-circle';
+        } elseif ($validade <= $oneMonthLater) {
+            // Data próxima de expirar
+            $validadeClass = 'approaching';
+            $validadeTextColor = 'orange';
+            $validadeIcon = 'fa-exclamation-circle';
+        } else {
+            // Data válida
+            $validadeClass = 'valid';
+            $validadeTextColor = 'green';
+            $validadeIcon = 'fa-check-circle';
+        }
+
+        echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
+        echo "<td>{$row['id']}</td>";
+        echo "<td>{$row['titulo']}</td>";
+        echo "<td>{$row['descricao']}</td>";
+
+        // Coloca a validade com a cor e o ícone correto
+        echo "<td class='$validadeClass' style='color: $validadeTextColor;'>
+                <i class='fas $validadeIcon'></i> 
+                $validadeFormatted
+            </td>";
+
+        // Coloca a situação com a cor e o ícone correto
+        echo "<td class='$situacaoClass' style='color: $situacaoTextColor;'>
+                <i class='fas $situacaoIcon'></i> 
+                $situacao
+            </td>";
+
+        // O botão "Visualizar" terá um evento independente
+        echo "<td>";
+        echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
+                <i class='fas fa-eye'></i>
+            </button>";
+        echo "<button class='btn btn-primary btn-sm' onclick='generateReport()' title='Relatório'>
+                <i class='fas fa-file-alt'></i>
+            </button>";
+        echo "<button class='btn btn-success btn-sm' onclick='editProcess(event, " . json_encode($row) . ")' title='Editar processo'>
+                <i class='fas fa-edit'></i>
+            </button>";
+        echo "</td>";
+        echo "</tr>";
+    }   
+    ?>
+        </tbody>
+    </table>
+    </div>
+    
+</div>
+
+<!-- Modal de Edição -->
+<div class="modal fade" id="editProcessModal" tabindex="-1" role="dialog" aria-labelledby="editProcessModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProcessModalLabel">Editar Processo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Abas -->
+                <ul class="nav nav-tabs" id="editModalTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">Detalhes</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="edit-tab" data-toggle="tab" href="#edit" role="tab" aria-controls="edit" aria-selected="false">Editar</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="editModalTabContent">
+                    <!-- Primeira Aba: Detalhes do Contrato -->
+                    <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                        <h5 class="mt-3">Detalhes do Contrato</h5>
+                        <p><strong>Título:</strong> <span id="contractTitulo"></span></p>
+                        <p><strong>Descrição:</strong> <span id="contractDescricao"></span></p>
+                        <p><strong>Validade:</strong> <span id="contractValidade"></span></p>
+                        <p><strong>Situação:</strong> <span id="contractSituacao"></span></p>
+                    </div>
+
+                    <!-- Segunda Aba: Edição do Contrato -->
+                    <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="edit-tab">
+                        <h5 class="mt-3">Editar Contrato</h5>
+                        <form id="editProcessForm">
+                            <div class="form-group">
+                                <label for="editTitulo">Título</label>
+                                <input type="text" class="form-control" id="editTitulo" name="titulo" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editDescricao">Descrição</label>
+                                <textarea class="form-control" id="editDescricao" name="descricao" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="editValidade">Validade</label>
+                                <input type="date" class="form-control" id="editValidade" name="validade" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editSituacao">Situação</label>
+                                <select class="form-control" id="editSituacao" name="situacao" required>
+                                    <option value="ativo">Ativo</option>
+                                    <option value="inativo">Inativo</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--  // Função editar modal -->
+<script src="./src/contratos/js/edit-process-modal.js"></script>
+
+<!-- Modal exibi detalhes do contrato BOTAO VISUALIZAR DA TABELA -->
+<div class="modal fade" id="modalContrato" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalhes do Contrato</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Título:</strong> <span id="modalTituloContrato"></span></p>
+                <p><strong>Descrição:</strong> <span id="modalDescricao"></span></p>
+                <p><strong>Validade:</strong> <span id="modalValidade"></span></p>
+                <p><strong>Nº SEI:</strong> <span id="modalSEI"></span></p>
+                <p><strong>Gestor:</strong> <span id="modalGestor"></span></p>
+                <p><strong>Fiscais:</strong> <span id="modalFiscais"></span></p>
+                <p><strong>Valor do Contrato:</strong> R$ <span id="modalValorContrato"></span></p>
+                <p><strong>Número de Parcelas:</strong> <span id="modalNumParcelas"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Configuração de Filtros -->
+<div class="modal" id="filterModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Configurar Filtros</h5>
+                <button type="button" class="close" onclick="closeFilterModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-check">
+                    <input type="radio" name="filterOption" class="form-check-input" id="filterSei" onchange="toggleFilterField('Digite o número SEI')">
+                    <label class="form-check-label" for="filterSei">Filtrar por Nº SEI</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" name="filterOption" class="form-check-input" id="filterValor" onchange="toggleFilterField('Digite o valor')">
+                    <label class="form-check-label" for="filterValor">Filtrar por Valor</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" name="filterOption" class="form-check-input" id="filterVigencia" onchange="toggleFilterField('Digite a vigência')">
+                    <label class="form-check-label" for="filterVigencia">Filtrar por Vigência</label>
+                </div>
+                <p class="text-center mt-3">
+                    <a href="#" onclick="clearFilters(event)">Limpar Filtros</a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeFilterModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="./src/js/filtroModal.js"></script>
+<!--  -->
+<script src="./src/js/active.js"></script>
+
+
+
+<!-- Ícone de Loading -->
+<div class="loading" style="display:none;"></div>
+<!-- Dentro do body, substitua a seção da aba "gerenciar" por: -->
+
+<div class="form-container" id="gerenciar" style="display:none;">
+<h2 id="contractTitleHeader">Pagamentos do</h2>
+    <div class="button-group">
+    <button class="btn-submit" onclick="savePayment()">Salvar Alterações</button>
+   </div>
+    <table id="contratosTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mês</th>
+                <th>Empenho</th>
+                <th>Tipo</th>
+                <th>Nota de Empenho</th>
+                <th>Valor do Contrato</th>
+                <th>Créditos Ativos</th>
+                <th>SEI</th>
+                <th>Nota Fiscal</th>
+                <th>Envio Pagamento</th>
+                <th>Vencimento da Fatura</th>
+                <th>Valor Liquidado</th>
+                <th>Valor Liquidado Ag</th>
+                <th>Ordem Bancária</th>
+                <th>Agência Bancária</th>
+                <th>Data de Atualização</th>
+                <th>Data de Pagamento</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="contratosTableBody">
+            <!-- Dados serão preenchidos dinamicamente -->
+        </tbody>
+    </table>
+</div>
+<!--  FUNCTION DE API - CAMPOS EDITAVEIS DE TABELA E INSERÇÃO DE DADOS -->
+<script src="./src/contratos/js/gerenciar-pagamentos.js"></script>
 
 <div class="form-container" id="relatorio">
     <h2><i class="fas fa-file-alt"></i> Gerar Relatório</h2>
@@ -469,7 +782,7 @@ include 'header.php';
                 <tr>
                     <th>Título do Contrato</th>
                     <th>Mês</th>
-                    <th> Valores pagos </th>
+                    <th> Data de pagamento </th>
                     <th>Pagamentos Efetuados</th>
                 </tr>
             </thead>
@@ -536,545 +849,6 @@ include 'header.php';
     </div>
 </div>
 
-<script src="./src/contratos/js/relatorio-avancado.js">
-
-</script>
-
-
-
-
-
-
-<div class="form-container" id="consultar" style="display:none;">
-<h2 class="text-center mt-3">
-    <span class="icon-before fas fa-box"></span> Lista de Produtos
-</h2>
-   <!-- Pesquisa -->
-<div class="search-bar">
-    <div class="search-filters">
-        <!-- Campo de pesquisa por título ou descrição -->
-        <input type="text" id="searchInput" class="input-field" placeholder="Digite o título ou descrição do contrato" oninput="searchContracts()">
-        
-        <!-- Filtro de status (Ativo/Inativo) -->
-        <select id="statusSelect" class="input-field" onchange="searchContracts()">
-            <option value="">Todos</option>
-            <option value="ativo">Ativo</option>
-            <option value="inativo">Inativo</option>
-        </select>
-        
-        <!-- Botão para abrir o modal de filtro -->
-        <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
-    </div>
-</div>
-
-
-
-    <!-- Lista de Contratos -->
-<div class="table-container-contratos">
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-            <th><i class="fas fa-hashtag"></i> ID</th>
-        <th><i class="fas fa-file-alt"></i> Nome</th>
-        <th><i class="fas fa-align-left"></i> Descrição</th>
-        <th><i class="fas fa-calendar-alt"></i> Validade</th>
-        <th><i class="fas fa-circle"></i> Status</th>
-        <th><i class="fas fa-cogs"></i> Ações</th>
-            </tr>
-        </thead>
-        <tbody id="contractTableBody">
-            <!-- Dados carregados via PHP -->
-            <?php
-            // Conexão com o banco de dados (supondo que $pdo já esteja configurado)
-
-            // Verifica se há um filtro de situação via GET
-            $situacao = isset($_GET['situacao']) ? $_GET['situacao'] : '';
-
-            // Monta a consulta SQL com filtro opcional
-            $sql = "SELECT * FROM gestao_contratos";
-            if (!empty($situacao)) {
-                $sql .= " WHERE situacao = :situacao";
-            }
-            $sql .= " ORDER BY validade "; //DESC ORDEM DECRESCENTE 
-
-            $stmt = $pdo->prepare($sql);
-
-            // Se houver filtro, vincula o valor da situação
-            if (!empty($situacao)) {
-                $stmt->bindParam(':situacao', $situacao, PDO::PARAM_STR);
-            }
-
-            $stmt->execute();
-
-// Exibe os resultados
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $situacao = $row['situacao'];
-    $situacaoClass = '';
-    $situacaoIcon = '';
-    $situacaoTextColor = '';
-    
-    // Verifica o valor de 'situacao' para aplicar o estilo adequado
-    if ($situacao == 'Ativo') {
-        $situacaoClass = 'Ativo'; // Classe para 'Ativo'
-        $situacaoIcon = 'fa-arrow-up'; // Ícone da seta para cima
-        $situacaoTextColor = 'green'; // Cor verde para 'Ativo'
-    } else {
-        $situacaoClass = 'Inativo'; // Classe para 'Inativo'
-        $situacaoIcon = 'fa-arrow-down'; // Ícone da seta para baixo
-        $situacaoTextColor = 'red'; // Cor vermelha para 'Inativo'
-    }
-
-    // Formatar a data de validade
-    $validade = new DateTime($row['validade']);
-    $validadeFormatted = $validade->format('d/m/Y');
-    
-    // Adicionando uma classe para a validade estilizada
-    $validadeClass = '';
-    $validadeTextColor = '';
-    $validadeIcon = '';
-
-    // Verifica se a data é válida, expirada ou próxima de expirar
-    $today = new DateTime();
-    $oneMonthLater = clone $today;
-    $oneMonthLater->modify('+1 month'); // Cria uma data com o próximo mês
-
-    if ($validade < $today) {
-        // Data expirada
-        $validadeClass = 'expired';
-        $validadeTextColor = 'red';
-        $validadeIcon = 'fa-times-circle';
-    } elseif ($validade <= $oneMonthLater) {
-        // Data próxima de expirar
-        $validadeClass = 'approaching';
-        $validadeTextColor = 'orange';
-        $validadeIcon = 'fa-exclamation-circle';
-    } else {
-        // Data válida
-        $validadeClass = 'valid';
-        $validadeTextColor = 'green';
-        $validadeIcon = 'fa-check-circle';
-    }
-
-    echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
-    echo "<td>{$row['id']}</td>";
-    echo "<td>{$row['titulo']}</td>";
-    echo "<td>{$row['descricao']}</td>";
-
-    // Coloca a validade com a cor e o ícone correto
-    echo "<td class='$validadeClass' style='color: $validadeTextColor;'>
-            <i class='fas $validadeIcon'></i> 
-            $validadeFormatted
-          </td>";
-
-    // Coloca a situação com a cor e o ícone correto
-    echo "<td class='$situacaoClass' style='color: $situacaoTextColor;'>
-            <i class='fas $situacaoIcon'></i> 
-            $situacao
-          </td>";
-
-    // O botão "Visualizar" terá um evento independente
-    echo "<td>";
-    echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
-            <i class='fas fa-eye'></i>
-          </button>";
-    echo "<button class='btn btn-primary btn-sm' onclick='generateReport()' title='Relatório'>
-            <i class='fas fa-file-alt'></i>
-          </button>";
-    echo "<button class='btn btn-success btn-sm' onclick='editProcess(event, " . json_encode($row) . ")' title='Editar processo'>
-            <i class='fas fa-edit'></i>
-          </button>";
-    echo "</td>";
-    echo "</tr>";
-}
-?>
-        </tbody>
-    </table>
-    </div>
-    
-</div>
-
-
-
-
-<!-- Modal de Edição -->
-<div class="modal fade" id="editProcessModal" tabindex="-1" role="dialog" aria-labelledby="editProcessModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editProcessModalLabel">Editar Processo</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Abas -->
-                <ul class="nav nav-tabs" id="editModalTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">Detalhes</a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="edit-tab" data-toggle="tab" href="#edit" role="tab" aria-controls="edit" aria-selected="false">Editar</a>
-                    </li>
-                </ul>
-
-                <div class="tab-content" id="editModalTabContent">
-                    <!-- Primeira Aba: Detalhes do Contrato -->
-                    <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
-                        <h5 class="mt-3">Detalhes do Contrato</h5>
-                        <p><strong>Título:</strong> <span id="contractTitulo"></span></p>
-                        <p><strong>Descrição:</strong> <span id="contractDescricao"></span></p>
-                        <p><strong>Validade:</strong> <span id="contractValidade"></span></p>
-                        <p><strong>Situação:</strong> <span id="contractSituacao"></span></p>
-                    </div>
-
-                    <!-- Segunda Aba: Edição do Contrato -->
-                    <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="edit-tab">
-                        <h5 class="mt-3">Editar Contrato</h5>
-                        <form id="editProcessForm">
-                            <div class="form-group">
-                                <label for="editTitulo">Título</label>
-                                <input type="text" class="form-control" id="editTitulo" name="titulo" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editDescricao">Descrição</label>
-                                <textarea class="form-control" id="editDescricao" name="descricao" rows="3" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="editValidade">Validade</label>
-                                <input type="date" class="form-control" id="editValidade" name="validade" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editSituacao">Situação</label>
-                                <select class="form-control" id="editSituacao" name="situacao" required>
-                                    <option value="ativo">Ativo</option>
-                                    <option value="inativo">Inativo</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!--  // Função editar modal -->
-<script src="./src/contratos/js/edit-process-modal.js"></script>
-
-
-
-
-
-
-
-<!-- Modal exibi detalhes do contrato BOTAO VISUALIZAR DA TABELA -->
-<div class="modal fade" id="modalContrato" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detalhes do Contrato</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Título:</strong> <span id="modalTituloContrato"></span></p>
-                <p><strong>Descrição:</strong> <span id="modalDescricao"></span></p>
-                <p><strong>Validade:</strong> <span id="modalValidade"></span></p>
-                <p><strong>Nº SEI:</strong> <span id="modalSEI"></span></p>
-                <p><strong>Gestor:</strong> <span id="modalGestor"></span></p>
-                <p><strong>Fiscais:</strong> <span id="modalFiscais"></span></p>
-                <p><strong>Valor do Contrato:</strong> R$ <span id="modalValorContrato"></span></p>
-                <p><strong>Número de Parcelas:</strong> <span id="modalNumParcelas"></span></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de Configuração de Filtros -->
-<div class="modal" id="filterModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Configurar Filtros</h5>
-                <button type="button" class="close" onclick="closeFilterModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-check">
-                    <input type="radio" name="filterOption" class="form-check-input" id="filterSei" onchange="toggleFilterField('Digite o número SEI')">
-                    <label class="form-check-label" for="filterSei">Filtrar por Nº SEI</label>
-                </div>
-                <div class="form-check">
-                    <input type="radio" name="filterOption" class="form-check-input" id="filterValor" onchange="toggleFilterField('Digite o valor')">
-                    <label class="form-check-label" for="filterValor">Filtrar por Valor</label>
-                </div>
-                <div class="form-check">
-                    <input type="radio" name="filterOption" class="form-check-input" id="filterVigencia" onchange="toggleFilterField('Digite a vigência')">
-                    <label class="form-check-label" for="filterVigencia">Filtrar por Vigência</label>
-                </div>
-                <p class="text-center mt-3">
-                    <a href="#" onclick="clearFilters(event)">Limpar Filtros</a>
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeFilterModal()">Fechar</button>
-            </div>
-        </div>
-    </div>
-</div>
-<script src="./src/js/filtroModal.js"></script>
-
-<!--  -->
-
-<script src="./src/js/active.js"></script>
-
-<!-- JavaScript para abrir o modal e exibir as tarefas -->
-<script>
-    // Variável para armazenar os agendamentos
-    const agendamentos = <?php echo json_encode($agendamentos); ?>;
-
-    // Modal
-    const modal = document.getElementById("taskModal");
-    const closeModal = document.getElementsByClassName("close-btn")[0];
-
-    // Quando o usuário clica em um dia
-    document.querySelectorAll(".day-number").forEach((dayElement) => {
-        dayElement.addEventListener("click", function() {
-            const selectedDay = this.innerText;
-            const selectedDate = '<?php echo $currentYear . "-" . $currentMonth; ?>-' + ('0' + selectedDay).slice(-2);
-
-            // Verificando se existem agendamentos para o dia
-            if (agendamentos[selectedDate]) {
-                const taskDetails = agendamentos[selectedDate].map(task => 
-                    `<p><strong>${task.nome}</strong>: ${task.descricao}</p>`
-                ).join("");
-                document.getElementById("taskDetails").innerHTML = taskDetails;
-                modal.style.display = "block";
-            } else {
-                document.getElementById("taskDetails").innerHTML = "<p>Não há tarefas agendadas para este dia.</p>";
-                modal.style.display = "block";
-            }
-        });
-    });
-
-    // Fechar o modal quando o usuário clicar no "X"
-    closeModal.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // Fechar o modal quando o usuário clicar fora do conteúdo do modal
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    }
-</script>
-<?php
-
-
-// Incluir o código que já insere as notificações
-include 'verificar_notificacoes.php';  // O código que já insere as notificações
-
-// echo "Notificações inseridas com sucesso.";
-?>
-<!-- Ícone de Loading -->
-<div class="loading" style="display:none;"></div>
-<!-- Dentro do body, substitua a seção da aba "gerenciar" por: -->
-
-<div class="form-container" id="gerenciar" style="display:none;">
-<h2 id="contractTitleHeader">Pagamentos do</h2>
-    <div class="button-group">
-    <button class="btn-submit" onclick="savePayment()">Salvar Alterações</button>
-   </div>
-    <table id="contratosTable" class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Mês</th>
-                <th>Empenho</th>
-                <th>Tipo</th>
-                <th>Nota de Empenho</th>
-                <th>Valor do Contrato</th>
-                <th>Créditos Ativos</th>
-                <th>SEI</th>
-                <th>Nota Fiscal</th>
-                <th>Envio Pagamento</th>
-                <th>Vencimento da Fatura</th>
-                <th>Valor Liquidado</th>
-                <th>Valor Liquidado Ag</th>
-                <th>Ordem Bancária</th>
-                <th>Agência Bancária</th>
-                <th>Data de Atualização</th>
-                <th>Data de Pagamento</th>
-            </tr>
-        </thead>
-        <tbody id="contratosTableBody">
-            <!-- Dados serão preenchidos dinamicamente -->
-        </tbody>
-    </table>
-</div>
-
-<script>
-// Função para exibir o resumo do processo e abrir a aba Gerenciar Contratos
-async function showResumoProcesso(rowData) {
-    const contractData = typeof rowData === 'string' ? JSON.parse(rowData) : rowData;
-    showTab('gerenciar');
-    await loadContractsAndPayments(contractData);
-}
-
-// Função para carregar os dados do contrato e os pagamentos anteriores
-async function loadContractsAndPayments(contractData) {
-    const tbody = document.getElementById('contratosTableBody');
-    tbody.innerHTML = ''; // Limpar tabela
-    
-    // Atualizar o título com o contrato_titulo
-    const contractTitleHeader = document.getElementById('contractTitleHeader');
-    contractTitleHeader.textContent = `Pagamentos do  ${contractData.titulo || 'Desconhecido'}`;
-
-    // Carregar pagamentos anteriores com base em contrato_titulo
-    try {
-        const response = await fetch(`./get_payment.php?contrato_titulo=${encodeURIComponent(contractData.titulo)}`);
-        if (!response.ok) throw new Error('Erro ao carregar pagamentos');
-        const payments = await response.json();
-
-        // Exibir pagamentos anteriores como linhas não editáveis
-        payments.forEach(payment => {
-            const tr = document.createElement('tr');
-            tr.classList.add('read-only');
-            tr.innerHTML = `
-                <td>${payment.mes || ''}</td>
-                <td>${payment.empenho || ''}</td>
-                <td>${payment.tipo || ''}</td>
-                <td>${payment.nota_empenho || ''}</td>
-                <td>${payment.valor_contrato || 0}</td>
-                <td>${payment.creditos_ativos || ''}</td>
-                <td>${payment.SEI || ''}</td>
-                <td>${payment.nota_fiscal || ''}</td>
-                <td>${payment.envio_pagamento || ''}</td>
-                <td>${payment.vencimento_fatura || ''}</td>
-                <td>${payment.valor_liquidado || 0}</td>
-                <td>${payment.valor_liquidado_ag || 0}</td>
-                <td>${payment.ordem_bancaria || ''}</td>
-                <td>${payment.agencia_bancaria || ''}</td>
-                <td>${payment.data_atualizacao || ''}</td>
-                <td>${payment.data_pagamento || ''}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        // Adicionar nova linha editável para novo pagamento
-        const trEditable = document.createElement('tr');
-        trEditable.classList.add('editable');
-        trEditable.innerHTML = `
-            <td><input type="text" value="" class="form-control form-control-sm" data-key="mes"></td>
-            <td><input type="text" value="${contractData.empenho || ''}" class="form-control form-control-sm" data-key="empenho"></td>
-            <td><input type="text" value="${contractData.tipo || ''}" class="form-control form-control-sm" data-key="tipo"></td>
-            <td><input type="text" value="${contractData.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho"></td>
-            <td><input type="number" step="0.01" value="${contractData.valor_contrato || 0}" class="form-control form-control-sm" data-key="valor_contrato" readonly></td>
-            <td><input type="text" value="${contractData.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
-            <td><input type="text" value="${contractData.SEI || ''}" class="form-control form-control-sm" data-key="SEI" readonly></td>
-            <td><input type="text" value="${contractData.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
-            <td><input type="text" value="${contractData.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
-            <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
-            <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
-            <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
-            <td><input type="text" value="${contractData.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
-            <td><input type="text" value="${contractData.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
-            <td><input type="date" value="${contractData.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
-            <td><input type="date" value="${new Date().toISOString().split('T')[0]}" class="form-control form-control-sm" data-key="data_pagamento" ></td>
-        `;
-        tbody.appendChild(trEditable);
-
-        // Armazenar o título do contrato para uso no salvamento
-        tbody.dataset.contractTitle = contractData.titulo;
-    } catch (error) {
-        console.error('Erro ao carregar pagamentos:', error);
-        alert('Erro ao carregar pagamentos: ' + error.message);
-    }
-}
-
-// Função para salvar os dados na tabela pagamentos
-async function savePayment() {
-    const contractTitle = document.getElementById('contratosTableBody').dataset.contractTitle;
-    const inputs = document.querySelectorAll('#contratosTableBody .editable input');
-    const paymentData = { contrato_titulo: contractTitle };
-
-    const columns = [
-        'mes', 'empenho', 'tipo', 'nota_empenho', 'valor_contrato', 'creditos_ativos',
-        'SEI', 'nota_fiscal', 'envio_pagamento', 'vencimento_fatura', 'valor_liquidado',
-        'valor_liquidado_ag', 'ordem_bancaria', 'agencia_bancaria', 'data_atualizacao', 'data_pagamento'
-    ];
-
-    inputs.forEach(input => {
-        const key = input.getAttribute('data-key');
-        if (columns.includes(key)) {
-            if (input.type === "number") {
-                paymentData[key] = parseFloat(input.value) || 0;
-            } else if (input.type === "date") {
-                paymentData[key] = input.value || null;
-            } else {
-                paymentData[key] = input.value || null;
-            }
-        }
-    });
-
-    // Validar que o mês foi preenchido
-    if (!paymentData.mes) {
-        alert('O campo Mês é obrigatório.');
-        return;
-    }
-
-    try {
-        const response = await fetch('./save_payment.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(paymentData)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status} - Verifique se save_payment.php existe no servidor.`);
-        }
-
-        const data = await response.json();
-        if (data.success) {
-            alert('Pagamento salvo com sucesso!');
-            // Recarregar a tabela com os pagamentos atualizados
-            await loadContractsAndPayments({ titulo: contractTitle, tipo: paymentData.tipo || '' });
-        } else {
-            alert('Erro ao salvar pagamento: ' + data.message);
-        }
-    } catch (error) {
-        console.error('Erro ao salvar pagamento:', error);
-        alert('Erro ao salvar pagamento: ' + error.message);
-    }
-}
-
-// Certificar que a função showTab está definida
-function showTab(tabId) {
-    const tabs = document.querySelectorAll('.tab');
-    const contents = document.querySelectorAll('.form-container');
-    tabs.forEach(tab => tab.classList.remove('active'));
-    contents.forEach(content => content.style.display = 'none');
-    document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
-    document.getElementById(tabId).style.display = 'block';
-}
-
-// Estilizar linhas não editáveis
-document.addEventListener('DOMContentLoaded', () => {
-    const style = document.createElement('style');
-    style.textContent = `
-        .read-only td { background-color: #f0f0f0; }
-        .read-only td input { display: none; }
-        .editable td input { width: 100%; }
-    `;
-    document.head.appendChild(style);
-});
-</script>
+<script src="./src/contratos/js/relatorio-avancado.js"></script>
 </body>
 </html>
-<?php
-include 'footer.php';
-?>

@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${contrato.contrato_titulo || 'N/A'}</td>
                     <td>${pagamento.mes || 'N/A'}</td>
                     <td>${formatDate(pagamento.data_pagamento)}</td>
-                    <td>R$ ${parseFloat(pagamento.valor_contrato).toFixed(2) || 'N/A'}</td>
+                    <td>R$ ${parseFloat(pagamento.valor_liquidado).toFixed(2) }</td>
                 `;
                 tabela.appendChild(tr);
             });
@@ -567,7 +567,7 @@ function formatDate(dateString) {
                         <td>${contrato.titulo || 'N/A'}</td>
                         <td>${parcelasRestantes >= 0 ? parcelasRestantes : 'N/A'}</td>
                         <td>${formatDate(pagamento.data_pagamento)}</td>
-                        <td>${formatCurrency(pagamento.valor)}</td>
+                        <td>${formatCurrency(pagamento.valor_contrato)}</td>
                     `;
                     tabela.appendChild(tr);
                 });

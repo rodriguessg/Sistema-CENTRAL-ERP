@@ -2,7 +2,7 @@
 .calendar-and-events {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-rows: repeat(1, 1fr);
     gap: 10px;
     width: 100%;
 }
@@ -98,7 +98,6 @@
 #cancel-btn {
     background-color: #dc3545;
     color: white;
-    margin-top: 10px;
 }
 
 #cancel-btn:hover {
@@ -175,7 +174,6 @@
     border-radius: 8px;
     height: 100%;
     box-sizing: border-box;
-    margin-top: 10px;
 }
 
 
@@ -522,7 +520,7 @@ input[type="color"]:hover {
 /* Container Calendário */
 .calendar-container {
     grid-area: 1 / 2 / 2 / 3;
-    border-radius: 16px; /* Borda mais suave */
+    border-radius: 10px; /* Borda mais suave */
     padding: 20px;
     width: 100%;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Sombra mais suave */

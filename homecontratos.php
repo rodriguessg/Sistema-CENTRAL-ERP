@@ -1296,7 +1296,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $validadeTextColor = 'green';
         $validadeIcon = 'fa-check-circle';
     }
-
     echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
     echo "<td class='truncated-text' title='{$row['id']}'>{$row['id']}</td>";
     echo "<td class='truncated-text' title='{$row['titulo']}'>{$row['titulo']}</td>";
@@ -1328,7 +1327,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
           </button>";
     echo "</td>";
     echo "</tr>";
-    
 }
 ?>
         </tbody>

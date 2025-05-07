@@ -175,6 +175,7 @@ include 'header.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Inclusão do Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -284,7 +285,7 @@ include 'header.php';
 <body>
 
 <!-- Container principal -->
-<div class="main-container">
+<div class="caderno">
     <div class="dashboard">
         <!-- Cards -->
         <div class="cards-container">

@@ -172,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else if ($relatorio_tipo === 'pagamentos') {
                 // Busca os pagamentos associados ao contrato
                 $sql = "
-                    SELECT p.data_pagamento, p.valor_liquidado_ag, p.mes, p.contrato_titulo
+                    SELECT p.data_pagamento, p.valor_liquidado, p.mes, p.contrato_titulo
                     FROM pagamentos p
                     WHERE p.contrato_titulo = ?
                     ORDER BY p.data_pagamento
@@ -199,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $contratos[$titulo]['pagamentos'][] = [
                             'mes' => $pagamento['mes'],
                             'data_pagamento' => $pagamento['data_pagamento'],
-                            'valor_liquidado_ag' => (float)$pagamento['valor_liquidado_ag']
+                            'valor_liquidado' => (float)$pagamento['valor_liquidado']
                         ];
                     }
 

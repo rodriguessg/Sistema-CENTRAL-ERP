@@ -444,38 +444,38 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
             $validadeIcon = 'fa-check-circle';
         }
 
-        echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
-        echo "<td>{$row['id']}</td>";
-        echo "<td>{$row['titulo']}</td>";
-        echo "<td>{$row['descricao']}</td>";
+    echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
+    echo "<td>{$row['id']}</td>";
+    echo "<td>{$row['titulo']}</td>";
+    echo "<td>{$row['descricao']}</td>";
 
-        // Coloca a validade com a cor e o ícone correto
-        echo "<td class='$validadeClass' style='color: $validadeTextColor;'>
-                <i class='fas $validadeIcon'></i> 
-                $validadeFormatted
-            </td>";
+    // Coloca a validade com a cor e o ícone correto
+    echo "<td class='$validadeClass' style='color: $validadeTextColor;'>
+            <i class='fas $validadeIcon'></i> 
+            $validadeFormatted
+          </td>";
 
-        // Coloca a situação com a cor e o ícone correto
-        echo "<td class='$situacaoClass' style='color: $situacaoTextColor;'>
-                <i class='fas $situacaoIcon'></i> 
-                $situacao
-            </td>";
+    // Coloca a situação com a cor e o ícone correto
+    echo "<td class='$situacaoClass' style='color: $situacaoTextColor;'>
+            <i class='fas $situacaoIcon'></i> 
+            $situacao
+          </td>";
 
-        // O botão "Visualizar" terá um evento independente
-        echo "<td>";
-        echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
-                <i class='fas fa-eye'></i>
-            </button>";
-        echo "<button class='btn btn-primary btn-sm' onclick='generateReport()' title='Relatório'>
-                <i class='fas fa-file-alt'></i>
-            </button>";
-        echo "<button class='btn btn-success btn-sm' onclick='editProcess(event, " . json_encode($row) . ")' title='Editar processo'>
-                <i class='fas fa-edit'></i>
-            </button>";
-        echo "</td>";
-        echo "</tr>";
-    }   
-    ?>
+    // O botão "Visualizar" terá um evento independente
+    echo "<td>";
+    echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
+            <i class='fas fa-eye'></i>
+          </button>";
+    echo "<button class='btn btn-primary btn-sm' onclick='generateReport()' title='Relatório'>
+            <i class='fas fa-file-alt'></i>
+          </button>";
+    echo "<button class='btn btn-success btn-sm' onclick='editProcess(event, " . json_encode($row) . ")' title='Editar processo'>
+            <i class='fas fa-edit'></i>
+          </button>";
+    echo "</td>";
+    echo "</tr>";
+}
+?>
         </tbody>
     </table>
     </div>

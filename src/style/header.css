@@ -99,3 +99,25 @@
   display: block;
   margin: 0 auto;
 }
+
+
+/* Adiciona o estilo quando o botão é clicado e marcado como lido */
+.btn-success {
+  background-color: #28a745;
+  color: white;
+  border: 1px solid #28a745;
+}
+
+.btn-success i {
+  margin-right: 5px;
+}
+
+.btn-outline-success {
+  border: 1px solid #28a745;
+  color: #28a745;
+}
+
+.btn-outline-success:hover {
+  background-color: #28a745;
+  color: white;
+}

@@ -11,6 +11,7 @@ $mensagens = [
     'senha_invalida' => 'Usuário ou senha inválida.',
     'usuario_invalido' => 'Usuário não encontrado.',
     'setor_nao_reconhecido' => 'Setor não reconhecido.',
+    'event' => 'Evento cadastrado com sucesso.',
     'erro_adicionar_usuario' =>'Já existe um usuário com este e-mail ou matrícula.',
     'novo_usuario_adicionado' =>'O novo usuário foi adicionado com sucesso.',
     'sucesso' => 'BP cadastrado com sucesso e registrado no log de eventos.',

@@ -183,6 +183,9 @@ include 'header.php';
     <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">
         <i class="fas fa-info-circle"></i> Resumo
     </div>
+    <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
+            <i class="fas fa-edit"></i> Gerenciar Contratos
+        </div>
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
         <i class="fas fa-file-alt"></i> Relatórios
     </div>  
@@ -465,6 +468,8 @@ include 'header.php';
             <thead>
                 <tr>
                     <th>Título do Contrato</th>
+                    <th>Mês</th>
+                    <th> Valores pagos </th>
                     <th>Pagamentos Efetuados</th>
                 </tr>
             </thead>
@@ -978,31 +983,49 @@ document.addEventListener('DOMContentLoaded', function() {
     // }
 
     function preencherTabelaPagamentos(dados) {
-        const tabela = document.querySelector('#relatorio-pagamentos tbody');
-        tabela.innerHTML = '';
+    const tabela = document.querySelector('#relatorio-pagamentos tbody');
+    tabela.innerHTML = ''; // Limpar a tabela antes de adicionar os novos dados
 
-        const contratos = Array.isArray(dados) ? dados : [dados];
-        contratos.forEach(contrato => {
-            if (contrato.pagamentos && Array.isArray(contrato.pagamentos) && contrato.pagamentos.length > 0) {
-                contrato.pagamentos.forEach(pagamento => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${contrato.titulo || 'N/A'}</td>
-                        <td>${formatDate(pagamento.data_pagamento)}</td>
-                    `;
-                    tabela.appendChild(tr);
-                });
-            } else {
+    const contratos = Array.isArray(dados) ? dados : [dados]; // Garantir que 'dados' seja um array
+
+    contratos.forEach(contrato => {
+        // Verifica se o contrato tem pagamentos
+        if (contrato.pagamentos && Array.isArray(contrato.pagamentos) && contrato.pagamentos.length > 0) {
+            contrato.pagamentos.forEach(pagamento => {
+                // Cria uma linha na tabela para cada pagamento
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${contrato.titulo || 'N/A'}</td>
-                    <td>Nenhum pagamento</td>
+                    <td>${contrato.contrato_titulo || 'N/A'}</td>
+                    <td>${pagamento.mes || 'N/A'}</td>
+                    <td>${formatDate(pagamento.data_pagamento)}</td>
+                    <td>R$ ${parseFloat(pagamento.valor_contrato).toFixed(2) || 'N/A'}</td>
                 `;
                 tabela.appendChild(tr);
-            }
-        });
-        document.getElementById('relatorio-pagamentos-tabela').style.display = 'block';
-    }
+            });
+        } else {
+            // Se não houver pagamentos, cria uma linha indicando "Nenhum pagamento"
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${contrato.contrato_titulo || 'N/A'}</td>
+                <td>Nenhum pagamento</td>
+                <td></td>
+                <td></td>
+            `;
+            tabela.appendChild(tr);
+        }
+    });
+
+    // Exibe a tabela depois de preenchê-la com os dados
+    document.getElementById('relatorio-pagamentos-tabela').style.display = 'block';
+}
+
+// Função auxiliar para formatar a data de pagamento
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', options);
+}
+
 
     function preencherTabelaMensal(dados) {
         const tabela = document.querySelector('#relatorio-mensal tbody');
@@ -1499,7 +1522,199 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
 ?>
 <!-- Ícone de Loading -->
 <div class="loading" style="display:none;"></div>
+<!-- Dentro do body, substitua a seção da aba "gerenciar" por: -->
 
+<div class="form-container" id="gerenciar" style="display:none;">
+<h2 id="contractTitleHeader">Pagamentos do</h2>
+    <div class="button-group">
+    <button class="btn-submit" onclick="savePayment()">Salvar Alterações</button>
+   </div>
+    <table id="contratosTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mês</th>
+                <th>Empenho</th>
+                <th>Tipo</th>
+                <th>Nota de Empenho</th>
+                <th>Valor do Contrato</th>
+                <th>Créditos Ativos</th>
+                <th>SEI</th>
+                <th>Nota Fiscal</th>
+                <th>Envio Pagamento</th>
+                <th>Vencimento da Fatura</th>
+                <th>Valor Liquidado</th>
+                <th>Valor Liquidado Ag</th>
+                <th>Ordem Bancária</th>
+                <th>Agência Bancária</th>
+                <th>Data de Atualização</th>
+                <th>Data de Pagamento</th>
+            </tr>
+        </thead>
+        <tbody id="contratosTableBody">
+            <!-- Dados serão preenchidos dinamicamente -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+// Função para exibir o resumo do processo e abrir a aba Gerenciar Contratos
+async function showResumoProcesso(rowData) {
+    const contractData = typeof rowData === 'string' ? JSON.parse(rowData) : rowData;
+    showTab('gerenciar');
+    await loadContractsAndPayments(contractData);
+}
+
+// Função para carregar os dados do contrato e os pagamentos anteriores
+async function loadContractsAndPayments(contractData) {
+    const tbody = document.getElementById('contratosTableBody');
+    tbody.innerHTML = ''; // Limpar tabela
+    
+    // Atualizar o título com o contrato_titulo
+    const contractTitleHeader = document.getElementById('contractTitleHeader');
+    contractTitleHeader.textContent = `Pagamentos do  ${contractData.titulo || 'Desconhecido'}`;
+
+    // Carregar pagamentos anteriores com base em contrato_titulo
+    try {
+        const response = await fetch(`./get_payment.php?contrato_titulo=${encodeURIComponent(contractData.titulo)}`);
+        if (!response.ok) throw new Error('Erro ao carregar pagamentos');
+        const payments = await response.json();
+
+        // Exibir pagamentos anteriores como linhas não editáveis
+        payments.forEach(payment => {
+            const tr = document.createElement('tr');
+            tr.classList.add('read-only');
+            tr.innerHTML = `
+                <td>${payment.mes || ''}</td>
+                <td>${payment.empenho || ''}</td>
+                <td>${payment.tipo || ''}</td>
+                <td>${payment.nota_empenho || ''}</td>
+                <td>${payment.valor_contrato || 0}</td>
+                <td>${payment.creditos_ativos || ''}</td>
+                <td>${payment.SEI || ''}</td>
+                <td>${payment.nota_fiscal || ''}</td>
+                <td>${payment.envio_pagamento || ''}</td>
+                <td>${payment.vencimento_fatura || ''}</td>
+                <td>${payment.valor_liquidado || 0}</td>
+                <td>${payment.valor_liquidado_ag || 0}</td>
+                <td>${payment.ordem_bancaria || ''}</td>
+                <td>${payment.agencia_bancaria || ''}</td>
+                <td>${payment.data_atualizacao || ''}</td>
+                <td>${payment.data_pagamento || ''}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Adicionar nova linha editável para novo pagamento
+        const trEditable = document.createElement('tr');
+        trEditable.classList.add('editable');
+        trEditable.innerHTML = `
+            <td><input type="text" value="" class="form-control form-control-sm" data-key="mes"></td>
+            <td><input type="text" value="${contractData.empenho || ''}" class="form-control form-control-sm" data-key="empenho"></td>
+            <td><input type="text" value="${contractData.tipo || ''}" class="form-control form-control-sm" data-key="tipo"></td>
+            <td><input type="text" value="${contractData.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho"></td>
+            <td><input type="number" step="0.01" value="${contractData.valor_contrato || 0}" class="form-control form-control-sm" data-key="valor_contrato" readonly></td>
+            <td><input type="text" value="${contractData.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
+            <td><input type="text" value="${contractData.SEI || ''}" class="form-control form-control-sm" data-key="SEI" readonly></td>
+            <td><input type="text" value="${contractData.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
+            <td><input type="text" value="${contractData.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
+            <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
+            <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
+            <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
+            <td><input type="text" value="${contractData.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
+            <td><input type="text" value="${contractData.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
+            <td><input type="date" value="${contractData.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
+            <td><input type="date" value="${new Date().toISOString().split('T')[0]}" class="form-control form-control-sm" data-key="data_pagamento" ></td>
+        `;
+        tbody.appendChild(trEditable);
+
+        // Armazenar o título do contrato para uso no salvamento
+        tbody.dataset.contractTitle = contractData.titulo;
+    } catch (error) {
+        console.error('Erro ao carregar pagamentos:', error);
+        alert('Erro ao carregar pagamentos: ' + error.message);
+    }
+}
+
+// Função para salvar os dados na tabela pagamentos
+async function savePayment() {
+    const contractTitle = document.getElementById('contratosTableBody').dataset.contractTitle;
+    const inputs = document.querySelectorAll('#contratosTableBody .editable input');
+    const paymentData = { contrato_titulo: contractTitle };
+
+    const columns = [
+        'mes', 'empenho', 'tipo', 'nota_empenho', 'valor_contrato', 'creditos_ativos',
+        'SEI', 'nota_fiscal', 'envio_pagamento', 'vencimento_fatura', 'valor_liquidado',
+        'valor_liquidado_ag', 'ordem_bancaria', 'agencia_bancaria', 'data_atualizacao', 'data_pagamento'
+    ];
+
+    inputs.forEach(input => {
+        const key = input.getAttribute('data-key');
+        if (columns.includes(key)) {
+            if (input.type === "number") {
+                paymentData[key] = parseFloat(input.value) || 0;
+            } else if (input.type === "date") {
+                paymentData[key] = input.value || null;
+            } else {
+                paymentData[key] = input.value || null;
+            }
+        }
+    });
+
+    // Validar que o mês foi preenchido
+    if (!paymentData.mes) {
+        alert('O campo Mês é obrigatório.');
+        return;
+    }
+
+    try {
+        const response = await fetch('./save_payment.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(paymentData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status} - Verifique se save_payment.php existe no servidor.`);
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            alert('Pagamento salvo com sucesso!');
+            // Recarregar a tabela com os pagamentos atualizados
+            await loadContractsAndPayments({ titulo: contractTitle, tipo: paymentData.tipo || '' });
+        } else {
+            alert('Erro ao salvar pagamento: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Erro ao salvar pagamento:', error);
+        alert('Erro ao salvar pagamento: ' + error.message);
+    }
+}
+
+// Certificar que a função showTab está definida
+function showTab(tabId) {
+    const tabs = document.querySelectorAll('.tab');
+    const contents = document.querySelectorAll('.form-container');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    contents.forEach(content => content.style.display = 'none');
+    document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+    document.getElementById(tabId).style.display = 'block';
+}
+
+// Estilizar linhas não editáveis
+document.addEventListener('DOMContentLoaded', () => {
+    const style = document.createElement('style');
+    style.textContent = `
+        .read-only td { background-color: #f0f0f0; }
+        .read-only td input { display: none; }
+        .editable td input { width: 100%; }
+    `;
+    document.head.appendChild(style);
+});
+</script>
 </body>
 </html>
 <?php

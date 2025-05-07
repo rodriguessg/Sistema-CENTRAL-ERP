@@ -22,6 +22,18 @@ td {
   
 }
 
+/* Truncar o texto dentro das células da tabela */
+.truncated-text {
+  white-space: nowrap; /* Impede que o texto quebre em várias linhas */
+  overflow: hidden; /* Esconde o texto que ultrapassar o tamanho da célula */
+  text-overflow: ellipsis; /* Adiciona "..." quando o texto ultrapassar */
+  max-width: 150px; /* Ajuste a largura conforme necessário */
+  cursor: pointer; /* Para que pareça interativo */
+}
+
+
+
+
 /* Cabeçalho */
 .table-container-contratos th {
   color: white;

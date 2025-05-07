@@ -1298,22 +1298,23 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     }
 
     echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
-    echo "<td>{$row['id']}</td>";
-    echo "<td>{$row['titulo']}</td>";
-    echo "<td>{$row['descricao']}</td>";
-
+    echo "<td class='truncated-text' title='{$row['id']}'>{$row['id']}</td>";
+    echo "<td class='truncated-text' title='{$row['titulo']}'>{$row['titulo']}</td>";
+    echo "<td class='truncated-text' title='{$row['descricao']}'>{$row['descricao']}</td>";
+    
+    
     // Coloca a validade com a cor e o ícone correto
     echo "<td class='$validadeClass' style='color: $validadeTextColor;'>
             <i class='fas $validadeIcon'></i> 
             $validadeFormatted
           </td>";
-
+    
     // Coloca a situação com a cor e o ícone correto
     echo "<td class='$situacaoClass' style='color: $situacaoTextColor;'>
             <i class='fas $situacaoIcon'></i> 
             $situacao
           </td>";
-
+    
     // O botão "Visualizar" terá um evento independente
     echo "<td>";
     echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
@@ -1327,6 +1328,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
           </button>";
     echo "</td>";
     echo "</tr>";
+    
 }
 ?>
         </tbody>

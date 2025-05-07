@@ -604,7 +604,6 @@ include 'header.php';
 </div>
 
 
-  
-</script>
+<script src="./src/contratos/js/calendario.js"></script>
 </body>
 </html>

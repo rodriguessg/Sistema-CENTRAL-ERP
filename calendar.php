@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 // Simulação de usuário logado (em um ambiente real, isso viria de um sistema de autenticação)
@@ -380,6 +381,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'add_category'
     }
 }
 include 'header.php';
+
 ?>
 
 <!DOCTYPE html>
@@ -392,10 +394,33 @@ include 'header.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="./src/contratos/style/calendar.css">
     <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
-   
 </head>
+
+
+
 <body>
 <div class="caderno">
+
+<!-- Modal de notificações -->
+<div class="modal" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationModalLabel">Notificações</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- O conteúdo das notificações será gerado aqui -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Messages -->
 <div id="messages" aria-live="polite">
     <?php foreach ($messages as $msg): ?>
@@ -579,10 +604,6 @@ include 'header.php';
 </div>
 
 
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="./src/contratos/js/calendario.js">
   
 </script>
 </body>

@@ -498,7 +498,7 @@ include 'header.php';
       <!-- <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>"> -->
       <div class="input-icon">
         <label for="new_category">Nova Categoria:</label>
-        <input type="text" name="new_category" id="new_category" placeholder="Digite o nome da categoria">
+        <input class="input-category" type="text" name="new_category" id="new_category" placeholder="Digite o nome da categoria">
       </div>
       <button type="submit"><i class="fas fa-plus"></i> Adicionar Categoria</button>
     </form>
@@ -541,15 +541,26 @@ include 'header.php';
         <i class="fas fa-calendar-alt event-icon"></i>
         <strong><?= htmlspecialchars($event['titulo']) ?></strong>
     </div>
-    <div class="event-time">
-        <i class="fas fa-clock event-icon"></i>
-        <small>das <?= htmlspecialchars($event['hora']) ?></small>
-    </div>
+
+    <div class="event-category">
+    <i class="fas fa-tags event-icon"></i> <!-- Ícone para categoria -->
+    <small> <?= htmlspecialchars($event['categoria']) ?></small>
+</div>
+
+
+
+<div class="event-time">
+    <i class="fas fa-clock event-icon"></i>
+    <small>Agendado para <?= htmlspecialchars($event['hora']) ?> HR</small>
+</div>
+
 
   <div class="event-description">
     <i class="fas fa-info-circle event-icon"></i> <!-- Novo ícone -->
     <small> <?= htmlspecialchars($event['descricao']) ?></small>
    </div>
+
+ 
 </div>
 
             <div class="daily-event-menu">

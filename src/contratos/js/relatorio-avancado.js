@@ -567,7 +567,7 @@ function formatDate(dateString) {
                         <td>${contrato.titulo || 'N/A'}</td>
                         <td>${parcelasRestantes >= 0 ? parcelasRestantes : 'N/A'}</td>
                         <td>${formatDate(pagamento.data_pagamento)}</td>
-                        <td>${formatCurrency(pagamento.valor_contrato)}</td>
+                        <td>${formatCurrency(pagamento.valor_liquidado)}</td>
                     `;
                     tabela.appendChild(tr);
                 });

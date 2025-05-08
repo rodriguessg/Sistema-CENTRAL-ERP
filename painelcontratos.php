@@ -322,7 +322,7 @@ try {
         <!-- Cards -->
         <div class="cards-container">
             <div class="card">
-                <h3>Total de Processos</h3>
+                <h3>Total de Contratos</h3>
                 <p><?php echo $total_processos; ?></p>
             </div>
             <div class="card">
@@ -334,7 +334,7 @@ try {
                 <p><?php echo $total_expirados; ?></p>
             </div>
             <div class="card">
-                <h3>Contratos Vencendo em 30 dias</h3>
+                <h3>Contratos Vencendo em 6 meses</h3>
                 <p><?php echo $total_vencendo; ?></p>
             </div>
             <div class="card">

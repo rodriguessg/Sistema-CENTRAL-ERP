@@ -41,7 +41,7 @@ async function loadContractsAndPayments(contractData) {
                 <td>${payment.agencia_bancaria || ''}</td>
                 <td>${payment.data_atualizacao || ''}</td>
                 <td>${payment.data_pagamento || ''}</td>
-                <td><button class="btn btn-danger btn-sm" onclick="deletePayment(${payment.id})">Excluir</button></td>
+                <td><button class="btn btn-danger btn-sm" style="color=black;" onclick="deletePayment(${payment.id})">Excluir</button></td>
             `;
             tbody.appendChild(tr);
         });

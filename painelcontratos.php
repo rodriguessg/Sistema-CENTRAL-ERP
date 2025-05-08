@@ -155,7 +155,7 @@ $row_vencendo = $result_vencendo->fetch_assoc();
 $total_vencendo = $row_vencendo['total_vencendo'];
 
 // Consulta para contar os agendamentos
-$sql_agendamentos = "SELECT COUNT(*) AS total_agendamentos FROM agendamentos";
+$sql_agendamentos = "SELECT COUNT(*) AS total_agendamentos FROM eventos";
 $result_agendamentos = $conn->query($sql_agendamentos);
 $row_agendamentos = $result_agendamentos->fetch_assoc();
 $total_agendamentos = $row_agendamentos['total_agendamentos'];
@@ -338,7 +338,7 @@ try {
                 <p><?php echo $total_vencendo; ?></p>
             </div>
             <div class="card">
-                <h3>Total de Agendamentos</h3>
+                <h3>Total de Eventos</h3>
                 <p><?php echo $total_agendamentos; ?></p>
             </div>
         </div>
@@ -346,7 +346,7 @@ try {
         <div class="cards-container2">
             <!-- Gráfico de Contratos por Mês -->
             <div class="card5">
-                <h3>Contratos por Mês</h3>
+                <h3> Contratos </h3>
                 <canvas id="contratosPorMesChart" width="400" height="200"></canvas>
             </div>
 
@@ -407,6 +407,7 @@ try {
             </div>
             <card class="card5">
                  <!-- Tabela para exibir os eventos -->
+                 <h3>Eventos agendados</h3>
     <table>
         <thead>
             <tr>

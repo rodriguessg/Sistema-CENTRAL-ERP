@@ -1,148 +1,151 @@
 <?php
-session_start();
+    session_start();
 
-// Configuração e conexão com o banco de dados (usando PDO)
-$dsn = 'mysql:host=localhost;dbname=gm_sicbd';
-$username = 'root';
-$password = '';
-
-try {
-    $pdo = new PDO($dsn, $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Erro ao conectar ao banco de dados: " . $e->getMessage());
-}
-
-// Função para redirecionar com mensagem
-function setMessageAndRedirect($type, $message, $location) {
-    $_SESSION[$type] = $message;
-    header("Location: $location");
-    exit;
-}
-
-// Marcar notificação como lida
-if (isset($_GET['mark_read']) && $_SESSION['username'] === 'contratos') {
-    $notificationId = filter_var($_GET['mark_read'], FILTER_VALIDATE_INT);
-    if ($notificationId === false) {
-        setMessageAndRedirect('error', 'ID de notificação inválido.', 'index.php');
-    }
+    // Configuração e conexão com o banco de dados (usando PDO)
+    $dsn = 'mysql:host=localhost;dbname=gm_sicbd';
+    $username = 'root';
+    $password = '';
 
     try {
-        $sqlMarkRead = "UPDATE notificacoes SET situacao = 'lida' WHERE id = :id";
-        $stmtMarkRead = $pdo->prepare($sqlMarkRead);
-        $stmtMarkRead->execute(['id' => $notificationId]);
-        setMessageAndRedirect('success', 'Notificação marcada como lida.', 'index.php');
+        $pdo = new PDO($dsn, $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
-        setMessageAndRedirect('error', 'Erro ao marcar notificação: ' . $e->getMessage(), 'index.php');
-    }
-}
-
-// Processar cadastro de contrato
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])) {
-    $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
-    $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING);
-    $validade = filter_input(INPUT_POST, 'validade', FILTER_SANITIZE_STRING);
-    $assinatura = filter_input(INPUT_POST, 'assinatura', FILTER_SANITIZE_STRING);
-
-    if (!$titulo || !$validade || !$assinatura) {
-        setMessageAndRedirect('error', 'Campos obrigatórios não preenchidos.', 'cadastro_contrato.php');
+        die("Erro ao conectar ao banco de dados: " . $e->getMessage());
     }
 
-    // Inserir contrato
-    try {
-        $sql = "INSERT INTO gestao_contratos (titulo, descricao, assinatura, validade) 
-                VALUES (:titulo, :descricao, :assinatura, :validade)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            'titulo' => $titulo,
-            'descricao' => $descricao,
-            'assinatura' => $assinatura,
-            'validade' => $validade
-        ]);
+    // Função para redirecionar com mensagem
+    function setMessageAndRedirect($type, $message, $location) {
+        $_SESSION[$type] = $message;
+        header("Location: $location");
+        exit;
+    }
 
-        // Inserir notificação
-        $usuario = $_SESSION['username'];
-        $setor = $_SESSION['setor'];
-        $mensagem = "Contrato '{$titulo}' prestes a expirar.";
-        $situacao = 'não lida';
-        $dataNotificacao = date('Y-m-d H:i:s');
-
-        // Verificar se já existe uma notificação
-        $sqlVerificacao = "SELECT COUNT(*) FROM notificacoes WHERE username = :username AND mensagem = :mensagem";
-        $stmtVerificacao = $pdo->prepare($sqlVerificacao);
-        $stmtVerificacao->execute(['username' => $usuario, 'mensagem' => $mensagem]);
-
-        if ($stmtVerificacao->fetchColumn() == 0) {
-            $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
-                               VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
-            $stmtNotificacao = $pdo->prepare($sqlNotificacao);
-            $stmtNotificacao->execute([
-                'username' => $usuario,
-                'setor' => $setor,
-                'mensagem' => $mensagem,
-                'situacao' => $situacao,
-                'data_criacao' => $dataNotificacao
-            ]);
+    // Marcar notificação como lida
+    if (isset($_GET['mark_read']) && $_SESSION['username'] === 'contratos') {
+        $notificationId = filter_var($_GET['mark_read'], FILTER_VALIDATE_INT);
+        if ($notificationId === false) {
+            setMessageAndRedirect('error', 'ID de notificação inválido.', 'index.php');
         }
 
-        setMessageAndRedirect('success', 'Contrato cadastrado com sucesso!', 'index.php');
-    } catch (PDOException $e) {
-        setMessageAndRedirect('error', 'Erro ao cadastrar contrato: ' . $e->getMessage(), 'cadastro_contrato.php');
-    }
-}
-
-// Buscar contratos próximos de expirar
-$notificacoes = [];
-try {
-    $sqlNotificacoes = "SELECT * FROM gestao_contratos 
-                        WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH) 
-                        AND validade >= CURDATE()";
-    $stmtNotificacoes = $pdo->query($sqlNotificacoes);
-    $notificacoes = $stmtNotificacoes->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $_SESSION['error'] = "Erro ao buscar notificações: " . $e->getMessage();
-}
-
-// Buscar detalhes do processo
-$processDetails = null;
-if (isset($_GET['processId'])) {
-    $processId = filter_var($_GET['processId'], FILTER_VALIDATE_INT);
-    if ($processId !== false) {
         try {
-            $sqlProcesso = "SELECT * FROM gestao_contratos WHERE id = :id";
-            $stmtProcesso = $pdo->prepare($sqlProcesso);
-            $stmtProcesso->execute(['id' => $processId]);
-            $processDetails = $stmtProcesso->fetch(PDO::FETCH_ASSOC);
+            $sqlMarkRead = "UPDATE notificacoes SET situacao = 'lida' WHERE id = :id";
+            $stmtMarkRead = $pdo->prepare($sqlMarkRead);
+            $stmtMarkRead->execute(['id' => $notificationId]);
+            setMessageAndRedirect('success', 'Notificação marcada como lida.', 'index.php');
         } catch (PDOException $e) {
-            $_SESSION['error'] = "Erro ao buscar detalhes do processo: " . $e->getMessage();
+            setMessageAndRedirect('error', 'Erro ao marcar notificação: ' . $e->getMessage(), 'index.php');
         }
     }
-}
 
-// Buscar contratos para o dropdown
-$options = "";
-try {
-    $sqlContratos = "SELECT titulo FROM gestao_contratos";
-    $stmtContratos = $pdo->query($sqlContratos);
-    $contratos = $stmtContratos->fetchAll(PDO::FETCH_ASSOC);
+    // Processar cadastro de contrato
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])) {
+        $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
+        $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING);
+        $validade = filter_input(INPUT_POST, 'validade', FILTER_SANITIZE_STRING);
+        $assinatura = filter_input(INPUT_POST, 'assinatura', FILTER_SANITIZE_STRING);
 
-    if ($contratos) {
-        foreach ($contratos as $contrato) {
-            $titulo = htmlspecialchars($contrato['titulo'], ENT_QUOTES, 'UTF-8');
-            $options .= "<option value=\"$titulo\">$titulo</option>";
+        if (!$titulo || !$validade || !$assinatura) {
+            setMessageAndRedirect('error', 'Campos obrigatórios não preenchidos.', 'cadastro_contrato.php');
         }
-    } else {
-        $options = "<option value=\"\">Nenhum contrato encontrado</option>";
-    }
-} catch (PDOException $e) {
-    $_SESSION['error'] = "Erro ao buscar contratos: " . $e->getMessage();
-    $options = "<option value=\"\">Erro ao carregar contratos</option>";
-}
 
-include 'header.php';
+        // Inserir contrato
+        try {
+            $sql = "INSERT INTO gestao_contratos (titulo, descricao, assinatura, validade) 
+                    VALUES (:titulo, :descricao, :assinatura, :validade)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                'titulo' => $titulo,
+                'descricao' => $descricao,
+                'assinatura' => $assinatura,
+                'validade' => $validade
+            ]);
+
+            // Inserir notificação
+            $usuario = $_SESSION['username'];
+            $setor = $_SESSION['setor'];
+            $mensagem = "Contrato '{$titulo}' prestes a expirar.";
+            $situacao = 'não lida';
+            $dataNotificacao = date('Y-m-d H:i:s');
+
+            // Verificar se já existe uma notificação
+            $sqlVerificacao = "SELECT COUNT(*) FROM notificacoes WHERE username = :username AND mensagem = :mensagem";
+            $stmtVerificacao = $pdo->prepare($sqlVerificacao);
+            $stmtVerificacao->execute(['username' => $usuario, 'mensagem' => $mensagem]);
+
+            if ($stmtVerificacao->fetchColumn() == 0) {
+                $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                                VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
+                $stmtNotificacao = $pdo->prepare($sqlNotificacao);
+                $stmtNotificacao->execute([
+                    'username' => $usuario,
+                    'setor' => $setor,
+                    'mensagem' => $mensagem,
+                    'situacao' => $situacao,
+                    'data_criacao' => $dataNotificacao
+                ]);
+            }
+
+            setMessageAndRedirect('success', 'Contrato cadastrado com sucesso!', 'index.php');
+        } catch (PDOException $e) {
+            setMessageAndRedirect('error', 'Erro ao cadastrar contrato: ' . $e->getMessage(), 'cadastro_contrato.php');
+        }
+    }
+
+    // Buscar contratos próximos de expirar
+    $notificacoes = [];
+    try {
+        $sqlNotificacoes = "SELECT * FROM gestao_contratos 
+                            WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH) 
+                            AND validade >= CURDATE()";
+        $stmtNotificacoes = $pdo->query($sqlNotificacoes);
+        $notificacoes = $stmtNotificacoes->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Erro ao buscar notificações: " . $e->getMessage();
+    }
+
+    // Buscar detalhes do processo
+    $processDetails = null;
+    if (isset($_GET['processId'])) {
+        $processId = filter_var($_GET['processId'], FILTER_VALIDATE_INT);
+        if ($processId !== false) {
+            try {
+                $sqlProcesso = "SELECT * FROM gestao_contratos WHERE id = :id";
+                $stmtProcesso = $pdo->prepare($sqlProcesso);
+                $stmtProcesso->execute(['id' => $processId]);
+                $processDetails = $stmtProcesso->fetch(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                $_SESSION['error'] = "Erro ao buscar detalhes do processo: " . $e->getMessage();
+            }
+        }
+    }
+
+    // Buscar contratos para o dropdown
+    $options = "";
+    try {
+        $sqlContratos = "SELECT titulo FROM gestao_contratos";
+        $stmtContratos = $pdo->query($sqlContratos);
+        $contratos = $stmtContratos->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($contratos) {
+            foreach ($contratos as $contrato) {
+                $titulo = htmlspecialchars($contrato['titulo'], ENT_QUOTES, 'UTF-8');
+                $options .= "<option value=\"$titulo\">$titulo</option>";
+            }
+        } else {
+            $options = "<option value=\"\">Nenhum contrato encontrado</option>";
+        }
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Erro ao buscar contratos: " . $e->getMessage();
+        $options = "<option value=\"\">Erro ao carregar contratos</option>";
+    }
+
+    include 'header.php';
+    
+// Incluir o código que já insere as notificações
+include 'verificar_notificacoes.php';  // O código que já insere as notificações
+
+// echo "Notificações inseridas com sucesso.";
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -169,23 +172,26 @@ include 'header.php';
 <div class="caderno">
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
 
-   
     <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
         <i class="fas fa-plus-circle"></i> Cadastro de contratos
     </div>
+
     <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
         <i class="fas fa-search"></i> Consultar contratos
     </div>
-    <!-- <div class="tab" data-tab="agenda" onclick="showTab('agenda')">
-        <i class="fas fa-calendar-alt"></i> Agendamento
-    </div> -->
+
     <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">
         <i class="fas fa-info-circle"></i> Resumo
     </div>
     <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
             <i class="fas fa-edit"></i> Gerenciar Contratos
         </div>
+        
+    <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
+            <i class="fas fa-edit"></i> Prestação de Contas
+        </div>
+
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
         <i class="fas fa-file-alt"></i> Relatórios
     </div>  
@@ -193,12 +199,12 @@ include 'header.php';
 </div>
 
 
-
+<!-- ABA -->
 <div class="form-container" id="cadastrar" style="display:none;">
     <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data">
     <h1 class="cadastrar-contratos">
     <i class="fas fa-plus-circle" id="icon-cadastrar"></i> Cadastrar Contratos
-</h1>
+    </h1>
 
     <div class="cadastro">
         <div class="grupo1">
@@ -327,32 +333,8 @@ include 'header.php';
     </form>
 </div>
 
-<script src="./src/contratos/js/cadastro_contato.js">
-</script>
-
-<!-- <div class="form-container3" id="processos">
-    <?php
-    // Conexão com o banco de dados
-    include 'banco.php';
-
-    // Consulta para contar o número de processos na tabela gestao_contratos
-    $sql = "SELECT COUNT(*) as total FROM gestao_contratos";
-    $result = mysqli_query($con, $sql);
-    $row = mysqli_fetch_assoc($result);
-    $total_processos = $row['total'];
-    ?>
-
-    <div class="card">
-        <div class="card-body text-center">
-            <h5 class="card-title">Total de Processos</h5>
-            <p class="card-text display-4"><?php echo $total_processos; ?></p>
-        </div>
-    </div>
-</div> -->
-<!-- Formulário para selecionar contrato e tipo de relatório -->
-
-
-
+<script src="./src/contratos/js/cadastro_contato.js"></script>
+<!--  ABA CONSULTAR -->
 <div class="form-container" id="consultar" style="display:none;">
     <h2 class="text-center mt-3">
         <span class="icon-before fas fa-box"></span> Lista de Fornecedores
@@ -373,136 +355,130 @@ include 'header.php';
             <!-- Botão para abrir o modal de filtro -->
             <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
         </div>
-</div>
+    </div>
+   <!-- Lista de Contratos -->
+    <div class="table-container-contratos">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                <th><i class="fas fa-hashtag"></i> ID</th>
+            <th><i class="fas fa-file-alt"></i> Nome</th>
+            <th><i class="fas fa-align-left"></i> Descrição</th>
+            <th><i class="fas fa-calendar-alt"></i> Validade</th>
+            <th><i class="fas fa-circle"></i> Status</th>
+            <th><i class="fas fa-cogs"></i> Ações</th>
+                </tr>
+            </thead>
+            <tbody id="contractTableBody">
+                <!-- Dados carregados via PHP -->
+                <?php
+                // Conexão com o banco de dados (supondo que $pdo já esteja configurado)
 
+                // Verifica se há um filtro de situação via GET
+                $situacao = isset($_GET['situacao']) ? $_GET['situacao'] : '';
 
+                // Monta a consulta SQL com filtro opcional
+                $sql = "SELECT * FROM gestao_contratos";
+                if (!empty($situacao)) {
+                    $sql .= " WHERE situacao = :situacao";
+                }
+                $sql .= " ORDER BY validade "; //DESC ORDEM DECRESCENTE 
 
-    <!-- Lista de Contratos -->
-<div class="table-container-contratos">
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-            <th><i class="fas fa-hashtag"></i> ID</th>
-        <th><i class="fas fa-file-alt"></i> Nome</th>
-        <th><i class="fas fa-align-left"></i> Descrição</th>
-        <th><i class="fas fa-calendar-alt"></i> Validade</th>
-        <th><i class="fas fa-circle"></i> Status</th>
-        <th><i class="fas fa-cogs"></i> Ações</th>
-            </tr>
-        </thead>
-        <tbody id="contractTableBody">
-            <!-- Dados carregados via PHP -->
-            <?php
-            // Conexão com o banco de dados (supondo que $pdo já esteja configurado)
+                $stmt = $pdo->prepare($sql);
 
-            // Verifica se há um filtro de situação via GET
-            $situacao = isset($_GET['situacao']) ? $_GET['situacao'] : '';
+                // Se houver filtro, vincula o valor da situação
+                if (!empty($situacao)) {
+                    $stmt->bindParam(':situacao', $situacao, PDO::PARAM_STR);
+                }
 
-            // Monta a consulta SQL com filtro opcional
-            $sql = "SELECT * FROM gestao_contratos";
-            if (!empty($situacao)) {
-                $sql .= " WHERE situacao = :situacao";
-            }
-            $sql .= " ORDER BY validade "; //DESC ORDEM DECRESCENTE 
+                $stmt->execute();
 
-            $stmt = $pdo->prepare($sql);
+    // Exibe os resultados
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $situacao = $row['situacao'];
+        $situacaoClass = '';
+        $situacaoIcon = '';
+        $situacaoTextColor = '';
+        
+        // Verifica o valor de 'situacao' para aplicar o estilo adequado
+        if ($situacao == 'Ativo') {
+            $situacaoClass = 'Ativo'; // Classe para 'Ativo'
+            $situacaoIcon = 'fa-arrow-up'; // Ícone da seta para cima
+            $situacaoTextColor = 'green'; // Cor verde para 'Ativo'
+        } else {
+            $situacaoClass = 'Inativo'; // Classe para 'Inativo'
+            $situacaoIcon = 'fa-arrow-down'; // Ícone da seta para baixo
+            $situacaoTextColor = 'red'; // Cor vermelha para 'Inativo'
+        }
 
-            // Se houver filtro, vincula o valor da situação
-            if (!empty($situacao)) {
-                $stmt->bindParam(':situacao', $situacao, PDO::PARAM_STR);
-            }
+        // Formatar a data de validade
+        $validade = new DateTime($row['validade']);
+        $validadeFormatted = $validade->format('d/m/Y');
+        
+        // Adicionando uma classe para a validade estilizada
+        $validadeClass = '';
+        $validadeTextColor = '';
+        $validadeIcon = '';
 
-            $stmt->execute();
+        // Verifica se a data é válida, expirada ou próxima de expirar
+        $today = new DateTime();
+        $oneMonthLater = clone $today;
+        $oneMonthLater->modify('+1 month'); // Cria uma data com o próximo mês
 
-// Exibe os resultados
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $situacao = $row['situacao'];
-    $situacaoClass = '';
-    $situacaoIcon = '';
-    $situacaoTextColor = '';
-    
-    // Verifica o valor de 'situacao' para aplicar o estilo adequado
-    if ($situacao == 'Ativo') {
-        $situacaoClass = 'Ativo'; // Classe para 'Ativo'
-        $situacaoIcon = 'fa-arrow-up'; // Ícone da seta para cima
-        $situacaoTextColor = 'green'; // Cor verde para 'Ativo'
-    } else {
-        $situacaoClass = 'Inativo'; // Classe para 'Inativo'
-        $situacaoIcon = 'fa-arrow-down'; // Ícone da seta para baixo
-        $situacaoTextColor = 'red'; // Cor vermelha para 'Inativo'
+        if ($validade < $today) {
+            // Data expirada
+            $validadeClass = 'expired';
+            $validadeTextColor = 'red';
+            $validadeIcon = 'fa-times-circle';
+        } elseif ($validade <= $oneMonthLater) {
+            // Data próxima de expirar
+            $validadeClass = 'approaching';
+            $validadeTextColor = 'orange';
+            $validadeIcon = 'fa-exclamation-circle';
+        } else {
+            // Data válida
+            $validadeClass = 'valid';
+            $validadeTextColor = 'green';
+            $validadeIcon = 'fa-check-circle';
+        }
+        echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
+        echo "<td class='truncated-text' title='{$row['id']}'>{$row['id']}</td>";
+        echo "<td class='truncated-text' title='{$row['titulo']}'>{$row['titulo']}</td>";
+        echo "<td class='truncated-text' title='{$row['descricao']}'>{$row['descricao']}</td>";
+        
+        
+        // Coloca a validade com a cor e o ícone correto
+        echo "<td class='$validadeClass' style='color: $validadeTextColor;'>
+                <i class='fas $validadeIcon'></i> 
+                $validadeFormatted
+            </td>";
+        
+        // Coloca a situação com a cor e o ícone correto
+        echo "<td class='$situacaoClass' style='color: $situacaoTextColor;'>
+                <i class='fas $situacaoIcon'></i> 
+                $situacao
+            </td>";
+        
+        // O botão "Visualizar" terá um evento independente
+        echo "<td>";
+        echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
+                <i class='fas fa-eye'></i>
+            </button>";
+        echo "<button class='btn btn-primary btn-sm' onclick='generateReport()' title='Relatório'>
+                <i class='fas fa-file-alt'></i>
+            </button>";
+        echo "<button class='btn btn-success btn-sm' onclick='editProcess(event, " . json_encode($row) . ")' title='Editar processo'>
+                <i class='fas fa-edit'></i>
+            </button>";
+        echo "</td>";
+        echo "</tr>";
     }
-
-    // Formatar a data de validade
-    $validade = new DateTime($row['validade']);
-    $validadeFormatted = $validade->format('d/m/Y');
-    
-    // Adicionando uma classe para a validade estilizada
-    $validadeClass = '';
-    $validadeTextColor = '';
-    $validadeIcon = '';
-
-    // Verifica se a data é válida, expirada ou próxima de expirar
-    $today = new DateTime();
-    $oneMonthLater = clone $today;
-    $oneMonthLater->modify('+1 month'); // Cria uma data com o próximo mês
-
-    if ($validade < $today) {
-        // Data expirada
-        $validadeClass = 'expired';
-        $validadeTextColor = 'red';
-        $validadeIcon = 'fa-times-circle';
-    } elseif ($validade <= $oneMonthLater) {
-        // Data próxima de expirar
-        $validadeClass = 'approaching';
-        $validadeTextColor = 'orange';
-        $validadeIcon = 'fa-exclamation-circle';
-    } else {
-        // Data válida
-        $validadeClass = 'valid';
-        $validadeTextColor = 'green';
-        $validadeIcon = 'fa-check-circle';
-    }
-    echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
-    echo "<td class='truncated-text' title='{$row['id']}'>{$row['id']}</td>";
-    echo "<td class='truncated-text' title='{$row['titulo']}'>{$row['titulo']}</td>";
-    echo "<td class='truncated-text' title='{$row['descricao']}'>{$row['descricao']}</td>";
-    
-    
-    // Coloca a validade com a cor e o ícone correto
-    echo "<td class='$validadeClass' style='color: $validadeTextColor;'>
-            <i class='fas $validadeIcon'></i> 
-            $validadeFormatted
-          </td>";
-    
-    // Coloca a situação com a cor e o ícone correto
-    echo "<td class='$situacaoClass' style='color: $situacaoTextColor;'>
-            <i class='fas $situacaoIcon'></i> 
-            $situacao
-          </td>";
-    
-    // O botão "Visualizar" terá um evento independente
-    echo "<td>";
-    echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
-            <i class='fas fa-eye'></i>
-          </button>";
-    echo "<button class='btn btn-primary btn-sm' onclick='generateReport()' title='Relatório'>
-            <i class='fas fa-file-alt'></i>
-          </button>";
-    echo "<button class='btn btn-success btn-sm' onclick='editProcess(event, " . json_encode($row) . ")' title='Editar processo'>
-            <i class='fas fa-edit'></i>
-          </button>";
-    echo "</td>";
-    echo "</tr>";
-}
-?>
+    ?>
         </tbody>
     </table>
     </div>
     
 </div>
-
-
-
 
 <!-- Modal de Edição -->
 <div class="modal fade" id="editProcessModal" tabindex="-1" role="dialog" aria-labelledby="editProcessModalLabel" aria-hidden="true">
@@ -566,14 +542,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         </div>
     </div>
 </div>
+
 <!--  // Função editar modal -->
 <script src="./src/contratos/js/edit-process-modal.js"></script>
-
-
-
-
-
-
 
 <!-- Modal exibi detalhes do contrato BOTAO VISUALIZAR DA TABELA -->
 <div class="modal fade" id="modalContrato" tabindex="-1" aria-hidden="true">
@@ -631,68 +602,15 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         </div>
     </div>
 </div>
-<script src="./src/js/filtroModal.js"></script>
-
-<!--  -->
-
-<script src="./src/js/active.js"></script>
-
-<!-- JavaScript para abrir o modal e exibir as tarefas -->
-<script>
-    // Variável para armazenar os agendamentos
-    const agendamentos = <?php echo json_encode($agendamentos); ?>;
-
-    // Modal
-    const modal = document.getElementById("taskModal");
-    const closeModal = document.getElementsByClassName("close-btn")[0];
-
-    // Quando o usuário clica em um dia
-    document.querySelectorAll(".day-number").forEach((dayElement) => {
-        dayElement.addEventListener("click", function() {
-            const selectedDay = this.innerText;
-            const selectedDate = '<?php echo $currentYear . "-" . $currentMonth; ?>-' + ('0' + selectedDay).slice(-2);
-
-            // Verificando se existem agendamentos para o dia
-            if (agendamentos[selectedDate]) {
-                const taskDetails = agendamentos[selectedDate].map(task => 
-                    `<p><strong>${task.nome}</strong>: ${task.descricao}</p>`
-                ).join("");
-                document.getElementById("taskDetails").innerHTML = taskDetails;
-                modal.style.display = "block";
-            } else {
-                document.getElementById("taskDetails").innerHTML = "<p>Não há tarefas agendadas para este dia.</p>";
-                modal.style.display = "block";
-            }
-        });
-    });
-
-    // Fechar o modal quando o usuário clicar no "X"
-    closeModal.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // Fechar o modal quando o usuário clicar fora do conteúdo do modal
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    }
-</script>
-<?php
 
 
-// Incluir o código que já insere as notificações
-include 'verificar_notificacoes.php';  // O código que já insere as notificações
-
-// echo "Notificações inseridas com sucesso.";
-?>
 <!-- Ícone de Loading -->
 <div class="loading" style="display:none;"></div>
 <!-- Dentro do body, substitua a seção da aba "gerenciar" por: -->
 
 
 <div class="form-container" id="gerenciar" style="display:none;">
-<h2 id="contractTitleHeader">Pagamentos do</h2>
+    <h2 id="contractTitleHeader">Pagamentos do</h2>
     <div class="button-group">
     <button class="btn-submit" onclick="savePayment()">Salvar Alterações</button>
    </div>
@@ -927,6 +845,8 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
 <script src="./src/contratos/js/relatorio-avancado.js"></script>
 <!--  FUNCTION DE API - CAMPOS EDITAVEIS DE TABELA E INSERÇÃO DE DADOS -->
 <script src="./src/contratos/js/gerenciar-pagamentos.js"></script>
+<script src="./src/js/active.js"></script>
+<script src="./src/js/filtroModal.js"></script>
 </body>
 </html>
 <?php

@@ -546,7 +546,7 @@ include 'header.php';
 
 <div class="form-container" id="consultar" style="display:none;">
 <h2 class="text-center mt-3">
-    <span class="icon-before fas fa-box"></span> Lista de Produtos
+    <span class="icon-before fas fa-box"></span> Lista de Fornecedores
 </h2>
    <!-- Pesquisa -->
 <div class="search-bar">

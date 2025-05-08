@@ -363,11 +363,10 @@ $navigation = generateNavigation($currentMonth, $currentYear, $categoryFilter, $
 
 // Predefined categories
 $categories = [
-    'geral' => 'Geral',
+    'Geral' => 'Geral',
     'audiencia' => 'Audiência',
     'escritorio' => 'Escritório',
     'ligacao' => 'Ligação',
-    'oab' => 'OAB',
     'reuniao' => 'Reunião',
     'urgente' => 'Urgente'
 ];

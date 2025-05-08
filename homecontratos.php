@@ -351,228 +351,28 @@ include 'header.php';
 </div> -->
 <!-- Formulário para selecionar contrato e tipo de relatório -->
 
-<div class="form-container" id="relatorio">
-    <h2><i class="fas fa-file-alt"></i> Gerar Relatório</h2>
-    <form id="relatorio-form">
-        <div class="form-group">
-            <div class="input-group-contratos">
-                <!-- Seletor de contrato -->
-                <div style="flex: 1;">
-                    <label for="tipo_relatorio"><i class="fas fa-folder-open"></i> Nome do Contrato</label>
-                    <select name="contrato" id="tipo_relatorio" onchange="mostrarTipoRelatorio()">
-                        <option value="">Selecione o Contrato</option>
-                        <?php echo $options; ?>
-                    </select>
-                </div>
 
-                <!-- Seletor para relatórios de todos os contratos -->
-                <div style="flex: 1;">
-                    <label for="relatorio_todos"><i class="fas fa-globe"></i> Relatório de Todos os Contratos</label>
-                    <select name="relatorio_todos" id="relatorio_todos" onchange="mostrarCamposRelatorioTodos()">
-                        <option value="">Selecione o Tipo de Relatório</option>
-                        <option value="mensal_todos">Relatório Mensal (Todos os Contratos)</option>
-                        <option value="anual_todos">Relatório Anual (Todos os Contratos)</option>
-                    </select>
-                </div>
-
-                <!-- Seletor de tipo de relatório (inicialmente oculto, para contratos individuais) -->
-                <div id="tipo-relatorio-container" style="display: none; flex: 1;">
-                    <label for="relatorio_tipo"><i class="fas fa-chart-line"></i> Relatório por Contratos</label>
-                    <select name="relatorio_tipo" id="relatorio_tipo" onchange="mostrarCamposRelatorio()">
-                        <option value="completo">Relatório Completo</option>
-                        <!-- <option value="compromissos_futuros">Compromissos Futuros</option> -->
-                        <option value="pagamentos">Relatório de Pagamentos</option>
-                        <option value="mensal">Relatório Mensal</option>
-                        <option value="anual">Relatório Anual</option>
-                    </select>
-                </div>
-
-                <!-- Seletor de mês (oculto inicialmente, usado por ambos) -->
-                <div id="mes-container" style="display: none; flex: 1;">
-                    <label for="mes"><i class="fas fa-calendar"></i> Selecione o Mês</label>
-                    <select name="mes" id="mes"></select>
-                </div>
-
-                <!-- Seletor de ano (oculto inicialmente, usado por ambos) -->
-                <div id="ano-container" style="display: none; flex: 1;">
-                    <label for="ano"><i class="fas fa-calendar"></i> Selecione o Ano</label>
-                    <select name="ano" id="ano"></select>
-                </div>
-            </div>
-        </div>
-
-        <!-- Seção para agendamento de relatórios -->
-        <!-- <div id="agendamento-container">
-            <h3><i class="fas fa-clock"></i> Agendar Relatório</h3>
-            <div class="email-group">
-                <div style="flex: 1;">
-                    <label for="email_destinatario_select">E-mails Salvos</label>
-                    <select id="email_destinatario_select" name="email_destinatario_select" onchange="atualizarCampoEmail()">
-                        <option value="">Selecione um e-mail salvo</option>
-                        <?php echo $options_emails; ?>
-                        <option value="novo">Digitar novo e-mail</option>
-                    </select>
-                </div>
-                <div style="flex: 1;">
-                    <label for="email_destinatario">E-mail do Destinatário</label>
-                    <input type="email" id="email_destinatario" name="email_destinatario" placeholder="Digite o e-mail" required>
-                    <label style="display: none;" id="salvar_email_label">
-                        <input type="checkbox" id="salvar_email" name="salvar_email"> Salvar este e-mail para uso futuro
-                    </label>
-                </div>
-            </div>
-            <label for="periodicidade">Periodicidade</label>
-            <select id="periodicidade" name="periodicidade">
-                <option value="diario">Diário</option>
-                <option value="semanal">Semanal</option>
-                <option value="mensal">Mensal</option>
-            </select>
-            <button type="button" class="btn-submit" onclick="agendarRelatorio()">Agendar Relatório</button>
-        </div> -->
-
-        <div class="button-group">
-            <!-- Botão para gerar o relatório -->
-            <button class="btn-submit" type="button" id="gerar-relatorio" onclick="gerarRelatorio()">Gerar Relatório</button>
-            <!-- Botões para exportação -->
-            <button class="btn-submit" type="button" id="btnExportPDF" onclick="exportarPDF()">Exportar para PDF</button>
-            <button class="btn-submit" type="button" id="btnExportCSV" onclick="exportarCSV()">Exportar para CSV</button>
-        </div>
-    </form>
-
-    <!-- Tabelas para Relatórios -->
-    <div id="relatorio-completo-tabela" style="display: none;">
-        <table id="relatorio-completo" style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>Título do Contrato</th>
-                    <th>Vigência</th>
-                    <th>Gestor</th>
-                    <th>Gestor Substituto</th>
-                    <th>Situação</th>
-                    <th>Nº de Parcelas</th>
-                    <th>Data de Cadastro</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <div id="compromissos-futuros-tabela" style="display: none;">
-        <table id="compromissos-futuros" style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>Título do Contrato</th>
-                    <th>Vigência</th>
-                    <th>Gestor</th>
-                    <th>Gestor Substituto</th>
-                    <th>Situação</th>
-                    <th>Nº de Parcelas</th>
-                    <th>Evento</th>
-                    <th>Descrição</th>
-                    <th>Data</th>
-                    <th>Hora</th>
-                    <th>Categoria</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <div id="relatorio-pagamentos-tabela" style="display: none;">
-        <table id="relatorio-pagamentos" style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>Título do Contrato</th>
-                    <th>Mês</th>
-                    <th> Valores pagos </th>
-                    <th>Pagamentos Efetuados</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <div id="relatorio-mensal-tabela" style="display: none;">
-        <table id="relatorio-mensal" style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>Título do Contrato</th>
-                    <th>Nº de Parcelas</th>
-                    <th>Histórico de Pagamentos (Data)</th>
-                    <th>Histórico de Pagamentos (Valor)</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <div id="relatorio-anual-tabela" style="display: none;">
-        <table id="relatorio-anual" style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>Título do Contrato</th>
-                    <th>Ano</th>
-                    <th>Nº de Parcelas</th>
-                    <th>Total Pago no Ano</th>
-                    <th>Quantidade de Pagamentos</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <div id="relatorio-mensal-todos-tabela" style="display: none;">
-        <table id="relatorio-mensal-todos" style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>Título do Contrato</th>
-                    <th>Nº de Parcelas</th>
-                    <th>Histórico de Pagamentos (Data)</th>
-                    <th>Histórico de Pagamentos (Valor)</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <div id="relatorio-anual-todos-tabela" style="display: none;">
-        <table id="relatorio-anual-todos" style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>Título do Contrato</th>
-                    <th>Ano</th>
-                    <th>Nº de Parcelas</th>
-                    <th>Total Pago no Ano</th>
-                    <th>Quantidade de Pagamentos</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-</div>
-
-<script src="./src/contratos/js/relatorio-avancado.js"></script>
 
 <div class="form-container" id="consultar" style="display:none;">
-<h2 class="text-center mt-3">
-    <span class="icon-before fas fa-box"></span> Lista de Fornecedores
-</h2>
-   <!-- Pesquisa -->
-<div class="search-bar">
-    <div class="search-filters">
-        <!-- Campo de pesquisa por título ou descrição -->
-        <input type="text" id="searchInput" class="input-field" placeholder="Digite o título ou descrição do contrato" oninput="searchContracts()">
-        
-        <!-- Filtro de status (Ativo/Inativo) -->
-        <select id="statusSelect" class="input-field" onchange="searchContracts()">
-            <option value="">Todos</option>
-            <option value="ativo">Ativo</option>
-            <option value="inativo">Inativo</option>
-        </select>
-        
-        <!-- Botão para abrir o modal de filtro -->
-        <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
-    </div>
+    <h2 class="text-center mt-3">
+        <span class="icon-before fas fa-box"></span> Lista de Fornecedores
+    </h2>
+    <!-- Pesquisa -->
+    <div class="search-bar">
+        <div class="search-filters">
+            <!-- Campo de pesquisa por título ou descrição -->
+            <input type="text" id="searchInput" class="input-field" placeholder="Digite o título para pesquisar" oninput="searchContracts()">
+            
+            <!-- Filtro de status (Ativo/Inativo) -->
+            <select id="statusSelect" class="input-field" onchange="searchContracts()">
+                <option value="">Todos</option>
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+            </select>
+            
+            <!-- Botão para abrir o modal de filtro -->
+            <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
+        </div>
 </div>
 
 
@@ -923,6 +723,208 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
         </tbody>
     </table>
 </div>
+<!-- Aba Relatório -->
+<div class="form-container" id="relatorio">
+    <h2><i class="fas fa-file-alt"></i> Gerar Relatório</h2>
+    <form id="relatorio-form">
+        <div class="form-group">
+            <div class="input-group-contratos">
+                <!-- Seletor de contrato -->
+                <div style="flex: 1;">
+                    <label for="tipo_relatorio"><i class="fas fa-folder-open"></i> Nome do Contrato</label>
+                    <select name="contrato" id="tipo_relatorio" onchange="mostrarTipoRelatorio()">
+                        <option value="">Selecione o Contrato</option>
+                        <?php echo $options; ?>
+                    </select>
+                </div>
+
+                <!-- Seletor para relatórios de todos os contratos -->
+                <div style="flex: 1;">
+                    <label for="relatorio_todos"><i class="fas fa-globe"></i> Relatório de Todos os Contratos</label>
+                    <select name="relatorio_todos" id="relatorio_todos" onchange="mostrarCamposRelatorioTodos()">
+                        <option value="">Selecione o Tipo de Relatório</option>
+                        <option value="mensal_todos">Relatório Mensal (Todos os Contratos)</option>
+                        <option value="anual_todos">Relatório Anual (Todos os Contratos)</option>
+                    </select>
+                </div>
+
+                <!-- Seletor de tipo de relatório (inicialmente oculto, para contratos individuais) -->
+                <div id="tipo-relatorio-container" style="display: none; flex: 1;">
+                    <label for="relatorio_tipo"><i class="fas fa-chart-line"></i> Relatório por Contratos</label>
+                    <select name="relatorio_tipo" id="relatorio_tipo" onchange="mostrarCamposRelatorio()">
+                        <option value="completo">Relatório Completo</option>
+                        <!-- <option value="compromissos_futuros">Compromissos Futuros</option> -->
+                        <option value="pagamentos">Relatório de Pagamentos</option>
+                        <option value="mensal">Relatório Mensal</option>
+                        <option value="anual">Relatório Anual</option>
+                    </select>
+                </div>
+
+                <!-- Seletor de mês (oculto inicialmente, usado por ambos) -->
+                <div id="mes-container" style="display: none; flex: 1;">
+                    <label for="mes"><i class="fas fa-calendar"></i> Selecione o Mês</label>
+                    <select name="mes" id="mes"></select>
+                </div>
+
+                <!-- Seletor de ano (oculto inicialmente, usado por ambos) -->
+                <div id="ano-container" style="display: none; flex: 1;">
+                    <label for="ano"><i class="fas fa-calendar"></i> Selecione o Ano</label>
+                    <select name="ano" id="ano"></select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção para agendamento de relatórios -->
+        <!-- <div id="agendamento-container">
+            <h3><i class="fas fa-clock"></i> Agendar Relatório</h3>
+            <div class="email-group">
+                <div style="flex: 1;">
+                    <label for="email_destinatario_select">E-mails Salvos</label>
+                    <select id="email_destinatario_select" name="email_destinatario_select" onchange="atualizarCampoEmail()">
+                        <option value="">Selecione um e-mail salvo</option>
+                        <?php echo $options_emails; ?>
+                        <option value="novo">Digitar novo e-mail</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label for="email_destinatario">E-mail do Destinatário</label>
+                    <input type="email" id="email_destinatario" name="email_destinatario" placeholder="Digite o e-mail" required>
+                    <label style="display: none;" id="salvar_email_label">
+                        <input type="checkbox" id="salvar_email" name="salvar_email"> Salvar este e-mail para uso futuro
+                    </label>
+                </div>
+            </div>
+            <label for="periodicidade">Periodicidade</label>
+            <select id="periodicidade" name="periodicidade">
+                <option value="diario">Diário</option>
+                <option value="semanal">Semanal</option>
+                <option value="mensal">Mensal</option>
+            </select>
+            <button type="button" class="btn-submit" onclick="agendarRelatorio()">Agendar Relatório</button>
+        </div> -->
+
+        <div class="button-group">
+            <!-- Botão para gerar o relatório -->
+            <button class="btn-submit" type="button" id="gerar-relatorio" onclick="gerarRelatorio()">Gerar Relatório</button>
+            <!-- Botões para exportação -->
+            <button class="btn-submit" type="button" id="btnExportPDF" onclick="exportarPDF()">Exportar para PDF</button>
+            <button class="btn-submit" type="button" id="btnExportCSV" onclick="exportarCSV()">Exportar para CSV</button>
+        </div>
+    </form>
+
+    <!-- Tabelas para Relatórios -->
+    <div id="relatorio-completo-tabela" style="display: none;">
+        <table id="relatorio-completo" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Vigência</th>
+                    <th>Gestor</th>
+                    <th>Gestor Substituto</th>
+                    <th>Situação</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Data de Cadastro</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="compromissos-futuros-tabela" style="display: none;">
+        <table id="compromissos-futuros" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Vigência</th>
+                    <th>Gestor</th>
+                    <th>Gestor Substituto</th>
+                    <th>Situação</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Evento</th>
+                    <th>Descrição</th>
+                    <th>Data</th>
+                    <th>Hora</th>
+                    <th>Categoria</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="relatorio-pagamentos-tabela" style="display: none;">
+        <table id="relatorio-pagamentos" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Mês</th>
+                    <th> Valores pagos </th>
+                    <th>Pagamentos Efetuados</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="relatorio-mensal-tabela" style="display: none;">
+        <table id="relatorio-mensal" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Histórico de Pagamentos (Data)</th>
+                    <th>Histórico de Pagamentos (Valor)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="relatorio-anual-tabela" style="display: none;">
+        <table id="relatorio-anual" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Ano</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Total Pago no Ano</th>
+                    <th>Quantidade de Pagamentos</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="relatorio-mensal-todos-tabela" style="display: none;">
+        <table id="relatorio-mensal-todos" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Histórico de Pagamentos (Data)</th>
+                    <th>Histórico de Pagamentos (Valor)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="relatorio-anual-todos-tabela" style="display: none;">
+        <table id="relatorio-anual-todos" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Título do Contrato</th>
+                    <th>Ano</th>
+                    <th>Nº de Parcelas</th>
+                    <th>Total Pago no Ano</th>
+                    <th>Quantidade de Pagamentos</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script src="./src/contratos/js/relatorio-avancado.js"></script>
 <!--  FUNCTION DE API - CAMPOS EDITAVEIS DE TABELA E INSERÇÃO DE DADOS -->
 <script src="./src/contratos/js/gerenciar-pagamentos.js"></script>
 </body>

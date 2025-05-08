@@ -322,7 +322,7 @@ try {
         <!-- Cards -->
         <div class="cards-container">
             <div class="card">
-                <h3>Total de Processos</h3>
+                <h3>Total de Contratos</h3>
                 <p><?php echo $total_processos; ?></p>
             </div>
             <div class="card">

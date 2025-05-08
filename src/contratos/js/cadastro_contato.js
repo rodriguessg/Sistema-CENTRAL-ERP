@@ -23,7 +23,7 @@ function atualizarParcelas() {
 
 function calcularParcelas(dataInicial, numParcelas) {
     const parcelas = [];
-    const intervalo = 30; // A cada 30 dias (aproximadamente 1 mês)
+    const intervalo = 182; // A cada 30 dias (aproximadamente 1 mês)
 
     // Converter a string dataInicial para um objeto Date, caso seja uma string.
     let data = new Date(dataInicial);

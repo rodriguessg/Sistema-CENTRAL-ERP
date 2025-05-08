@@ -9,10 +9,14 @@
   font-family: "Roboto", sans-serif; /* Usando a fonte Roboto */
 }
 body {
-  background-color: rgb(217 217 217 / 90%);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #E0E0E0; /* Cinza bem claro */
+
+
+
+
 }
 
 /* Container principal - "Caderno" */
@@ -38,6 +42,7 @@ body {
 }
 
 .tab {
+  border: solid 1px  #A0A0A0;
   padding: 12px 20px;
   cursor: pointer;
   font-size: 16px;
@@ -52,7 +57,7 @@ body {
 
 /* Estilo das abas ativas */
 .tab.active {
-  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  background-color: #427842; 
   color: white;
   transform: scale(1.05);
 }
@@ -265,18 +270,27 @@ h3 {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.5s ease;
 }
 
 .btn-submit {
-  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  background: #427842;
   color: white;
 }
-
-.btn-submit:hover {
-  background-color: #777;
-  transform: scale(1.05);
+.btn-submit-adicionar {
+  background: #BC9D32;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
+
+.white-icon {
+  color: white;
+  margin-right: 8px; /* Para adicionar um pequeno espaçamento entre o ícone e o texto */
+}
+
 
 .btn-clear {
   background: linear-gradient(180deg, #2d3e50, #1a242f);
@@ -732,22 +746,8 @@ tr:hover {
 
 /* modal de informaçoes */
 
-body {
-  background-color: rgb(217 217 217 / 90%);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
 /* Container para as Tabs e o Conteúdo */
 
-
-/* Estilo das abas ativas */
-.tab.active {
-  background: linear-gradient(180deg, #2d3e50, #1a242f);
-  color: white;
-  transform: scale(1.05);
-}
 
 /* Estilo de hover em abas não ativas */
 .tab:hover {
@@ -885,15 +885,13 @@ h3 {
 /* Botões de ação */
 .button-group {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: space-between;
+      align-items: center;
 }
 
 
-.btn-submit {
-  background: linear-gradient(180deg, #2d3e50, #1a242f);
-  color: white;
-}
 
 .btn-submit:hover {
   background-color: #777;

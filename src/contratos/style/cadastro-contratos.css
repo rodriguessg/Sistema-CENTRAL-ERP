@@ -64,34 +64,17 @@
 .input-icon input {
     width: 100%;
     padding: 2px 16px;
-    padding-left: 35px; /* Espaço para o ícone à esquerda */
-    border: 3px solid #ddd;
+    padding-left: 40px; /* Espaço para o ícone à esquerda */
+    border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 14px;
     color: #333;
     background-color: #f9f9f9;
     transition: all 0.3s ease;
     box-sizing: border-box;
 }
 
-/* Estilo das labels */
-.form-label {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 8px;
-    display: block;
-}
 
-/* Estilo dos campos de input */
-.form-control {
-    padding: 10px;
-    padding-left: 15px; /* Espaço para o ícone */
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    transition: border-color 0.3s ease;
-}
 
 /* Remover o foco azul padrão e aplicar a cor de borda #777 */
 .form-control:focus {
@@ -110,8 +93,7 @@
     left: 10px; /* Posição do ícone dentro do campo */
     top: 50%;
     transform: translateY(-50%);
-    color: #aaa;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 /* Responsividade para telas menores */
@@ -186,11 +168,13 @@ input[type="checkbox"] {
 
 /* Estilo das labels */
 .form-label {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 8px;
-    display: block;
+    display: flex;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        justify-content: space-between;
+    
 }
 
 /* Estilo do campo de número de parcelas */
@@ -267,14 +251,15 @@ input[type="checkbox"]:checked + label {
 
 /* Estilo para o ícone */
 #icon-cadastrar {
-    margin-right: 10px; /* Espaço entre o ícone e o texto */
-    transition: transform 0.3s ease, color 0.3s ease; /* Adiciona um efeito suave de transição */
+    transition: transform 0.5s ease, color 0.3s ease; /* Adiciona um efeito suave de transição */
     cursor: pointer;
+    color:  #427842;
+    font-size:smaller;
 }
 
 /* Efeito de hover (quando o usuário passar o mouse sobre o ícone) */
 #icon-cadastrar:hover {
-    transform: scale(1.2); /* Aumenta o tamanho do ícone */
+    transform: scale(1.1); /* Aumenta o tamanho do ícone */
     color: #007bff; /* Muda a cor do ícone */
 }
 

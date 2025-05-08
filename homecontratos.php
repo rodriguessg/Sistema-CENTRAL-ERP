@@ -197,64 +197,78 @@ include 'header.php';
 <div class="form-container" id="cadastrar" style="display:none;">
     <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data">
     <h1 class="cadastrar-contratos">
-    <i class="fas fa-plus-circle" id="icon-cadastrar"></i> Cadastrar Contratos
+    <i class="fas fa-file-signature" id="icon-cadastrar"></i> Cadastrar Contratos
+
 </h1>
 
-    <div class="cadastro">
-        <div class="grupo1">
-         <div class="mb-3">
-            <label for="titulo" class="form-label">Título do Contrato</label>
+<div class="cadastro">
+    <div class="grupo1">
+        <div class="mb-3">
+            <label for="titulo" class="form-label">
+                Título do Contrato <span class="text-danger">*</span>
+            </label>
             <div class="input-icon">
-                <input type="text" id="titulo" name="titulo" class="form-control" required>
+                <input type="text" id="titulo" name="titulo" class="form-control" placeholder="Coloque o título do contrato" required>
                 <i class="fas fa-pencil-alt"></i> <!-- Ícone dentro do input -->
             </div>
-         </div>
+        </div>
 
         <div class="mb-3">
-            <label for="SEI" class="form-label">Nº SEI</label>
+            <label for="SEI" class="form-label">
+                Nº SEI <span class="text-danger">*</span>
+            </label>
             <div class="input-icon">
-                <input type="text" id="SEI" name="SEI" class="form-control" required>
+                <input type="text" id="SEI" name="SEI" class="form-control" placeholder="Coloque o número do SEI" required>
                 <i class="fas fa-file-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
 
         <div class="mb-3">
-            <label for="objeto" class="form-label">Objeto</label>
+            <label for="objeto" class="form-label">
+                Objeto <span class="text-danger">*</span>
+            </label>
             <div class="input-icon">
-                <input type="text" id="objeto" name="objeto" class="form-control" required>
+                <input type="text" id="objeto" name="objeto" class="form-control" placeholder="Descreva o objeto do contrato" required>
                 <i class="fas fa-cogs"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
 
         <div class="mb-3">
-            <label for="gestor" class="form-label">Gestor</label>
+            <label for="gestor" class="form-label">
+                Gestor <span class="text-danger">*</span>
+            </label>
             <div class="input-icon">
-                <input type="text" id="gestor" name="gestor" class="form-control" required>
+                <input type="text" id="gestor" name="gestor" class="form-control" placeholder="Coloque o nome do gestor" required>
                 <i class="fas fa-user"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
 
         <div class="mb-3">
-            <label for="gestorsb" class="form-label">Gestor Substituto</label>
+            <label for="gestorsb" class="form-label">
+                Gestor Substituto <span class="text-danger">*</span>
+            </label>
             <div class="input-icon">
-                <input type="text" id="gestorsb" name="gestorsb" class="form-control" required>
+                <input type="text" id="gestorsb" name="gestorsb" class="form-control" placeholder="Coloque o nome do gestor substituto" required>
                 <i class="fas fa-user-slash"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
-        </div>
+    </div>
 
-        
-        <div class="grupo2">
+    <div class="grupo2">
         <div class="mb-3">
-            <label for="fiscais" class="form-label">Fiscais</label>
+            <label for="fiscais" class="form-label">
+                Fiscais <span class="text-danger">*</span>
+            </label>
             <div class="input-icon">
-                <input type="text" id="fiscais" name="fiscais" class="form-control" required>
+                <input type="text" id="fiscais" name="fiscais" class="form-control" placeholder="Coloque os fiscais responsáveis" required>
                 <i class="fas fa-balance-scale"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
 
         <div class="mb-3">
-            <label for="validade" class="form-label">Vigência</label>
+            <label for="validade" class="form-label">
+                Vigência <span class="text-danger">*</span>
+            </label>
             <div class="input-icon">
                 <input type="date" id="validade" name="validade" class="form-control" required onchange="atualizarParcelas()">
                 <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
@@ -262,34 +276,45 @@ include 'header.php';
         </div>
 
         <div class="mb-3">
-            <label for="contatos" class="form-label">Contatos</label>
+            <label for="contatos" class="form-label">
+                Contatos <span class="text-danger">*</span>
+            </label>
             <div class="input-icon">
-                <input type="text" id="contatos" name="contatos" class="form-control" required>
+                <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Coloque os contatos para o contrato" required>
                 <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
 
         <div class="mb-3">
-            <label for="valor-contrato" class="form-label">Valor do Contrato</label>
+            <label for="valor-contrato" class="form-label">
+                Valor do Contrato <span class="text-danger">*</span>
+            </label>
             <div class="input-icon">
-                <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" required>
+                <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" placeholder="Informe o valor do contrato" required>
                 <i class="fas fa-dollar-sign"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
 
         <div class="mb-3">
-            <label for="valor-aditivo" class="form-label">Valor Aditivo</label>
+            <label for="valor-aditivo" class="form-label">
+                Valor Aditivo <span class="text-danger">*</span>
+            </label>
             <div class="input-icon">
-                <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" required>
+                <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" placeholder="Informe o valor aditivo" required>
                 <i class="fas fa-plus-circle"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
-        </div>
-        </div>
+    </div>
+</div>
+
 
         <div class="button-group" >
-        <button type="button" class="btn-submit" onclick="toggleComplementares()">Adicionar Informações Complementares</button>
-        <button type="submit" name="cadastrar_contrato" class="btn-submit" >Cadastrar Contrato</button>
+        <button class="btn-submit-adicionar" type="button" class="btn-submit" onclick="toggleComplementares()">
+    <i class="fas fa-save white-icon"></i> Adicionar Informações Complementares</button>
+
+    <button type="submit" name="cadastrar_contrato" class="btn-submit">
+    <i class="fas fa-plus-circle white-icon"></i> Cadastrar Contrato</button>
+
         </div>
         <div id="complementares" style="display:none;">
             <div class="mb-3">
@@ -927,6 +952,3 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
 <script src="./src/contratos/js/gerenciar-pagamentos.js"></script>
 </body>
 </html>
-<?php
-include 'footer.php';
-?>

@@ -100,12 +100,8 @@ button {
   padding: 8px 16px;
   font-size: 14px;
   border-radius: 50%; /* Faz os botões ficarem circulares */
-  border: none !important; /* Remove a borda forçando com !important */
-  background-color: transparent !important; /* Remover fundo forçando com !important */
-  box-shadow: none !important; /* Remove qualquer sombra que o Bootstrap possa adicionar */
   transition: all 0.3s ease;
   cursor: pointer;
-  margin-right: 10px;
   position: relative;
 }
 
@@ -136,7 +132,6 @@ button:hover span {
 /* Estilo dos ícones */
 button i {
   font-size: 18px;
-  color: black !important; /* Ícones na cor preta forçando com !important */
 }
 
 /* Efeito de hover para os ícones */

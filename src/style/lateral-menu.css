@@ -1,6 +1,6 @@
 /* Menu Lateral */
 #sidebar {
-  background: linear-gradient(180deg, #2d3e50, #1a242f);
+  background:#005A92;
   color: white;
   padding: 30px 12px;
   position: fixed;
@@ -12,7 +12,7 @@
   flex-direction: column;
   align-items: center;
   z-index: 1000;
-  border-radius: 0px 20px 20px 0px;
+  border-radius: 0px 10px 10px 0px;
   transition: width 0.5s ease, transform 0.3s ease-in-out;
 }
 
@@ -230,7 +230,7 @@
 /* Itens da lista de navegação */
 #sidebar .components li {
   padding: 10px;
-  border-bottom: 1px solid #4e5a6a;
+  border-bottom: 1px solid white;
   transition: background-color 0.3s ease, padding-left 0.3s ease;
 }
 

@@ -39,3 +39,8 @@ function calcularParcelas(dataInicial, numParcelas) {
 
     return parcelas;
 }
+function toggleOutros() {
+    var outrosChecked = document.getElementById("outros").checked;
+    var outrosContainer = document.getElementById("outros-container");
+    outrosContainer.style.display = outrosChecked ? "block" : "none";
+}

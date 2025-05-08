@@ -363,13 +363,12 @@ $navigation = generateNavigation($currentMonth, $currentYear, $categoryFilter, $
 
 // Predefined categories
 $categories = [
-    'geral' => 'Geral',
-    'audiencia' => 'Audiência',
-    'escritorio' => 'Escritório',
-    'ligacao' => 'Ligação',
-    'oab' => 'OAB',
-    'reuniao' => 'Reunião',
-    'urgente' => 'Urgente'
+    'Geral' => 'Geral',
+    'Audiencia' => 'Audiência',
+    'Escritorio' => 'Escritório',
+    'Ligacao' => 'Ligação',
+    'Reuniao' => 'Reunião',
+    'Urgente' => 'Urgente'
 ];
 
 // Add new category if submitted

@@ -155,7 +155,7 @@ $row_vencendo = $result_vencendo->fetch_assoc();
 $total_vencendo = $row_vencendo['total_vencendo'];
 
 // Consulta para contar os agendamentos
-$sql_agendamentos = "SELECT COUNT(*) AS total_agendamentos FROM agendamentos";
+$sql_agendamentos = "SELECT COUNT(*) AS total_agendamentos FROM eventos";
 $result_agendamentos = $conn->query($sql_agendamentos);
 $row_agendamentos = $result_agendamentos->fetch_assoc();
 $total_agendamentos = $row_agendamentos['total_agendamentos'];
@@ -163,6 +163,38 @@ $total_agendamentos = $row_agendamentos['total_agendamentos'];
 $conn->close();
 include 'header.php';
 ?>
+<?php
+// Conexão com o banco de dados (ajuste conforme sua configuração)
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "gm_sicbd";
+
+
+try {
+    // Criação da conexão com PDO
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    // Definir o modo de erro do PDO para exceção
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Consulta SQL para selecionar os eventos
+    $sql = "SELECT id, titulo, descricao, data, hora, categoria FROM eventos";
+    
+    // Preparando a consulta
+    $stmt = $pdo->prepare($sql);
+    // Executando a consulta
+    $stmt->execute();
+    
+    // Fetch os resultados como um array associativo
+    $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    // Exibe mensagem de erro caso a conexão falhe
+    echo "Erro: " . $e->getMessage();
+    exit;
+}
+?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -306,7 +338,7 @@ include 'header.php';
                 <p><?php echo $total_vencendo; ?></p>
             </div>
             <div class="card">
-                <h3>Total de Agendamentos</h3>
+                <h3>Total de Eventos</h3>
                 <p><?php echo $total_agendamentos; ?></p>
             </div>
         </div>
@@ -314,7 +346,7 @@ include 'header.php';
         <div class="cards-container2">
             <!-- Gráfico de Contratos por Mês -->
             <div class="card5">
-                <h3>Contratos por Mês</h3>
+                <h3> Contratos </h3>
                 <canvas id="contratosPorMesChart" width="400" height="200"></canvas>
             </div>
 
@@ -373,6 +405,42 @@ include 'header.php';
                     </table>
                 </div>
             </div>
+            <card class="card5">
+                 <!-- Tabela para exibir os eventos -->
+                 <h3>Eventos agendados</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Descrição</th>
+                <th>Data</th>
+                <th>Hora</th>
+                <th>Categoria</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            // Verifica se há eventos
+            if ($eventos) {
+                // Exibe cada evento como uma linha na tabela
+                foreach ($eventos as $evento) {
+                    echo "<tr>";
+                    echo "<td>" . htmlspecialchars($evento['id']) . "</td>";
+                    echo "<td>" . htmlspecialchars($evento['titulo']) . "</td>";
+                    echo "<td>" . htmlspecialchars($evento['descricao']) . "</td>";
+                    echo "<td>" . htmlspecialchars($evento['data']) . "</td>";
+                    echo "<td>" . htmlspecialchars($evento['hora']) . "</td>";
+                    echo "<td>" . htmlspecialchars($evento['categoria']) . "</td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='6'>Nenhum evento encontrado.</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+            </card>
         </div>
     </div>
 </div>

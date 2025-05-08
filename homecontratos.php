@@ -295,11 +295,26 @@ include 'header.php';
             <div class="mb-3">
                 <input type="checkbox" id="parcelamento" name="parcelamento" onchange="toggleParcelas()">
                 <label for="parcelamento">Este contrato é um parcelamento?</label>
+                <input type="checkbox" id="outros" name="outros" onchange="toggleOutros()">
+                <label for="outros">Outros</label>
             </div>
             <div class="mb-3" id="parcelas-container" style="display:none;">
                 <label for="num-parcelas" class="form-label">Número de Parcelas</label>
                 <input type="number" id="num-parcelas" name="num_parcelas" class="form-control" max="12">
             </div>
+            <div class="mb-3">
+    
+    </div>
+    <div class="mb-3" id="outros-container" style="display:none;">
+        <label for="servicos" class="form-label">Escolha os serviços</label>
+        <select id="servicos" name="servicos" class="form-control">
+            <option value="servico1">Serviço 1</option>
+            <option value="servico2">Serviço 2</option>
+            <option value="servico3">Serviço 3</option>
+            <option value="servico4">Serviço 4</option>
+        </select>
+    </div>
+
             <div class="mb-3">
                 <label for="descricao" class="form-label">Observação</label>
                 <textarea id="descricao" name="descricao" class="form-control" rows="3" required></textarea>
@@ -536,17 +551,11 @@ include 'header.php';
     </div>
 </div>
 
-<script src="./src/contratos/js/relatorio-avancado.js">
-</script>
-
-
-
-
-
+<script src="./src/contratos/js/relatorio-avancado.js"></script>
 
 <div class="form-container" id="consultar" style="display:none;">
 <h2 class="text-center mt-3">
-    <span class="icon-before fas fa-box"></span> Lista de Produtos
+    <span class="icon-before fas fa-box"></span> Lista de Fornecedores
 </h2>
    <!-- Pesquisa -->
 <div class="search-bar">

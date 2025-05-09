@@ -169,23 +169,26 @@ include 'header.php';
 <div class="caderno">
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
 
-   
     <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
         <i class="fas fa-plus-circle"></i> Cadastro de contratos
     </div>
+
     <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
         <i class="fas fa-search"></i> Consultar contratos
     </div>
-    <!-- <div class="tab" data-tab="agenda" onclick="showTab('agenda')">
-        <i class="fas fa-calendar-alt"></i> Agendamento
-    </div> -->
+
     <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">
         <i class="fas fa-info-circle"></i> Resumo
     </div>
     <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
             <i class="fas fa-edit"></i> Gerenciar Contratos
         </div>
+        
+    <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
+            <i class="fas fa-edit"></i> Prestação de Contas
+        </div>
+
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
         <i class="fas fa-file-alt"></i> Relatórios
     </div>  
@@ -210,6 +213,20 @@ include 'header.php';
             <div class="input-icon">
                 <input type="text" id="titulo" name="titulo" class="form-control" placeholder="Coloque o título do contrato" required>
                 <i class="fas fa-pencil-alt"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="account-bank" class="form-label">Conta Bancária</label>
+            <div class="input-icon">
+                <input type="text" id="account-bank" name="account-bank" class="form-control" required >
+                <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="fonte" class="form-label">Fonte</label>
+            <div class="input-icon">
+                <input type="text" id="fonte" name="fonte" class="form-control" required >
+                <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
 
@@ -274,7 +291,20 @@ include 'header.php';
                 <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
-
+        <div class="mb-3">
+            <label for="publicacao" class="form-label">Data de Publicação</label>
+            <div class="input-icon">
+                <input type="date" id="publicacao" name="publicacao" class="form-control" required >
+                <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="date_service" class="form-label">Data de Serviço</label>
+            <div class="input-icon">
+                <input type="date" id="date_service" name="date_service" class="form-control" required >
+                <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
         <div class="mb-3">
             <label for="contatos" class="form-label">
                 Contatos <span class="text-danger">*</span>
@@ -282,6 +312,20 @@ include 'header.php';
             <div class="input-icon">
                 <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Coloque os contatos para o contrato" required>
                 <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="contatos" class="form-label">Natureza de Despesas</label>
+            <div class="input-icon">
+                <input type="text" id="n_despesas" name="contatos" class="form-control" required>
+                <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="valor-valor" class="form-label">Valor do Nota fiscal</label>
+            <div class="input-icon">
+                <input type="text" id="valor-NF" name="valor" class="form-control" required>
+                <i class="fas fa-dollar-sign"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
 
@@ -947,7 +991,47 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
             <!-- Dados serão preenchidos dinamicamente -->
         </tbody>
     </table>
+
+    
 </div>
+<div class="form-container" id="prestacao" style="display:block;" onclick="exibirContratos()">
+    <div id="table-container-contratos">
+        <!-- Tabela de contratos encerrados será inserida aqui -->
+    </div>
+
+    <div id="prestacao-container" style="display:none;">
+        <h3>Prestação de Contas</h3>
+        <form id="prestacao-form">
+            <label for="contrato_titulo">Nome do Contrato</label>
+            <input type="text" id="contrato_titulo" name="contrato_titulo" readonly><br>
+
+            <label for="valor-inicial">Valor Inicial</label>
+            <input type="text" id="valor-inicial" name="valor_inicial" readonly><br>
+
+            <label for="valor-total">Valor Total Pago</label>
+            <input type="text" id="valor-total" name="valor_total_pago" readonly><br>
+
+            <label for="situacao">Situação do Contrato</label>
+            <input type="text" id="situacao" name="situacao" readonly><br>
+
+            <label for="valor-a-prestar">Valor a Ser Prestado</label>
+            <input type="number" id="valor-a-prestar" name="valor_a_prestar" required><br>
+
+            <label for="data-pagamento">Data do Último Pagamento</label>
+            <input type="date" id="data-pagamento" name="data_pagamento" required><br>
+
+            <label for="documentos">Documentos Comprovantes</label>
+            <input type="file" id="documentos" name="documentos[]" multiple><br>
+
+            <label for="observacoes">Observações</label><br>
+            <textarea id="observacoes" name="observacoes" rows="4" cols="50"></textarea><br>
+
+            <button type="button" onclick="salvarPrestacao()">Finalizar Prestação de Contas</button>
+        </form>
+    </div>
+</div>
+
+<script src="./src/contratos/js/prestacao-contas.js"></script>
 <!--  FUNCTION DE API - CAMPOS EDITAVEIS DE TABELA E INSERÇÃO DE DADOS -->
 <script src="./src/contratos/js/gerenciar-pagamentos.js"></script>
 </body>

@@ -1,6 +1,6 @@
 <?php
 // detalhes_contrato.php
-include 'db.php'; // Incluir a conexão com o banco de dados
+include 'banco.php'; // Incluir a conexão com o banco de dados
 
 if (isset($_GET['id'])) {
     $contratoId = $_GET['id'];

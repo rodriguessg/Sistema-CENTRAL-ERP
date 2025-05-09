@@ -178,9 +178,6 @@ include 'header.php';
         <i class="fas fa-search"></i> Consultar contratos
     </div>
 
-    <div class="tab" data-tab="resumo_processo" onclick="showTab('resumo_processo')" style="display: none;">
-        <i class="fas fa-info-circle"></i> Resumo
-    </div>
     <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
             <i class="fas fa-edit"></i> Gerenciar Contratos
         </div>
@@ -235,7 +232,7 @@ include 'header.php';
                 Nº SEI <span class="text-danger">*</span>
             </label>
             <div class="input-icon">
-                <input type="text" id="SEI" name="SEI" class="form-control" placeholder="Coloque o número do SEI" required>
+                <input type="text" id="SEI" name="SEI" class="form-control" placeholder="Digite o número do SEI" required>
                 <i class="fas fa-file-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
@@ -255,7 +252,7 @@ include 'header.php';
                 Gestor <span class="text-danger">*</span>
             </label>
             <div class="input-icon">
-                <input type="text" id="gestor" name="gestor" class="form-control" placeholder="Coloque o nome do gestor" required>
+                <input type="text" id="gestor" name="gestor" class="form-control" placeholder="Digite o nome do gestor" required>
                 <i class="fas fa-user"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
@@ -265,7 +262,7 @@ include 'header.php';
                 Gestor Substituto <span class="text-danger">*</span>
             </label>
             <div class="input-icon">
-                <input type="text" id="gestorsb" name="gestorsb" class="form-control" placeholder="Coloque o nome do gestor substituto" required>
+                <input type="text" id="gestorsb" name="gestorsb" class="form-control" placeholder="Digite o nome do gestor substituto" required>
                 <i class="fas fa-user-slash"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
@@ -277,7 +274,7 @@ include 'header.php';
                 Fiscais <span class="text-danger">*</span>
             </label>
             <div class="input-icon">
-                <input type="text" id="fiscais" name="fiscais" class="form-control" placeholder="Coloque os fiscais responsáveis" required>
+                <input type="text" id="fiscais" name="fiscais" class="form-control" placeholder="Digite os fiscais responsáveis" required>
                 <i class="fas fa-balance-scale"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
@@ -310,7 +307,7 @@ include 'header.php';
                 Contatos <span class="text-danger">*</span>
             </label>
             <div class="input-icon">
-                <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Coloque os contatos para o contrato" required>
+                <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Digite o  número de contato ou email " required>
                 <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>

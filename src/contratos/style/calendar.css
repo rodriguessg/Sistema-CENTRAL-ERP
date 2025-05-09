@@ -60,22 +60,40 @@
     margin-top: 5px;
 }
 
-
 #event-form input[type="color"] {
-    width: 10%;
-    padding: 5px 10px;
-    border: 2px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    box-sizing: border-box;
-    margin-top: 5px;
+    -webkit-appearance: none;  /* Remove a aparência padrão do navegador */
+    -moz-appearance: none;
+    appearance: none;
+    width: 30px;  /* Define o tamanho da bolinha */
+    height: 30px;  /* Garante que a bolinha seja circular */
+    border-radius: 50%;  /* Faz o input ter o formato circular */
+    border: 2px solid #ccc;  /* Adiciona uma borda de destaque */
+    background-color: transparent;  /* Garante que o fundo seja transparente */
+    padding: 0;  /* Remove qualquer preenchimento extra */
+    cursor: pointer;  /* Torna o cursor em forma de ponteiro */
+    transition: border-color 0.3s ease;  /* Suaviza a transição da cor da borda */
 }
 
-/* Input Color Especial */
-#event-form input[type="color"] {
-    height: 40px;
-    padding: 0;
+#event-form input[type="color"]:hover {
+    border-color: #999;  /* Altera a cor da borda ao passar o mouse */
 }
+
+#event-form input[type="color"]:focus {
+    border-color: #000;  /* Altera a cor da borda quando em foco */
+}
+
+#event-form input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;  /* Remove qualquer preenchimento ao redor da cor */
+}
+
+#event-form input[type="color"]::-webkit-color-swatch {
+    border-radius: 50%;  /* Garante que a cor também tenha formato circular */
+    width: 100%;  /* Faz a cor ocupar toda a bolinha */
+    height: 100%;  /* Faz a cor ocupar toda a bolinha */
+}
+
+
+
 
 /* Botões Principais do Formulário */
 /* Botões Principais do Formulário */
@@ -91,7 +109,6 @@
     width: 100%;
     text-align: center;
     box-sizing: border-box;
-    transition: background-color 0.3s ease; /* Suavizar transição para cor */
 }
 
 /* Botão Enviar */
@@ -106,7 +123,7 @@
 
 /* Botões de Ação (Adicionar Categoria, etc.) */
 .form-actions button {
-    background: linear-gradient(180deg, #3a4a64, #28303d); /* Cor base */
+ background-color: #427842;
     color: white;
     padding: 8px 12px;
     border: none;
@@ -114,7 +131,7 @@
     cursor: pointer;
     font-size: 0.85em;
     text-align: center;
-    transition: background-color 0.3s ease; /* Transição suave */
+    transform: none;
 }
 
 /* Botão de Cancelar dentro de .form-actions */
@@ -123,17 +140,10 @@
 }
 
 #toggle-category-form {
-    background: linear-gradient(180deg, #3a4a64, #28303d); /* Mantém o mesmo estilo do botão de ação */
+background-color:#BC9D32;
 }
 
-/* Hover: altera a cor de fundo ao passar o mouse */
-#submit-btn:hover,
-#cancel-btn:hover,
-#toggle-category-form:hover,
-#add-category-form button:hover {
-    background: linear-gradient(180deg, #2c3e50, #1a242f); /* Cor de hover mais escura */
-    transform: none; /* Garantir que não haja aumento ou alteração no tamanho */
-}
+
 
 
 
@@ -156,8 +166,9 @@
 
 /* Botão Adicionar Categoria */
 #add-category-form button {
-    background: linear-gradient(180deg, #3a4a64, #28303d); /* Cor base */
+   background-color: #427842;
     color: white;
+    transform: none;
 }
 
 #add-category-form button:hover {
@@ -402,19 +413,6 @@
     gap: 10px;
 }
 
-/* Estilos do input de cor */
-input[type="color"] {
-    width: 40px;
-    height: 40px;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-}
-
-
 
 /* Efeito de hover no input de cor */
 input[type="color"]:hover {
@@ -521,7 +519,7 @@ input[type="color"]:hover {
 .calendar-container {
     grid-area: 1 / 2 / 2 / 3;
     border-radius: 10px; /* Borda mais suave */
-    padding: 20px;
+    padding: 10px;
     width: 100%;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Sombra mais suave */
     box-sizing: border-box;
@@ -535,7 +533,7 @@ input[type="color"]:hover {
     align-items: center;
     color: #ffffff; /* Alteração para contraste */
     font-size: 18px;
-    background: linear-gradient(180deg, #3a4a64, #28303d); /* Gradient que você forneceu */
+    background: #005A92;
     border-top-left-radius: 16px; /* Bordas arredondadas mais suaves */
     border-top-right-radius: 16px;
     padding: 12px 20px;
@@ -555,14 +553,22 @@ input[type="color"]:hover {
 
 /* Botões de Navegação */
 .calendar-header button {
-    background: #3a4a64; /* Cor de fundo para o botão combinando com o gradiente */
-    color: white;
+    background: white;
+    color: black;
     font-size: 16px;
     border: none;
     padding: 10px 16px;
     border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease; /* Adiciona efeito de transição suave */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.data-tempo{
+    display: flex;
+        justify-content: start;
+        width: 100%;
+        align-items: center;
+        gap: 15px;
 }
 
 .calendar-header button:hover {

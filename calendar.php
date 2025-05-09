@@ -449,7 +449,7 @@ include 'header.php';
         <label for="descricao">Descrição</label>
         <textarea name="descricao" id="descricao" aria-describedby="desc-help"></textarea>
       </div>
-
+      <div class="data-tempo">
       <!-- Data -->
       <div class="input-icon input-with-icon">
         <label for="data">Data</label>
@@ -472,14 +472,16 @@ include 'header.php';
         </select>
       </div>
 
-      <!-- Cor -->
-     <!-- Cor -->
+          <!-- Cor -->
 <div class="input-icon">
   <label for="cor">Cor</label>
   <div class="color-picker-container">
     <input type="color" name="cor" id="cor" value="#ff0000" required aria-required="true">
   </div>
 </div>
+      </div>
+  
+ 
 
 
       <!-- Enviar por e-mail -->

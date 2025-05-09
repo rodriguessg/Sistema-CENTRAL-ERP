@@ -382,9 +382,10 @@ h3 {
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
   margin-bottom: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: 87%;
 }
 
 /* Remover bordas verticais e manter apenas horizontais */
@@ -393,23 +394,23 @@ th, td {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-size: 15px;
   font-weight: 500;
-  color: #111827; /* Cor do texto */
-  padding: 10px;
+  color: #111827;
   text-align: center;
   border-left: none;
   border-right: none;
   border-top: none;
-  border-bottom: 1px solid #ddd; /* Linha de separação horizontal */
+  border-bottom: 2px solid #ddd;
 }
 
 /* Estilo do cabeçalho da tabela */
 th {
-  background: linear-gradient(180deg, #3a4a64, #28303d); /* Gradiente mais claro */
+  background-color: #A0A0A0;
   color: white;
   text-transform: uppercase;
   font-weight: bold;
   text-align: center;
   font-size: 16px; /* Ajuste para uma melhor legibilidade */
+  padding: 5px;
 }
 
 /* Adiciona os ícones ao lado do texto do cabeçalho */

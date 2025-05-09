@@ -44,3 +44,6 @@ function toggleOutros() {
     var outrosContainer = document.getElementById("outros-container");
     outrosContainer.style.display = outrosChecked ? "block" : "none";
 }
+
+
+

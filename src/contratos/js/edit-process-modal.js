@@ -7,23 +7,61 @@
     openEditModal(contractData);
 }
 
-// Função para abrir o modal de edição e preencher os campos com os dados do contrato
-function openEditModal(contractData) {
-    // Preenche a aba de Detalhes com os dados do contrato
-    document.getElementById('contractTitulo').textContent = contractData.titulo;
-    document.getElementById('contractDescricao').textContent = contractData.descricao;
-    document.getElementById('contractValidade').textContent = contractData.validade;
-    document.getElementById('contractSituacao').textContent = contractData.situacao;
+let aditivoCount = 1; // Contador para os aditivos
 
-    // Preenche a aba de Edição com os dados do contrato
-    document.getElementById('editTitulo').value = contractData.titulo;
-    document.getElementById('editDescricao').value = contractData.descricao;
-    document.getElementById('editValidade').value = contractData.validade;
-    document.getElementById('editSituacao').value = contractData.situacao;
+// Função para adicionar os campos de aditivos
+document.getElementById("addAditivoBtn").addEventListener("click", function() {
+    if (aditivoCount <= 5) {
+        const aditivoContainer = document.getElementById("aditivosContainer");
 
-    // Exibe o modal
-    $('#editProcessModal').modal('show');
-}
+        // Cria o campo para o novo aditivo
+        const div = document.createElement("div");
+        div.classList.add("form-group");
+        div.innerHTML = `
+            <label for="editAditivo${aditivoCount}">Valor Aditivo ${aditivoCount}</label>
+            <input type="number" class="form-control" id="editAditivo${aditivoCount}" name="valor_aditivo${aditivoCount}" required>
+        `;
+
+        // Adiciona o campo de aditivo ao container
+        aditivoContainer.appendChild(div);
+
+        // Incrementa o contador de aditivos
+        aditivoCount++;
+    } else {
+        alert("Você já pode adicionar até 5 aditivos.");
+    }
+});
+
+// Função para enviar o formulário de edição
+document.getElementById("editProcessForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+
+    // Preencher os valores dos aditivos, se houver
+    for (let i = 1; i <= 5; i++) {
+        if (formData.get(`valor_aditivo${i}`)) {
+            formData.append(`valor_aditivo${i}`, formData.get(`valor_aditivo${i}`));
+        }
+    }
+
+    // Aqui você pode fazer a requisição para salvar os dados do contrato e os aditivos
+    // Exemplo: Você pode usar fetch() ou XMLHttpRequest para enviar os dados para o backend
+    fetch('editar_contrato.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("Contrato atualizado com sucesso!");
+        // Fechar o modal após salvar
+        $('#editProcessModal').modal('hide');
+    })
+    .catch(error => {
+        console.error('Erro ao salvar o contrato:', error);
+        alert('Erro ao salvar o contrato.');
+    });
+});
 
 // Função para salvar as alterações
 document.getElementById('editProcessForm').addEventListener('submit', function(event) {

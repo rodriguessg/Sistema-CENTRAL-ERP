@@ -529,7 +529,7 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
         echo "<button class='btn btn-primary btn-sm' onclick='generateReport()' title='Relatório'>
                 <i class='fas fa-file-alt'></i>
             </button>";
-        echo "<button class='btn btn-success btn-sm' onclick='editProcess(event, " . json_encode($row) . ")' title='Editar processo'>
+        echo "<button class='btn btn-success btn-sm' onclick='editProcessModal(" . json_encode($row) . ")' title='Editar processo'>
                 <i class='fas fa-edit'></i>
             </button>";
         echo "</td>";
@@ -542,6 +542,7 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
     
 </div>
 
+<!-- Modal de Edição -->
 <!-- Modal de Edição -->
 <div class="modal fade" id="editProcessModal" tabindex="-1" role="dialog" aria-labelledby="editProcessModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -612,64 +613,6 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
     </div>
 </div>
 
-<script>
-    let aditivoCount = 1; // Contador para os aditivos
-
-    // Função para adicionar os campos de aditivos
-    document.getElementById("addAditivoBtn").addEventListener("click", function() {
-        if (aditivoCount <= 5) {
-            const aditivoContainer = document.getElementById("aditivosContainer");
-
-            // Cria o campo para o novo aditivo
-            const div = document.createElement("div");
-            div.classList.add("form-group");
-            div.innerHTML = `
-                <label for="editAditivo${aditivoCount}">Valor Aditivo ${aditivoCount}</label>
-                <input type="number" class="form-control" id="editAditivo${aditivoCount}" name="valor_aditivo${aditivoCount}" required>
-            `;
-
-            // Adiciona o campo de aditivo ao container
-            aditivoContainer.appendChild(div);
-
-            // Incrementa o contador de aditivos
-            aditivoCount++;
-        } else {
-            alert("Você já pode adicionar até 5 aditivos.");
-        }
-    });
-
-    // Função para enviar o formulário de edição
-    document.getElementById("editProcessForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        const formData = new FormData(this);
-
-        // Preencher os valores dos aditivos, se houver
-        for (let i = 1; i <= 5; i++) {
-            if (formData.get(`valor_aditivo${i}`)) {
-                formData.append(`valor_aditivo${i}`, formData.get(`valor_aditivo${i}`));
-            }
-        }
-
-        // Aqui você pode fazer a requisição para salvar os dados do contrato e os aditivos
-        // Exemplo: Você pode usar fetch() ou XMLHttpRequest para enviar os dados para o backend
-        fetch('editar_contrato.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert("Contrato atualizado com sucesso!");
-            // Fechar o modal após salvar
-            $('#editProcessModal').modal('hide');
-        })
-        .catch(error => {
-            console.error('Erro ao salvar o contrato:', error);
-            alert('Erro ao salvar o contrato.');
-        });
-    });
-</script>
-
 <style>
     .form-group {
         margin-bottom: 15px;
@@ -684,8 +627,8 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
     }
 </style>
 
- <!-- // Função editar modal
-<script src="./src/contratos/js/edit-process-modal.js"></script> -->
+<!--  // Função editar modal -->
+<script src="./src/contratos/js/edit-process-modal.js"></script>
 
 <!-- Modal exibi detalhes do contrato BOTAO VISUALIZAR DA TABELA -->
 <div class="modal fade" id="modalContrato" tabindex="-1" aria-hidden="true">

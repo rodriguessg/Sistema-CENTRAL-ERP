@@ -215,14 +215,14 @@ include 'header.php';
         <div class="mb-3">
             <label for="account-bank" class="form-label">Conta Bancária</label>
             <div class="input-icon">
-                <input type="text" id="account-bank" name="account-bank" class="form-control" required >
+                <input type="text" id="account-bank" name="account-bank" class="form-control" placeholder=" Digite o número e agência da conta bancária" required >
                 <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
         <div class="mb-3">
             <label for="fonte" class="form-label">Fonte</label>
             <div class="input-icon">
-                <input type="text" id="fonte" name="fonte" class="form-control" required >
+                <input type="text" id="fonte" name="fonte" class="form-control"placeholder=" Digite a fonte" required >
                 <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
@@ -266,9 +266,6 @@ include 'header.php';
                 <i class="fas fa-user-slash"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
-    </div>
-
-    <div class="grupo2">
         <div class="mb-3">
             <label for="fiscais" class="form-label">
                 Fiscais <span class="text-danger">*</span>
@@ -278,6 +275,10 @@ include 'header.php';
                 <i class="fas fa-balance-scale"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
+    </div>
+
+    <div class="grupo2">
+        
 
         <div class="mb-3">
             <label for="validade" class="form-label">
@@ -289,14 +290,14 @@ include 'header.php';
             </div>
         </div>
         <div class="mb-3">
-            <label for="publicacao" class="form-label">Data de Publicação</label>
+            <label for="publicacao" class="form-label">Data de Publicação <span class="text-danger">*</span></label>
             <div class="input-icon">
                 <input type="date" id="publicacao" name="publicacao" class="form-control" required >
                 <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
         <div class="mb-3">
-            <label for="date_service" class="form-label">Data de Serviço</label>
+            <label for="date_service" class="form-label">Data de Serviço <span class="text-danger">*</span></label>
             <div class="input-icon">
                 <input type="date" id="date_service" name="date_service" class="form-control" required >
                 <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
@@ -312,16 +313,16 @@ include 'header.php';
             </div>
         </div>
         <div class="mb-3">
-            <label for="contatos" class="form-label">Natureza de Despesas</label>
+            <label for="contatos" class="form-label">Natureza de Despesas</label><span class="text-danger">*</span>
             <div class="input-icon">
-                <input type="text" id="n_despesas" name="contatos" class="form-control" required>
+                <input type="text" id="n_despesas" name="contatos" class="form-control" placeholder="Digite a natureza de despesa" required>
                 <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
         <div class="mb-3">
-            <label for="valor-valor" class="form-label">Valor do Nota fiscal</label>
+            <label for="valor-valor" class="form-label">Valor do Nota fiscal <span class="text-danger">*</span></label>
             <div class="input-icon">
-                <input type="text" id="valor-NF" name="valor" class="form-control" required>
+                <input type="text" id="valor-NF" name="valor" class="form-control" placeholder="Digite o número da nota fiscal" required>
                 <i class="fas fa-dollar-sign"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
@@ -331,7 +332,7 @@ include 'header.php';
                 Valor do Contrato <span class="text-danger">*</span>
             </label>
             <div class="input-icon">
-                <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" placeholder="Informe o valor do contrato" required>
+                <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" placeholder="Digite o valor do contrato" required>
                 <i class="fas fa-dollar-sign"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
@@ -341,7 +342,7 @@ include 'header.php';
                 Valor Aditivo <span class="text-danger">*</span>
             </label>
             <div class="input-icon">
-                <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" placeholder="Informe o valor aditivo" required>
+                <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" placeholder="Digite o valor aditivo" required>
                 <i class="fas fa-plus-circle"></i> <!-- Ícone dentro do input -->
             </div>
         </div>

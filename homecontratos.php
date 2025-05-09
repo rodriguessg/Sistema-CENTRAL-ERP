@@ -547,7 +547,6 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
 
 
 <!-- Modal de Edição -->
-<!-- Modal de Edição -->
 <div class="modal fade" id="editContractModal" tabindex="-1" role="dialog" aria-labelledby="editContractModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -604,7 +603,7 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
                             </div>
 
                             <button type="button" id="addAditivoBtn" class="btn btn-secondary">Adicionar Aditivo</button>
-<div id="aditivosContainer"></div> <!-- Contêiner onde os campos de aditivos serão adicionados -->
+                            <div id="aditivosContainer"></div> <!-- Contêiner onde os campos de aditivos serão adicionados -->
 
 
                             <button type="submit" class="btn btn-primary">Salvar Alterações</button>
@@ -615,27 +614,6 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
         </div>
     </div>
 </div>
-<script>
-    
-    // Função para adicionar um novo campo de aditivo
-document.getElementById('addAditivoBtn').addEventListener('click', function() {
-    if (aditivosCount < 5) {  // Limitar a 5 aditivos
-        aditivosCount++;
-        const container = document.getElementById('aditivosContainer');
-        const aditivoInput = document.createElement('div');
-        aditivoInput.classList.add('form-group');
-        aditivoInput.innerHTML = `
-            <label for="editAditivo${aditivosCount}">Valor Aditivo ${aditivosCount}</label>
-            <input type="number" class="form-control form-control-sm" id="editAditivo${aditivosCount}" name="aditivo${aditivosCount}" step="0.01" required>
-        `;
-        container.appendChild(aditivoInput);
-        updateModalValorAditivo();  // Atualiza o total de aditivos no modal
-    } else {
-        alert('Máximo de 5 aditivos alcançado');
-    }
-});
-
-</script>
 
 
 
@@ -672,15 +650,6 @@ document.getElementById('addAditivoBtn').addEventListener('click', function() {
         </div>
     </div>
 </div>
-
-<!-- Carregar jQuery (se necessário) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Carregar Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<!--  // Função editar modal -->
-<script src="./src/contratos/js/edit-process-modal.js"></script>
-
 
 <!-- Modal de Configuração de Filtros -->
 <div class="modal" id="filterModal" tabindex="-1" role="dialog">
@@ -998,6 +967,35 @@ document.getElementById('addAditivoBtn').addEventListener('click', function() {
 
 <!-- BOTÔES -->
 <script src="./src/js/active.js"></script>
+
+<!-- Carregar jQuery (se necessário) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Carregar Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!--  // Função editar modal -->
+<script src="./src/contratos/js/edit-process-modal.js"></script>
+<script>
+    
+    // Função para adicionar um novo campo de aditivo
+    document.getElementById('addAditivoBtn').addEventListener('click', function() {
+        if (aditivosCount < 5) {  // Limitar a 5 aditivos
+            aditivosCount++;
+            const container = document.getElementById('aditivosContainer');
+            const aditivoInput = document.createElement('div');
+            aditivoInput.classList.add('form-group');
+            aditivoInput.innerHTML = `
+                <label for="editAditivo${aditivosCount}">Valor Aditivo ${aditivosCount}</label>
+                <input type="number" class="form-control form-control-sm" id="editAditivo${aditivosCount}" name="aditivo${aditivosCount}" step="0.01" required>
+            `;
+            container.appendChild(aditivoInput);
+            updateModalValorAditivo();  // Atualiza o total de aditivos no modal
+        } else {
+            alert('Máximo de 5 aditivos alcançado');
+        }
+    });
+
+</script>
 
 <script src="./src/contratos/js/relatorio-avancado.js"></script>
 <!-- JS CADASTRO -->

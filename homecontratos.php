@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])
 
     // Inserir contrato
     try {
-        $sql = "INSERT INTO gestao_contratos (titulo, descricao, assinatura, validade) 
+        $sql = "INSERT INTO gestao_contratos (titulo, descricao, assinatura, validade)
                 VALUES (:titulo, :descricao, :assinatura, :validade)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])
         $stmtVerificacao->execute(['username' => $usuario, 'mensagem' => $mensagem]);
 
         if ($stmtVerificacao->fetchColumn() == 0) {
-            $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+            $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao)
                                VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
             $stmtNotificacao = $pdo->prepare($sqlNotificacao);
             $stmtNotificacao->execute([
@@ -94,8 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])
 // Buscar contratos próximos de expirar
 $notificacoes = [];
 try {
-    $sqlNotificacoes = "SELECT * FROM gestao_contratos 
-                        WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH) 
+    $sqlNotificacoes = "SELECT * FROM gestao_contratos
+                        WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH)
                         AND validade >= CURDATE()";
     $stmtNotificacoes = $pdo->query($sqlNotificacoes);
     $notificacoes = $stmtNotificacoes->fetchAll(PDO::FETCH_ASSOC);
@@ -154,10 +154,10 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
     <title>Gestão de Contratos</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+
 </head>
 
 <!-- <link rel="stylesheet" href="./src/style/form-cadastro-contratos.css"> -->
@@ -182,14 +182,14 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
     <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
             <i class="fas fa-edit"></i> Gerenciar Contratos
         </div>
-        
+
     <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
             <i class="fas fa-edit"></i> Prestação de Contas
         </div>
 
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
         <i class="fas fa-file-alt"></i> Relatórios
-    </div>  
+    </div>
     <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
 </div>
 
@@ -279,7 +279,7 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
     </div>
 
     <div class="grupo2">
-        
+
 
         <div class="mb-3">
             <label for="validade" class="form-label">
@@ -371,7 +371,7 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
                 <input type="number" id="num-parcelas" name="num_parcelas" class="form-control" max="12">
             </div>
             <div class="mb-3">
-    
+
     </div>
     <div class="mb-3" id="outros-container" style="display:none;">
         <label for="servicos" class="form-label">Escolha os serviços</label>
@@ -390,8 +390,8 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
         </div>
 
         <input type="hidden" id="assinatura" name="assinatura">
-       
-      
+
+
     </form>
 </div>
 
@@ -405,20 +405,20 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
     <div class="search-filters">
         <!-- Campo de pesquisa por título ou descrição -->
         <input type="text" id="searchInput" class="input-field" placeholder="Digite o título ou descrição do contrato" oninput="searchContracts()">
-        
+
         <!-- Filtro de status (Ativo/Inativo) -->
         <select id="statusSelect" class="input-field" onchange="searchContracts()">
             <option value="">Todos</option>
             <option value="ativo">Ativo</option>
             <option value="inativo">Inativo</option>
         </select>
-        
+
         <!-- Botão para abrir o modal de filtro -->
         <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
     </div>
     </div>
 
-    <!-- Lista de Contratos --> 
+    <!-- Lista de Contratos -->
     <div class="table-container-contratos">
     <table class="table table-bordered table-hover">
         <thead>
@@ -444,7 +444,7 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
             if (!empty($situacao)) {
                 $sql .= " WHERE situacao = :situacao";
             }
-            $sql .= " ORDER BY validade "; //DESC ORDEM DECRESCENTE 
+            $sql .= " ORDER BY validade "; //DESC ORDEM DECRESCENTE
 
             $stmt = $pdo->prepare($sql);
 
@@ -461,7 +461,7 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
         $situacaoClass = '';
         $situacaoIcon = '';
         $situacaoTextColor = '';
-        
+
         // Verifica o valor de 'situacao' para aplicar o estilo adequado
         if ($situacao == 'Ativo') {
             $situacaoClass = 'Ativo'; // Classe para 'Ativo'
@@ -476,7 +476,7 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
         // Formatar a data de validade
         $validade = new DateTime($row['validade']);
         $validadeFormatted = $validade->format('d/m/Y');
-        
+
         // Adicionando uma classe para a validade estilizada
         $validadeClass = '';
         $validadeTextColor = '';
@@ -503,35 +503,37 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
             $validadeTextColor = 'green';
             $validadeIcon = 'fa-check-circle';
         }
-        echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
+        //  echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
         echo "<td class='truncated-text' title='{$row['id']}'>{$row['id']}</td>";
         echo "<td class='truncated-text' title='{$row['titulo']}'>{$row['titulo']}</td>";
         echo "<td class='truncated-text' title='{$row['descricao']}'>{$row['descricao']}</td>";
-        
-        
+
+
         // Coloca a validade com a cor e o ícone correto
         echo "<td class='$validadeClass' style='color: $validadeTextColor;'>
-                <i class='fas $validadeIcon'></i> 
+                <i class='fas $validadeIcon'></i>
                 $validadeFormatted
             </td>";
-        
+
         // Coloca a situação com a cor e o ícone correto
         echo "<td class='$situacaoClass' style='color: $situacaoTextColor;'>
-                <i class='fas $situacaoIcon'></i> 
+                <i class='fas $situacaoIcon'></i>
                 $situacao
             </td>";
-        
+
         // O botão "Visualizar" terá um evento independente
         echo "<td>";
         echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
                 <i class='fas fa-eye'></i>
             </button>";
-        echo "<button class='btn btn-primary btn-sm' onclick='generateReport()' title='Relatório'>
+        echo "<button class='btn btn-primary btn-sm' onclick='showResumoProcesso(" . json_encode($row) . ");' title='Relatório'>
                 <i class='fas fa-file-alt'></i>
             </button>";
-        echo "<button class='btn btn-success btn-sm' onclick='editProcessModal(" . json_encode($row) . ")' title='Editar processo'>
-                <i class='fas fa-edit'></i>
-            </button>";
+
+
+            echo "<button class='btn btn-warning btn-sm' onclick='openModalContrato(" . json_encode($row) . ")' title='Editar contrato'>
+        <i class='fas fa-file-contract'></i>
+    </button>";
         echo "</td>";
         echo "</tr>";
     }
@@ -539,16 +541,18 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
         </tbody>
     </table>
     </div>
-    
+
 </div>
 
 
+
 <!-- Modal de Edição -->
-<div class="modal fade" id="editProcessModal" tabindex="-1" role="dialog" aria-labelledby="editProcessModalLabel" aria-hidden="true">
+<!-- Modal de Edição -->
+<div class="modal fade" id="editContractModal" tabindex="-1" role="dialog" aria-labelledby="editContractModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editProcessModalLabel">Editar Processo</h5>
+                <h5 class="modal-title" id="editContractModalLabel">Editar Contrato</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -572,12 +576,13 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
                         <p><strong>Descrição:</strong> <span id="contractDescricao"></span></p>
                         <p><strong>Validade:</strong> <span id="contractValidade"></span></p>
                         <p><strong>Situação:</strong> <span id="contractSituacao"></span></p>
+                        <p><strong>Valor Aditivo:</strong> R$ <span id="modalValorAditivo"></span></p> <!-- Exibição dos aditivos -->
                     </div>
 
                     <!-- Segunda Aba: Edição do Contrato -->
                     <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="edit-tab">
                         <h5 class="mt-3">Editar Contrato</h5>
-                        <form id="editProcessForm">
+                        <form id="editContractForm">
                             <div class="form-group">
                                 <label for="editTitulo">Título</label>
                                 <input type="text" class="form-control" id="editTitulo" name="titulo" required>
@@ -598,11 +603,9 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
                                 </select>
                             </div>
 
-                            <!-- Adicionar Aditivos -->
-                            <div class="form-group">
-                                <button type="button" id="addAditivoBtn" class="btn btn-secondary">Adicionar Aditivo</button>
-                                <div id="aditivosContainer"></div> <!-- Container para os campos de aditivos -->
-                            </div>
+                            <button type="button" id="addAditivoBtn" class="btn btn-secondary">Adicionar Aditivo</button>
+<div id="aditivosContainer"></div> <!-- Contêiner onde os campos de aditivos serão adicionados -->
+
 
                             <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                         </form>
@@ -612,10 +615,30 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
         </div>
     </div>
 </div>
+<script>
+    
+    // Função para adicionar um novo campo de aditivo
+document.getElementById('addAditivoBtn').addEventListener('click', function() {
+    if (aditivosCount < 5) {  // Limitar a 5 aditivos
+        aditivosCount++;
+        const container = document.getElementById('aditivosContainer');
+        const aditivoInput = document.createElement('div');
+        aditivoInput.classList.add('form-group');
+        aditivoInput.innerHTML = `
+            <label for="editAditivo${aditivosCount}">Valor Aditivo ${aditivosCount}</label>
+            <input type="number" class="form-control form-control-sm" id="editAditivo${aditivosCount}" name="aditivo${aditivosCount}" step="0.01" required>
+        `;
+        container.appendChild(aditivoInput);
+        updateModalValorAditivo();  // Atualiza o total de aditivos no modal
+    } else {
+        alert('Máximo de 5 aditivos alcançado');
+    }
+});
+
+</script>
 
 
-<!--  // Função editar modal -->
-<script src="./src/contratos/js/edit-process-modal.js"></script>
+
 
 <!-- Modal exibi detalhes do contrato BOTAO VISUALIZAR DA TABELA -->
 <div class="modal fade" id="modalContrato" tabindex="-1" aria-hidden="true">
@@ -649,6 +672,15 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
         </div>
     </div>
 </div>
+
+<!-- Carregar jQuery (se necessário) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Carregar Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!--  // Função editar modal -->
+<script src="./src/contratos/js/edit-process-modal.js"></script>
+
 
 <!-- Modal de Configuração de Filtros -->
 <div class="modal" id="filterModal" tabindex="-1" role="dialog">
@@ -722,8 +754,9 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
         </tbody>
     </table>
 
-    
+
 </div>
+
 <div class="form-container" id="prestacao" style="display:none;" onclick="exibirContratos()">
     <div id="table-container-contratos">
         <!-- Tabela de contratos encerrados será inserida aqui -->

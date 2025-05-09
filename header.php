@@ -76,6 +76,7 @@ try {
                     ['link' => 'homecontratos.php', 'nome' => 'Home', 'icon' => 'home'],
                     ['link' => 'calendar.php', 'nome' => 'Calendário / Tarefas', 'icon' => 'calendar-alt'],
                     ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
+                    ['link' => 'certidoes.php', 'nome' => 'Certidões', 'icon' => 'envelope'],
                 ];
                 break;
 

@@ -1,150 +1,166 @@
-   // Função chamada quando o botão "Editar processo" for clicado
-   function editProcess(event, contractData) {
-    // Impede que o evento de clique se propague
-    event.stopPropagation();
+let aditivosCount = 0;  // Controla quantos aditivos foram adicionados
 
-    // Chama a função para abrir o modal e preencher as abas com os dados do contrato
-    openEditModal(contractData);
+// Função para abrir o modal de visualização de detalhes do contrato
+function openModal(contrato) {
+    try {
+        // Preencher os campos do modal com os dados do contrato
+        document.getElementById('modalTituloContrato').textContent = contrato.titulo || 'N/A';
+        document.getElementById('modalDescricao').textContent = contrato.descricao || 'N/A';
+        document.getElementById('modalValidade').textContent = contrato.validade || 'N/A';
+        document.getElementById('modalSEI').textContent = contrato.SEI || 'N/A';
+        document.getElementById('modalGestor').textContent = contrato.gestor || 'N/A';
+        document.getElementById('modalFiscais').textContent = contrato.fiscais || 'N/A';
+        document.getElementById('modalValorContrato').textContent = contrato.valor_contrato ? 
+            parseFloat(contrato.valor_contrato).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ 0,00';
+        document.getElementById('modalNumParcelas').textContent = contrato.num_parcelas || 'N/A';
+
+        // Exibir o total de aditivos no modal de detalhes
+        document.getElementById('modalValorAditivo').textContent = contrato.valor_aditivo ? 
+            parseFloat(contrato.valor_aditivo).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'R$ 0,00';
+
+        // Abrir o modal usando Bootstrap 5
+        const modal = new bootstrap.Modal(document.getElementById('modalContrato'));
+        modal.show();
+    } catch (error) {
+        console.error('Erro ao abrir modal de visualização:', error);
+        alert('Erro ao abrir modal: ' + error.message);
+    }
 }
 
-let aditivoCount = 1; // Contador para os aditivos
+// Função para abrir o modal de edição de contrato
+function openModalContrato(contractData) {
+    try {
+        // Preencher os campos na aba de detalhes
+        document.getElementById('contractTitulo').textContent = contractData.titulo || 'N/A';
+        document.getElementById('contractDescricao').textContent = contractData.descricao || 'N/A';
+        document.getElementById('contractValidade').textContent = contractData.validade || 'N/A';
+        document.getElementById('contractSituacao').textContent = contractData.situacao || 'N/A';
 
-// Função para adicionar os campos de aditivos
-document.getElementById("addAditivoBtn").addEventListener("click", function() {
-    if (aditivoCount <= 5) {
-        const aditivoContainer = document.getElementById("aditivosContainer");
+        // Preencher os campos no formulário de edição
+        document.getElementById('editTitulo').value = contractData.titulo || '';
+        document.getElementById('editDescricao').value = contractData.descricao || '';
+        document.getElementById('editValidade').value = contractData.validade || '';
+        document.getElementById('editSituacao').value = contractData.situacao || '';
 
-        // Cria o campo para o novo aditivo
-        const div = document.createElement("div");
-        div.classList.add("form-group");
-        div.innerHTML = `
-            <label for="editAditivo${aditivoCount}">Valor Aditivo ${aditivoCount}</label>
-            <input type="number" class="form-control" id="editAditivo${aditivoCount}" name="valor_aditivo${aditivoCount}" required>
-        `;
-
-        // Adiciona o campo de aditivo ao container
-        aditivoContainer.appendChild(div);
-
-        // Incrementa o contador de aditivos
-        aditivoCount++;
-    } else {
-        alert("Você já pode adicionar até 5 aditivos.");
-    }
-});
-
-// Função para enviar o formulário de edição
-document.getElementById("editProcessForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-
-    const formData = new FormData(this);
-
-    // Preencher os valores dos aditivos, se houver
-    for (let i = 1; i <= 5; i++) {
-        if (formData.get(`valor_aditivo${i}`)) {
-            formData.append(`valor_aditivo${i}`, formData.get(`valor_aditivo${i}`));
+        // Preencher os aditivos (se já existirem)
+        if (contractData.aditivos) {
+            aditivosCount = contractData.aditivos.length;
+            contractData.aditivos.forEach((aditivo, index) => {
+                addAditivoField(aditivo, index + 1);
+            });
         }
+
+        // **IMPORTANTE**: Não chamar `showTab('gerenciar')` aqui, para evitar que a aba seja alterada quando abrir o modal de edição.
+        // Abrir o modal de edição usando Bootstrap 5
+        const modal = new bootstrap.Modal(document.getElementById('editContractModal'));
+        modal.show();
+    } catch (error) {
+        console.error('Erro ao abrir modal de edição:', error);
+        alert('Erro ao abrir modal de edição: ' + error.message);
+    }
+}
+
+// Função para adicionar um novo campo de aditivo
+function addAditivoField(value = '', aditivoNumber = aditivosCount + 1) {
+    if (aditivosCount < 5) {  // Limitar a 5 aditivos
+        aditivosCount++;
+        const container = document.getElementById('aditivosContainer');
+        const aditivoInput = document.createElement('div');
+        aditivoInput.classList.add('form-group');
+        aditivoInput.innerHTML = `
+            <label for="editAditivo${aditivosCount}">Valor Aditivo ${aditivosCount}</label>
+            <input type="number" class="form-control form-control-sm" id="editAditivo${aditivosCount}" name="aditivo${aditivosCount}" value="${value}" step="0.01" required>
+        `;
+        container.appendChild(aditivoInput);
+        updateModalValorAditivo();  // Atualiza o total de aditivos no modal
+    } else {
+        alert('Máximo de 5 aditivos alcançado');
+    }
+}
+
+// Função para atualizar o valor total dos aditivos no modal de detalhes
+function updateModalValorAditivo() {
+    let totalAditivos = 0;
+    for (let i = 1; i <= aditivosCount; i++) {
+        const aditivoValue = parseFloat(document.getElementById(`editAditivo${i}`).value) || 0;
+        totalAditivos += aditivoValue;
+    }
+    document.getElementById('modalValorAditivo').textContent = totalAditivos.toFixed(2);
+}
+
+// Função para salvar as alterações do contrato
+document.getElementById('editContractForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
     }
 
-    // Aqui você pode fazer a requisição para salvar os dados do contrato e os aditivos
-    // Exemplo: Você pode usar fetch() ou XMLHttpRequest para enviar os dados para o backend
-    fetch('editar_contrato.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert("Contrato atualizado com sucesso!");
-        // Fechar o modal após salvar
-        $('#editProcessModal').modal('hide');
-    })
-    .catch(error => {
-        console.error('Erro ao salvar o contrato:', error);
-        alert('Erro ao salvar o contrato.');
-    });
-});
-
-// Função para salvar as alterações
-document.getElementById('editProcessForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Previne o envio normal do formulário
-
-    // Coleta os dados do formulário
-    var updatedData = {
+    const updatedContractData = {
         titulo: document.getElementById('editTitulo').value,
         descricao: document.getElementById('editDescricao').value,
         validade: document.getElementById('editValidade').value,
-        situacao: document.getElementById('editSituacao').value
+        situacao: document.getElementById('editSituacao').value,
+        aditivos: []  // Array para armazenar os valores dos aditivos
     };
 
-    // Aqui você pode fazer uma requisição para salvar os dados atualizados no banco de dados
-    // Exemplo com Fetch API:
-    /*
-    fetch('/path/to/your/api', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData),
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Fechar o modal após salvar os dados
-        $('#editProcessModal').modal('hide');
-    })
-    .catch((error) => {
-        console.error('Erro:', error);
-    });
-    */
+    // Coletando os valores dos aditivos
+    for (let i = 1; i <= aditivosCount; i++) {
+        const aditivoValue = parseFloat(document.getElementById(`editAditivo${i}`).value) || 0;
+        updatedContractData.aditivos.push(aditivoValue);
+    }
 
-    // Fechar o modal após salvar os dados
-    $('#editProcessModal').modal('hide');
+    try {
+        const response = await fetch('./salvar_edicao_contrato.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedContractData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result.success) {
+            alert('Contrato atualizado com sucesso!');
+            // Fechar o modal de edição
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editContractModal'));
+            modal.hide();
+        } else {
+            alert('Erro ao atualizar contrato: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Erro ao salvar contrato:', error);
+        alert('Erro ao salvar contrato: ' + error.message);
+    }
 });
-function showResumoProcesso(data) {
-    // Exibe a div do resumo do processo
-    document.getElementById('consultar').style.display = 'none'; // Esconde a lista de contratos
-    document.getElementById('resumo_processo').style.display = 'block'; // Exibe o resumo do processo
 
-    // Preenche os detalhes do processo na div
-    const processoDetalhes = document.getElementById('processoDetalhes');
-    processoDetalhes.innerHTML = `
-        <p><strong>ID:</strong> ${data.id}</p>
-        <p><strong>Título:</strong> ${data.titulo}</p>
-        <p><strong>Descrição:</strong> ${data.descricao}</p>
-        <p><strong>Validade:</strong> ${data.validade}</p>
-        <p><strong>Status:</strong> ${data.situacao}</p>
-    `;
-}
-// Função para redirecionar para a aba "resumo_processo"
+// Função para redirecionar para uma aba específica
 function redirectTo(tab) {
-    // Altera a aba para "resumo_processo"
-    showTab(tab);
+    showTab(tab); // Chama a função para exibir a aba
 }
 
 // Função para exibir a aba específica
 function showTab(tabName) {
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(tab => {
-        if (tab.dataset.tab === tabName) {
-            tab.classList.add('active');  // Marca a aba como ativa
-        } else {
-            tab.classList.remove('active');
-        }
-    });
-    // Adicione a lógica de exibição do conteúdo da aba se necessário
-    console.log("Aba exibida: " + tabName);
+    try {
+        const tabs = document.querySelectorAll('.tab');
+        const contents = document.querySelectorAll('.form-container'); // Assume que as abas têm essa classe
+
+        // Atualizar as abas
+        tabs.forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.tab === tabName);
+        });
+
+        // Exibir o conteúdo correspondente
+        contents.forEach(content => {
+            content.style.display = content.id === tabName ? 'block' : 'none';
+        });
+
+        console.log(`Aba exibida: ${tabName}`);
+    } catch (error) {
+        console.error('Erro ao exibir aba:', error);
+    }
 }
-
-
-function openModal(contrato) {
-    document.getElementById('modalTituloContrato').innerText = contrato.titulo;
-    document.getElementById('modalDescricao').innerText = contrato.descricao;
-    document.getElementById('modalValidade').innerText = contrato.validade;
-    document.getElementById('modalSEI').innerText = contrato.SEI;
-    document.getElementById('modalGestor').innerText = contrato.gestor;
-    document.getElementById('modalFiscais').innerText = contrato.fiscais;
-    document.getElementById('modalValorContrato').innerText = contrato.valor_contrato;
-    document.getElementById('modalNumParcelas').innerText = contrato.num_parcelas ? contrato.num_parcelas : 'N/A';
-
-    var modal = new bootstrap.Modal(document.getElementById('modalContrato'));
-    modal.show();
-}
-

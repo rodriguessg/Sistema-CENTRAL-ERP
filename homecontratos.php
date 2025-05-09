@@ -542,7 +542,7 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
     
 </div>
 
-<!-- Modal de Edição -->
+
 <!-- Modal de Edição -->
 <div class="modal fade" id="editProcessModal" tabindex="-1" role="dialog" aria-labelledby="editProcessModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -613,19 +613,6 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
     </div>
 </div>
 
-<style>
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    .btn-secondary {
-        margin-top: 10px;
-    }
-
-    .form-control {
-        width: 100%;
-    }
-</style>
 
 <!--  // Função editar modal -->
 <script src="./src/contratos/js/edit-process-modal.js"></script>

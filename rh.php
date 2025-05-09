@@ -87,6 +87,8 @@ include './header.php';
 
       <label for="email">E-mail:</label>
       <input type="email" id="email" required />
+      <label for="tel">Telefone:</label>
+      <input type="numer" id="tel"> 
 
       <button type="button" onclick="validateForm()">Criar</button>
     </form>
@@ -110,7 +112,7 @@ include './header.php';
         <span class="close" onclick="closeModal()">&times;</span>
         <div id="signatureLayout">
           <div class="logo-section">
-            <img class="gvn" src="./src/img/cent.png" alt="logo" />
+            <img class="gvn" src="./RH/src/img/cent.png" alt="logo" />
           </div>
           <div class="content-section">
             <h2 id="modalName">Nome Sobrenome</h2>

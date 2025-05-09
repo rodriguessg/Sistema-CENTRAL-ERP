@@ -622,7 +622,7 @@ input[type="color"]:hover {
 
 /* Seleção do dia */
 .selected-day {
-    background-color: #28303d; /* Cor do dia selecionado */
+    background-color: #A0A0A0; /* Cor do dia selecionado */
     color: white;
     font-weight: bold;
 }

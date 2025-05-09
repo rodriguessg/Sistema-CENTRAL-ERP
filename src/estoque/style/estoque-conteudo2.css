@@ -41,6 +41,8 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+
+
 .tab {
   border: solid 1px  #A0A0A0;
   padding: 12px 20px;
@@ -53,11 +55,12 @@ body {
   gap: 8px;
   border-radius: 8px;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  background-color: #A0A0A0;
 }
 
 /* Estilo das abas ativas */
 .tab.active {
-  background-color: #427842; 
+  background-color: #005A92; 
   color: white;
   transform: scale(1.05);
 }
@@ -66,6 +69,7 @@ body {
 .tab:hover {
   background-color: #ddd;
   transform: scale(1.02);
+  color: black;
 }
 
 /* Ícones nas abas */

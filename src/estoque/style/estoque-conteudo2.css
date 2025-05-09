@@ -410,6 +410,7 @@ th {
   font-weight: bold;
   text-align: center;
   font-size: 16px; /* Ajuste para uma melhor legibilidade */
+  padding: 5px;
 }
 
 /* Adiciona os ícones ao lado do texto do cabeçalho */

@@ -166,8 +166,9 @@ background-color:#BC9D32;
 
 /* Botão Adicionar Categoria */
 #add-category-form button {
-    background: linear-gradient(180deg, #3a4a64, #28303d); /* Cor base */
+   background-color: #427842;
     color: white;
+    transform: none;
 }
 
 #add-category-form button:hover {
@@ -518,7 +519,7 @@ input[type="color"]:hover {
 .calendar-container {
     grid-area: 1 / 2 / 2 / 3;
     border-radius: 10px; /* Borda mais suave */
-    padding: 20px;
+    padding: 10px;
     width: 100%;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Sombra mais suave */
     box-sizing: border-box;

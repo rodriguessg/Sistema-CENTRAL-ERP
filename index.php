@@ -109,17 +109,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!--===============================================================================================-->
 </head>
-<img src="src/img/jk.png" alt="Background Image" class="background-image">
+<img src="src/img/bk.png" alt="Background Image" class="background-image">
 <body>
 <div class="limiter">
         <div class="container-login100">
             <!-- Lado esquerdo (Logo e Texto) -->
-            <div class="left-side">
-                <div class="logo-container">
-                    <img src="./src/img/colo.png" alt="PCA RJ Logo" class="logo">
-                    <h2>SISTEMA ERP CENTRAL LOGISTICA</h2>
-                </div>
-            </div>
+						<div class="left-side">
+    <div class="logo-container">
+        <!-- Primeira Imagem (Maior) -->
+        <img src="./src/img/colo.png" alt="PCA RJ Logo" class="logo logo-large">
+
+        <!-- Texto -->
+        <h2>SISTEMA ERP CENTRAL LOGISTICA</h2>
+
+        <!-- Segunda Imagem (Menor) -->
+        <img src="./src/img/log.png" alt="PCA RJ Logo" class="logo logo-small">
+    </div>
+</div>
+
 
             <!-- Lado direito (Formulário de Login) -->
             <div class="wrap-login100">

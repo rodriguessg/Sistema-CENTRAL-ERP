@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="left-side">
                 <div class="logo-container">
                     <img src="./src/img/colo.png" alt="PCA RJ Logo" class="logo">
-                    <h2>Plano de Contratações Anual do Poder Executivo do Estado do Rio de Janeiro</h2>
+                    <h2>SISTEMA ERP CENTRAL LOGISTICA</h2>
                 </div>
             </div>
 

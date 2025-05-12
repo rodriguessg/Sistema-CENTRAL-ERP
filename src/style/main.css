@@ -157,7 +157,7 @@ label {
 }
 
 .login100-form-btn {
-  background-color: #45b5a9;
+  background-color: #198754;
   color: white;
   padding: 12px;
   width: 100%; /* Garante que o botão ocupe toda a largura */
@@ -177,22 +177,6 @@ label {
   justify-content: center;
   align-items: center;
   width: 100%;
-}
-
-/* Estilos para o botão do gov.br */
-.btn-gov {
-  background-color: #fff;
-  color: #45b5a9;
-  padding: 12px;
-  border: 1px solid #45b5a9;
-  border-radius: 5px;
-  width: 100%; /* Garante que o botão ocupe toda a largura */
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.btn-gov:hover {
-  background-color: #f1f1f1;
 }
 
 /* Link de "Esqueceu sua Senha" */

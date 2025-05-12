@@ -11,8 +11,17 @@ async function loadContractsAndPayments(contractData) {
     tbody.innerHTML = ''; // Limpar tabela
     
     // Atualizar o título com o contrato_titulo
-    const contractTitleHeader = document.getElementById('contractTitleHeader');
-    contractTitleHeader.textContent = `Pagamentos do  ${contractData.titulo || 'Desconhecido'}`;
+   const contractTitleHeader = document.getElementById('contractTitleHeader');
+const titulo = contractData.titulo || 'Desconhecido';
+const sei = contractData.SEI || 'N/A';
+
+// Link de pesquisa no SEI (ajuste se necessário)
+const seiLink = sei !== 'N/A' 
+  ? `<a href="https://sei.rj.gov.br/sei/controlador_externo.php?acao=procedimento_trabalhar&acao_origem=procedimento_pesquisar&id_procedimento=${encodeURIComponent(sei)}" target="_blank" rel="noopener noreferrer" title="Link de acesso direto  ao processo SEI">SEI: ${sei}</a>`
+  : 'SEI: N/A';
+
+contractTitleHeader.innerHTML = `Pagamentos do contrato ${titulo} (${seiLink})`;
+
 
     // Carregar pagamentos anteriores com base em contrato_titulo
     try {
@@ -31,6 +40,7 @@ async function loadContractsAndPayments(contractData) {
                 <td>${payment.nota_empenho || ''}</td>
                 <td>${payment.valor_contrato || 0}</td>
                 <td>${payment.creditos_ativos || ''}</td>
+                <td>${payment.fonte || ''}</td>
                 <td>${payment.SEI || ''}</td>
                 <td>${payment.nota_fiscal || ''}</td>
                 <td>${payment.envio_pagamento || ''}</td>
@@ -57,7 +67,8 @@ async function loadContractsAndPayments(contractData) {
             <td><input type="text" value="${contractData.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho"></td>
             <td><input type="number" step="0.01" value="${contractData.valor_contrato || 0}" class="form-control form-control-sm" data-key="valor_contrato" readonly></td>
             <td><input type="text" value="${contractData.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
-            <td><input type="text" value="${contractData.SEI || ''}" class="form-control form-control-sm" data-key="SEI" readonly></td>
+            <td><input type="text" value="${contractData.fonte || ''}" class="form-control form-control-sm" data-key="fonte"></td>
+            <td><input type="text" value="${contractData.SEI || ''}" class="form-control form-control-sm" data-key="SEI" ></td>
             <td><input type="text" value="${contractData.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
             <td><input type="text" value="${contractData.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
             <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
@@ -122,7 +133,7 @@ async function savePayment() {
     const paymentData = { contrato_titulo: contractTitle };
 
     const columns = [
-        'mes', 'empenho', 'tipo', 'nota_empenho', 'valor_contrato', 'creditos_ativos',
+        'mes', 'empenho', 'tipo', 'nota_empenho', 'valor_contrato', 'creditos_ativos', 'fonte',
         'SEI', 'nota_fiscal', 'envio_pagamento', 'vencimento_fatura', 'valor_liquidado',
         'valor_liquidado_ag', 'ordem_bancaria', 'agencia_bancaria', 'data_atualizacao', 'data_pagamento'
     ];

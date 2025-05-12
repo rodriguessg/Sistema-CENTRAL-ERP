@@ -49,7 +49,8 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Resposta do servidor (get_contratos):', data);
+                    //EXIBI NO JASON ASSO, QUE ABRE O SISTEMA
+                    // console.log('Resposta do servidor (get_contratos):', data);
                     tableBody.innerHTML = '';
                     if (data.success && data.contratos.length > 0) {
                         data.contratos.forEach(contrato => {

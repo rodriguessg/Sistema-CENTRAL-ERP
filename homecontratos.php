@@ -1,196 +1,196 @@
 <?php
-// Iniciar sessão
-session_start();
+    // Iniciar sessão
+    session_start();
 
-// Configurar logging de erros
-ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/logs/error.log');
+    // Configurar logging de erros
+    ini_set('log_errors', 1);
+    ini_set('error_log', __DIR__ . '/logs/error.log');
 
-// Conectar ao banco de dados
-$host = 'localhost';
-$dbname = 'gm_sicbd';
-$username = 'root';
-$password = '';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    error_log("Erro ao conectar ao banco: " . $e->getMessage());
-    die("Erro ao conectar ao banco de dados. Consulte o administrador.");
-}
-
-// Função para redirecionar com mensagem
-function setMessageAndRedirect($type, $message, $location) {
-    $_SESSION[$type] = $message;
-    header("Location: $location");
-    exit;
-}
-
-// Verificar sessão
-if (!isset($_SESSION['username']) || !isset($_SESSION['setor'])) {
-    setMessageAndRedirect('error', 'Sessão inválida. Faça login.', 'login.php');
-}
-
-// Gerar token CSRF
-$csrf_token = bin2hex(random_bytes(32));
-$_SESSION['csrf_token'] = $csrf_token;
-
-// Marcar notificação como lida
-if (isset($_GET['mark_read']) && $_SESSION['username'] === 'contratos') {
-    $notificationId = filter_var($_GET['mark_read'], FILTER_VALIDATE_INT);
-    if ($notificationId === false) {
-        setMessageAndRedirect('error', 'ID de notificação inválido.', 'index.php');
-    }
+    // Conectar ao banco de dados
+    $host = 'localhost';
+    $dbname = 'gm_sicbd';
+    $username = 'root';
+    $password = '';
 
     try {
-        $sqlMarkRead = "UPDATE notificacoes SET situacao = 'lida' WHERE id = :id";
-        $stmtMarkRead = $pdo->prepare($sqlMarkRead);
-        $stmtMarkRead->execute(['id' => $notificationId]);
-        setMessageAndRedirect('success', 'Notificação marcada como lida.', 'index.php');
+        $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
-        error_log("Erro ao marcar notificação: " . $e->getMessage());
-        setMessageAndRedirect('error', 'Erro ao marcar notificação.', 'index.php');
-    }
-}
-
-// Processar cadastro de contrato
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])) {
-    // Validar CSRF
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        setMessageAndRedirect('error', 'Token CSRF inválido.', 'cadastrar_contratos.php');
+        error_log("Erro ao conectar ao banco: " . $e->getMessage());
+        die("Erro ao conectar ao banco de dados. Consulte o administrador.");
     }
 
-    // Campos obrigatórios
-    $requiredFields = [
-        'titulo', 'validade', 'assinatura', 'SEI', 'gestor', 'gestorsb',
-        'fiscais', 'valor_contrato', 'valor_aditivo', 'publicacao',
-        'date_service', 'contatos', 'n_despesas', 'valor_nf'
-    ];
-    $data = [];
-    foreach ($requiredFields as $field) {
-        $data[$field] = filter_input(INPUT_POST, $field, FILTER_SANITIZE_STRING);
-        if (empty($data[$field])) {
-            setMessageAndRedirect('error', "Campo '$field' é obrigatório.", 'cadastrar_contratos.php');
-        }
+    // Função para redirecionar com mensagem
+    function setMessageAndRedirect($type, $message, $location) {
+        $_SESSION[$type] = $message;
+        header("Location: $location");
+        exit;
     }
 
-    // Campos opcionais
-    $data['descricao'] = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING) ?: null;
-    $data['fonte'] = filter_input(INPUT_POST, 'fonte', FILTER_SANITIZE_STRING) ?: null;
-    $data['objeto'] = filter_input(INPUT_POST, 'objeto', FILTER_SANITIZE_STRING) ?: null;
-    $data['servicos'] = filter_input(INPUT_POST, 'servicos', FILTER_SANITIZE_STRING) ?: null;
-    $data['num_parcelas'] = filter_input(INPUT_POST, 'num_parcelas', FILTER_VALIDATE_INT) ?: null;
-    $data['account_bank'] = filter_input(INPUT_POST, 'account_bank', FILTER_SANITIZE_STRING) ?: null;
-
-    // Validar formatos
-    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['validade'])) {
-        setMessageAndRedirect('error', 'Data de validade inválida.', 'cadastrar_contratos.php');
-    }
-    if (!is_numeric($data['valor_contrato']) || $data['valor_contrato'] < 0) {
-        setMessageAndRedirect('error', 'Valor do contrato deve ser um número positivo.', 'cadastrar_contratos.php');
-    }
-    if (!is_numeric($data['valor_aditivo']) || $data['valor_aditivo'] < 0) {
-        setMessageAndRedirect('error', 'Valor aditivo deve ser um número positivo.', 'cadastrar_contratos.php');
+    // Verificar sessão
+    if (!isset($_SESSION['username']) || !isset($_SESSION['setor'])) {
+        setMessageAndRedirect('error', 'Sessão inválida. Faça login.', 'login.php');
     }
 
-    try {
-        $sql = "INSERT INTO gestao_contratos (
-            titulo, descricao, assinatura, validade, SEI, gestor, gestorsb, fiscais,
-            valor_contrato, valor_aditivo, fonte, objeto, publicacao, date_service,
-            contatos, n_despesas, valor_nf, servicos, num_parcelas, account_bank
-        ) VALUES (
-            :titulo, :descricao, :assinatura, :validade, :SEI, :gestor, :gestorsb, :fiscais,
-            :valor_contrato, :valor_aditivo, :fonte, :objeto, :publicacao, :date_service,
-            :contatos, :n_despesas, :valor_nf, :servicos, :num_parcelas, :account_bank
-        )";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($data);
+    // Gerar token CSRF
+    $csrf_token = bin2hex(random_bytes(32));
+    $_SESSION['csrf_token'] = $csrf_token;
 
-        // Inserir notificação
-        $usuario = $_SESSION['username'];
-        $setor = $_SESSION['setor'];
-        $mensagem = "Contrato '{$data['titulo']}' prestes a expirar.";
-        $situacao = 'não lida';
-        $dataNotificacao = date('Y-m-d H:i:s');
-
-        $sqlVerificacao = "SELECT COUNT(*) FROM notificacoes WHERE username = :username AND mensagem = :mensagem";
-        $stmtVerificacao = $pdo->prepare($sqlVerificacao);
-        $stmtVerificacao->execute(['username' => $usuario, 'mensagem' => $mensagem]);
-
-        if ($stmtVerificacao->fetchColumn() == 0) {
-            $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao)
-                            VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
-            $stmtNotificacao = $pdo->prepare($sqlNotificacao);
-            $stmtNotificacao->execute([
-                'username' => $usuario,
-                'setor' => $setor,
-                'mensagem' => $mensagem,
-                'situacao' => $situacao,
-                'data_criacao' => $dataNotificacao
-            ]);
+    // Marcar notificação como lida
+    if (isset($_GET['mark_read']) && $_SESSION['username'] === 'contratos') {
+        $notificationId = filter_var($_GET['mark_read'], FILTER_VALIDATE_INT);
+        if ($notificationId === false) {
+            setMessageAndRedirect('error', 'ID de notificação inválido.', 'index.php');
         }
 
-        setMessageAndRedirect('success', 'Contrato cadastrado com sucesso!', 'index.php');
-    } catch (PDOException $e) {
-        error_log("Erro ao cadastrar contrato: " . $e->getMessage());
-        setMessageAndRedirect('error', 'Erro ao cadastrar contrato.', 'cadastrar_contratos.php');
-    }
-}
-
-// Buscar contratos próximos de expirar
-$notificacoes = [];
-try {
-    $sqlNotificacoes = "SELECT * FROM gestao_contratos
-                        WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH)
-                        AND validade >= CURDATE()";
-    $stmtNotificacoes = $pdo->query($sqlNotificacoes);
-    $notificacoes = $stmtNotificacoes->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    error_log("Erro ao buscar notificações: " . $e->getMessage());
-    $_SESSION['error'] = "Erro ao buscar notificações.";
-}
-
-// Buscar detalhes do processo
-$processDetails = null;
-if (isset($_GET['processId'])) {
-    $processId = filter_var($_GET['processId'], FILTER_VALIDATE_INT);
-    if ($processId !== false) {
         try {
-            $sqlProcesso = "SELECT * FROM gestao_contratos WHERE id = :id";
-            $stmtProcesso = $pdo->prepare($sqlProcesso);
-            $stmtProcesso->execute(['id' => $processId]);
-            $processDetails = $stmtProcesso->fetch(PDO::FETCH_ASSOC);
+            $sqlMarkRead = "UPDATE notificacoes SET situacao = 'lida' WHERE id = :id";
+            $stmtMarkRead = $pdo->prepare($sqlMarkRead);
+            $stmtMarkRead->execute(['id' => $notificationId]);
+            setMessageAndRedirect('success', 'Notificação marcada como lida.', 'index.php');
         } catch (PDOException $e) {
-            error_log("Erro ao buscar processo: " . $e->getMessage());
-            $_SESSION['error'] = "Erro ao buscar detalhes do processo.";
+            error_log("Erro ao marcar notificação: " . $e->getMessage());
+            setMessageAndRedirect('error', 'Erro ao marcar notificação.', 'index.php');
         }
     }
-}
 
-// Buscar contratos para o dropdown
-$options = "";
-try {
-    $sqlContratos = "SELECT titulo FROM gestao_contratos";
-    $stmtContratos = $pdo->query($sqlContratos);
-    $contratos = $stmtContratos->fetchAll(PDO::FETCH_ASSOC);
-
-    if ($contratos) {
-        foreach ($contratos as $contrato) {
-            $titulo = htmlspecialchars($contrato['titulo'], ENT_QUOTES, 'UTF-8');
-            $options .= "<option value=\"$titulo\">$titulo</option>";
+    // Processar cadastro de contrato
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])) {
+        // Validar CSRF
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            setMessageAndRedirect('error', 'Token CSRF inválido.', 'cadastrar_contratos.php');
         }
-    } else {
-        $options = "<option value=\"\">Nenhum contrato encontrado</option>";
-    }
-} catch (PDOException $e) {
-    error_log("Erro ao buscar contratos: " . $e->getMessage());
-    $_SESSION['error'] = "Erro ao buscar contratos.";
-    $options = "<option value=\"\">Erro ao carregar contratos</option>";
-}
 
-include 'header.php';
-include 'verificar_notificacoes.php';
+        // Campos obrigatórios
+        $requiredFields = [
+            'titulo', 'validade', 'assinatura', 'SEI', 'gestor', 'gestorsb',
+            'fiscais', 'valor_contrato', 'valor_aditivo', 'publicacao',
+            'date_service', 'contatos', 'n_despesas', 'valor_nf'
+        ];
+        $data = [];
+        foreach ($requiredFields as $field) {
+            $data[$field] = filter_input(INPUT_POST, $field, FILTER_SANITIZE_STRING);
+            if (empty($data[$field])) {
+                setMessageAndRedirect('error', "Campo '$field' é obrigatório.", 'cadastrar_contratos.php');
+            }
+        }
+
+        // Campos opcionais
+        $data['descricao'] = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING) ?: null;
+        $data['fonte'] = filter_input(INPUT_POST, 'fonte', FILTER_SANITIZE_STRING) ?: null;
+        $data['objeto'] = filter_input(INPUT_POST, 'objeto', FILTER_SANITIZE_STRING) ?: null;
+        $data['servicos'] = filter_input(INPUT_POST, 'servicos', FILTER_SANITIZE_STRING) ?: null;
+        $data['num_parcelas'] = filter_input(INPUT_POST, 'num_parcelas', FILTER_VALIDATE_INT) ?: null;
+        $data['account_bank'] = filter_input(INPUT_POST, 'account_bank', FILTER_SANITIZE_STRING) ?: null;
+
+        // Validar formatos
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['validade'])) {
+            setMessageAndRedirect('error', 'Data de validade inválida.', 'cadastrar_contratos.php');
+        }
+        if (!is_numeric($data['valor_contrato']) || $data['valor_contrato'] < 0) {
+            setMessageAndRedirect('error', 'Valor do contrato deve ser um número positivo.', 'cadastrar_contratos.php');
+        }
+        if (!is_numeric($data['valor_aditivo']) || $data['valor_aditivo'] < 0) {
+            setMessageAndRedirect('error', 'Valor aditivo deve ser um número positivo.', 'cadastrar_contratos.php');
+        }
+
+        try {
+            $sql = "INSERT INTO gestao_contratos (
+                titulo, descricao, assinatura, validade, SEI, gestor, gestorsb, fiscais,
+                valor_contrato, valor_aditivo, fonte, objeto, publicacao, date_service,
+                contatos, n_despesas, valor_nf, servicos, num_parcelas, account_bank
+            ) VALUES (
+                :titulo, :descricao, :assinatura, :validade, :SEI, :gestor, :gestorsb, :fiscais,
+                :valor_contrato, :valor_aditivo, :fonte, :objeto, :publicacao, :date_service,
+                :contatos, :n_despesas, :valor_nf, :servicos, :num_parcelas, :account_bank
+            )";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($data);
+
+            // Inserir notificação
+            $usuario = $_SESSION['username'];
+            $setor = $_SESSION['setor'];
+            $mensagem = "Contrato '{$data['titulo']}' prestes a expirar.";
+            $situacao = 'não lida';
+            $dataNotificacao = date('Y-m-d H:i:s');
+
+            $sqlVerificacao = "SELECT COUNT(*) FROM notificacoes WHERE username = :username AND mensagem = :mensagem";
+            $stmtVerificacao = $pdo->prepare($sqlVerificacao);
+            $stmtVerificacao->execute(['username' => $usuario, 'mensagem' => $mensagem]);
+
+            if ($stmtVerificacao->fetchColumn() == 0) {
+                $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao)
+                                VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
+                $stmtNotificacao = $pdo->prepare($sqlNotificacao);
+                $stmtNotificacao->execute([
+                    'username' => $usuario,
+                    'setor' => $setor,
+                    'mensagem' => $mensagem,
+                    'situacao' => $situacao,
+                    'data_criacao' => $dataNotificacao
+                ]);
+            }
+
+            setMessageAndRedirect('success', 'Contrato cadastrado com sucesso!', 'index.php');
+        } catch (PDOException $e) {
+            error_log("Erro ao cadastrar contrato: " . $e->getMessage());
+            setMessageAndRedirect('error', 'Erro ao cadastrar contrato.', 'cadastrar_contratos.php');
+        }
+    }
+
+    // Buscar contratos próximos de expirar
+    $notificacoes = [];
+    try {
+        $sqlNotificacoes = "SELECT * FROM gestao_contratos
+                            WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH)
+                            AND validade >= CURDATE()";
+        $stmtNotificacoes = $pdo->query($sqlNotificacoes);
+        $notificacoes = $stmtNotificacoes->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Erro ao buscar notificações: " . $e->getMessage());
+        $_SESSION['error'] = "Erro ao buscar notificações.";
+    }
+
+    // Buscar detalhes do processo
+    $processDetails = null;
+    if (isset($_GET['processId'])) {
+        $processId = filter_var($_GET['processId'], FILTER_VALIDATE_INT);
+        if ($processId !== false) {
+            try {
+                $sqlProcesso = "SELECT * FROM gestao_contratos WHERE id = :id";
+                $stmtProcesso = $pdo->prepare($sqlProcesso);
+                $stmtProcesso->execute(['id' => $processId]);
+                $processDetails = $stmtProcesso->fetch(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                error_log("Erro ao buscar processo: " . $e->getMessage());
+                $_SESSION['error'] = "Erro ao buscar detalhes do processo.";
+            }
+        }
+    }
+
+    // Buscar contratos para o dropdown
+    $options = "";
+    try {
+        $sqlContratos = "SELECT titulo FROM gestao_contratos";
+        $stmtContratos = $pdo->query($sqlContratos);
+        $contratos = $stmtContratos->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($contratos) {
+            foreach ($contratos as $contrato) {
+                $titulo = htmlspecialchars($contrato['titulo'], ENT_QUOTES, 'UTF-8');
+                $options .= "<option value=\"$titulo\">$titulo</option>";
+            }
+        } else {
+            $options = "<option value=\"\">Nenhum contrato encontrado</option>";
+        }
+    } catch (PDOException $e) {
+        error_log("Erro ao buscar contratos: " . $e->getMessage());
+        $_SESSION['error'] = "Erro ao buscar contratos.";
+        $options = "<option value=\"\">Erro ao carregar contratos</option>";
+    }
+
+    include 'header.php';
+    include 'verificar_notificacoes.php';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -210,12 +210,12 @@ include 'verificar_notificacoes.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Carregar Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
 <div class="caderno">
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
-
     <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
         <i class="fas fa-plus-circle"></i> Cadastro de contratos
@@ -384,15 +384,15 @@ include 'verificar_notificacoes.php';
             </div>
         </div>
 
-        <div class="mb-3">
+        <!-- <div class="mb-3">
             <label for="valor-aditivo" class="form-label">
                 Valor Aditivo <span class="text-danger">*</span>
             </label>
             <div class="input-icon">
                 <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" placeholder="Digite o valor aditivo" required>
                 <i class="fas fa-plus-circle"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
+            <!-- </div> -->
+        <!-- </div> -->
     </div>
     </div>
 
@@ -476,7 +476,7 @@ include 'verificar_notificacoes.php';
             </table>
         </div>
     </div>
-
+</div>
     <!-- Modal de Visualização -->
     <div class="modal fade" id="modalContrato" tabindex="-1" aria-labelledby="modalContratoLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -545,7 +545,7 @@ include 'verificar_notificacoes.php';
             </div>
         </div>
     </div>
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
 
 <!-- Modal de Configuração de Filtros -->
 <div class="modal" id="filterModal" tabindex="-1" role="dialog">
@@ -601,7 +601,8 @@ include 'verificar_notificacoes.php';
                 <th>Nota de Empenho</th>
                 <th>Valor do Contrato</th>
                 <th>Créditos Ativos</th>
-                <th>SEI</th>
+                <th>Fonte</th>
+                <th>SEI</th>                
                 <th>Nota Fiscal</th>
                 <th>Envio Pagamento</th>
                 <th>Vencimento da Fatura</th>
@@ -865,10 +866,9 @@ include 'verificar_notificacoes.php';
 
 <!-- BOTÔES -->
 <script src="./src/js/active.js"></script>
-
 <!--  // Função editar modal -->
  <script src="./src/contratos/js/edit-process-modal.js"></script> 
-
+ <!-- JS RELATÓRIO AVANÇADO -->
 <script src="./src/contratos/js/relatorio-avancado.js"></script>
 <!-- JS CADASTRO -->
 <script src="./src/contratos/js/cadastro_contato.js"></script>

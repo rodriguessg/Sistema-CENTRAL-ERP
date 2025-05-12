@@ -261,81 +261,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    // Função para agendar relatório
-    function agendarRelatorio() {
-        const contrato = document.getElementById('tipo_relatorio').value;
-        const relatorioTodos = document.getElementById('relatorio_todos').value;
-        const tipoRelatorio = document.getElementById('relatorio_tipo').value;
-        const mes = document.getElementById('mes').value;
-        const ano = document.getElementById('ano').value;
-        const email = document.getElementById('email_destinatario').value;
-        const salvarEmail = document.getElementById('salvar_email').checked;
-        const periodicidade = document.getElementById('periodicidade').value;
-
-        if (!email) {
-            alert('Por favor, informe o e-mail do destinatário.');
-            return;
-        }
-        if (!periodicidade) {
-            alert('Por favor, selecione a periodicidade.');
-            return;
-        }
-
-        let params = 'email=' + encodeURIComponent(email) + '&periodicidade=' + encodeURIComponent(periodicidade);
-        if (salvarEmail) {
-            params += '&salvar_email=1';
-        }
-        if (relatorioTodos) {
-            params += '&relatorio_todos=' + encodeURIComponent(relatorioTodos);
-            if (relatorioTodos === 'mensal_todos' && mes) {
-                params += '&mes=' + encodeURIComponent(mes);
-            } else if (relatorioTodos === 'anual_todos' && ano) {
-                params += '&ano=' + encodeURIComponent(ano);
-            }
-        } else {
-            if (!contrato || !tipoRelatorio) {
-                alert('Por favor, selecione o contrato e o tipo de relatório.');
-                return;
-            }
-            params += '&contrato=' + encodeURIComponent(contrato) + '&relatorio_tipo=' + encodeURIComponent(tipoRelatorio);
-            if (tipoRelatorio === 'mensal' && mes) {
-                params += '&mes=' + encodeURIComponent(mes);
-            } else if (tipoRelatorio === 'anual' && ano) {
-                params += '&ano=' + encodeURIComponent(ano);
-            }
-        }
-
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'agendar_relatorio.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.send(params);
-
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                try {
-                    const resposta = JSON.parse(xhr.responseText);
-                    if (resposta.sucesso) {
-                        alert('Relatório agendado com sucesso!');
-                        if (salvarEmail && resposta.email_salvo) {
-                            // Adicionar o e-mail ao seletor de e-mails salvos
-                            const emailSelect = document.getElementById('email_destinatario_select');
-                            const option = document.createElement('option');
-                            option.value = email;
-                            option.textContent = email;
-                            emailSelect.insertBefore(option, emailSelect.lastElementChild);
-                        }
-                    } else {
-                        alert(resposta.mensagem || 'Erro ao agendar o relatório.');
-                    }
-                } catch (e) {
-                    alert('Erro ao processar a resposta: ' + xhr.responseText);
-                }
-            } else {
-                alert('Erro ao agendar relatório. Status HTTP: ' + xhr.status);
-            }
-        };
-    }
-
     // Função para exportar para PDF
     function exportarPDF() {
         const { jsPDF } = window.jspdf;
@@ -535,7 +460,7 @@ function formatDate(dateString) {
                         <td>${ano.ano || 'N/A'}</td>
                         <td>${contrato.num_parcelas ?? 'N/A'}</td>
                         <td>${formatCurrency(ano.total_pago)}</td>
-                        <td>${ano.quantidade_pagamentos ?? '0'}</td>
+                  
                     `;
                     tabela.appendChild(tr);
                 });
@@ -598,7 +523,7 @@ function formatDate(dateString) {
                         <td>${ano.ano || 'N/A'}</td>
                         <td>${contrato.num_parcelas ?? 'N/A'}</td>
                         <td>${formatCurrency(ano.total_pago)}</td>
-                        <td>${ano.quantidade_pagamentos ?? '0'}</td>
+                      
                     `;
                     tabela.appendChild(tr);
                 });

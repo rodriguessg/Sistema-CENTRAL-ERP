@@ -109,68 +109,73 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!--===============================================================================================-->
 </head>
-<body class="central-logo2">
-	<div class="limiter">
-		<div class="container-login100">
-			<div class="wrap-login100">
-				<form class="login100-form validate-form" action="login.php" method="POST">
-					<span class="login100-form-logo">
-						<img src="./src/img/GM.png" alt="GM">
-					</span>
+<img src="src/img/jk.png" alt="Background Image" class="background-image">
+<body>
+<div class="limiter">
+        <div class="container-login100">
+            <!-- Lado esquerdo (Logo e Texto) -->
+            <div class="left-side">
+                <div class="logo-container">
+                    <img src="./src/img/colo.png" alt="PCA RJ Logo" class="logo">
+                    <h2>Plano de Contratações Anual do Poder Executivo do Estado do Rio de Janeiro</h2>
+                </div>
+            </div>
 
-										<!-- Seletor de área de acesso -->
-										<div class="wrap-menu-custom validate-input">
-											<select class="menu-custom" name="setor" id="setor" required>
-												<option value="" disabled selected>Área de Acesso</option>
-												<option value="administrador">Administrador</option>
-												<option value="patrimonio">Patrimônio</option>
-												<option value="financeiro">Financeiro</option>
-												<option value="estoque">Estoque</option>
-												<option value="recursos_humanos">Recursos Humanos</option>
-                                                <option value="contratos">Contratos</option>
-											</select>
-										</div>
-										
-										
-					<!-- Campo de Nome de Usuário -->
-					<div class="wrap-input100 validate-input" data-validate="Enter username">
-						<input class="input100" type="text" name="username" placeholder="Username" required>
-						<span class="focus-input100" data-placeholder="&#xf207;"></span>
-					</div>
+            <!-- Lado direito (Formulário de Login) -->
+            <div class="wrap-login100">
+                <form class="login100-form validate-form" action="login.php" method="POST">
+                        <div class="logo-central">
+                        <img src="./src/img/GM.png" alt="GM">
+												</div>
 
-					<!-- Campo de Senha -->
-					<div class="wrap-input100 validate-input" data-validate="Enter password">
-						<input class="input100" type="password" name="senha" id="senha" placeholder="Password" required>
-						<span class="focus-input100" data-placeholder="&#xf191;"></span>
-					</div>
+                    <!-- Seletor de área de acesso -->
+                    <div class="wrap-input100 validate-input">
+                        <select class="menu-custom" name="setor" id="setor" required>
+                            <option value="" disabled selected>Área de Acesso</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="patrimonio">Patrimônio</option>
+                            <option value="financeiro">Financeiro</option>
+                            <option value="estoque">Estoque</option>
+                            <option value="recursos_humanos">Recursos Humanos</option>
+                            <option value="contratos">Contratos</option>
+                        </select>
+                    </div>
 
-					<!-- Mostrar Senha -->
-					<div class="password-container">
-						<input type="checkbox" id="mostrar-senha" onclick="togglePassword()">
-						<label for="mostrar-senha">Mostrar senha</label>
-					</div>
+                    <!-- Campo de Nome de Usuário -->
+                    <div class="wrap-input100 validate-input" data-validate="Enter username">
+                        <input class="input100" type="text" name="username" placeholder="Username" required>
+                        <span class="focus-input100" data-placeholder="&#xf207;"></span>
+                    </div>
 
-					<!-- Botão de Login -->
-					<div class="container-login100-form-btn">
-						<button class="login100-form-btn">
-							Login
-						</button>
-					</div>
+                    <!-- Campo de Senha -->
+                    <div class="wrap-input100 validate-input" data-validate="Enter password">
+                        <input class="input100" type="password" name="senha" id="senha" placeholder="Password" required>
+                        <span class="focus-input100" data-placeholder="&#xf191;"></span>
+                    </div>
 
-					<!-- <span class="login100-form-title p-b-20 p-t-27">
-						<img src="./src/img/Logo.png" alt="">
-					   </span> -->
+                    <!-- Mostrar Senha -->
+                    <div class="password-container">
+                        <input type="checkbox" id="mostrar-senha" onclick="togglePassword()">
+                        <label for="mostrar-senha">Mostrar senha</label>
+                    </div>
 
-					<!-- Link para "Esqueci minha senha" -->
-					<div class="text-center p-t-50">
-						<a class="txt1" href="javascript:void(0);" onclick="abrirModal()">
-							Esqueceu sua Senha ?
-						</a>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+                    <!-- Botão de Login -->
+                    <div class="container-login100-form-btn">
+                        <button class="login100-form-btn">
+                            Login
+                        </button>
+                    </div>
+
+                    <!-- Link para "Esqueci minha senha" -->
+                    <div class="text-center p-t-50">
+                        <a class="txt1" href="javascript:void(0);" onclick="abrirModal()">
+                            Esqueceu sua Senha ?
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 <!-- Modal para "Esqueci minha senha" -->
 <div id="modal-esqueci-senha" class="modal-container">
@@ -228,6 +233,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	<script src="vendor/countdowntime/countdowntime.js"></script>
 	<script src="./src/js/main.js"></script>
 	<script src="./src/js/recsenhamodal.js"></script>
-	<script src="./src/js/fundo.js"></script>
 </body>
 </html>

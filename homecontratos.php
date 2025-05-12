@@ -590,7 +590,7 @@
 <div class="form-container" id="gerenciar" style="display:none;">
     <h2 id="contractTitleHeader">Pagamentos do</h2>
     <div class="button-group">
-  
+    <button class="btn-submit" onclick="savePayment()">Salvar Alterações</button>
    </div>
     <table id="contratosTable" class="table table-bordered">
         <thead>
@@ -620,7 +620,7 @@
         </tbody>
     </table>
 
-      <button class="btn-submit" onclick="savePayment()">Salvar Alterações</button>
+    
 
 
 </div>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 08-Maio-2025 às 21:17
+-- Tempo de geração: 12-Maio-2025 às 21:44
 -- Versão do servidor: 10.4.32-MariaDB
 -- versão do PHP: 8.2.12
 
@@ -32,6 +32,32 @@ CREATE TABLE `categorias` (
   `nome` varchar(255) NOT NULL,
   `cor` varchar(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `certidoes`
+--
+
+CREATE TABLE `certidoes` (
+  `id` int(11) NOT NULL,
+  `documento` varchar(50) NOT NULL COMMENT 'Tipo de certidão (ex.: CND, CRF, FGTS, INSS, Outros)',
+  `data_vencimento` date NOT NULL COMMENT 'Data de vencimento da certidão',
+  `nome` varchar(255) NOT NULL COMMENT 'Nome ou descrição da certidão',
+  `fornecedor` varchar(255) NOT NULL COMMENT 'Empresa ou entidade fornecedora',
+  `responsavel` varchar(255) NOT NULL COMMENT 'Pessoa responsável pela certidão',
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'Data de criação do registro',
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Data de última atualização',
+  `arquivo` varchar(255) DEFAULT NULL,
+  `contrato_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Tabela para armazenar informações de certidões';
+
+--
+-- Extraindo dados da tabela `certidoes`
+--
+
+INSERT INTO `certidoes` (`id`, `documento`, `data_vencimento`, `nome`, `fornecedor`, `responsavel`, `criado_em`, `atualizado_em`, `arquivo`, `contrato_id`) VALUES
+(3, 'Outros', '2025-05-23', 'teste120', 'DELL', 'Claudia', '2025-05-12 19:39:39', '2025-05-12 19:40:53', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -122,7 +148,10 @@ INSERT INTO `contratos_parcelas` (`id`, `contrato_id`, `mes`, `ano`, `valor`) VA
 (28, 10, 2, 2026, 41.67),
 (29, 10, 3, 2026, 41.67),
 (30, 10, 4, 2026, 41.67),
-(31, 10, 5, 2026, 41.67);
+(31, 10, 5, 2026, 41.67),
+(32, 11, 7, 2025, 1440880.00),
+(33, 11, 8, 2025, 1440880.00),
+(34, 11, 9, 2025, 1440880.00);
 
 -- --------------------------------------------------------
 
@@ -200,16 +229,17 @@ CREATE TABLE `eventos` (
   `hora` time NOT NULL,
   `categoria` varchar(50) NOT NULL,
   `cor` varchar(7) DEFAULT NULL,
-  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `certidao_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Extraindo dados da tabela `eventos`
 --
 
-INSERT INTO `eventos` (`id`, `titulo`, `descricao`, `data`, `hora`, `categoria`, `cor`, `criado_em`) VALUES
-(27, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', 'Realizar pagamento parcela 1', '2025-05-07', '14:50:00', 'Geral', '#56d783', '2025-05-07 22:50:23'),
-(28, ' REUNIÃO', 'REUNIÃO SISTEMA DE CONTRATOS', '2025-05-08', '16:09:00', 'Reuniao', '#c23d3d', '2025-05-08 00:10:33');
+INSERT INTO `eventos` (`id`, `titulo`, `descricao`, `data`, `hora`, `categoria`, `cor`, `criado_em`, `certidao_id`) VALUES
+(1, 'Renovar Certidão: Certidão Negativa Teste', 'Certidão ID: 1, vence em 15/05/2025.', '2025-05-12', '00:00:00', 'Renovação', '#dc3545', '2025-05-12 19:15:13', 0),
+(2, 'Renovar Certidão: Computador Dell', 'Certidão ID: 2, vence em 15/05/2025.', '2025-05-12', '00:00:00', 'Renovação', '#dc3545', '2025-05-12 19:20:51', 0);
 
 -- --------------------------------------------------------
 
@@ -365,24 +395,30 @@ CREATE TABLE `gestao_contratos` (
   `servicos` varchar(255) DEFAULT NULL,
   `valor_nf` decimal(15,2) NOT NULL,
   `valor_contrato` decimal(15,2) NOT NULL,
-  `valor_aditivo` decimal(15,2) DEFAULT NULL,
+  `valor_aditivo1` decimal(15,2) DEFAULT NULL,
   `num_parcelas` int(11) DEFAULT NULL,
   `descricao` text NOT NULL,
   `situacao` enum('Ativo','Inativo','Encerrado') NOT NULL DEFAULT 'Ativo',
   `data_cadastro` timestamp NOT NULL DEFAULT current_timestamp(),
-  `setor` enum('administrador','estoque','patrimonio','financeiro','contratos') NOT NULL DEFAULT 'contratos'
+  `setor` enum('administrador','estoque','patrimonio','financeiro','contratos') NOT NULL DEFAULT 'contratos',
+  `parcelamento` enum('Sim','Não') DEFAULT 'Não',
+  `valor_aditivo2` decimal(15,2) DEFAULT NULL,
+  `valor_aditivo3` decimal(15,2) DEFAULT NULL,
+  `valor_aditivo4` decimal(15,2) DEFAULT NULL,
+  `valor_aditivo5` decimal(15,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Extraindo dados da tabela `gestao_contratos`
 --
 
-INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `conta_bancaria`, `fonte`, `publicacao`, `date_service`, `contatos`, `n_despesas`, `outros`, `servicos`, `valor_nf`, `valor_contrato`, `valor_aditivo`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`, `setor`) VALUES
-(2, 'Contrato de Consultoria TI', 'SEI-002/2024', 'Consultoria em TI', 'Ana Costa', 'Pedro Souza', 'Mariana Lopes', '2024-08-31', '', '', NULL, NULL, 'consultoria@ti.com', '', 'Não', NULL, 0.00, 12000.00, NULL, 6, 'Consultoria para implementação de sistemas.', 'Encerrado', '2024-03-01 03:00:00', 'contratos'),
-(3, 'Contrato de Locação de Equipamentos', 'SEI-003/2023', 'Locação de equipamentos', 'Carlos Mendes', 'Luiza Almeida', 'Rafael Lima', '2025-09-30', '', '', NULL, NULL, 'locacao@equip.com', '', 'Não', NULL, 0.00, 19200.00, 5000.00, 24, 'Locação de equipamentos para eventos.', 'Encerrado', '2023-06-01 03:00:00', 'contratos'),
-(5, 'CONTRATO DE ENERGIA LIGTH', '7890', 'CENTRAL', 'CHEFE', 'GERENTE', 'GABRIEL, MAIK', '2026-04-28', '', '', NULL, NULL, '400289222', '', 'Não', NULL, 0.00, 500000.00, 0.00, 1, 'TESTE DE NOVO CADASTRO DE CONTRATOS.', 'Ativo', '2025-04-27 20:50:03', 'contratos'),
-(7, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '100006/001752/2023', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'N/A', 'Raphaela Batista Saldanha - 99.000.900 - ASSCON / VALDENICE ALVES DA SILVA DE PAULA - GERGEP - 99.000.517 / André Miranda Lobão Tavares Mendonça - 99.000.610 - CHEGAB', '2025-12-19', '', '', NULL, NULL, 'susiane.kempfer@grupogreencard.com.br', '', 'Não', NULL, 0.00, 432264000.00, 0.00, 1, 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'Ativo', '2025-05-06 17:45:31', 'contratos'),
-(10, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', '20231600/889345', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'CARUSO', 'MAIK', 'ALEXANDRE', '2025-05-07', '', '', NULL, NULL, '40028922', '', 'Não', NULL, 0.00, 500.00, 0.00, 12, 'TESTE', 'Ativo', '2025-05-07 18:53:25', 'contratos');
+INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `conta_bancaria`, `fonte`, `publicacao`, `date_service`, `contatos`, `n_despesas`, `outros`, `servicos`, `valor_nf`, `valor_contrato`, `valor_aditivo1`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`, `setor`, `parcelamento`, `valor_aditivo2`, `valor_aditivo3`, `valor_aditivo4`, `valor_aditivo5`) VALUES
+(2, 'Contrato de Consultoria TI', 'SEI-002/2024', 'Consultoria em TI', 'Ana Costa', 'Pedro Souza', 'Mariana Lopes', '2024-08-31', '', '', NULL, NULL, 'consultoria@ti.com', '', 'Não', NULL, 0.00, 12000.00, NULL, 6, 'Consultoria para implementação de sistemas.', 'Inativo', '2024-03-01 03:00:00', 'contratos', 'Não', NULL, NULL, NULL, NULL),
+(3, 'Contrato de Locação de Equipamentos', 'SEI-003/2023', 'Locação de equipamentos', 'Carlos Mendes', 'Luiza Almeida', 'Rafael Lima', '2025-09-30', '', '', NULL, NULL, 'locacao@equip.com', '', 'Não', NULL, 0.00, 19200.00, 5000.00, 24, 'Locação de equipamentos para eventos.', 'Encerrado', '2023-06-01 03:00:00', 'contratos', 'Não', NULL, NULL, NULL, NULL),
+(5, 'teste de atualização', '7890', 'CENTRAL', 'CHEFE', 'GERENTE', 'GABRIEL, MAIK', '2025-05-16', '', '', NULL, NULL, '400289222', '', 'Não', NULL, 0.00, 500000.00, NULL, 1, 'teste', 'Ativo', '2025-04-27 20:50:03', 'contratos', 'Não', NULL, NULL, NULL, NULL),
+(7, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '100006/001752/2023', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'N/A', 'Raphaela Batista Saldanha - 99.000.900 - ASSCON / VALDENICE ALVES DA SILVA DE PAULA - GERGEP - 99.000.517 / André Miranda Lobão Tavares Mendonça - 99.000.610 - CHEGAB', '2025-12-19', '', '', NULL, NULL, 'susiane.kempfer@grupogreencard.com.br', '', 'Não', NULL, 0.00, 432264000.00, 0.00, 1, 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'Ativo', '2025-05-06 17:45:31', 'contratos', 'Não', NULL, NULL, NULL, NULL),
+(10, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', '20231600/889345', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'CARUSO', 'MAIK', 'ALEXANDRE', '2025-05-07', '', '', NULL, NULL, '40028922', '', 'Não', NULL, 0.00, 500.00, 0.00, 12, 'TESTE', 'Ativo', '2025-05-07 18:53:25', 'contratos', 'Não', NULL, NULL, NULL, NULL),
+(11, 'Contrato teste de nova atualização', '100006/001752/2023', 'teste', 'MAIK', 'ALEXANDRE', 'CELSO', '2025-05-31', '5542', '100', '2025-04-16', '2025-04-30', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, 0.00, 3, 'TESTE', 'Ativo', '2025-05-08 19:35:16', 'contratos', 'Sim', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -697,7 +733,11 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (645, 'PAULO', 'Login bem-sucedido', '2025-05-07 18:13:04'),
 (646, 'CONTRATOS', 'Login bem-sucedido', '2025-05-07 18:14:20'),
 (647, 'CONTRATOS', 'Login bem-sucedido', '2025-05-07 18:16:42'),
-(648, 'CONTRATOS', 'Login bem-sucedido', '2025-05-08 17:06:03');
+(648, 'CONTRATOS', 'Login bem-sucedido', '2025-05-08 17:06:03'),
+(649, 'contratos', 'Login bem-sucedido', '2025-05-09 12:18:14'),
+(650, 'CONTRATOS', 'Login bem-sucedido', '2025-05-12 11:21:44'),
+(651, 'CONTRATOS', 'Login bem-sucedido', '2025-05-12 16:35:36'),
+(652, 'CONTRATOS', 'Login bem-sucedido', '2025-05-12 19:15:10');
 
 -- --------------------------------------------------------
 
@@ -765,106 +805,30 @@ CREATE TABLE `notificacoes` (
   `setor` varchar(255) NOT NULL,
   `mensagem` text NOT NULL,
   `situacao` enum('nao lida','lida') DEFAULT 'nao lida',
-  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp()
+  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp(),
+  `certidao_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Extraindo dados da tabela `notificacoes`
 --
 
-INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `data_criacao`) VALUES
-(353, 'CONTRATOS', 'contratos', 'Contrato \'Contrato A\' com validade em 2025-04-07 prestes a expirar.', 'lida', '2025-04-07 22:22:20'),
-(354, 'CONTRATOS', 'contratos', 'Contrato \'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA\' com validade em 2025-04-08 prestes a expirar.', 'lida', '2025-04-07 22:22:20'),
-(355, 'CONTRATOS', 'contratos', 'Contrato \'Contrato A\' com validade em 2025-04-08 prestes a expirar.', 'lida', '2025-04-07 22:22:20'),
-(356, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-04-07 17:22:43'),
-(357, 'PAULO', 'estoque', 'O produto \'PROJETOR\' está com 4 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-04-07 17:22:45'),
-(358, 'CONTRATOS', 'contratos', 'Contrato \'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA\' com validade em 2025-04-07 prestes a expirar.', 'lida', '2025-04-08 05:59:38'),
-(359, 'CONTRATOS', 'contratos', 'Contrato \'contrato de aluguel de impressoras \' com validade em 2025-04-07 prestes a expirar.', 'lida', '2025-04-08 06:06:05'),
-(360, 'PAULO', 'estoque', 'O produto \'SACO LIXO 10LD\' está com 2 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-04-08 11:49:42'),
-(361, 'PAULO', 'estoque', 'O produto \'PROJETOR\' está com 4 unidades. Estoque abaixo de 5 unidades.', 'nao lida', '2025-04-08 11:49:42'),
-(362, 'PAULO', 'estoque', 'O produto \'69\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'nao lida', '2025-04-08 12:13:34'),
-(363, 'PAULO', 'estoque', 'O produto \'71\' chegou ao limite mínimo de 5 unidades.', 'nao lida', '2025-04-08 12:52:30'),
-(364, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:46'),
-(365, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:46'),
-(366, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:55'),
-(367, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:55'),
-(368, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:56'),
-(369, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:56'),
-(370, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:57'),
-(371, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:57'),
-(372, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:22:59'),
-(373, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:22:59'),
-(374, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:23:14'),
-(375, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:23:14'),
-(376, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:27:29'),
-(377, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:27:30'),
-(378, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:27:33'),
-(379, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:27:33'),
-(380, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:07'),
-(381, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'nao lida', '2025-04-08 18:47:07'),
-(382, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:11'),
-(383, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:11'),
-(384, 'estoque', 'estoque', '#teste de custo chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:26'),
-(385, 'estoque', 'estoque', '#PROJETOR54 chegou ao seu limite de estoque.', 'lida', '2025-04-08 18:47:26'),
-(388, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 04:30:36'),
-(389, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 04:46:47'),
-(390, 'CONTRATOS', 'Geral', 'Evento excluído: ', 'nao lida', '2025-04-25 04:48:28'),
-(391, 'CONTRATOS', 'Geral', 'Evento atualizado: Estoque', 'nao lida', '2025-04-25 04:54:37'),
-(392, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 04:59:15'),
-(393, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 04:59:33'),
-(394, 'CONTRATOS', 'Geral', 'Evento atualizado: Contrato A', 'nao lida', '2025-04-25 05:02:34'),
-(395, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:05:31'),
-(396, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:05:35'),
-(397, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:06:00'),
-(398, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:06:57'),
-(399, 'CONTRATOS', 'contratos', 'Contrato \'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA\' com validade em 2025-04-24 prestes a expirar.', 'lida', '2025-04-25 05:09:14'),
-(400, 'CONTRATOS', 'contratos', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-25 05:11:44'),
-(401, 'CONTRATOS', 'Geral', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:26:39'),
-(402, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-25 05:30:34'),
-(403, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-25 05:31:35'),
-(404, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-25 05:32:35'),
-(405, 'CONTRATOS', 'contratos', 'Novo evento criado: teste', 'lida', '2025-04-25 05:35:15'),
-(406, 'CONTRATOS', 'contratos', 'Novo evento criado: teste', 'lida', '2025-04-25 05:36:25'),
-(407, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-25 05:36:46'),
-(408, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-25 05:38:16'),
-(409, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-25 05:38:50'),
-(410, 'CONTRATOS', 'Geral', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:45:27'),
-(411, 'CONTRATOS', 'Geral', 'Novo evento criado: Contrato A', 'nao lida', '2025-04-25 05:46:31'),
-(412, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:47:16'),
-(413, 'CONTRATOS', 'Geral', 'Evento excluído: teste', 'nao lida', '2025-04-25 05:49:22'),
-(414, 'CONTRATOS', 'Geral', 'Evento excluído: teste', 'nao lida', '2025-04-25 05:49:45'),
-(415, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:49:50'),
-(416, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:49:59'),
-(417, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:50:09'),
-(418, 'CONTRATOS', 'Geral', 'Evento excluído: Contrato A', 'nao lida', '2025-04-25 05:50:14'),
-(419, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:50:46'),
-(420, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:50:52'),
-(421, 'CONTRATOS', 'Geral', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:50:55'),
-(422, 'CONTRATOS', 'Geral', 'Novo evento criado: UPDATE CONTRATOS', 'nao lida', '2025-04-25 05:53:01'),
-(423, 'CONTRATOS', 'Geral', 'Evento excluído: UPDATE CONTRATOS', 'nao lida', '2025-04-25 05:53:29'),
-(424, 'CONTRATOS', 'Geral', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 05:54:18'),
-(425, 'CONTRATOS', 'Geral', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'nao lida', '2025-04-25 06:01:36'),
-(426, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-25 06:07:22'),
-(427, 'CONTRATOS', 'contratos', 'Evento atualizado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-25 06:07:40'),
-(428, 'CONTRATOS', 'contratos', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-25 06:19:15'),
-(429, 'CONTRATOS', 'contratos', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-25 06:19:21'),
-(430, 'CONTRATOS', 'contratos', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-27 20:27:43'),
-(431, 'estoque', 'estoque', '#42400050015 chegou ao seu limite de estoque.', 'nao lida', '2025-04-27 20:39:40'),
-(432, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-27 21:45:15'),
-(433, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-04-27 22:53:22'),
-(434, 'CONTRATOS', 'contratos', 'Contrato \'CONTRATO DE ENERGIA LIGTH\' com validade em 2025-04-28 prestes a expirar.', 'lida', '2025-04-28 01:50:06'),
-(435, 'CONTRATOS', 'contratos', 'Contrato \'Contrato de Locação de Equipamentos\' com validade em 2025-05-31 prestes a expirar.', 'lida', '2025-05-01 16:52:30'),
-(436, 'CONTRATOS', 'contratos', 'Novo evento criado: compra de notebook', 'lida', '2025-05-05 18:50:23'),
-(437, 'CONTRATOS', 'contratos', 'Novo evento criado: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-05-05 18:50:51'),
-(438, 'CONTRATOS', 'contratos', 'Evento excluído: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', 'lida', '2025-05-05 18:51:15'),
-(439, 'CONTRATOS', 'contratos', 'Evento excluído: compra de notebook', 'lida', '2025-05-05 18:51:32'),
-(440, 'CONTRATOS', 'contratos', 'Novo evento criado: teste', 'lida', '2025-05-06 03:56:36'),
-(441, 'PAULO', 'estoque', 'O produto \'42400050015\' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.', 'nao lida', '2025-05-06 16:21:00'),
-(442, 'CONTRATOS', 'contratos', 'Contrato \'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA~ç\' com validade em 2025-05-07 prestes a expirar.', 'lida', '2025-05-06 22:58:25'),
-(443, 'CONTRATOS', 'contratos', 'Novo evento criado: GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', 'nao lida', '2025-05-07 22:50:23'),
-(444, 'CONTRATOS', 'contratos', 'Contrato \'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA\' com validade em 2025-05-07 prestes a expirar.', 'nao lida', '2025-05-07 23:53:29'),
-(445, 'CONTRATOS', 'contratos', 'Novo evento criado:  REUNIÃO', 'nao lida', '2025-05-08 00:10:33'),
-(446, 'CONTRATOS', 'contratos', 'Evento atualizado:  REUNIÃO', 'nao lida', '2025-05-08 00:11:43');
+INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `data_criacao`, `certidao_id`) VALUES
+(1, 'contratos', 'contratos', 'Certidão \"Certidão Negativa Teste\" (ID: 1) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:15:13', 0),
+(2, 'contratos', 'contratos', 'A certidão \"Certidão Negativa Teste\" (ID: 1) está próxima do vencimento (2 dias restantes, vence em 15/05/2025). Setor: contratos.', 'lida', '2025-05-12 19:15:13', 0),
+(3, 'contratos', 'contratos', 'Contrato \'teste de atualização\' com validade em 2025-05-16 prestes a expirar.', 'lida', '2025-05-13 00:17:13', 0),
+(4, 'contratos', 'contratos', 'Contrato \'Contrato teste de nova atualização\' com validade em 2025-05-31 prestes a expirar.', 'lida', '2025-05-13 00:17:13', 0),
+(5, 'contratos', 'contratos', 'Certidão \"Certidão Negativa Teste\" (ID: 1) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:19:03', 0),
+(6, 'contratos', 'contratos', 'Certidão \"Certidão Negativa Teste\" (ID: 1) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:20:26', 0),
+(7, 'contratos', 'contratos', 'Certidão \"Computador Dell\" (ID: 2) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:20:51', 0),
+(8, 'contratos', 'contratos', 'A certidão \"Computador Dell\" (ID: 2) está próxima do vencimento (2 dias restantes, vence em 15/05/2025). Setor: contratos.', 'lida', '2025-05-12 19:20:51', 0),
+(9, 'contratos', 'contratos', 'Certidão \"teste120\" (ID: 3) cadastrada com sucesso. Vence em 31/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:39:39', 0),
+(10, 'contratos', 'contratos', 'A certidão \"teste120\"  está próxima do vencimento (3 dias restantes, vence em 18). ', 'lida', '2025-05-12 19:39:39', 0),
+(11, 'contratos', 'contratos', 'Certidão \"teste120\" (ID: 3) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:40:16', 0),
+(12, 'contratos', 'contratos', 'A certidão \"teste120\"  está próxima do vencimento (3 dias restantes, vence em 2). ', 'lida', '2025-05-12 19:40:16', 0),
+(13, 'contratos', 'contratos', 'Certidão \"teste120\" (ID: 3) cadastrada com sucesso. Vence em 23/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:40:53', 0),
+(14, 'contratos', 'contratos', 'A certidão \"teste120\"  está próxima do vencimento (3 dias restantes, vence em 10). ', 'lida', '2025-05-12 19:40:53', 0),
+(15, 'contratos', 'contratos', 'Evento excluído: Renovar Certidão: teste120', 'lida', '2025-05-13 00:41:11', 0);
 
 -- --------------------------------------------------------
 
@@ -982,7 +946,8 @@ CREATE TABLE `pagamentos` (
 --
 
 INSERT INTO `pagamentos` (`id`, `contrato_titulo`, `data_pagamento`, `valor_contrato`, `mes`, `empenho`, `nota_empenho`, `valor_liquidado`, `ordem_bancaria`, `data_atualizacao`, `envio_pagamento`, `vencimento_fatura`, `agencia_bancaria`, `tipo`, `SEI`, `nota_fiscal`, `creditos_ativos`, `valor_liquidado_ag`) VALUES
-(17, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '2025-05-06', 432264000.00, '01/2025', '331.944,00', ' 2025NE00021 ', 329510.00, ' 2025OB00075 ', NULL, '0000-00-00', '2025-12-19', NULL, 'Original', '100006/001752/2023', '2025/1470 e 2025/1472', '23/12/2024', 329.51);
+(17, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '2025-05-06', 432264000.00, '01/2025', '331.944,00', ' 2025NE00021 ', 329510.00, ' 2025OB00075 ', NULL, '0000-00-00', '2025-12-19', NULL, 'Original', '100006/001752/2023', '2025/1470 e 2025/1472', '23/12/2024', 329.51),
+(24, 'Contrato teste de nova atualização', '2025-05-12', 4322640.00, '05/*2025', '330', '1504550', 64500000.00, '100', '2025-05-12', '0000-00-00', '2025-05-31', NULL, 'original', '100006/001752/2023', 'nf-50', '260', 51232.00);
 
 -- --------------------------------------------------------
 
@@ -1298,6 +1263,15 @@ ALTER TABLE `categorias`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Índices para tabela `certidoes`
+--
+ALTER TABLE `certidoes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_data_vencimento` (`data_vencimento`),
+  ADD KEY `idx_documento` (`documento`),
+  ADD KEY `fk_contrato` (`contrato_id`);
+
+--
 -- Índices para tabela `codigo_atual`
 --
 ALTER TABLE `codigo_atual`
@@ -1488,6 +1462,12 @@ ALTER TABLE `categorias`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `certidoes`
+--
+ALTER TABLE `certidoes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT de tabela `codigo_atual`
 --
 ALTER TABLE `codigo_atual`
@@ -1503,7 +1483,7 @@ ALTER TABLE `configuracoes`
 -- AUTO_INCREMENT de tabela `contratos_parcelas`
 --
 ALTER TABLE `contratos_parcelas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT de tabela `controle_transicao`
@@ -1527,7 +1507,7 @@ ALTER TABLE `emails_salvos`
 -- AUTO_INCREMENT de tabela `eventos`
 --
 ALTER TABLE `eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `fechamento`
@@ -1545,19 +1525,19 @@ ALTER TABLE `funcionario`
 -- AUTO_INCREMENT de tabela `gestao_contratos`
 --
 ALTER TABLE `gestao_contratos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=649;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=653;
 
 --
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=447;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de tabela `ordens_compra`
@@ -1569,7 +1549,7 @@ ALTER TABLE `ordens_compra`
 -- AUTO_INCREMENT de tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de tabela `painel_config`
@@ -1646,6 +1626,12 @@ ALTER TABLE `vencimentos_futuros`
 --
 -- Restrições para despejos de tabelas
 --
+
+--
+-- Limitadores para a tabela `certidoes`
+--
+ALTER TABLE `certidoes`
+  ADD CONSTRAINT `fk_contrato` FOREIGN KEY (`contrato_id`) REFERENCES `gestao_contratos` (`id`) ON DELETE SET NULL;
 
 --
 -- Limitadores para a tabela `contratos_parcelas`

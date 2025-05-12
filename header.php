@@ -190,13 +190,19 @@ try {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Incluindo o CSS customizado -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
     <div class="wrapper">
         <!-- Menu Lateral -->
         <nav id="sidebar" class="active">
             <!-- Notificações -->
-            <li class="nav-item">
+<li class="nav-item">
     <a class="nav-link" href="#" id="notificacaoLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fa fa-bell"></i>
         <span class="badge badge-danger" id="notificationCount"><?= $unreadCount ?></span> <!-- Número de notificações -->
@@ -210,14 +216,9 @@ try {
         if ($unreadCount > 0) {
             foreach ($notifications as $notification) {
         ?>
-               <a class="dropdown-item" href="marcar_notificacao_lida.php?id=<?= $notification['id'] ?>">
-    <?= htmlspecialchars($notification['mensagem']) ?>
-</a>
-<!-- <a class="dropdown-item" href="marcar_notificacao_lida.php?id=<?= $notification['id'] ?>">
-    <?= htmlspecialchars($notification['mensagem']) ?>
-</a> -->
-
-
+            <div class="dropdown-item" style="cursor: pointer;" onclick="markAsRead(<?= $notification['id'] ?>)">
+                <?= htmlspecialchars($notification['mensagem']) ?>
+            </div>
         <?php 
             }
         } else { 
@@ -312,8 +313,52 @@ try {
     <!-- JS PREENCHIMENTO INFORMAÇÕES PERFIL -->
     <script src="./src/header/js/perfil.js"></script>
     <!-- JS ATUALIZACAO ICONE INFORMAÇÕES -->
-   <script src="./src/header/js/icon-notificacao.js"></script> 
-    
+   <!-- <script src="./src/header/js/icon-notificacao.js"></script>  -->
+    <script>
+        <!-- Script JavaScript para marcar notificações como lidas via AJAX -->
+
+function markAsRead(notificationId) {
+    fetch('marcar_notificacao_lida.php?id=' + notificationId, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Atualizar o contador de notificações
+            const countElement = document.getElementById('notificationCount');
+            let currentCount = parseInt(countElement.textContent);
+            if (currentCount > 0) {
+                currentCount--;
+                countElement.textContent = currentCount;
+                if (currentCount === 0) {
+                    countElement.style.display = 'none'; // Ocultar badge se não houver notificações
+                }
+            }
+
+            // Opcional: Remover a notificação da lista ou marcar como lida visualmente
+            const notificationItem = document.querySelector(`div[onclick="markAsRead(${notificationId})"]`);
+            if (notificationItem) {
+                notificationItem.style.backgroundColor = '#f0f0f0'; // Destacar como lida
+                notificationItem.style.opacity = '0.6';
+                notificationItem.onclick = null; // Desativar clique
+            }
+
+            // Se não houver mais notificações, exibir mensagem
+            if (currentCount === 0) {
+                const notificationList = document.getElementById('notificationList');
+                notificationList.innerHTML = '<h6 class="dropdown-header">Notificações</h6><p class="dropdown-item">Sem novas notificações.</p>';
+            }
+        } else {
+            console.error('Erro ao marcar notificação como lida:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Erro na requisição AJAX:', error);
+    });
+}
+</script>
+
+
 <!-- <?php
 include 'footer.php';
 ?> -->

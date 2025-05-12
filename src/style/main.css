@@ -31,7 +31,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
 }
 
 /* Classe principal para o logo */
@@ -49,7 +49,7 @@ body {
 
 /* Classe para a segunda imagem (Menor) */
 .logo-small {
-  width: 120px; /* Tamanho menor da segunda imagem */
+  width: 150px; /* Tamanho menor da segunda imagem */
   height: auto;
 }
 
@@ -59,8 +59,6 @@ body {
   width: 100%;
   max-width: 1600px; /* Aumentando o tamanho máximo do container */
   height: 80%;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Lado esquerdo com logo e texto */
@@ -239,4 +237,44 @@ label {
     width: 100%;
     padding: 20px;
   }
+}
+.icon-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 10px;
+  width: 70%;
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-img {
+  width: 60px; /* Tamanho dos ícones */
+  height: 80px; /* Tamanho dos ícones */
+  object-fit: contain; /* Ajusta a imagem para se manter proporcional */
+}
+
+/* Tamanho específico para o ícone do meio */
+.middle-icon {
+  width: 50px; /* Ajuste o tamanho para que fique igual aos outros */
+  height: 65px; /* Tamanho igual para manter a uniformidade */
+}
+
+.erp {
+  background-color: #bc9d32;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px 20px;
+  text-align: center;
+  width: fit-content;
+  margin: 20px auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  position: relative;
+  z-index: 1;
 }

@@ -1,149 +1,149 @@
 <?php
-session_start();
+    session_start();
 
-// Configuração e conexão com o banco de dados (usando PDO)
-$dsn = 'mysql:host=localhost;dbname=gm_sicbd';
-$username = 'root';
-$password = '';
-
-try {
-    $pdo = new PDO($dsn, $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Erro ao conectar ao banco de dados: " . $e->getMessage());
-}
-
-// Função para redirecionar com mensagem
-function setMessageAndRedirect($type, $message, $location) {
-    $_SESSION[$type] = $message;
-    header("Location: $location");
-    exit;
-}
-
-// Marcar notificação como lida
-if (isset($_GET['mark_read']) && $_SESSION['username'] === 'contratos') {
-    $notificationId = filter_var($_GET['mark_read'], FILTER_VALIDATE_INT);
-    if ($notificationId === false) {
-        setMessageAndRedirect('error', 'ID de notificação inválido.', 'index.php');
-    }
+    // Configuração e conexão com o banco de dados (usando PDO)
+    $dsn = 'mysql:host=localhost;dbname=gm_sicbd';
+    $username = 'root';
+    $password = '';
 
     try {
-        $sqlMarkRead = "UPDATE notificacoes SET situacao = 'lida' WHERE id = :id";
-        $stmtMarkRead = $pdo->prepare($sqlMarkRead);
-        $stmtMarkRead->execute(['id' => $notificationId]);
-        setMessageAndRedirect('success', 'Notificação marcada como lida.', 'index.php');
+        $pdo = new PDO($dsn, $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
-        setMessageAndRedirect('error', 'Erro ao marcar notificação: ' . $e->getMessage(), 'index.php');
-    }
-}
-
-// Processar cadastro de contrato
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])) {
-    $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
-    $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING);
-    $validade = filter_input(INPUT_POST, 'validade', FILTER_SANITIZE_STRING);
-    $assinatura = filter_input(INPUT_POST, 'assinatura', FILTER_SANITIZE_STRING);
-
-    if (!$titulo || !$validade || !$assinatura) {
-        setMessageAndRedirect('error', 'Campos obrigatórios não preenchidos.', 'cadastro_contrato.php');
+        die("Erro ao conectar ao banco de dados: " . $e->getMessage());
     }
 
-    // Inserir contrato
-    try {
-        $sql = "INSERT INTO gestao_contratos (titulo, descricao, assinatura, validade)
-                VALUES (:titulo, :descricao, :assinatura, :validade)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            'titulo' => $titulo,
-            'descricao' => $descricao,
-            'assinatura' => $assinatura,
-            'validade' => $validade
-        ]);
+    // Função para redirecionar com mensagem
+    function setMessageAndRedirect($type, $message, $location) {
+        $_SESSION[$type] = $message;
+        header("Location: $location");
+        exit;
+    }
 
-        // Inserir notificação
-        $usuario = $_SESSION['username'];
-        $setor = $_SESSION['setor'];
-        $mensagem = "Contrato '{$titulo}' prestes a expirar.";
-        $situacao = 'não lida';
-        $dataNotificacao = date('Y-m-d H:i:s');
-
-        // Verificar se já existe uma notificação
-        $sqlVerificacao = "SELECT COUNT(*) FROM notificacoes WHERE username = :username AND mensagem = :mensagem";
-        $stmtVerificacao = $pdo->prepare($sqlVerificacao);
-        $stmtVerificacao->execute(['username' => $usuario, 'mensagem' => $mensagem]);
-
-        if ($stmtVerificacao->fetchColumn() == 0) {
-            $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao)
-                               VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
-            $stmtNotificacao = $pdo->prepare($sqlNotificacao);
-            $stmtNotificacao->execute([
-                'username' => $usuario,
-                'setor' => $setor,
-                'mensagem' => $mensagem,
-                'situacao' => $situacao,
-                'data_criacao' => $dataNotificacao
-            ]);
+    // Marcar notificação como lida
+    if (isset($_GET['mark_read']) && $_SESSION['username'] === 'contratos') {
+        $notificationId = filter_var($_GET['mark_read'], FILTER_VALIDATE_INT);
+        if ($notificationId === false) {
+            setMessageAndRedirect('error', 'ID de notificação inválido.', 'index.php');
         }
 
-        setMessageAndRedirect('success', 'Contrato cadastrado com sucesso!', 'index.php');
-    } catch (PDOException $e) {
-        setMessageAndRedirect('error', 'Erro ao cadastrar contrato: ' . $e->getMessage(), 'cadastro_contrato.php');
-    }
-}
-
-// Buscar contratos próximos de expirar
-$notificacoes = [];
-try {
-    $sqlNotificacoes = "SELECT * FROM gestao_contratos
-                        WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH)
-                        AND validade >= CURDATE()";
-    $stmtNotificacoes = $pdo->query($sqlNotificacoes);
-    $notificacoes = $stmtNotificacoes->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $_SESSION['error'] = "Erro ao buscar notificações: " . $e->getMessage();
-}
-
-// Buscar detalhes do processo
-$processDetails = null;
-if (isset($_GET['processId'])) {
-    $processId = filter_var($_GET['processId'], FILTER_VALIDATE_INT);
-    if ($processId !== false) {
         try {
-            $sqlProcesso = "SELECT * FROM gestao_contratos WHERE id = :id";
-            $stmtProcesso = $pdo->prepare($sqlProcesso);
-            $stmtProcesso->execute(['id' => $processId]);
-            $processDetails = $stmtProcesso->fetch(PDO::FETCH_ASSOC);
+            $sqlMarkRead = "UPDATE notificacoes SET situacao = 'lida' WHERE id = :id";
+            $stmtMarkRead = $pdo->prepare($sqlMarkRead);
+            $stmtMarkRead->execute(['id' => $notificationId]);
+            setMessageAndRedirect('success', 'Notificação marcada como lida.', 'index.php');
         } catch (PDOException $e) {
-            $_SESSION['error'] = "Erro ao buscar detalhes do processo: " . $e->getMessage();
+            setMessageAndRedirect('error', 'Erro ao marcar notificação: ' . $e->getMessage(), 'index.php');
         }
     }
-}
 
-// Buscar contratos para o dropdown
-$options = "";
-try {
-    $sqlContratos = "SELECT titulo FROM gestao_contratos";
-    $stmtContratos = $pdo->query($sqlContratos);
-    $contratos = $stmtContratos->fetchAll(PDO::FETCH_ASSOC);
+    // Processar cadastro de contrato
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_contrato'])) {
+        $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
+        $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING);
+        $validade = filter_input(INPUT_POST, 'validade', FILTER_SANITIZE_STRING);
+        $assinatura = filter_input(INPUT_POST, 'assinatura', FILTER_SANITIZE_STRING);
 
-    if ($contratos) {
-        foreach ($contratos as $contrato) {
-            $titulo = htmlspecialchars($contrato['titulo'], ENT_QUOTES, 'UTF-8');
-            $options .= "<option value=\"$titulo\">$titulo</option>";
+        if (!$titulo || !$validade || !$assinatura) {
+            setMessageAndRedirect('error', 'Campos obrigatórios não preenchidos.', 'cadastro_contrato.php');
         }
-    } else {
-        $options = "<option value=\"\">Nenhum contrato encontrado</option>";
+
+        // Inserir contrato
+        try {
+            $sql = "INSERT INTO gestao_contratos (titulo, descricao, assinatura, validade)
+                    VALUES (:titulo, :descricao, :assinatura, :validade)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                'titulo' => $titulo,
+                'descricao' => $descricao,
+                'assinatura' => $assinatura,
+                'validade' => $validade
+            ]);
+
+            // Inserir notificação
+            $usuario = $_SESSION['username'];
+            $setor = $_SESSION['setor'];
+            $mensagem = "Contrato '{$titulo}' prestes a expirar.";
+            $situacao = 'não lida';
+            $dataNotificacao = date('Y-m-d H:i:s');
+
+            // Verificar se já existe uma notificação
+            $sqlVerificacao = "SELECT COUNT(*) FROM notificacoes WHERE username = :username AND mensagem = :mensagem";
+            $stmtVerificacao = $pdo->prepare($sqlVerificacao);
+            $stmtVerificacao->execute(['username' => $usuario, 'mensagem' => $mensagem]);
+
+            if ($stmtVerificacao->fetchColumn() == 0) {
+                $sqlNotificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao)
+                                VALUES (:username, :setor, :mensagem, :situacao, :data_criacao)";
+                $stmtNotificacao = $pdo->prepare($sqlNotificacao);
+                $stmtNotificacao->execute([
+                    'username' => $usuario,
+                    'setor' => $setor,
+                    'mensagem' => $mensagem,
+                    'situacao' => $situacao,
+                    'data_criacao' => $dataNotificacao
+                ]);
+            }
+
+            setMessageAndRedirect('success', 'Contrato cadastrado com sucesso!', 'index.php');
+        } catch (PDOException $e) {
+            setMessageAndRedirect('error', 'Erro ao cadastrar contrato: ' . $e->getMessage(), 'cadastro_contrato.php');
+        }
     }
-} catch (PDOException $e) {
-    $_SESSION['error'] = "Erro ao buscar contratos: " . $e->getMessage();
-    $options = "<option value=\"\">Erro ao carregar contratos</option>";
-}
 
-include 'header.php';
-// Incluir o código que já insere as notificações
-include 'verificar_notificacoes.php';  // O código que já insere as notificações
+    // Buscar contratos próximos de expirar
+    $notificacoes = [];
+    try {
+        $sqlNotificacoes = "SELECT * FROM gestao_contratos
+                            WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 1 MONTH)
+                            AND validade >= CURDATE()";
+        $stmtNotificacoes = $pdo->query($sqlNotificacoes);
+        $notificacoes = $stmtNotificacoes->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Erro ao buscar notificações: " . $e->getMessage();
+    }
 
-// echo "Notificações inseridas com sucesso.";
+    // Buscar detalhes do processo
+    $processDetails = null;
+    if (isset($_GET['processId'])) {
+        $processId = filter_var($_GET['processId'], FILTER_VALIDATE_INT);
+        if ($processId !== false) {
+            try {
+                $sqlProcesso = "SELECT * FROM gestao_contratos WHERE id = :id";
+                $stmtProcesso = $pdo->prepare($sqlProcesso);
+                $stmtProcesso->execute(['id' => $processId]);
+                $processDetails = $stmtProcesso->fetch(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                $_SESSION['error'] = "Erro ao buscar detalhes do processo: " . $e->getMessage();
+            }
+        }
+    }
+
+    // Buscar contratos para o dropdown
+    $options = "";
+    try {
+        $sqlContratos = "SELECT titulo FROM gestao_contratos";
+        $stmtContratos = $pdo->query($sqlContratos);
+        $contratos = $stmtContratos->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($contratos) {
+            foreach ($contratos as $contrato) {
+                $titulo = htmlspecialchars($contrato['titulo'], ENT_QUOTES, 'UTF-8');
+                $options .= "<option value=\"$titulo\">$titulo</option>";
+            }
+        } else {
+            $options = "<option value=\"\">Nenhum contrato encontrado</option>";
+        }
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Erro ao buscar contratos: " . $e->getMessage();
+        $options = "<option value=\"\">Erro ao carregar contratos</option>";
+    }
+
+    include 'header.php';
+    // Incluir o código que já insere as notificações
+    include 'verificar_notificacoes.php';  // O código que já insere as notificações
+
+    // echo "Notificações inseridas com sucesso.";
 ?>
 
 <!DOCTYPE html>
@@ -157,14 +157,20 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
+    <link rel="stylesheet" href="src/contratos/style/consultar-contratos.css">
+    <link rel="stylesheet" href="src/contratos/style/cadastro-contratos.css">
 
+
+<!-- Carregar jQuery (se necessário) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Carregar Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <!-- <link rel="stylesheet" href="./src/style/form-cadastro-contratos.css"> -->
 <!-- <link rel="stylesheet" href="./src/style/notificacao.css"> -->
-<link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
-<link rel="stylesheet" href="src/contratos/style/consultar-contratos.css">
-<link rel="stylesheet" href="src/contratos/style/cadastro-contratos.css">
 
 <body>
 <div class="caderno">
@@ -396,260 +402,110 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
 </div>
 
 
-<div class="form-container" id="consultar" style="display:none;">
-    <h2 class="text-center mt-3">
-        <span class="icon-before fas fa-box"></span> Lista de Fornecedores
-    </h2>
-    <!-- Pesquisa -->
-    <div class="search-bar">
-    <div class="search-filters">
-        <!-- Campo de pesquisa por título ou descrição -->
-        <input type="text" id="searchInput" class="input-field" placeholder="Digite o título ou descrição do contrato" oninput="searchContracts()">
-
-        <!-- Filtro de status (Ativo/Inativo) -->
-        <select id="statusSelect" class="input-field" onchange="searchContracts()">
-            <option value="">Todos</option>
-            <option value="ativo">Ativo</option>
-            <option value="inativo">Inativo</option>
-        </select>
-
-        <!-- Botão para abrir o modal de filtro -->
-        <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
-    </div>
-    </div>
-
-    <!-- Lista de Contratos -->
-    <div class="table-container-contratos">
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-            <th><i class="fas fa-hashtag"></i> ID</th>
-        <th><i class="fas fa-file-alt"></i> Nome</th>
-        <th><i class="fas fa-align-left"></i> Descrição</th>
-        <th><i class="fas fa-calendar-alt"></i> Vigência</th>
-        <th><i class="fas fa-circle"></i> Status</th>
-        <th><i class="fas fa-cogs"></i> Ações</th>
-            </tr>
-        </thead>
-        <tbody id="contractTableBody">
-            <!-- Dados carregados via PHP -->
-            <?php
-            // Conexão com o banco de dados (supondo que $pdo já esteja configurado)
-
-            // Verifica se há um filtro de situação via GET
-            $situacao = isset($_GET['situacao']) ? $_GET['situacao'] : '';
-
-            // Monta a consulta SQL com filtro opcional
-            $sql = "SELECT * FROM gestao_contratos";
-            if (!empty($situacao)) {
-                $sql .= " WHERE situacao = :situacao";
-            }
-            $sql .= " ORDER BY validade "; //DESC ORDEM DECRESCENTE
-
-            $stmt = $pdo->prepare($sql);
-
-            // Se houver filtro, vincula o valor da situação
-            if (!empty($situacao)) {
-                $stmt->bindParam(':situacao', $situacao, PDO::PARAM_STR);
-            }
-
-            $stmt->execute();
-
-    // Exibe os resultados
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $situacao = $row['situacao'];
-        $situacaoClass = '';
-        $situacaoIcon = '';
-        $situacaoTextColor = '';
-
-        // Verifica o valor de 'situacao' para aplicar o estilo adequado
-        if ($situacao == 'Ativo') {
-            $situacaoClass = 'Ativo'; // Classe para 'Ativo'
-            $situacaoIcon = 'fa-arrow-up'; // Ícone da seta para cima
-            $situacaoTextColor = 'green'; // Cor verde para 'Ativo'
-        } else {
-            $situacaoClass = 'Inativo'; // Classe para 'Inativo'
-            $situacaoIcon = 'fa-arrow-down'; // Ícone da seta para baixo
-            $situacaoTextColor = 'red'; // Cor vermelha para 'Inativo'
-        }
-
-        // Formatar a data de validade
-        $validade = new DateTime($row['validade']);
-        $validadeFormatted = $validade->format('d/m/Y');
-
-        // Adicionando uma classe para a validade estilizada
-        $validadeClass = '';
-        $validadeTextColor = '';
-        $validadeIcon = '';
-
-        // Verifica se a data é válida, expirada ou próxima de expirar
-        $today = new DateTime();
-        $oneMonthLater = clone $today;
-        $oneMonthLater->modify('+1 month'); // Cria uma data com o próximo mês
-
-        if ($validade < $today) {
-            // Data expirada
-            $validadeClass = 'expired';
-            $validadeTextColor = 'red';
-            $validadeIcon = 'fa-times-circle';
-        } elseif ($validade <= $oneMonthLater) {
-            // Data próxima de expirar
-            $validadeClass = 'approaching';
-            $validadeTextColor = 'orange';
-            $validadeIcon = 'fa-exclamation-circle';
-        } else {
-            // Data válida
-            $validadeClass = 'valid';
-            $validadeTextColor = 'green';
-            $validadeIcon = 'fa-check-circle';
-        }
-        //  echo "<tr style='cursor:pointer;' onclick='showResumoProcesso(" . json_encode($row) . ")'>";
-        echo "<td class='truncated-text' title='{$row['id']}'>{$row['id']}</td>";
-        echo "<td class='truncated-text' title='{$row['titulo']}'>{$row['titulo']}</td>";
-        echo "<td class='truncated-text' title='{$row['descricao']}'>{$row['descricao']}</td>";
-
-
-        // Coloca a validade com a cor e o ícone correto
-        echo "<td class='$validadeClass' style='color: $validadeTextColor;'>
-                <i class='fas $validadeIcon'></i>
-                $validadeFormatted
-            </td>";
-
-        // Coloca a situação com a cor e o ícone correto
-        echo "<td class='$situacaoClass' style='color: $situacaoTextColor;'>
-                <i class='fas $situacaoIcon'></i>
-                $situacao
-            </td>";
-
-        // O botão "Visualizar" terá um evento independente
-        echo "<td>";
-        echo "<button class='btn btn-info btn-sm' onclick='openModal(" . json_encode($row) . "); event.stopPropagation();' title='Visualizar'>
-                <i class='fas fa-eye'></i>
-            </button>";
-        echo "<button class='btn btn-primary btn-sm' onclick='showResumoProcesso(" . json_encode($row) . ");' title='Relatório'>
-                <i class='fas fa-file-alt'></i>
-            </button>";
-
-
-            echo "<button class='btn btn-warning btn-sm' onclick='openModalContrato(" . json_encode($row) . ")' title='Editar contrato'>
-        <i class='fas fa-file-contract'></i>
-    </button>";
-        echo "</td>";
-        echo "</tr>";
-    }
-    ?>
-        </tbody>
-    </table>
-    </div>
-
-</div>
-
-
-
-<!-- Modal de Edição -->
-<div class="modal fade" id="editContractModal" tabindex="-1" role="dialog" aria-labelledby="editContractModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editContractModalLabel">Editar Contrato</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<div class="form-container" id="consultar">
+        <h2 class="text-center mt-3">
+            <span class="icon-before fas fa-box"></span> Lista de Contratos
+        </h2>
+        <!-- Pesquisa -->
+        <div class="search-bar">
+            <div class="search-filters">
+                <input type="text" id="searchInput" class="input-field" placeholder="Digite o título ou descrição do contrato" oninput="searchContracts()">
+                <select id="statusSelect" class="input-field" onchange="searchContracts()">
+                    <option value="">Todos</option>
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                    <option value="Encerrado">Encerrado</option>
+                </select>
+                <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
             </div>
-            <div class="modal-body">
-                <!-- Abas -->
-                <ul class="nav nav-tabs" id="editModalTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">Detalhes</a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="edit-tab" data-toggle="tab" href="#edit" role="tab" aria-controls="edit" aria-selected="false">Editar</a>
-                    </li>
-                </ul>
+        </div>
+        <!-- Lista de Contratos -->
+        <div class="table-container-contratos">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-hashtag"></i> ID</th>
+                        <th><i class="fas fa-file-alt"></i> Nome</th>
+                        <th><i class="fas fa-align-left"></i> Descrição</th>
+                        <th><i class="fas fa-calendar-alt"></i> Vigência</th>
+                        <th><i class="fas fa-circle"></i> Status</th>
+                        <th><i class="fas fa-cogs"></i> Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="contractTableBody"></tbody>
+            </table>
+        </div>
+    </div>
 
-                <div class="tab-content" id="editModalTabContent">
-                    <!-- Primeira Aba: Detalhes do Contrato -->
-                    <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
-                        <h5 class="mt-3">Detalhes do Contrato</h5>
-                        <p><strong>Título:</strong> <span id="contractTitulo"></span></p>
-                        <p><strong>Descrição:</strong> <span id="contractDescricao"></span></p>
-                        <p><strong>Validade:</strong> <span id="contractValidade"></span></p>
-                        <p><strong>Situação:</strong> <span id="contractSituacao"></span></p>
-                        <p><strong>Valor Aditivo:</strong> R$ <span id="modalValorAditivo"></span></p> <!-- Exibição dos aditivos -->
-                    </div>
-
-                    <!-- Segunda Aba: Edição do Contrato -->
-                    <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="edit-tab">
-                        <h5 class="mt-3">Editar Contrato</h5>
-                        <form id="editContractForm">
-                            <div class="form-group">
-                                <label for="editTitulo">Título</label>
-                                <input type="text" class="form-control" id="editTitulo" name="titulo" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editDescricao">Descrição</label>
-                                <textarea class="form-control" id="editDescricao" name="descricao" rows="3" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="editValidade">Validade</label>
-                                <input type="date" class="form-control" id="editValidade" name="validade" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="editSituacao">Situação</label>
-                                <select class="form-control" id="editSituacao" name="situacao" required>
-                                    <option value="ativo">Ativo</option>
-                                    <option value="inativo">Inativo</option>
-                                </select>
-                            </div>
-
-                            <button type="button" id="addAditivoBtn" class="btn btn-secondary">Adicionar Aditivo</button>
-                            <div id="aditivosContainer"></div> <!-- Contêiner onde os campos de aditivos serão adicionados -->
-
-
-                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                        </form>
-                    </div>
+    <!-- Modal de Visualização -->
+    <div class="modal fade" id="modalContrato" tabindex="-1" aria-labelledby="modalContratoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalContratoLabel">Detalhes do Contrato</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Título:</strong> <span id="modalTituloContrato"></span></p>
+                    <p><strong>Descrição:</strong> <span id="modalDescricao"></span></p>
+                    <p><strong>Validade:</strong> <span id="modalValidade"></span></p>
+                    <p><strong>SEI:</strong> <span id="modalSEI"></span></p>
+                    <p><strong>Gestor:</strong> <span id="modalGestor"></span></p>
+                    <p><strong>Fiscais:</strong> <span id="modalFiscais"></span></p>
+                    <p><strong>Valor do Contrato:</strong> <span id="modalValorContrato"></span></p>
+                    <p><strong>Número de Parcelas:</strong> <span id="modalNumParcelas"></span></p>
+                    <p><strong>Valor Aditivo:</strong> <span id="modalValorAditivo"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-
-
-
-<!-- Modal exibi detalhes do contrato BOTAO VISUALIZAR DA TABELA -->
-<div class="modal fade" id="modalContrato" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detalhes do Contrato</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Título:</strong> <span id="modalTituloContrato"></span></p>
-                <p><strong>Descrição:</strong> <span id="modalDescricao"></span></p>
-                <p><strong>Validade:</strong> <span id="modalValidade"></span></p>
-                <p><strong>Nº SEI:</strong> <span id="modalSEI"></span></p>
-                <p><strong>Gestor:</strong> <span id="modalGestor"></span></p>
-                <p><strong>Fiscais:</strong> <span id="modalFiscais"></span></p>
-                <p><strong>Valor do Contrato:</strong> R$ <span id="modalValorContrato"></span></p>
-                <p><strong>Número de Parcelas:</strong> <span id="modalNumParcelas"></span></p>
-                <p><strong>Valor Aditivo:</strong> R$ <span id="modalValorAditivo"></span></p>
-                <p><strong>Número de Parcelas:</strong> <span id="modalNumParcelas"></span></p>
-                <p><strong>Conta Bancária:</strong> <span id="modalContaBancaria"></span></p>
-                <p><strong>Fonte:</strong> <span id="modalFonte"></span></p>
-                <p><strong>Data de Publicação:</strong> <span id="modalPublicacao"></span></p>
-                <p><strong>Data de Serviço:</strong> <span id="modalDateService"></span></p>
-                <p><strong>Natureza de Despesas:</strong> <span id="modalNaturezaDespesas"></span></p>
-                <p><strong>Valor Nota Fiscal:</strong> R$ <span id="modalValorNF"></span></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+    <!-- Modal de Edição -->
+    <div class="modal fade" id="modalEditContrato" tabindex="-1" aria-labelledby="modalEditContratoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditContratoLabel">Editar Contrato</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditContrato">
+                        <input type="hidden" id="id_contrato" name="id_contrato">
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao" name="descricao" ></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="validade" class="form-label">Validade</label>
+                            <input type="date" class="form-control" id="validade" name="validade" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="situacao" class="form-label">Situação</label>
+                            <select class="form-select" id="situacao" name="situacao" >
+                                <option value="Ativo">Ativo</option>
+                                <option value="Inativo">Inativo</option>
+                                <option value="Encerrado">Encerrado</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Valores Aditivos</label>
+                            <div id="aditivos-container"></div>
+                            <button type="button" class="btn btn-outline-primary mt-2" onclick="addAditivo()">Adicionar Aditivo</button>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- Modal de Configuração de Filtros -->
 <div class="modal" id="filterModal" tabindex="-1" role="dialog">
@@ -684,7 +540,7 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
 </div>
 <script src="./src/js/filtroModal.js"></script>
 
-<!--  -->
+
 
 <!-- Ícone de Loading -->
 <div class="loading" style="display:none;"></div>
@@ -694,7 +550,7 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
 <div class="form-container" id="gerenciar" style="display:none;">
     <h2 id="contractTitleHeader">Pagamentos do</h2>
     <div class="button-group">
-    <button class="btn-submit" onclick="savePayment()">Salvar Alterações</button>
+  
    </div>
     <table id="contratosTable" class="table table-bordered">
         <thead>
@@ -722,6 +578,8 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
             <!-- Dados serão preenchidos dinamicamente -->
         </tbody>
     </table>
+
+      <button class="btn-submit" onclick="savePayment()">Salvar Alterações</button>
 
 
 </div>
@@ -968,34 +826,8 @@ include 'verificar_notificacoes.php';  // O código que já insere as notificaç
 <!-- BOTÔES -->
 <script src="./src/js/active.js"></script>
 
-<!-- Carregar jQuery (se necessário) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Carregar Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <!--  // Função editar modal -->
-<script src="./src/contratos/js/edit-process-modal.js"></script>
-<script>
-    
-    // Função para adicionar um novo campo de aditivo
-    document.getElementById('addAditivoBtn').addEventListener('click', function() {
-        if (aditivosCount < 5) {  // Limitar a 5 aditivos
-            aditivosCount++;
-            const container = document.getElementById('aditivosContainer');
-            const aditivoInput = document.createElement('div');
-            aditivoInput.classList.add('form-group');
-            aditivoInput.innerHTML = `
-                <label for="editAditivo${aditivosCount}">Valor Aditivo ${aditivosCount}</label>
-                <input type="number" class="form-control form-control-sm" id="editAditivo${aditivosCount}" name="aditivo${aditivosCount}" step="0.01" required>
-            `;
-            container.appendChild(aditivoInput);
-            updateModalValorAditivo();  // Atualiza o total de aditivos no modal
-        } else {
-            alert('Máximo de 5 aditivos alcançado');
-        }
-    });
-
-</script>
+ <script src="./src/contratos/js/edit-process-modal.js"></script> 
 
 <script src="./src/contratos/js/relatorio-avancado.js"></script>
 <!-- JS CADASTRO -->

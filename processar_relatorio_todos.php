@@ -51,49 +51,50 @@ $contratos[$titulo]['pagamentos'][] = [
         }
         $dados = array_values($contratos);
 
-    } elseif ($tipo_relatorio === 'anual_todos') {
-        $ano = $_POST['ano'] ?? '';
-        if (!$ano) {
-            throw new Exception('Ano não especificado.');
-        }
-
-        // Consulta para relatórios anuais de todos os contratos usando contrato_titulo
-        $sql = "SELECT c.titulo, c.num_parcelas, YEAR(p.data_pagamento) as ano, 
-                       SUM(p.valor_contrato) as total_pago, COUNT(p.id) as quantidade_pagamentos
-                FROM gestao_contratos c
-                LEFT JOIN pagamentos p ON c.titulo = p.contrato_titulo
-                WHERE YEAR(p.data_pagamento) = :ano
-                GROUP BY c.titulo, YEAR(p.data_pagamento)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['ano' => $ano]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Organiza os dados
-        $contratos = [];
-        foreach ($result as $row) {
-            $titulo = $row['titulo'];
-            if (!isset($contratos[$titulo])) {
-                $contratos[$titulo] = [
-                    'titulo' => $titulo,
-                    'num_parcelas' => $row['num_parcelas'],
-                    'anos' => []
-                ];
-            }
-            $contratos[$titulo]['anos'][] = [
-                'ano' => $row['ano'],
-                'total_pago' => $row['total_pago'],
-                'quantidade_pagamentos' => $row['quantidade_pagamentos']
-            ];
-        }
-        $dados = array_values($contratos);
+    }elseif ($tipo_relatorio === 'anual_todos') {
+    $ano = $_POST['ano'] ?? '';
+    if (!$ano) {
+        throw new Exception('Ano não especificado.');
     }
 
-    $response['sucesso'] = true;
-    $response['dados'] = $dados;
+    // Consulta para relatórios anuais de todos os contratos, somando o valor do contrato e os aditivos da tabela gestao_contratos
+    $sql = "SELECT c.titulo, c.num_parcelas, YEAR(c.data_cadastro) as ano, 
+                   SUM(c.valor_contrato + COALESCE(c.valor_aditivo1, 0) + COALESCE(c.valor_aditivo2, 0) + 
+                   COALESCE(c.valor_aditivo3, 0) + COALESCE(c.valor_aditivo4, 0) + COALESCE(c.valor_aditivo5, 0)) as total_pago
+            FROM gestao_contratos c
+            WHERE YEAR(c.data_cadastro) = :ano
+            GROUP BY c.titulo, YEAR(c.data_cadastro)";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['ano' => $ano]);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Organiza os dados
+    $contratos = [];
+    foreach ($result as $row) {
+        $titulo = $row['titulo'];
+        if (!isset($contratos[$titulo])) {
+            $contratos[$titulo] = [
+                'titulo' => $titulo,
+                'num_parcelas' => $row['num_parcelas'],
+                'anos' => []
+            ];
+        }
+        $contratos[$titulo]['anos'][] = [
+            'ano' => $row['ano'],
+            'total_pago' => $row['total_pago'],
+        ];
+    }
+    $dados = array_values($contratos);
+}
+
+$response['sucesso'] = true;
+$response['dados'] = $dados;
 
 } catch (Exception $e) {
     $response['mensagem'] = $e->getMessage();
 }
+
 
 echo json_encode($response);
 ?>

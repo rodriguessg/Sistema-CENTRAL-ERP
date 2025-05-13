@@ -49,7 +49,8 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Resposta do servidor (get_contratos):', data);
+                    //EXIBI NO JASON ASSO, QUE ABRE O SISTEMA
+                    // console.log('Resposta do servidor (get_contratos):', data);
                     tableBody.innerHTML = '';
                     if (data.success && data.contratos.length > 0) {
                         data.contratos.forEach(contrato => {
@@ -119,34 +120,40 @@
         }
 
         // Função para abrir o modal de edição
-        function editacontrato(dados) {
-            try {
-                const modalElement = document.getElementById('modalEditContrato');
-                if (!modalElement) throw new Error('Modal de edição não encontrado.');
+function editacontrato(dados) {
+    console.log('Dados recebidos para edição:', dados); // Verifica os dados que estão sendo passados
 
-                document.getElementById('id_contrato').value = dados.id || '';
-                document.getElementById('titulo').value = dados.titulo || '';
-                document.getElementById('validade').value = dados.validade || '';
-                document.getElementById('situacao').value = dados.situacao || 'Ativo';
-                document.getElementById('descricao').value = dados.descricao || '';
+    try {
+        const modalElement = document.getElementById('modalEditContrato');
+        if (!modalElement) throw new Error('Modal de edição não encontrado.');
 
-                const container = document.getElementById('aditivos-container');
-                container.innerHTML = '';
-                aditivoCount = 0;
+        // Preenche os campos do formulário com os dados do contrato
+        document.getElementById('id_contrato').value = dados.id || '';
+        document.getElementById('titulo').value = dados.titulo || '';
+        document.getElementById('validade').value = dados.validade || '';
+        document.getElementById('situacao').value = dados.situacao || 'Ativo';
+        document.getElementById('descricao').value = dados.descricao || '';
 
-                if (dados.valores_aditivos && Array.isArray(dados.valores_aditivos)) {
-                    dados.valores_aditivos.forEach(valor => addAditivo(valor));
-                } else {
-                    addAditivo();
-                }
+        // Limpa os campos de aditivo antes de adicionar novos
+        const container = document.getElementById('aditivos-container');
+        container.innerHTML = '';
+        aditivoCount = 0;
 
-                const modal = new bootstrap.Modal(modalElement);
-                modal.show();
-            } catch (error) {
-                console.error('Erro ao preencher modal de edição:', error);
-                alert('Erro ao editar contrato: ' + error.message);
-            }
+        // Verifica se há valores de aditivos e os adiciona ao formulário
+        if (dados.valores_aditivos && Array.isArray(dados.valores_aditivos)) {
+            dados.valores_aditivos.forEach(valor => addAditivo(valor));
+        } else {
+            addAditivo();  // Se não houver valores de aditivo, adiciona um campo vazio
         }
+
+        // Exibe o modal de edição
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    } catch (error) {
+        console.error('Erro ao preencher modal de edição:', error);
+        alert('Erro ao editar contrato: ' + error.message);
+    }
+}
 
         // Função para adicionar campos de valor aditivo
         function addAditivo(valor = '') {

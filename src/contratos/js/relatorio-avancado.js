@@ -18,26 +18,26 @@ document.addEventListener('DOMContentLoaded', function() {
         return timeStr;
     }
 
-    // Função para atualizar o campo de e-mail com base no seletor
-    function atualizarCampoEmail() {
-        const emailSelect = document.getElementById('email_destinatario_select');
-        const emailInput = document.getElementById('email_destinatario');
-        const salvarEmailLabel = document.getElementById('salvar_email_label');
+    // // Função para atualizar o campo de e-mail com base no seletor
+    // function atualizarCampoEmail() {
+    //     const emailSelect = document.getElementById('email_destinatario_select');
+    //     const emailInput = document.getElementById('email_destinatario');
+    //     const salvarEmailLabel = document.getElementById('salvar_email_label');
 
-        if (emailSelect.value === 'novo') {
-            emailInput.value = '';
-            emailInput.disabled = false;
-            salvarEmailLabel.style.display = 'block';
-        } else if (emailSelect.value) {
-            emailInput.value = emailSelect.value;
-            emailInput.disabled = true;
-            salvarEmailLabel.style.display = 'none';
-        } else {
-            emailInput.value = '';
-            emailInput.disabled = false;
-            salvarEmailLabel.style.display = 'block';
-        }
-    }
+    //     if (emailSelect.value === 'novo') {
+    //         emailInput.value = '';
+    //         emailInput.disabled = false;
+    //         salvarEmailLabel.style.display = 'block';
+    //     } else if (emailSelect.value) {
+    //         emailInput.value = emailSelect.value;
+    //         emailInput.disabled = true;
+    //         salvarEmailLabel.style.display = 'none';
+    //     } else {
+    //         emailInput.value = '';
+    //         emailInput.disabled = false;
+    //         salvarEmailLabel.style.display = 'block';
+    //     }
+    // }
 
     // Função para mostrar ou esconder o campo de tipo de relatório
     function mostrarTipoRelatorio() {
@@ -561,8 +561,7 @@ function formatDate(dateString) {
     window.mostrarCamposRelatorioTodos = mostrarCamposRelatorioTodos;
     window.mostrarCamposRelatorio = mostrarCamposRelatorio;
     window.gerarRelatorio = gerarRelatorio;
-    window.agendarRelatorio = agendarRelatorio;
     window.exportarPDF = exportarPDF;
     window.exportarCSV = exportarCSV;
-    window.atualizarCampoEmail = atualizarCampoEmail;
+    // window.atualizarCampoEmail = atualizarCampoEmail;
 });

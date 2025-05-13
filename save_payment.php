@@ -15,8 +15,8 @@ try {
         exit;
     }
 
-    $sql = "INSERT INTO pagamentos (contrato_titulo, mes, empenho, tipo, nota_empenho, valor_contrato, creditos_ativos, SEI, nota_fiscal, envio_pagamento, vencimento_fatura, valor_liquidado, valor_liquidado_ag, ordem_bancaria, data_atualizacao, data_pagamento ) 
-            VALUES (:contrato_titulo, :mes, :empenho, :tipo, :nota_empenho, :valor_contrato, :creditos_ativos, :SEI, :nota_fiscal, :envio_pagamento, :vencimento_fatura, :valor_liquidado, :valor_liquidado_ag, :ordem_bancaria, :data_atualizacao, :data_pagamento )";
+    $sql = "INSERT INTO pagamentos (contrato_titulo, mes, empenho, tipo, nota_empenho, valor_contrato, creditos_ativos, SEI,fonte, nota_fiscal, envio_pagamento, vencimento_fatura, valor_liquidado, valor_liquidado_ag, ordem_bancaria, data_atualizacao, data_pagamento ) 
+            VALUES (:contrato_titulo, :mes, :empenho, :tipo, :nota_empenho, :valor_contrato, :creditos_ativos, :SEI, :fonte, :nota_fiscal, :envio_pagamento, :vencimento_fatura, :valor_liquidado, :valor_liquidado_ag, :ordem_bancaria, :data_atualizacao, :data_pagamento )";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -27,7 +27,9 @@ try {
         ':nota_empenho' => $data['nota_empenho'] ?? null,
         ':valor_contrato' => $data['valor_contrato'] ?? 0,
         ':creditos_ativos' => $data['creditos_ativos'] ?? null,
+         ':fonte' => $data['fonte'] ?? null,
         ':SEI' => $data['SEI'] ?? null,
+        
         ':nota_fiscal' => $data['nota_fiscal'] ?? null,
         ':envio_pagamento' => $data['envio_pagamento'] ?? null,
         ':vencimento_fatura' => $data['vencimento_fatura'] ?? null,

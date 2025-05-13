@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 12-Maio-2025 às 21:44
+-- Tempo de geração: 13-Maio-2025 às 18:11
 -- Versão do servidor: 10.4.32-MariaDB
 -- versão do PHP: 8.2.12
 
@@ -57,7 +57,7 @@ CREATE TABLE `certidoes` (
 --
 
 INSERT INTO `certidoes` (`id`, `documento`, `data_vencimento`, `nome`, `fornecedor`, `responsavel`, `criado_em`, `atualizado_em`, `arquivo`, `contrato_id`) VALUES
-(3, 'Outros', '2025-05-23', 'teste120', 'DELL', 'Claudia', '2025-05-12 19:39:39', '2025-05-12 19:40:53', NULL, NULL);
+(1, 'CND', '2025-05-15', 'Certidão Negativa Teste', 'Empresa Teste', 'contratos', '2025-05-12 19:46:03', '2025-05-12 19:46:03', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -233,14 +233,6 @@ CREATE TABLE `eventos` (
   `certidao_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `eventos`
---
-
-INSERT INTO `eventos` (`id`, `titulo`, `descricao`, `data`, `hora`, `categoria`, `cor`, `criado_em`, `certidao_id`) VALUES
-(1, 'Renovar Certidão: Certidão Negativa Teste', 'Certidão ID: 1, vence em 15/05/2025.', '2025-05-12', '00:00:00', 'Renovação', '#dc3545', '2025-05-12 19:15:13', 0),
-(2, 'Renovar Certidão: Computador Dell', 'Certidão ID: 2, vence em 15/05/2025.', '2025-05-12', '00:00:00', 'Renovação', '#dc3545', '2025-05-12 19:20:51', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -385,7 +377,7 @@ CREATE TABLE `gestao_contratos` (
   `gestorsb` varchar(255) NOT NULL,
   `fiscais` varchar(255) NOT NULL,
   `validade` date NOT NULL,
-  `conta_bancaria` varchar(11) NOT NULL,
+  `agencia_bancaria` varchar(11) NOT NULL,
   `fonte` varchar(11) NOT NULL,
   `publicacao` date DEFAULT NULL,
   `date_service` date DEFAULT NULL,
@@ -412,11 +404,11 @@ CREATE TABLE `gestao_contratos` (
 -- Extraindo dados da tabela `gestao_contratos`
 --
 
-INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `conta_bancaria`, `fonte`, `publicacao`, `date_service`, `contatos`, `n_despesas`, `outros`, `servicos`, `valor_nf`, `valor_contrato`, `valor_aditivo1`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`, `setor`, `parcelamento`, `valor_aditivo2`, `valor_aditivo3`, `valor_aditivo4`, `valor_aditivo5`) VALUES
+INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `agencia_bancaria`, `fonte`, `publicacao`, `date_service`, `contatos`, `n_despesas`, `outros`, `servicos`, `valor_nf`, `valor_contrato`, `valor_aditivo1`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`, `setor`, `parcelamento`, `valor_aditivo2`, `valor_aditivo3`, `valor_aditivo4`, `valor_aditivo5`) VALUES
 (2, 'Contrato de Consultoria TI', 'SEI-002/2024', 'Consultoria em TI', 'Ana Costa', 'Pedro Souza', 'Mariana Lopes', '2024-08-31', '', '', NULL, NULL, 'consultoria@ti.com', '', 'Não', NULL, 0.00, 12000.00, NULL, 6, 'Consultoria para implementação de sistemas.', 'Inativo', '2024-03-01 03:00:00', 'contratos', 'Não', NULL, NULL, NULL, NULL),
 (3, 'Contrato de Locação de Equipamentos', 'SEI-003/2023', 'Locação de equipamentos', 'Carlos Mendes', 'Luiza Almeida', 'Rafael Lima', '2025-09-30', '', '', NULL, NULL, 'locacao@equip.com', '', 'Não', NULL, 0.00, 19200.00, 5000.00, 24, 'Locação de equipamentos para eventos.', 'Encerrado', '2023-06-01 03:00:00', 'contratos', 'Não', NULL, NULL, NULL, NULL),
 (5, 'teste de atualização', '7890', 'CENTRAL', 'CHEFE', 'GERENTE', 'GABRIEL, MAIK', '2025-05-16', '', '', NULL, NULL, '400289222', '', 'Não', NULL, 0.00, 500000.00, NULL, 1, 'teste', 'Ativo', '2025-04-27 20:50:03', 'contratos', 'Não', NULL, NULL, NULL, NULL),
-(7, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '100006/001752/2023', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'N/A', 'Raphaela Batista Saldanha - 99.000.900 - ASSCON / VALDENICE ALVES DA SILVA DE PAULA - GERGEP - 99.000.517 / André Miranda Lobão Tavares Mendonça - 99.000.610 - CHEGAB', '2025-12-19', '', '', NULL, NULL, 'susiane.kempfer@grupogreencard.com.br', '', 'Não', NULL, 0.00, 432264000.00, 0.00, 1, 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'Ativo', '2025-05-06 17:45:31', 'contratos', 'Não', NULL, NULL, NULL, NULL),
+(7, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '100006/001752/2023', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'N/A', 'Raphaela Batista Saldanha - 99.000.900 - ASSCON / VALDENICE ALVES DA SILVA DE PAULA - GERGEP - 99.000.517 / André Miranda Lobão Tavares Mendonça - 99.000.610 - CHEGAB', '2025-12-19', '2430-6', '', NULL, NULL, 'susiane.kempfer@grupogreencard.com.br', '', 'Não', NULL, 0.00, 432264000.00, 0.00, 1, 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'Ativo', '2025-05-06 17:45:31', 'contratos', 'Não', NULL, NULL, NULL, NULL),
 (10, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', '20231600/889345', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'CARUSO', 'MAIK', 'ALEXANDRE', '2025-05-07', '', '', NULL, NULL, '40028922', '', 'Não', NULL, 0.00, 500.00, 0.00, 12, 'TESTE', 'Ativo', '2025-05-07 18:53:25', 'contratos', 'Não', NULL, NULL, NULL, NULL),
 (11, 'Contrato teste de nova atualização', '100006/001752/2023', 'teste', 'MAIK', 'ALEXANDRE', 'CELSO', '2025-05-31', '5542', '100', '2025-04-16', '2025-04-30', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, 0.00, 3, 'TESTE', 'Ativo', '2025-05-08 19:35:16', 'contratos', 'Sim', NULL, NULL, NULL, NULL);
 
@@ -737,7 +729,8 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (649, 'contratos', 'Login bem-sucedido', '2025-05-09 12:18:14'),
 (650, 'CONTRATOS', 'Login bem-sucedido', '2025-05-12 11:21:44'),
 (651, 'CONTRATOS', 'Login bem-sucedido', '2025-05-12 16:35:36'),
-(652, 'CONTRATOS', 'Login bem-sucedido', '2025-05-12 19:15:10');
+(652, 'CONTRATOS', 'Login bem-sucedido', '2025-05-12 19:15:10'),
+(653, 'CONTRATOS', 'Login bem-sucedido', '2025-05-12 19:50:06');
 
 -- --------------------------------------------------------
 
@@ -814,21 +807,11 @@ CREATE TABLE `notificacoes` (
 --
 
 INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `data_criacao`, `certidao_id`) VALUES
-(1, 'contratos', 'contratos', 'Certidão \"Certidão Negativa Teste\" (ID: 1) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:15:13', 0),
-(2, 'contratos', 'contratos', 'A certidão \"Certidão Negativa Teste\" (ID: 1) está próxima do vencimento (2 dias restantes, vence em 15/05/2025). Setor: contratos.', 'lida', '2025-05-12 19:15:13', 0),
-(3, 'contratos', 'contratos', 'Contrato \'teste de atualização\' com validade em 2025-05-16 prestes a expirar.', 'lida', '2025-05-13 00:17:13', 0),
-(4, 'contratos', 'contratos', 'Contrato \'Contrato teste de nova atualização\' com validade em 2025-05-31 prestes a expirar.', 'lida', '2025-05-13 00:17:13', 0),
-(5, 'contratos', 'contratos', 'Certidão \"Certidão Negativa Teste\" (ID: 1) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:19:03', 0),
-(6, 'contratos', 'contratos', 'Certidão \"Certidão Negativa Teste\" (ID: 1) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:20:26', 0),
-(7, 'contratos', 'contratos', 'Certidão \"Computador Dell\" (ID: 2) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:20:51', 0),
-(8, 'contratos', 'contratos', 'A certidão \"Computador Dell\" (ID: 2) está próxima do vencimento (2 dias restantes, vence em 15/05/2025). Setor: contratos.', 'lida', '2025-05-12 19:20:51', 0),
-(9, 'contratos', 'contratos', 'Certidão \"teste120\" (ID: 3) cadastrada com sucesso. Vence em 31/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:39:39', 0),
-(10, 'contratos', 'contratos', 'A certidão \"teste120\"  está próxima do vencimento (3 dias restantes, vence em 18). ', 'lida', '2025-05-12 19:39:39', 0),
-(11, 'contratos', 'contratos', 'Certidão \"teste120\" (ID: 3) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:40:16', 0),
-(12, 'contratos', 'contratos', 'A certidão \"teste120\"  está próxima do vencimento (3 dias restantes, vence em 2). ', 'lida', '2025-05-12 19:40:16', 0),
-(13, 'contratos', 'contratos', 'Certidão \"teste120\" (ID: 3) cadastrada com sucesso. Vence em 23/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:40:53', 0),
-(14, 'contratos', 'contratos', 'A certidão \"teste120\"  está próxima do vencimento (3 dias restantes, vence em 10). ', 'lida', '2025-05-12 19:40:53', 0),
-(15, 'contratos', 'contratos', 'Evento excluído: Renovar Certidão: teste120', 'lida', '2025-05-13 00:41:11', 0);
+(1, 'contratos', 'contratos', 'Certidão \"Certidão Negativa Teste\" (ID: 1) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:46:03', 0),
+(2, 'contratos', 'contratos', 'A certidão \"Certidão Negativa Teste\"  está próxima do vencimento (1 dias restantes, vence em 2). ', 'lida', '2025-05-12 19:46:03', 0),
+(3, 'contratos', 'contratos', 'Evento excluído: Renovar Certidão: Certidão Negativa Teste', 'lida', '2025-05-13 00:47:04', 0),
+(4, 'contratos', 'contratos', 'Contrato \'teste de atualização\' com validade em 2025-05-16 prestes a expirar.', 'lida', '2025-05-13 00:47:13', 0),
+(5, 'contratos', 'contratos', 'Contrato \'Contrato teste de nova atualização\' com validade em 2025-05-31 prestes a expirar.', 'lida', '2025-05-13 00:47:13', 0);
 
 -- --------------------------------------------------------
 
@@ -946,8 +929,7 @@ CREATE TABLE `pagamentos` (
 --
 
 INSERT INTO `pagamentos` (`id`, `contrato_titulo`, `data_pagamento`, `valor_contrato`, `mes`, `empenho`, `nota_empenho`, `valor_liquidado`, `ordem_bancaria`, `data_atualizacao`, `envio_pagamento`, `vencimento_fatura`, `agencia_bancaria`, `tipo`, `SEI`, `nota_fiscal`, `creditos_ativos`, `valor_liquidado_ag`) VALUES
-(17, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '2025-05-06', 432264000.00, '01/2025', '331.944,00', ' 2025NE00021 ', 329510.00, ' 2025OB00075 ', NULL, '0000-00-00', '2025-12-19', NULL, 'Original', '100006/001752/2023', '2025/1470 e 2025/1472', '23/12/2024', 329.51),
-(24, 'Contrato teste de nova atualização', '2025-05-12', 4322640.00, '05/*2025', '330', '1504550', 64500000.00, '100', '2025-05-12', '0000-00-00', '2025-05-31', NULL, 'original', '100006/001752/2023', 'nf-50', '260', 51232.00);
+(17, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '2025-05-06', 432264000.00, '01/2025', '331.944,00', ' 2025NE00021 ', 329510.00, ' 2025OB00075 ', NULL, '0000-00-00', '2025-12-19', '2430-6', 'Original', '100006/001752/2023', '2025/1470 e 2025/1472', '23/12/2024', 329.51);
 
 -- --------------------------------------------------------
 
@@ -1465,7 +1447,7 @@ ALTER TABLE `categorias`
 -- AUTO_INCREMENT de tabela `certidoes`
 --
 ALTER TABLE `certidoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `codigo_atual`
@@ -1507,7 +1489,7 @@ ALTER TABLE `emails_salvos`
 -- AUTO_INCREMENT de tabela `eventos`
 --
 ALTER TABLE `eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `fechamento`
@@ -1531,13 +1513,13 @@ ALTER TABLE `gestao_contratos`
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=653;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=654;
 
 --
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de tabela `ordens_compra`

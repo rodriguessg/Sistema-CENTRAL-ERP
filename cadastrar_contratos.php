@@ -21,11 +21,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
         // Prepara a inserção dos dados na tabela gestao_contratos
         $sql = "INSERT INTO gestao_contratos 
                 (titulo, SEI, objeto, gestor, gestorsb, fiscais, validade, contatos, valor_contrato, valor_aditivo, 
-                num_parcelas, descricao, situacao, conta_bancaria, fonte, publicacao, date_service, n_despesas, 
+                num_parcelas, descricao, situacao, agencia_bancaria, fonte, publicacao, date_service, n_despesas, 
                 valor_nf, parcelamento, outros, servicos) 
                 VALUES 
                 (:titulo, :SEI, :objeto, :gestor, :gestorsb, :fiscais, :validade, :contatos, :valor_contrato, 
-                :valor_aditivo, :num_parcelas, :descricao, 'Ativo', :conta_bancaria, :fonte, :publicacao, 
+                :valor_aditivo, :num_parcelas, :descricao, 'Ativo', :agencia_bancaria, :fonte, :publicacao, 
                 :date_service, :n_despesas, :valor_nf, :parcelamento, :outros, :servicos)";
 
         $stmt = $pdo->prepare($sql);
@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
         $stmt->bindParam(':descricao', $_POST['descricao']);
 
         // Novos campos
-        $stmt->bindParam(':conta_bancaria', $_POST['account-bank']);
+        $stmt->bindParam(':agencia_bancaria', $_POST['account-bank']);
         $stmt->bindParam(':fonte', $_POST['fonte']);
         $stmt->bindParam(':publicacao', $_POST['publicacao']);
         $stmt->bindParam(':date_service', $_POST['date_service']);

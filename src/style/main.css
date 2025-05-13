@@ -38,12 +38,11 @@ body {
 .logo {
   width: auto; /* Ajuste a largura de acordo com o conteúdo */
   height: auto;
-  margin-bottom: 10px; /* Distância entre as imagens */
 }
 
 /* Classe para a primeira imagem (Maior) */
 .logo-large {
-  width: 250px; /* Tamanho maior da primeira imagem */
+  width: 200px; /* Tamanho maior da primeira imagem */
   height: auto;
 }
 
@@ -91,7 +90,7 @@ h2 {
 
 .logo-central,
 img {
-  width: 70%;
+  width: 80%;
 }
 
 /* Lado direito com o formulário de login */
@@ -243,7 +242,7 @@ label {
   justify-content: space-around;
   align-items: center;
   margin: 10px;
-  width: 70%;
+  width: 100%;
 }
 
 .icon {

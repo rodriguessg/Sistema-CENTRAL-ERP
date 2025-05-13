@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 						<div class="left-side">
          <div class="logo-container">
         <!-- Primeira Imagem (Maior) -->
-        <img src="./src/img/colo.png" alt="PCA RJ Logo" class="logo logo-large">
+        <img src="./src/img/gm.png" alt="PCA RJ Logo" class="logo logo-large">
 
         <!-- Texto -->
         <h2 class="erp">SISTEMA ERP CENTRAL LOGISTICA</h2>
@@ -152,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="wrap-login100">
                 <form class="login100-form validate-form" action="login.php" method="POST">
                         <div class="logo-central">
-                        <img src="./src/img/GM.png" alt="GM">
+                        <img src="./src/img/LL.png" alt="CENTRAL">
 												</div>
 
                     <!-- Seletor de área de acesso -->

@@ -213,10 +213,10 @@
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body>
-<div class="caderno">
+<body class="caderno">
+
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
-    <div class="tabs">
+   <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
         <i class="fas fa-plus-circle"></i> Cadastro de contratos
     </div>
@@ -236,12 +236,13 @@
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
         <i class="fas fa-file-alt"></i> Relatórios
     </div>
-    <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
-</div>
+ </div> <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
+
+    
 
 
 
-<div class="form-container" id="cadastrar" style="display:none;">
+ <div class="form-container" id="cadastrar" style="display:none;">
     <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data">
     <h1 class="cadastrar-contratos">
     <i class="fas fa-file-signature" id="icon-cadastrar"></i> Cadastrar Contratos
@@ -439,10 +440,10 @@
 
 
     </form>
-</div>
+ </div>
 
 
-<div class="form-container" id="consultar">
+ <div class="form-container" id="consultar">
         <h2 class="text-center mt-3">
             <span class="icon-before fas fa-box"></span> Lista de Contratos
         </h2>
@@ -476,7 +477,7 @@
             </table>
         </div>
     </div>
-</div>
+ </div>
     <!-- Modal de Visualização -->
     <div class="modal fade" id="modalContrato" tabindex="-1" aria-labelledby="modalContratoLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -502,8 +503,8 @@
             </div>
         </div>
     </div>
-<!-- Modal de Edição -->
-<div class="modal fade" id="modalEditContrato" tabindex="-1" aria-labelledby="modalEditContratoLabel" aria-hidden="true">
+  <!-- Modal de Edição -->
+ <div class="modal fade" id="modalEditContrato" tabindex="-1" aria-labelledby="modalEditContratoLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -556,11 +557,11 @@
             </div>
         </div>
     </div>
-</div>
+ </div>
 
 
-<!-- Modal de Configuração de Filtros -->
-<div class="modal" id="filterModal" tabindex="-1" role="dialog">
+ <!-- Modal de Configuração de Filtros -->
+ <div class="modal" id="filterModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -589,22 +590,22 @@
             </div>
         </div>
     </div>
-</div>
-<script src="./src/js/filtroModal.js"></script>
+ </div>
+  <script src="./src/js/filtroModal.js"></script>
 
 
 
-<!-- Ícone de Loading -->
-<div class="loading" style="display:none;"></div>
-<!-- Dentro do body, substitua a seção da aba "gerenciar" por: -->
+ <!-- Ícone de Loading -->
+ <div class="loading" style="display:none;"></div>
+ <!-- Dentro do body, substitua a seção da aba "gerenciar" por: -->
 
-
-<div class="form-container" id="gerenciar" style="display:none;">
-    <h2 id="contractTitleHeader">Pagamentos do</h2>
-    <div class="button-group">
-    <button class="btn-submit" onclick="savePayment()">Salvar Alterações</button>
-   </div>
-    <table id="contratosTable" class="table table-bordered">
+ 
+   <div class="form-container" id="gerenciar" style="display:none;">
+     <h2 id="contractTitleHeader">Pagamentos do</h2>
+     <div class="button-group">
+     <button class="btn-submit" onclick="savePayment()">Salvar Alterações</button>
+     </div>
+     <table id="contratosTable" class="table table-bordered">
         <thead>
             <tr>
                 <th>Mês</th>
@@ -630,14 +631,15 @@
         <tbody id="contratosTableBody">
             <!-- Dados serão preenchidos dinamicamente -->
         </tbody>
-    </table>
+     </table>
+    
+    </div>
 
     
 
 
-</div>
 
-<div class="form-container" id="prestacao" style="display:none;" onclick="exibirContratos()">
+ <div class="form-container" id="prestacao" style="display:none;" onclick="exibirContratos()">
     <div id="table-container-contratos">
         <!-- Tabela de contratos encerrados será inserida aqui -->
     </div>
@@ -672,9 +674,9 @@
             <button type="button" onclick="salvarPrestacao()">Finalizar Prestação de Contas</button>
         </form>
     </div>
-</div>
+ </div>
 
-<!-- Formulário para selecionar contrato e tipo de relatório -->
+  <!-- Formulário para selecionar contrato e tipo de relatório -->
 
 <div class="form-container" id="relatorio">
     <h2><i class="fas fa-file-alt"></i> Gerar Relatório</h2>

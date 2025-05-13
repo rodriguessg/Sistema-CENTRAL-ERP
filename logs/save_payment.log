@@ -1,0 +1,32 @@
+2025-05-13 20:08:41 - Erro: SQLSTATE[HY000] [1049] Unknown database 'central_erp'
+2025-05-13 20:08:59 - Dados recebidos: 
+2025-05-13 20:08:59 - Erro JSON: Syntax error
+2025-05-13 20:09:05 - Dados recebidos: 
+2025-05-13 20:09:05 - Erro JSON: Syntax error
+2025-05-13 20:09:06 - Dados recebidos: 
+2025-05-13 20:09:06 - Erro JSON: Syntax error
+2025-05-13 20:09:07 - Dados recebidos: 
+2025-05-13 20:09:07 - Erro JSON: Syntax error
+2025-05-13 20:09:07 - Dados recebidos: 
+2025-05-13 20:09:07 - Erro JSON: Syntax error
+2025-05-13 20:09:07 - Dados recebidos: 
+2025-05-13 20:09:07 - Erro JSON: Syntax error
+2025-05-13 20:09:08 - Dados recebidos: 
+2025-05-13 20:09:08 - Erro JSON: Syntax error
+2025-05-13 20:09:28 - Dados recebidos: {"contrato_titulo":"Contrato de Locação de Equipamentos","mes":"05/2025","empenho":"sdf","tipo":null,"nota_empenho":null,"valor_contrato":800,"creditos_ativos":null,"fonte":"🔗 Fonte 1","SEI":"SEI-003/2023","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2025-09-30","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-13","fonte_adicional":"Fonte 1"}
+2025-05-13 20:09:28 - Executando INSERT
+2025-05-13 20:09:28 - Erro: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'fonte_adicional' in 'field list'
+2025-05-13 20:10:34 - Dados recebidos: {"contrato_titulo":"Contrato de Locação de Equipamentos","mes":"06/2025","empenho":"e","tipo":null,"nota_empenho":null,"valor_contrato":800,"creditos_ativos":null,"fonte":null,"SEI":"SEI-003/2023","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2025-09-30","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-13"}
+2025-05-13 20:10:34 - Executando INSERT
+2025-05-13 20:10:34 - Erro: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'fonte_adicional' in 'field list'
+2025-05-13 20:15:43 - Dados recebidos: {"contrato_titulo":"Contrato de Locação de Equipamentos","mes":"06/2025","empenho":"e","tipo":null,"nota_empenho":null,"valor_contrato":800,"creditos_ativos":null,"fonte":null,"SEI":"SEI-003/2023","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2025-09-30","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-13"}
+2025-05-13 20:15:43 - Executando INSERT
+2025-05-13 20:15:43 - Erro: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'fonte_adicional' in 'field list'
+2025-05-13 20:16:38 - Dados recebidos: {"contrato_titulo":"Contrato de Locação de Equipamentos","mes":"06/2025","empenho":"e","tipo":null,"nota_empenho":null,"valor_contrato":800,"creditos_ativos":null,"fonte":null,"SEI":"SEI-003/2023","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2025-09-30","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-13"}
+2025-05-13 20:16:38 - Executando INSERT
+2025-05-13 20:16:45 - Dados recebidos: {"contrato_titulo":"Contrato de Locação de Equipamentos","mes":"06/2025","empenho":"e","tipo":null,"nota_empenho":null,"valor_contrato":800,"creditos_ativos":null,"fonte":"Fonte 1","SEI":"SEI-003/2023","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2025-09-30","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-13","fonte_adicional":"Fonte 1"}
+2025-05-13 20:16:45 - Executando INSERT
+2025-05-13 20:16:55 - Dados recebidos: {"contrato_titulo":"Contrato de Locação de Equipamentos","mes":"06/2025","empenho":"eqw","tipo":null,"nota_empenho":null,"valor_contrato":800,"creditos_ativos":null,"fonte":null,"SEI":"SEI-003/2023","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2025-09-30","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-13","id":69}
+2025-05-13 20:16:55 - Executando UPDATE para id: 69
+2025-05-13 20:17:35 - Dados recebidos: {"contrato_titulo":"Contrato de Locação de Equipamentos","mes":"05/2025","empenho":"w","tipo":null,"nota_empenho":null,"valor_contrato":800,"creditos_ativos":null,"fonte":null,"SEI":"SEI-003/2023","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2025-09-30","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-13"}
+2025-05-13 20:17:35 - Executando INSERT

@@ -85,7 +85,7 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 .logo-central,
@@ -116,7 +116,7 @@ h3 {
 label {
   font-size: 12px; /* Tamanho da fonte ajustado */
   color: #fff;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
 }
 
 /* Estilos para os Inputs */
@@ -168,7 +168,7 @@ label {
 }
 
 .password-container input {
-  margin-right: 5px;
+  margin-right: 8px;
 }
 
 /* Estilos de foco no input e do botão */
@@ -219,11 +219,6 @@ label {
   text-decoration: none;
 }
 
-/* Mostrando Senha */
-.password-container {
-  text-align: center;
-  margin-bottom: 20px;
-}
 
 /* Responsividade */
 @media (max-width: 768px) {
@@ -264,7 +259,7 @@ label {
 }
 
 .erp {
-  background-color: #bc9d32;
+  background-color: #ffc107;
   color: white;
   font-size: 14px;
   font-weight: bold;

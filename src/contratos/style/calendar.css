@@ -533,7 +533,7 @@ input[type="color"]:hover {
     align-items: center;
     color: #ffffff; /* Alteração para contraste */
     font-size: 18px;
-    background: #005A92;
+    background:#273051;
     border-top-left-radius: 16px; /* Bordas arredondadas mais suaves */
     border-top-right-radius: 16px;
     padding: 12px 20px;
@@ -586,7 +586,7 @@ input[type="color"]:hover {
     grid-template-columns: repeat(7, 1fr);
     font-weight: bold;
     color: #ffffff;
-    background-color: #3a4a64; /* Cor de fundo das semanas, combinando com o gradiente */
+    background-color: #273051; /* Cor de fundo das semanas, combinando com o gradiente */
     margin-bottom: 10px;
     border-radius: 8px; /* Bordas arredondadas */
 }

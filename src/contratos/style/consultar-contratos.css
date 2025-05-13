@@ -197,7 +197,7 @@ button:hover i {
 .btn-filters {
   padding: 10px 20px;
   font-size: 16px;
-  background: linear-gradient(180deg, #2d3e50, #1a242f) !important; /* Cor de fundo do botão */
+  background: linear-gradient(180deg, #273051, #273051) !important; /* Cor de fundo do botão */
   color: white;
   border: none;
   border-radius: 4px;

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ícone do Trem Andando pelo Trilho</title>
+    <link rel="stylesheet" href="style.css"> <!-- Link para o arquivo CSS -->
+</head>
+<body>
+
+    <!-- Trilho -->
+    <div class="track">
+        <!-- Imagem do trem -->
+      <!-- Imagem de exemplo de trem -->
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Train_Icon.svg/1024px-Train_Icon.svg.png" alt="Trem" class="train">
+
+    </div>
+
+</body>
+</html>
+
+
+<style>
+    /* Resetando o padrão */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilo do corpo */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Trilho do trem */
+.track {
+    position: relative;
+    width: 80%; /* Define a largura do trilho */
+    height: 5px; /* Altura do trilho */
+    background-color: #555; /* Cor do trilho */
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 50px;
+}
+
+/* Imagem do trem */
+.train {
+    position: absolute;
+    top: -30px; /* O trem fica levemente acima do trilho */
+    left: -100px; /* Inicia fora da tela */
+    width: 60px; /* Ajuste o tamanho da imagem do trem */
+    height: auto; /* Mantém a proporção da imagem */
+    animation: moveTrain 5s linear infinite; /* A animação do movimento do trem */
+}
+
+/* Animação do movimento do trem */
+@keyframes moveTrain {
+    0% {
+        left: -100px; /* Começa fora da tela (esquerda) */
+    }
+    100% {
+        left: 100%; /* Vai até a extrema direita */
+    }
+}
+
+</style>

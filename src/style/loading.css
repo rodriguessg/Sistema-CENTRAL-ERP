@@ -97,35 +97,12 @@ body {
 .loading-text {
     margin-top: 15px;
     font-size: 16px;
-    color: black;
-    display: flex;
-    align-items: center;
-    animation: blink 1.5s infinite; /* Aplica a animação de piscar */
-}
-
-/* Ícone giratório */
-.loading-text i {
-    margin-right: 10px; /* Espaço entre o ícone e o texto */
-    font-size: 24px; /* Tamanho do ícone */
-    color: #00aaff; /* Cor do ícone */
-}
-
-/* Animação para piscar */
-@keyframes blink {
-    0%, 100% { opacity: 1; } /* Totalmente visível */
-    50% { opacity: 0; }      /* Invisível */
-}
-
-/* Texto de Carregamento */
-.loading-text {
-    margin-top: 15px;
-    font-size: 16px;
     color: blue;
     display: flex;
     align-items: center;
     animation: blink 1.5s infinite; /* Aplica a animação de piscar */
-    font-weight: bolder;
-    font-size: larger;
+      font-weight: bolder;
+    margin-top: 20px;
 }
 
 /* Ícone giratório */
@@ -139,16 +116,4 @@ body {
 @keyframes blink {
     0%, 100% { opacity: 1; } /* Totalmente visível */
     50% { opacity: 0; }      /* Invisível */
-}
-
-/* Animação da Barra de Carregamento */
-@keyframes loadBar {
-    0% { width: 0; }
-    100% { width: 100%; }
-}
-
-/* Animação de Fade-in para a Logo */
-@keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(-20px); }
-    100% { opacity: 1; transform: translateY(0); }
 }

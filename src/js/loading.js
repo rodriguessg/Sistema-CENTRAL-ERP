@@ -8,27 +8,26 @@ document.addEventListener("DOMContentLoaded", function () {
     // Adicionando log para verificar o valor de 'setor'
     console.log("Valor do setor:", setor); // Log para ver o valor real de 'setor'
 
+    // Exibe o container de loading
+    loadingContainer.style.display = 'flex';
+
     // Função para verificar o setor e redirecionar
     function checkSetorAndRedirect() {
         // Verifica se o setor está definido e é válido
         if (!setor || setor.trim() === '') {
             console.error("Setor não definido ou vazio");
-            loadingContainer.style.display = 'none';
+            loadingContainer.style.display = 'none'; // Esconde a tela de loading
             window.location.href = "mensagem.php?mensagem=setor_nao_reconhecido&pagina=index.php"; // Redireciona para página de erro
             return;
         }
 
-        // Simula o tempo de carregamento com um timer de 3.5 segundos
+        // Simula o tempo de carregamento com um timer de 3 segundos
         setTimeout(() => {
-            loadingContainer.style.display = 'none'; // Esconde a tela de carregamento
-
-            // Define o tempo do cookie (24 horas)
-            const cookie_duration = new Date().getTime() + (24 * 3600 * 1000); // 24 horas em milissegundos
+            loadingContainer.style.display = 'none'; // Esconde a tela de loading
 
             // Verificação do setor e redirecionamento adequado
             switch (setor.trim().toLowerCase()) {
                 case 'administrador':
-                    // Armazenando o setor no cookie (simulação com localStorage)
                     localStorage.setItem("administrador", setor);
                     console.log("Redirecionando para painel.php (Administrador)");
                     window.location.href = "painel.php";
@@ -68,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     window.location.href = "mensagem.php?mensagem=setor_nao_reconhecido&pagina=index.php"; // Redireciona para página de erro
                     break;
             }
-        }, 3500); // Espera 3.5 segundos antes de redirecionar
+        }, 3000); // Espera 3 segundos antes de redirecionar
     }
 
     // Chama a função para verificar o setor e redirecionar

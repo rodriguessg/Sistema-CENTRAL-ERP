@@ -7,7 +7,6 @@ if (!isset($_GET['destino'])) {
 
 $destino = $_GET['destino'];
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -20,12 +19,25 @@ $destino = $_GET['destino'];
 
     <div class="loading-container">
         <div class="logo-central">
-            <img src="./src/img/Logo.png" alt="Logo" class="img-logo">
+            <img src="./src/img/colo.png" alt="Logo" class="img-logo">
         </div>
-        <div class="loading-bar">
-            <div class="progress"></div>
+
+<!-- Estilo de Bolinhas Pulsantes -->
+ <div class="loading-balls">
+        <div class="ball"></div>
+        <div class="ball"></div>
+        <div class="ball"></div>
+        <div class="ball"></div>
+        <div class="ball"></div>
+        <div class="ball"></div>
+    </div>
+
+
+        
+        <!-- Texto de Carregamento com ícone -->
+        <div class="loading-text">
+            <i class="fas fa-spinner fa-spin"></i> Carregando...
         </div>
-        <p class="loading-text">Carregando...</p>
     </div>
 
     <script>
@@ -33,9 +45,10 @@ $destino = $_GET['destino'];
         setTimeout(function() {
             // Redireciona para a página do setor após o tempo de carregamento
             window.location.href = "<?php echo $destino; ?>";
-        }, 3000); // Tempo de 3 segundos de carregamento
+        }, 5000); // Tempo de 3 segundos de carregamento
     </script>
 
     <!-- <script src="./src/js/loading.js"></script> -->
 </body>
 </html>
+

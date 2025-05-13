@@ -148,11 +148,13 @@ label {
 /* Ajuste para o seletor de área de acesso */
 .menu-custom {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  font-size: 14px;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+    FONT-WEIGHT: bolder;
+    FONT-FAMILY: CURSIVE;
 }
 
 .menu-custom:focus {
@@ -214,9 +216,15 @@ label {
 }
 
 .txt1 {
-  color: #45b5a9;
-  font-size: 12px;
+  color: white;
+  font-size: 14px;
   text-decoration: none;
+}
+
+/* Efeito de hover */
+.txt1:hover {
+  color: red; /* Altera a cor para vermelho */
+  text-decoration: none; /* Remove o sublinhado no hover */
 }
 
 
@@ -270,5 +278,44 @@ label {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   position: relative;
-  z-index: 1;
 }
+
+.text-cente {
+  text-align: center;
+  margin-top: 20px;
+
+}
+
+/* Estilo para o botão de login */
+.login100-form-btn {
+    display: flex;
+    justify-content: CENTER;
+    align-items: center; /* Alinha verticalmente */
+    padding: 12px 20px; /* Ajuste o padding para um bom espaçamento */
+    FLEX-DIRECTION: ROW-REVERSE;
+}
+
+/* Ajustando o ícone */
+.login100-form-btn i {
+    font-size: 15px; /* Tamanho do ícone */
+    margin-left: 5px; /* Espaço entre o texto e o ícone */
+    color: white; /* Cor do ícone */
+}
+
+
+/* Estilo do título com ícone acima do input */
+.input-label {
+    font-size: 14px;
+    color: white; /* Cor do título */
+    margin-bottom: 5px; /* Espaçamento entre o título e o input */
+}
+
+/* Ícone dentro do título */
+.input-label i {
+    font-size: 14px; /* Tamanho do ícone */
+    margin-right: 5px; /* Espaço entre o ícone e o título */
+}
+
+
+
+

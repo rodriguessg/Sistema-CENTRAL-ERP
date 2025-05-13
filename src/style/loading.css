@@ -6,8 +6,8 @@
     font-family: 'Poppins', sans-serif;
 }
 
+/* Body básico */
 body {
-    background-color: #273051;
     color: #fff;
     overflow: hidden;
 }
@@ -19,44 +19,95 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, #fff, #273051);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 9999;
+    /* Definindo a imagem de fundo */
+    background-image: url('../img/bk.png'); /* Substitua o caminho da imagem conforme necessário */
+    background-size: cover; /* Faz a imagem cobrir todo o espaço do modal */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat; /* Impede que a imagem se repita */
 }
 
 /* Logo */
 .logo-central .img-logo {
-    width: 220px;
+    width: 300px;
     height: auto;
     animation: fadeIn 2s ease-in-out;
+    margin-bottom: 20px; 
 }
 
-/* Barra de Carregamento */
-.loading-bar {
-    position: relative;
-    width: 50%;
-    height: 8px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
-    margin-top: 20px;
-    overflow: hidden;
+/* Estilo das Bolinhas Pulsantes */
+.loading-balls {
+    display: flex;
+    justify-content: center;
+    gap: 30px;  /* Aumenta o espaço entre as bolinhas */
 }
 
-.loading-bar .progress {
-    width: 0;
-    height: 100%;
-    background: linear-gradient(to right,#273051,#273051);
-    animation: loadBar 3s ease-in-out forwards;
+.ball {
+    width: 20px;  /* Tamanho das bolinhas */
+    height: 20px;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite, colorChange 3s infinite; /* Animação de pulsação e troca de cor */
 }
 
+/* Animação de pulsação das bolinhas */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.5); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.7; }
+}
+
+/* Animação de troca de cores */
+@keyframes colorChange {
+    0% { background-color: #00aaff; } /* Azul */
+    33% { background-color: #ff4c4c; } /* Vermelho */
+    66% { background-color: #ffea00; } /* Amarelo */
+    100% { background-color: #00aaff; } /* Azul novamente */
+}
+
+/* Diferenciação das bolinhas com tempo de atraso para animação */
+.ball:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.ball:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.ball:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.ball:nth-child(4) {
+    animation-delay: 0.9s;
+}
+
+.ball:nth-child(5) {
+    animation-delay: 1.2s;
+}
+
+.ball:nth-child(6) {
+    animation-delay: 1.5s;
+}
+
+/* Texto de Carregamento */
 .loading-text {
     margin-top: 15px;
     font-size: 16px;
     color: black;
+    display: flex;
+    align-items: center;
     animation: blink 1.5s infinite; /* Aplica a animação de piscar */
+}
+
+/* Ícone giratório */
+.loading-text i {
+    margin-right: 10px; /* Espaço entre o ícone e o texto */
+    font-size: 24px; /* Tamanho do ícone */
+    color: #00aaff; /* Cor do ícone */
 }
 
 /* Animação para piscar */
@@ -65,79 +116,39 @@ body {
     50% { opacity: 0; }      /* Invisível */
 }
 
-
-/* Modal */
-.modal-container {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
+/* Texto de Carregamento */
+.loading-text {
+    margin-top: 15px;
+    font-size: 16px;
+    color: blue;
+    display: flex;
     align-items: center;
-    background: rgba(0, 0, 0, 0.7);
-    transition: all 0.5s ease-in-out;
+    animation: blink 1.5s infinite; /* Aplica a animação de piscar */
+    font-weight: bolder;
+    font-size: larger;
 }
 
-.modal-content {
-    background: linear-gradient(to bottom, white, #273051);
-    color: black;
-    padding: 30px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 1s ease;
-    width: 300px;
+/* Ícone giratório */
+.loading-text i {
+    margin-right: 10px; /* Espaço entre o ícone e o texto */
+    font-size: 24px; /* Tamanho do ícone */
+    color: #00aaff; /* Cor do ícone */
 }
 
-.modal-title {
-    font-size: 20px;
-    margin-bottom: 15px;
+/* Animação para piscar */
+@keyframes blink {
+    0%, 100% { opacity: 1; } /* Totalmente visível */
+    50% { opacity: 0; }      /* Invisível */
 }
 
-.modal-input {
-    width: 100%;
-    padding: 8px;
-    margin: 15px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.modal-button {
-    background-color: #003366;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.modal-button:hover {
-    background-color: #00aaff;
-}
-
-.modal-close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 25px;
-    cursor: pointer;
-}
-
-/* Animações */
+/* Animação da Barra de Carregamento */
 @keyframes loadBar {
     0% { width: 0; }
     100% { width: 100%; }
 }
 
+/* Animação de Fade-in para a Logo */
 @keyframes fadeIn {
     0% { opacity: 0; transform: translateY(-20px); }
     100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
 }

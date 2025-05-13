@@ -101,6 +101,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
 <!--===============================================================================================-->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="./src/style/util.css">
 	<link rel="stylesheet" type="text/css" href="./src/style/main.css">
@@ -120,7 +123,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <img src="./src/img/gm.png" alt="PCA RJ Logo" class="logo logo-large">
 
         <!-- Texto -->
-        <h2 class="erp">SISTEMA ERP CENTRAL LOGISTICA</h2>
+      <h2 class="erp">
+    <i class="fas fa-laptop-code"></i> SISTEMA ERP CENTRAL LOGISTICA
+</h2>
+
 
 				<div class="icon-container">
     <!-- Bondinho -->
@@ -169,31 +175,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
 
                     <!-- Campo de Nome de Usuário -->
-                    <div class="wrap-input100 validate-input" data-validate="Enter username">
-                        <input class="input100" type="text" name="username" placeholder="Username" required>
-                        <span class="focus-input100" data-placeholder="&#xf207;"></span>
-                    </div>
+<div class="wrap-input100 validate-input" data-validate="Enter username">
+    <!-- Título com ícone centralizado -->
+    <div class="input-label">
+        <i class="fas fa-user"></i> Usuário
+    </div>
+    <input class="input100" type="text" name="username" placeholder="Username" required>
+    <span class="focus-input100" data-placeholder="&#xf207;"></span>
+</div>
 
-                    <!-- Campo de Senha -->
-                    <div class="wrap-input100 validate-input" data-validate="Enter password">
-                        <input class="input100" type="password" name="senha" id="senha" placeholder="Password" required>
-                        <span class="focus-input100" data-placeholder="&#xf191;"></span>
+<!-- Campo de Senha -->
+<div class="wrap-input100 validate-input" data-validate="Enter password">
+    <!-- Título com ícone centralizado -->
+    <div class="input-label">
+        <i class="fas fa-lock"></i> Senha
+    </div>
+    <input class="input100" type="password" name="senha" id="senha" placeholder="Password" required>
+    <span class="focus-input100" data-placeholder="&#xf191;"></span>
 
-                         <!-- Mostrar Senha -->
-                    <div class="password-container">
-                        <input type="checkbox" id="mostrar-senha" onclick="togglePassword()">
-                        <label for="mostrar-senha">Mostrar senha</label>
-                    </div>
-                    </div>
+    <!-- Mostrar Senha -->
+    <div class="password-container">
+        <input type="checkbox" id="mostrar-senha" onclick="togglePassword()">
+        <label for="mostrar-senha">Mostrar senha</label>
+    </div>
+</div>
+
 
                    
 
                     <!-- Botão de Login -->
-                    <div class="container-login100-form-btn">
-                        <button class="login100-form-btn">
-                            Login
-                        </button>
-                    </div>
+<div class="container-login100-form-btn">
+    <button class="login100-form-btn">
+        <!-- Ícone dentro do botão -->
+        <i class="fas fa-sign-in-alt" style="color: white; margin-right: 10px;"></i> Login
+    </button>
+</div>
+
 
                     <!-- Link para "Esqueci minha senha" -->
                     <div class="text-cente">
@@ -235,8 +252,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input class="modal-input" type="email" id="email-recover" name="email-recover" placeholder="Digite seu e-mail" required>
             </div>
 
-	
-            <button class="modal-button" type="button" onclick="verificarUsuario()">Verificar</button>
+	<button class="modal-button" type="button" onclick="verificarUsuario()">
+    <i class="fas fa-check-circle"></i> Verificar
+</button>
+
         </form>
         <!-- Formulário de Nova Senha -->
         <form id="form-nova-senha" style="display: none;" method="POST">

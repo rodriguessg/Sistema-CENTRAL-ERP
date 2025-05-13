@@ -104,10 +104,13 @@ function atualizarSenha() {
 }
 
 // Função para alternar entre visualizar e ocultar a senha
+// Função para alternar entre visualizar e ocultar a senha
 function togglePassword() {
-    const passwordInput = document.getElementById('nova-senha'); // Corrigido para o ID correto
-    const showPasswordCheckbox = document.getElementById('mostrar-senha');
+    const passwordInput = document.getElementById('senha'); // Obtém o campo de senha
+    const showPasswordCheckbox = document.getElementById('mostrar-senha'); // Obtém o checkbox
 
-    // Alterna o tipo de input entre 'text' e 'password'
+    // Alterna o tipo de input entre 'text' (mostrar senha) e 'password' (ocultar senha)
     passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
 }
+
+

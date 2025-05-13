@@ -1,4 +1,5 @@
 /* Estilo do modal */
+/* Estilo do modal */
 .modal-container {
     display: none;
     position: fixed;
@@ -9,25 +10,31 @@
     justify-content: center;
     align-items: center;
     transition: all 0.5s ease-in-out; /* Transição suave para o modal */
-    background: linear-gradient(to bottom, white,#003366); /* Gradiente no fundo do container */
+    
+    /* Definindo a imagem de fundo */
+    background-image: url('../img/bk.png'); /* Substitua o caminho da imagem conforme necessário */
+    background-size: cover; /* Faz a imagem cobrir todo o espaço do modal */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat; /* Impede que a imagem se repita */
 }
+
 
 /* Conteúdo do modal */
 .modal-content {
-    color: white;
-    padding: 38px;
+ color: white;
+    padding: 20px;
     border-radius: 18px;
-    width: 25%;
-    height: auto;
+    width: 30%;
+    height: 50%;
     position: relative;
     opacity: 1;
     transition: transform 0.5s ease, opacity 0.5s ease;
     transform: translateY(0);
-    box-shadow: none; /* Removido o box-shadow para eliminar a borda preta */
+    box-shadow: none;
     z-index: 1;
-    background: linear-gradient(to bottom, white, #003366); /* Gradiente para o conteúdo */
+    background: #273051;
     overflow: hidden;
-    border: none; /* Removido qualquer borda */
+    border: none;
 }
 
 /* Cabeçalho do modal */
@@ -35,7 +42,7 @@
     display: flex;
     justify-content: space-between;
     padding: 0px;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1); /* Linha suave para separação */
+    border-bottom: 1px solid rgb(255, 255, 255); /* Linha suave para separação */
     margin-bottom: 20px;
 }
 
@@ -44,7 +51,7 @@
     font-family: 'Poppins-Regular', sans-serif; /* Fonte Poppins */
     font-size: 22px; /* Tamanho de fonte ajustado */
     font-weight: bold;
-    color: black; /* Título em preto */
+    color: white; /* Título em preto */
     margin-bottom: 15px;
     text-align: center;
 }
@@ -53,7 +60,7 @@
 .modal-close {
     font-family: 'Poppins-Regular', sans-serif; /* Fonte Poppins */
     font-size: 28px;
-    color: black; /* Fechar com cor preta */
+    color: red; /* Fechar com cor preta */
     cursor: pointer;
     position: absolute;
     top: 12px;
@@ -78,6 +85,7 @@
     border: 1px solid #ccc; /* Borda mais fina e suave */
     border-radius: 8px; /* Bordas arredondadas mais suaves */
     margin-bottom: 20px;
+    margin-TOP: 10px;
     box-sizing: border-box;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -87,7 +95,7 @@
     background: white;
     color: #333;
     border-color: #00aaff;
-    box-shadow: 0 0 8px  #003366; /* Efeito de glow mais sutil */
+    box-shadow: 0 0 8px  #273051; /* Efeito de glow mais sutil */
     outline: none;
 }
 
@@ -98,25 +106,28 @@
 
 /* Botões do modal */
 .modal-button {
-    font-family: 'Poppins-Regular', sans-serif;
-    background-color: #fff;
+       font-family: 'Poppins-Regular', sans-serif;
+    background-color:#198754;
+    color: white;
     border: none;
     padding: 8px 16px;
     cursor: pointer;
     font-size: 14px;
-    border-radius: 8px;
+    border-radius: 5px;
     transition: background-color 0.3s ease, transform 0.3s ease;
-    width: 20%;
-    margin-top: 15px;
+    width: 100%;
+    margin-top: 20PX;
+    font-weight: bolder;
 }
 
-/* Efeito hover para os botões */
-.modal-button:hover {
-    color: white;
-    background-color: #003366; /* Cor de fundo mais escura para o hover */
-    transform: translateY(-3px); /* Efeito de elevação */
-    box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.5); /* Efeito de box-shadow branco suave */
+
+/* Ajuste para o ícone dentro do botão */
+.modal-button i {
+    font-size: 12px; /* Tamanho do ícone */
 }
+
+
+
 
 /* Estilo do link "Recupera Senha" */
 .modal .recover-password {
@@ -135,11 +146,10 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    margin-bottom: 40px;
 }
 
 .img-logo-central-1 {
-    width: 220px; /* Largura padrão para a imagem */
+    width: 250px; /* Largura padrão para a imagem */
     height: auto; /* Mantém a proporção da imagem */
   }
   

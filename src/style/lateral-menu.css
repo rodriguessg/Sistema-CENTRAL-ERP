@@ -1,6 +1,8 @@
 /* Menu Lateral */
 #sidebar {
-  background:#005A92;
+ background: linear-gradient(45deg, #273051, #273051 80%, #ffffff 100%);
+
+
   color: white;
   padding: 30px 12px;
   position: fixed;
@@ -223,7 +225,7 @@
 
 /* Ícone da Aba Ativa */
 #sidebar .menu-item.active {
-  background-color: #007bff;
+  background-color: #273051;
   box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
 }
 

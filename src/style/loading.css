@@ -7,7 +7,7 @@
 }
 
 body {
-    background-color: #003366;
+    background-color: #273051;
     color: #fff;
     overflow: hidden;
 }
@@ -19,7 +19,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, #fff, #003366);
+    background: linear-gradient(to bottom, #fff, #273051);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -48,7 +48,7 @@ body {
 .loading-bar .progress {
     width: 0;
     height: 100%;
-    background: linear-gradient(to right, #00aaff, #003366);
+    background: linear-gradient(to right,#273051,#273051);
     animation: loadBar 3s ease-in-out forwards;
 }
 
@@ -81,7 +81,7 @@ body {
 }
 
 .modal-content {
-    background: linear-gradient(to bottom, white, #003366);
+    background: linear-gradient(to bottom, white, #273051);
     color: black;
     padding: 30px;
     border-radius: 15px;

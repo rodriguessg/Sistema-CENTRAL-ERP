@@ -178,13 +178,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="wrap-input100 validate-input" data-validate="Enter password">
                         <input class="input100" type="password" name="senha" id="senha" placeholder="Password" required>
                         <span class="focus-input100" data-placeholder="&#xf191;"></span>
-                    </div>
 
-                    <!-- Mostrar Senha -->
+                         <!-- Mostrar Senha -->
                     <div class="password-container">
                         <input type="checkbox" id="mostrar-senha" onclick="togglePassword()">
                         <label for="mostrar-senha">Mostrar senha</label>
                     </div>
+                    </div>
+
+                   
 
                     <!-- Botão de Login -->
                     <div class="container-login100-form-btn">

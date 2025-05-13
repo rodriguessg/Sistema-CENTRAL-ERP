@@ -23,7 +23,7 @@ body {
 .caderno {
   display: flex; /* Flexbox para alinhamento do menu e conteúdo */
   margin-left: 280px; /* Deixa espaço para o menu lateral */
-  padding: 15px;
+  padding: 5px;
   width: 85%;
   flex-direction: column;
 }
@@ -60,7 +60,7 @@ body {
 
 /* Estilo das abas ativas */
 .tab.active {
-  background-color: #005A92; 
+  background-color:#273051; 
   color: white;
   transform: scale(1.05);
 }
@@ -100,7 +100,7 @@ body {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra mais suave */
   backdrop-filter: blur(10px); /* Adiciona um efeito de desfoque no fundo */
   max-width: 100%; /* Garante que o formulário ocupe toda a largura disponível */
-  margin: 20px 0px; /* Centraliza o formulário */
+  margin: 10px 0px; /* Centraliza o formulário */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Font mais moderna */
 }
 
@@ -118,7 +118,7 @@ body {
   top: 50%;
   transform: translate(-50%, -50%);
   border: 4px solid #f3f3f3; /* Cor do fundo do círculo */
-  border-top: 4px solid #3498db; /* Cor da parte superior do círculo */
+  border-top: 4px solid #273051; /* Cor da parte superior do círculo */
   border-radius: 50%;
   width: 50px; /* Tamanho do círculo */
   height: 50px;

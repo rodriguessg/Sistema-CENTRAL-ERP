@@ -115,15 +115,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="container-login100">
             <!-- Lado esquerdo (Logo e Texto) -->
 						<div class="left-side">
-    <div class="logo-container">
+         <div class="logo-container">
         <!-- Primeira Imagem (Maior) -->
         <img src="./src/img/colo.png" alt="PCA RJ Logo" class="logo logo-large">
 
         <!-- Texto -->
-        <h2>SISTEMA ERP CENTRAL LOGISTICA</h2>
+        <h2 class="erp">SISTEMA ERP CENTRAL LOGISTICA</h2>
+
+				<div class="icon-container">
+    <!-- Bondinho -->
+    <div class="icon">
+        <img src="src/img/bondinho.png" alt="Bondinho" class="icon-img">
+    </div>
+    
+    <!-- Trem (Ícone do Meio) -->
+    <div class="icon">
+        <img src="src/img/trem.png" alt="Trem" class="icon-img middle-icon">
+    </div>
+
+    <!-- Teleférico -->
+    <div class="icon">
+        <img src="src/img/teleferico.png" alt="Teleférico" class="icon-img">
+    </div>
+</div>
+
 
         <!-- Segunda Imagem (Menor) -->
         <img src="./src/img/log.png" alt="PCA RJ Logo" class="logo logo-small">
+
+				
     </div>
 </div>
 
@@ -174,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
 
                     <!-- Link para "Esqueci minha senha" -->
-                    <div class="text-center p-t-50">
+                    <div class="text-cente">
                         <a class="txt1" href="javascript:void(0);" onclick="abrirModal()">
                             Esqueceu sua Senha ?
                         </a>

@@ -14,13 +14,14 @@ async function loadContractsAndPayments(contractData) {
     const contractTitleHeader = document.getElementById('contractTitleHeader');
     const titulo = contractData.titulo || 'Desconhecido';
     const sei = contractData.SEI || 'N/A';
+    const  agencia_bancaria = contractData.agencia_bancaria || 'N/A';
 
     // Link de pesquisa no SEI
     const seiLink = sei !== 'N/A' 
         ? `<a href="https://sei.rj.gov.br/sei/controlador_externo.php?acao=procedimento_trabalhar&acao_origem=procedimento_pesquisar&id_procedimento=${encodeURIComponent(sei)}" target="_blank" rel="noopener noreferrer" title="Link de acesso direto ao processo SEI">SEI: ${sei}</a>`
         : 'SEI: N/A';
 
-    contractTitleHeader.innerHTML = `Pagamentos do contrato ${titulo} (${seiLink})`;
+    contractTitleHeader.innerHTML = `Pagamentos do contrato ${titulo} (${seiLink}) ${agencia_bancaria}`;
 
     try {
         // Buscar num_parcelas e data_inicio do contrato
@@ -54,15 +55,14 @@ async function loadContractsAndPayments(contractData) {
                 <td>${payment.vencimento_fatura || ''}</td>
                 <td>${payment.valor_liquidado || 0}</td>
                 <td>${payment.valor_liquidado_ag || 0}</td>
-                <td>${payment.ordem_bancaria || ''}</td>
-                <td>${payment.agencia_bancaria || ''}</td>
+                <td>${payment.ordem_bancaria || ''}</td>   
                 <td>${payment.data_atualizacao || ''}</td>
                 <td>${payment.data_pagamento || ''}</td>
                 <td><button class="btn btn-danger btn-sm" onclick="deletePayment(${payment.id})">Excluir</button></td>
             `;
             tbody.appendChild(tr);
         });
-
+//   <td>${payment.agencia_bancaria || ''}</td>
         // Gerar meses para as parcelas
         const mesesExistentes = payments.map(p => p.mes); // Meses já salvos
         const mesesParcelas = [];
@@ -94,15 +94,14 @@ async function loadContractsAndPayments(contractData) {
                 <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
                 <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
                 <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
-                <td><input type="text" value="${contractData.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
-                <td><input type="text" value="${contractData.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
+                <td><input type="text" value="${contractData.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>                
                 <td><input type="date" value="${contractData.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
                 <td><input type="date" value="${new Date().toISOString().split('T')[0]}" class="form-control form-control-sm" data-key="data_pagamento"></td>
                 <td></td> <!-- Sem botão Excluir -->
             `;
             tbody.appendChild(trEditable);
         });
-
+        // <td><input type="text" value="${contractData.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
         // Armazenar o título do contrato para uso no salvamento
         tbody.dataset.contractTitle = contractData.titulo;
     } catch (error) {

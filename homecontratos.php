@@ -502,50 +502,62 @@
             </div>
         </div>
     </div>
+<!-- Modal de Edição -->
+<div class="modal fade" id="modalEditContrato" tabindex="-1" aria-labelledby="modalEditContratoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditContratoLabel">Editar Contrato</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditContrato">
+                    <!-- ID do Contrato (campo oculto) -->
+                    <input type="hidden" id="id_contrato" name="id_contrato">
 
-    <!-- Modal de Edição -->
-    <div class="modal fade" id="modalEditContrato" tabindex="-1" aria-labelledby="modalEditContratoLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalEditContratoLabel">Editar Contrato</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formEditContrato">
-                        <input type="hidden" id="id_contrato" name="id_contrato">
-                        <div class="mb-3">
-                            <label for="titulo" class="form-label">Título</label>
-                            <input type="text" class="form-control" id="titulo" name="titulo" >
-                        </div>
-                        <div class="mb-3">
-                            <label for="descricao" class="form-label">Descrição</label>
-                            <textarea class="form-control" id="descricao" name="descricao" ></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="validade" class="form-label">Validade</label>
-                            <input type="date" class="form-control" id="validade" name="validade" >
-                        </div>
-                        <div class="mb-3">
-                            <label for="situacao" class="form-label">Situação</label>
-                            <select class="form-select" id="situacao" name="situacao" >
-                                <option value="Ativo">Ativo</option>
-                                <option value="Inativo">Inativo</option>
-                                <option value="Encerrado">Encerrado</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Valores Aditivos</label>
-                            <div id="aditivos-container"></div>
-                            <button type="button" class="btn btn-outline-primary mt-2" onclick="addAditivo()">Adicionar Aditivo</button>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
-                    </form>
-                </div>
+                    <!-- Título do contrato -->
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" required>
+                    </div>
+
+                    <!-- Descrição do contrato -->
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="descricao" name="descricao" required></textarea>
+                    </div>
+
+                    <!-- Validade do contrato -->
+                    <div class="mb-3">
+                        <label for="validade" class="form-label">Validade</label>
+                        <input type="date" class="form-control" id="validade" name="validade" required>
+                    </div>
+
+                    <!-- Situação do contrato -->
+                    <div class="mb-3">
+                        <label for="situacao" class="form-label">Situação</label>
+                        <select class="form-select" id="situacao" name="situacao" required>
+                            <option value="Ativo">Ativo</option>
+                            <option value="Inativo">Inativo</option>
+                            <option value="Encerrado">Encerrado</option>
+                        </select>
+                    </div>
+
+                    <!-- Valores aditivos -->
+                    <div class="mb-3">
+                        <label class="form-label">Valores Aditivos</label>
+                        <div id="aditivos-container"></div>
+                        <button type="button" class="btn btn-outline-primary mt-2" onclick="addAditivo()">Adicionar Aditivo</button>
+                    </div>
+
+                    <!-- Botão para salvar as alterações -->
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Modal de Configuração de Filtros -->
 <div class="modal" id="filterModal" tabindex="-1" role="dialog">

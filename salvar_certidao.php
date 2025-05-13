@@ -26,7 +26,7 @@ function gerarNotificacaoCadastro($pdo, $username, $setor, $certidao_id, $nome, 
     try {
         $vencimento = new DateTime($data_vencimento);
         $mensagem = sprintf(
-            'Certidão "%s" (ID: %d) cadastrada com sucesso. Vence em %s. Setor: %s.',
+            'Certidão "%s" SScadastrada com sucesso. Vence em %s. Setor: %s.',
             $nome,
             $certidao_id,
             $vencimento->format('d/m/Y'),

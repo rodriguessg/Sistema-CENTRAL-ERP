@@ -621,7 +621,6 @@
                 <th>Valor Liquidado</th>
                 <th>Valor Liquidado Ag</th>
                 <th>Ordem Bancária</th>
-                <th>Agência Bancária</th>
                 <th>Data de Atualização</th>
                 <th>Data de Pagamento</th>
                 <th>Ações</th>

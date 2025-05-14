@@ -416,7 +416,7 @@
             </div>
             <div class="mb-3" id="parcelas-container" style="display:none;">
                 <label for="num-parcelas" class="form-label">Número de Parcelas</label>
-                <input type="number" id="num-parcelas" name="num_parcelas" class="form-control" max="12">
+                <input type="number" id="num-parcelas" name="num_parcelas" class="form-control">
             </div>
             <div class="mb-3">
 
@@ -603,9 +603,7 @@
  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
    <div class="form-container" id="gerenciar" style="display:none;">
      <h2 id="contractTitleHeader">Pagamentos do</h2>
-     <div class="button-group">
-     <button class="btn-submit" onclick="savePayment()">Salvar Alterações</button>
-     </div>
+
      <table id="contratosTable" class="table table-bordered">
         <thead>
             <tr>

@@ -11,7 +11,6 @@ body {
     color: #fff;
     overflow: hidden;
 }
-
 /* Container de Carregamento */
 .loading-container {
     position: fixed;
@@ -50,7 +49,7 @@ body {
     width: 20px;  /* Tamanho das bolinhas */
     height: 20px;
     border-radius: 50%;
-    animation: pulse 1.5s infinite, colorChange 3s infinite; /* Animação de pulsação e troca de cor */
+    animation: pulse 1.5s infinite, colorChange 6s infinite; /* Animação de pulsação e troca de cor */
 }
 
 /* Animação de pulsação das bolinhas */
@@ -60,12 +59,11 @@ body {
     100% { transform: scale(1); opacity: 0.7; }
 }
 
-/* Animação de troca de cores */
+/* Animação de troca de cores (apenas azul e vermelho) */
 @keyframes colorChange {
     0% { background-color: #00aaff; } /* Azul */
-    33% { background-color: #ff4c4c; } /* Vermelho */
-    66% { background-color: #ffea00; } /* Amarelo */
-    100% { background-color: #00aaff; } /* Azul novamente */
+    50% { background-color: #fe0101; } /* Vermelho */
+    100% { background-color: #00aaff; } /* Azul */
 }
 
 /* Diferenciação das bolinhas com tempo de atraso para animação */
@@ -93,16 +91,22 @@ body {
     animation-delay: 1.5s;
 }
 
-/* Texto de Carregamento */
+/* Estilo do texto de carregamento */
 .loading-text {
     margin-top: 15px;
     font-size: 16px;
     color: blue;
     display: flex;
     align-items: center;
-    animation: blink 1.5s infinite; /* Aplica a animação de piscar */
-      font-weight: bolder;
+    font-weight: bolder;
     margin-top: 20px;
+    animation: blink 1.5s infinite; /* Aplica a animação de piscar */
+}
+
+/* Animação para piscar */
+@keyframes blink {
+    0%, 100% { opacity: 1; } /* Totalmente visível */
+    50% { opacity: 0; }      /* Invisível */
 }
 
 /* Ícone giratório */
@@ -112,8 +116,4 @@ body {
     color: #00aaff; /* Cor do ícone */
 }
 
-/* Animação para piscar */
-@keyframes blink {
-    0%, 100% { opacity: 1; } /* Totalmente visível */
-    50% { opacity: 0; }      /* Invisível */
-}
+

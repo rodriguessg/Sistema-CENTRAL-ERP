@@ -33,19 +33,32 @@ $destino = $_GET['destino'];
     </div>
 
 
-        
-        <!-- Texto de Carregamento com ícone -->
-        <div class="loading-text">
-            <i class="fas fa-spinner fa-spin"></i> Carregando...
-        </div>
-    </div>
+<div class="loading-text">
+    <span id="dynamicText">Carregando</span>
+</div>
+
 
     <script>
         // Aguardar 3 segundos antes de redirecionar para a página do setor
         setTimeout(function() {
             // Redireciona para a página do setor após o tempo de carregamento
             window.location.href = "<?php echo $destino; ?>";
-        }, 5000); // Tempo de 3 segundos de carregamento
+        }, 7000); // Tempo de 3 segundos de carregamento
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const dynamicText = document.getElementById("dynamicText");
+
+    const texts = ["Carregando", "Processando", "Aguarde..."]; // Textos a serem alternados
+    let index = 0;
+
+    setInterval(function () {
+        dynamicText.textContent = texts[index]; // Atualiza o conteúdo do texto
+        index = (index + 1) % texts.length; // Alterna entre os textos
+    }, 2000); // Troca de texto a cada 3 segundos
+});
+
     </script>
 
     <!-- <script src="./src/js/loading.js"></script> -->

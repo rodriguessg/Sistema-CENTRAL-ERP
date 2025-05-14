@@ -606,25 +606,7 @@
 
      <table id="contratosTable" class="table table-bordered">
         <thead>
-            <tr>
-                <th>Mês</th>
-                <th>Empenho</th>
-                <th>Tipo</th>
-                <th>Nota de Empenho</th>
-                <th>Valor do Contrato</th>
-                <th>Créditos Ativos</th>
-                <th>Fonte</th>
-                <th>SEI</th>                
-                <th>Nota Fiscal</th>
-                <th>Envio Pagamento</th>
-                <th>Vencimento da Fatura</th>
-                <th>Valor Liquidado</th>
-                <th>Valor Liquidado Ag</th>
-                <th>Ordem Bancária</th>
-                <th>Data de Atualização</th>
-                <th>Data de Pagamento</th>
-                <th>Ações</th>
-            </tr>
+        
         </thead>
         <tbody id="contratosTableBody">
             <!-- Dados serão preenchidos dinamicamente -->

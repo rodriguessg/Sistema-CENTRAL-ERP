@@ -43,53 +43,20 @@ async function loadContractsAndPayments(contractData) {
         const payments = await paymentResponse.json();
         console.log('Pagamentos carregados:', payments);
 
-        // Exibir pagamentos anteriores como linhas não editáveis
+        // Agrupar pagamentos por ano
+        const paymentsByYear = {};
         payments.forEach(payment => {
-            const isSubRow = !!payment.fonte_adicional;
-            const tr = document.createElement('tr');
-            tr.classList.add('read-only');
-            if (isSubRow) tr.classList.add('sub-row');
-            tr.dataset.paymentId = payment.id; // Armazenar ID para edição
-            tr.dataset.paymentData = JSON.stringify(payment); // Armazenar dados para edição
-            tr.innerHTML = `
-                <td>${payment.mes || ''}</td>
-                <td>${payment.empenho || ''}</td>
-                <td>${payment.tipo || ''}</td>
-                <td>${payment.nota_empenho || ''}</td>
-                <td>${payment.valor_contrato || 0}</td>
-                <td>${payment.creditos_ativos || ''}</td>
-                <td>${isSubRow ? '↳ ' : ''}${payment.fonte || ''}${isSubRow ? ` (Fonte ${payment.fonte_adicional})` : ''}</td>
-                <td>${payment.SEI || ''}</td>
-                <td>${payment.nota_fiscal || ''}</td>
-                <td>${payment.envio_pagamento || ''}</td>
-                <td>${payment.vencimento_fatura || ''}</td>
-                <td>${payment.valor_liquidado || 0}</td>
-                <td>${payment.valor_liquidado_ag || 0}</td>
-                <td>${payment.ordem_bancaria || ''}</td>
-                <td>${payment.agencia_bancaria || ''}</td>
-                <td>${payment.data_atualizacao || ''}</td>
-                <td>${payment.data_pagamento || ''}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm" onclick="editPayment(${payment.id}, this)" title="Editar">
-                        <i class="bi bi-pencil"></i> Editar
-                    </button>
-                    <button class="btn btn-danger btn-sm" onclick="deletePayment(${payment.id}, this)" title="Excluir">
-                        <i class="bi bi-trash"></i> Excluir
-                    </button>
-                    ${!isSubRow ? `
-                        <button class="btn btn-success btn-sm" onclick="addSource(${payment.id}, this)" title="Adicionar Fonte">
-                            <i class="bi bi-plus-circle"></i> Adicionar Fonte
-                        </button>
-                    ` : ''}
-                </td>
-            `;
-            tbody.appendChild(tr);
+            const year = payment.mes ? payment.mes.split('/')[1] : 'Sem Ano';
+            if (!paymentsByYear[year]) {
+                paymentsByYear[year] = [];
+            }
+            paymentsByYear[year].push(payment);
         });
 
         // Gerar meses para as parcelas
         const mesesPagos = payments
-            .filter(p => !p.fonte_adicional) // Considerar apenas pagamentos principais
-            .map(p => p.mes); // Meses já salvos como pagamentos principais
+            .filter(p => !p.fonte_adicional)
+            .map(p => p.mes);
         const mesesParcelas = [];
         for (let i = 0; i < numParcelas; i++) {
             const dataParcela = new Date(dataInicio);
@@ -100,36 +67,142 @@ async function loadContractsAndPayments(contractData) {
             }
         }
 
-        // Adicionar linhas editáveis para cada parcela restante
-        mesesParcelas.forEach((mes) => {
-            const trEditable = document.createElement('tr');
-            trEditable.classList.add('editable');
-            trEditable.dataset.rowIndex = editableRowCounter; // Armazenar índice único
-            const valorParcela = valorContrato / numParcelas; // Dividir igualmente
-            trEditable.innerHTML = `
-                <td><input type="text" value="${mes}" class="form-control form-control-sm" data-key="mes" readonly></td>
-                <td><input type="text" value="${contractData.empenho || ''}" class="form-control form-control-sm" data-key="empenho"></td>
-                <td><input type="text" value="${contractData.tipo || ''}" class="form-control form-control-sm" data-key="tipo"></td>
-                <td><input type="text" value="${contractData.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho"></td>
-                <td><input type="number" step="0.01" value="${valorParcela.toFixed(2)}" class="form-control form-control-sm" data-key="valor_contrato" readonly></td>
-                <td><input type="text" value="${contractData.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
-                <td><input type="text" value="${contractData.fonte || ''}" class="form-control form-control-sm" data-key="fonte"></td>
-                <td><input type="text" value="${contractData.SEI || ''}" class="form-control form-control-sm" data-key="SEI"></td>
-                <td><input type="text" value="${contractData.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
-                <td><input type="text" value="${contractData.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
-                <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
-                <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
-                <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
-                <td><input type="text" value="${contractData.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
-                <td><input type="text" value="${contractData.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
-                <td><input type="date" value="${contractData.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
-                <td><input type="date" value="${new Date().toISOString().split('T')[0]}" class="form-control form-control-sm" data-key="data_pagamento"></td>
-                <td><button class="btn btn-primary btn-sm" onclick="saveSinglePayment(${editableRowCounter}, this)">
-                    <i class="bi bi-save"></i> Salvar
-                </button></td>
+        // Agrupar parcelas não pagas por ano
+        const parcelasByYear = {};
+        mesesParcelas.forEach(mes => {
+            const year = mes.split('/')[1];
+            if (!parcelasByYear[year]) {
+                parcelasByYear[year] = [];
+            }
+            parcelasByYear[year].push(mes);
+        });
+
+        // Obter o ano atual
+        const currentYear = new Date().getFullYear().toString(); // "2025"
+
+        // Criar um <details> para cada ano
+        const years = [...new Set([...Object.keys(paymentsByYear), ...Object.keys(parcelasByYear)])].sort((a, b) => b - a);
+        years.forEach(year => {
+            const details = document.createElement('details');
+            details.classList.add('year-details');
+            if (year === currentYear) {
+                details.setAttribute('open', ''); // Ano atual aberto por padrão
+            }
+
+            const summary = document.createElement('summary');
+            summary.textContent = `Ano ${year}`;
+            details.appendChild(summary);
+
+            // Criar tabela para o ano
+            const table = document.createElement('table');
+            table.classList.add('table');
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Mês</th>
+                        <th>Empenho</th>
+                        <th>Tipo</th>
+                        <th>Nota de Empenho</th>
+                        <th>Valor Contrato</th>
+                        <th>Créditos Ativos</th>
+                        <th>Fonte</th>
+                        <th>SEI</th>
+                        <th>Nota Fiscal</th>
+                        <th>Envio Pagamento</th>
+                        <th>Vencimento Fatura</th>
+                        <th>Valor Liquidado</th>
+                        <th>Valor Liquidado AG</th>
+                        <th>Ordem Bancária</th>
+                        <th>Agência Bancária</th>
+                        <th>Data Atualização</th>
+                        <th>Data Pagamento</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="year-tbody" data-year="${year}"></tbody>
             `;
-            tbody.appendChild(trEditable);
-            editableRowCounter++;
+            const yearTbody = table.querySelector('tbody');
+            details.appendChild(table);
+            tbody.appendChild(details);
+
+            // Exibir pagamentos existentes para o ano
+            if (paymentsByYear[year]) {
+                paymentsByYear[year].forEach(payment => {
+                    const isSubRow = !!payment.fonte_adicional;
+                    const tr = document.createElement('tr');
+                    tr.classList.add('read-only');
+                    if (isSubRow) tr.classList.add('sub-row');
+                    tr.dataset.paymentId = payment.id;
+                    tr.dataset.paymentData = JSON.stringify(payment);
+                    tr.innerHTML = `
+                        <td>${payment.mes || ''}</td>
+                        <td>${payment.empenho || ''}</td>
+                        <td>${payment.tipo || ''}</td>
+                        <td>${payment.nota_empenho || ''}</td>
+                        <td>${payment.valor_contrato || 0}</td>
+                        <td>${payment.creditos_ativos || ''}</td>
+                        <td>${isSubRow ? '↳ ' : ''}${payment.fonte || ''}${isSubRow ? ` (Fonte ${payment.fonte_adicional})` : ''}</td>
+                        <td>${payment.SEI || ''}</td>
+                        <td>${payment.nota_fiscal || ''}</td>
+                        <td>${payment.envio_pagamento || ''}</td>
+                        <td>${payment.vencimento_fatura || ''}</td>
+                        <td>${payment.valor_liquidado || 0}</td>
+                        <td>${payment.valor_liquidado_ag || 0}</td>
+                        <td>${payment.ordem_bancaria || ''}</td>
+                        <td>${payment.agencia_bancaria || ''}</td>
+                        <td>${payment.data_atualizacao || ''}</td>
+                        <td>${payment.data_pagamento || ''}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editPayment(${payment.id}, this)" title="Editar">
+                                <i class="bi bi-pencil"></i> Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deletePayment(${payment.id}, this)" title="Excluir">
+                                <i class="bi bi-trash"></i> Excluir
+                            </button>
+                            ${!isSubRow ? `
+                                <button class="btn btn-success btn-sm" onclick="addSource(${payment.id}, this)" title="Adicionar Fonte">
+                                    <i class="bi bi-plus-circle"></i> Adicionar Fonte
+                                </button>
+                            ` : ''}
+                        </td>
+                    `;
+                    yearTbody.appendChild(tr);
+                });
+            }
+
+            // Adicionar linhas editáveis para parcelas não pagas do ano
+            if (parcelasByYear[year]) {
+                parcelasByYear[year].forEach(mes => {
+                    const trEditable = document.createElement('tr');
+                    trEditable.classList.add('editable');
+                    trEditable.dataset.rowIndex = editableRowCounter;
+                    const valorParcela = valorContrato / numParcelas;
+                    trEditable.innerHTML = `
+                        <td><input type="text" value="${mes}" class="form-control form-control-sm" data-key="mes" readonly></td>
+                        <td><input type="text" value="${contractData.empenho || ''}" class="form-control form-control-sm" data-key="empenho"></td>
+                        <td><input type="text" value="${contractData.tipo || ''}" class="form-control form-control-sm" data-key="tipo"></td>
+                        <td><input type="text" value="${contractData.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho"></td>
+                        <td><input type="number" step="0.01" value="${valorParcela.toFixed(2)}" class="form-control form-control-sm" data-key="valor_contrato" readonly></td>
+                        <td><input type="text" value="${contractData.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
+                        <td><input type="text" value="${contractData.fonte || ''}" class="form-control form-control-sm" data-key="fonte"></td>
+                        <td><input type="text" value="${contractData.SEI || ''}" class="form-control form-control-sm" data-key="SEI"></td>
+                        <td><input type="text" value="${contractData.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
+                        <td><input type="text" value="${contractData.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
+                        <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
+                        <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
+                        <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
+                        <td><input type="text" value="${contractData.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
+                        <td><input type="text" value="${contractData.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
+                        <td><input type="date" value="${contractData.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
+                        <td><input type="date" value="${new Date().toISOString().split('T')[0]}" class="form-control form-control-sm" data-key="data_pagamento"></td>
+                        <td><button class="btn btn-primary btn-sm" onclick="saveSinglePayment(${editableRowCounter}, this)">
+                            <i class="bi bi-save"></i> Salvar
+                        </button></td>
+                    `;
+                    yearTbody.appendChild(trEditable);
+                    editableRowCounter++;
+                });
+            }
         });
 
         // Armazenar o título do contrato para uso no salvamento
@@ -143,10 +216,9 @@ async function loadContractsAndPayments(contractData) {
 // Função para sanitizar strings para JSON
 function sanitizeForJson(str) {
     if (typeof str !== 'string') return str;
-    // Remover caracteres de controle, quebras de linha e emojis
     return str
-        .replace(/[\x00-\x1F\x7F-\x9F]/g, '') // Caracteres de controle
-        .replace(/[\u{1F000}-\u{1FFFF}]/gu, '') // Emojis
+        .replace(/[\x00-\x1F\x7F-\x9F]/g, '')
+        .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')
         .replace(/\n/g, ' ')
         .trim();
 }
@@ -172,7 +244,6 @@ async function saveSinglePayment(rowIndex, button) {
         return;
     }
 
-    // Desativar botão para evitar múltiplos cliques
     button.disabled = true;
     button.textContent = 'Salvando...';
 
@@ -199,7 +270,6 @@ async function saveSinglePayment(rowIndex, button) {
         }
     });
 
-    // Validações de campos obrigatórios
     if (!paymentData.mes) {
         alert('O campo Mês é obrigatório.');
         button.disabled = false;
@@ -213,7 +283,6 @@ async function saveSinglePayment(rowIndex, button) {
         return;
     }
 
-    // Incluir ID do pagamento apenas para edições
     const paymentId = row.dataset.paymentId;
     if (paymentId && !row.classList.contains('sub-row')) {
         paymentData.id = parseInt(paymentId);
@@ -222,7 +291,6 @@ async function saveSinglePayment(rowIndex, button) {
         console.log('Salvando novo pagamento:', paymentData);
     }
 
-    // Validar JSON antes de enviar
     if (!isValidJson(paymentData)) {
         alert('Erro: Dados inválidos para envio.');
         console.error('Dados inválidos:', paymentData);
@@ -231,7 +299,6 @@ async function saveSinglePayment(rowIndex, button) {
         return;
     }
 
-    // Logar JSON antes de enviar
     const jsonPayload = JSON.stringify(paymentData);
     console.log('JSON enviado para save_payment.php:', jsonPayload);
 
@@ -245,7 +312,6 @@ async function saveSinglePayment(rowIndex, button) {
             body: jsonPayload
         });
 
-        // Verificar Content-Type da resposta
         const contentType = response.headers.get('Content-Type');
         if (!contentType || !contentType.includes('application/json')) {
             const text = await response.text();
@@ -262,7 +328,6 @@ async function saveSinglePayment(rowIndex, button) {
         const data = await response.json();
         if (data.success) {
             alert('Pagamento salvo com sucesso!');
-            // Recarregar a tabela com os pagamentos atualizados
             await loadContractsAndPayments({ titulo: contractTitle });
         } else {
             console.error('Erro retornado pelo servidor:', data.message);
@@ -288,7 +353,6 @@ function editPayment(paymentId, button) {
         return;
     }
 
-    // Obter dados do pagamento armazenados na linha
     let payment;
     try {
         payment = JSON.parse(row.dataset.paymentData || '{}');
@@ -299,13 +363,11 @@ function editPayment(paymentId, button) {
     }
     console.log('Editando pagamento:', payment);
 
-    // Alterar a classe da linha para editável
     row.classList.remove('read-only');
     row.classList.add('editable');
     if (payment.fonte_adicional) row.classList.add('sub-row');
-    row.dataset.rowIndex = editableRowCounter; // Atribuir índice único
+    row.dataset.rowIndex = editableRowCounter;
 
-    // Substituir células por inputs
     const cells = row.querySelectorAll('td');
     cells[0].innerHTML = `<input type="text" value="${sanitizeForJson(payment.mes || '')}" class="form-control form-control-sm" data-key="mes" readonly>`;
     cells[1].innerHTML = `<input type="text" value="${sanitizeForJson(payment.empenho || '')}" class="form-control form-control-sm" data-key="empenho">`;
@@ -345,7 +407,6 @@ function addSource(paymentId, button) {
         return;
     }
 
-    // Obter dados do pagamento armazenados na linha
     let payment;
     try {
         payment = JSON.parse(row.dataset.paymentData || '{}');
@@ -356,7 +417,6 @@ function addSource(paymentId, button) {
     }
     console.log('Adicionando fonte para pagamento:', payment);
 
-    // Contar fontes existentes para o mesmo mês
     const existingSources = Array.from(document.querySelectorAll(`tr[data-payment-id]`))
         .filter(tr => {
             try {
@@ -369,11 +429,9 @@ function addSource(paymentId, button) {
         .length;
     const fonteNumber = existingSources + 1;
 
-    // Criar nova linha editável como sublinha
     const trEditable = document.createElement('tr');
     trEditable.classList.add('editable', 'sub-row');
-    trEditable.dataset.rowIndex = editableRowCounter; // Índice único
-    // Não definir dataset.paymentId para indicar novo registro
+    trEditable.dataset.rowIndex = editableRowCounter;
     trEditable.innerHTML = `
         <td><input type="text" value="${sanitizeForJson(payment.mes || '')}" class="form-control form-control-sm" data-key="mes" readonly></td>
         <td><input type="text" value="${sanitizeForJson(payment.empenho || '')}" class="form-control form-control-sm" data-key="empenho"></td>
@@ -400,7 +458,6 @@ function addSource(paymentId, button) {
         </td>
     `;
 
-    // Inserir a nova linha logo após a linha selecionada
     row.insertAdjacentElement('afterend', trEditable);
     editableRowCounter++;
     console.log('Nova sublinha de fonte adicionada para paymentId:', paymentId, 'Fonte:', fonteNumber);
@@ -418,7 +475,6 @@ async function deletePayment(id, button) {
         return;
     }
 
-    // Desativar botão para evitar múltiplos cliques
     button.disabled = true;
     button.textContent = 'Excluindo...';
 
@@ -434,7 +490,6 @@ async function deletePayment(id, button) {
 
         if (data.success) {
             alert('Pagamento excluído com sucesso!');
-            // Recarregar os pagamentos após exclusão
             const contractTitle = document.getElementById('contratosTableBody').dataset.contractTitle;
             await loadContractsAndPayments({ titulo: contractTitle });
         } else {
@@ -465,7 +520,7 @@ function showTab(tabId) {
     document.getElementById(tabId).style.display = 'block';
 }
 
-// Estilizar linhas não editáveis, editáveis, sublinhas e botões
+// Estilizar linhas não editáveis, editáveis, sublinhas, botões e details
 document.addEventListener('DOMContentLoaded', () => {
     const style = document.createElement('style');
     style.textContent = `
@@ -474,6 +529,8 @@ document.addEventListener('DOMContentLoaded', () => {
             border-spacing: 0; 
             background-color: #fff; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            width: 100%;
+            margin-top: 10px;
         }
         .table th, .table td { 
             padding: 10px; 
@@ -527,6 +584,23 @@ document.addEventListener('DOMContentLoaded', () => {
         .btn-primary:hover { 
             background-color: #0052cc; 
         }
+        details.year-details {
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        summary {
+            font-size: 1.2em;
+            font-weight: 500;
+            padding: 8px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        summary:hover {
+            background-color: #e9ecef;
+        }
         @media (max-width: 768px) {
             .table { 
                 font-size: 0.9em; 
@@ -534,6 +608,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .btn-sm { 
                 padding: 5px 8px; 
                 font-size: 0.85em; 
+            }
+            summary {
+                font-size: 1em;
             }
         }
     `;

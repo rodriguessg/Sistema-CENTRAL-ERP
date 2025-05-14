@@ -34,11 +34,113 @@ async function loadContractsAndPayments(contractData) {
         if (!contractResponse.ok) throw new Error('Erro ao carregar detalhes do contrato');
         const contractDetails = await contractResponse.json();
         const numParcelas = contractDetails.num_parcelas || 1;
-        const dataInicio = contractDetails.data_inicio ? new Date(contractDetails.data_inicio) : new Date();
-        const valorContrato = contractDetails.valor_contrato || contractData.valor_contrato || 0;
+        const dataInicio = contractDetails.data_cadastro ? new Date(contractDetails.data_cadastro) : new Date();
+        const valorContrato = contractDetails.valor_contrato || contractData.valor_contrato || 0; // Definido aqui
 
-        // Carregar pagamentos anteriores
-        const paymentResponse = await fetch(`./get_payment.php?contrato_titulo=${encodeURIComponent(contractData.titulo)}`);
+        // Calcular anos disponíveis
+        const availableYears = calculateYearsFromContract(dataInicio, numParcelas);
+        const currentYear = new Date().getFullYear(); // 2025
+
+        // Criar ou atualizar o select de ano
+        let yearSelect = document.getElementById('yearSelect');
+        if (!yearSelect) {
+            yearSelect = document.createElement('select');
+            yearSelect.id = 'yearSelect';
+            yearSelect.className = 'form-control form-control-sm mb-3';
+            yearSelect.style.width = '150px';
+            yearSelect.addEventListener('change', async () => {
+                await updateMonthSelect();
+                await loadPaymentsForYearAndMonth(contractData, yearSelect.value, document.getElementById('monthSelect').value, valorContrato);
+            });
+            contractTitleHeader.insertAdjacentElement('afterend', yearSelect);
+
+            const monthSelect = document.createElement('select');
+            monthSelect.id = 'monthSelect';
+            monthSelect.className = 'form-control form-control-sm mb-3';
+            monthSelect.style.width = '120px';
+            monthSelect.addEventListener('change', async () => {
+                await loadPaymentsForYearAndMonth(contractData, yearSelect.value, monthSelect.value, valorContrato);
+            });
+            yearSelect.insertAdjacentElement('afterend', monthSelect);
+        }
+
+        yearSelect.innerHTML = '<option value="">Selecione o ano</option>';
+        availableYears.forEach(year => {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        });
+        yearSelect.value = String(currentYear);
+
+        // Atualizar meses e carregar dados iniciais
+        await updateMonthSelect();
+        await loadPaymentsForYearAndMonth(contractData, currentYear, document.getElementById('monthSelect').value, valorContrato);
+
+        // Armazenar o título do contrato para uso no salvamento
+        tbody.dataset.contractTitle = contractData.titulo;
+    } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        alert('Erro ao carregar dados: ' + error.message);
+    }
+}
+
+// Função para calcular os anos com base em data_inicio e num_parcelas
+function calculateYearsFromContract(dataInicio, numParcelas) {
+    const years = new Set();
+    const startYear = dataInicio.getFullYear();
+    const startMonth = dataInicio.getMonth();
+
+    for (let i = 0; i < numParcelas; i++) {
+        const currentDate = new Date(dataInicio);
+        currentDate.setMonth(startMonth + i);
+        years.add(currentDate.getFullYear());
+    }
+
+    return Array.from(years).sort((a, b) => b - a); // Ordem decrescente
+}
+
+// Função para atualizar o select de meses
+async function updateMonthSelect() {
+    const monthSelect = document.getElementById('monthSelect');
+    const yearSelect = document.getElementById('yearSelect');
+    const selectedYear = yearSelect.value;
+
+    if (!selectedYear) {
+        monthSelect.innerHTML = '<option value="">Selecione o mês</option>';
+        return;
+    }
+
+    const months = [
+        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+
+    monthSelect.innerHTML = '<option value="">Selecione o mês</option>';
+    months.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = String(index + 1).padStart(2, '0'); // 01 a 12
+        option.textContent = month;
+        monthSelect.appendChild(option);
+    });
+
+    // Selecionar o mês atual por padrão (maio = 05)
+    const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
+    monthSelect.value = currentMonth;
+}
+
+// Função para carregar pagamentos por ano e mês
+async function loadPaymentsForYearAndMonth(contractData, year, month, valorContrato) {
+    const tbody = document.getElementById('contratosTableBody');
+    tbody.innerHTML = '';
+    editableRowCounter = 0;
+
+    try {
+        let url = `./get_payment.php?contrato_titulo=${encodeURIComponent(contractData.titulo)}`;
+        if (year) url += `&ano=${year}`;
+        if (month) url += `&mes=${month}`;
+
+        const paymentResponse = await fetch(url);
         if (!paymentResponse.ok) throw new Error('Erro ao carregar pagamentos');
         const payments = await paymentResponse.json();
         console.log('Pagamentos carregados:', payments);
@@ -49,8 +151,8 @@ async function loadContractsAndPayments(contractData) {
             const tr = document.createElement('tr');
             tr.classList.add('read-only');
             if (isSubRow) tr.classList.add('sub-row');
-            tr.dataset.paymentId = payment.id; // Armazenar ID para edição
-            tr.dataset.paymentData = JSON.stringify(payment); // Armazenar dados para edição
+            tr.dataset.paymentId = payment.id;
+            tr.dataset.paymentData = JSON.stringify(payment);
             tr.innerHTML = `
                 <td>${payment.mes || ''}</td>
                 <td>${payment.empenho || ''}</td>
@@ -58,7 +160,7 @@ async function loadContractsAndPayments(contractData) {
                 <td>${payment.nota_empenho || ''}</td>
                 <td>${payment.valor_contrato || 0}</td>
                 <td>${payment.creditos_ativos || ''}</td>
-                <td>${isSubRow ? '↳ ' : ''}${payment.fonte || ''}${isSubRow ? ` (Fonte ${payment.fonte_adicional})` : ''}</td>
+                <td>${isSubRow ? '🔗 ' : ''}${payment.fonte || ''}${isSubRow ? ` (Fonte ${payment.fonte_adicional})` : ''}</td>
                 <td>${payment.SEI || ''}</td>
                 <td>${payment.nota_fiscal || ''}</td>
                 <td>${payment.envio_pagamento || ''}</td>
@@ -86,79 +188,65 @@ async function loadContractsAndPayments(contractData) {
             tbody.appendChild(tr);
         });
 
-        // Gerar meses para as parcelas
+        // Buscar detalhes do contrato novamente para gerar parcelas restantes
+        const contractResponse = await fetch(`./get_contract_details.php?titulo=${encodeURIComponent(contractData.titulo)}`);
+        if (!contractResponse.ok) throw new Error('Erro ao carregar detalhes do contrato');
+        const contractDetails = await contractResponse.json();
+        const numParcelas = contractDetails.num_parcelas || 1;
+        const dataInicio = contractDetails.data_cadastro ? new Date(contractDetails.data_cadastro) : new Date();
+        const valorParcela = valorContrato / numParcelas;
+
         const mesesPagos = payments
-            .filter(p => !p.fonte_adicional) // Considerar apenas pagamentos principais
-            .map(p => p.mes); // Meses já salvos como pagamentos principais
+            .filter(p => !p.fonte_adicional)
+            .map(p => p.mes.split('/')[0]); // Pegar apenas o mês (ex.: "05" de "05/2025")
+
         const mesesParcelas = [];
         for (let i = 0; i < numParcelas; i++) {
             const dataParcela = new Date(dataInicio);
             dataParcela.setMonth(dataInicio.getMonth() + i);
-            const mesFormatado = `${String(dataParcela.getMonth() + 1).padStart(2, '0')}/${dataParcela.getFullYear()}`;
-            if (!mesesPagos.includes(mesFormatado)) {
-                mesesParcelas.push(mesFormatado);
+            const mes = String(dataParcela.getMonth() + 1).padStart(2, '0');
+            const ano = dataParcela.getFullYear();
+            if (ano === parseInt(year) && !mesesPagos.includes(mes)) {
+                mesesParcelas.push(`${mes}/${ano}`);
             }
         }
 
-        // Adicionar linhas editáveis para cada parcela restante
+        // Adicionar linhas editáveis para cada parcela restante no ano inteiro
         mesesParcelas.forEach((mes) => {
-            const trEditable = document.createElement('tr');
-            trEditable.classList.add('editable');
-            trEditable.dataset.rowIndex = editableRowCounter; // Armazenar índice único
-            const valorParcela = valorContrato / numParcelas; // Dividir igualmente
-            trEditable.innerHTML = `
-                <td><input type="text" value="${mes}" class="form-control form-control-sm" data-key="mes" readonly></td>
-                <td><input type="text" value="${contractData.empenho || ''}" class="form-control form-control-sm" data-key="empenho"></td>
-                <td><input type="text" value="${contractData.tipo || ''}" class="form-control form-control-sm" data-key="tipo"></td>
-                <td><input type="text" value="${contractData.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho"></td>
-                <td><input type="number" step="0.01" value="${valorParcela.toFixed(2)}" class="form-control form-control-sm" data-key="valor_contrato" readonly></td>
-                <td><input type="text" value="${contractData.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
-                <td><input type="text" value="${contractData.fonte || ''}" class="form-control form-control-sm" data-key="fonte"></td>
-                <td><input type="text" value="${contractData.SEI || ''}" class="form-control form-control-sm" data-key="SEI"></td>
-                <td><input type="text" value="${contractData.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
-                <td><input type="text" value="${contractData.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
-                <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
-                <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
-                <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
-                <td><input type="text" value="${contractData.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
-                <td><input type="text" value="${contractData.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
-                <td><input type="date" value="${contractData.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
-                <td><input type="date" value="${new Date().toISOString().split('T')[0]}" class="form-control form-control-sm" data-key="data_pagamento"></td>
-                <td><button class="btn btn-primary btn-sm" onclick="saveSinglePayment(${editableRowCounter}, this)">
-                    <i class="bi bi-save"></i> Salvar
-                </button></td>
-            `;
-            tbody.appendChild(trEditable);
-            editableRowCounter++;
+            const [mesNum, ano] = mes.split('/');
+            if (ano === year) { // Apenas verificar o ano, ignorar o mês selecionado
+                const trEditable = document.createElement('tr');
+                trEditable.classList.add('editable');
+                trEditable.dataset.rowIndex = editableRowCounter;
+                trEditable.innerHTML = `
+                    <td><input type="text" value="${mes}" class="form-control form-control-sm" data-key="mes" readonly></td>
+                    <td><input type="text" value="${contractData.empenho || ''}" class="form-control form-control-sm" data-key="empenho"></td>
+                    <td><input type="text" value="${contractData.tipo || ''}" class="form-control form-control-sm" data-key="tipo"></td>
+                    <td><input type="text" value="${contractData.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho"></td>
+                    <td><input type="number" step="0.01" value="${valorParcela.toFixed(2)}" class="form-control form-control-sm" data-key="valor_contrato" readonly></td>
+                    <td><input type="text" value="${contractData.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
+                    <td><input type="text" value="${contractData.fonte || ''}" class="form-control form-control-sm" data-key="fonte"></td>
+                    <td><input type="text" value="${contractData.SEI || ''}" class="form-control form-control-sm" data-key="SEI"></td>
+                    <td><input type="text" value="${contractData.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
+                    <td><input type="text" value="${contractData.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
+                    <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
+                    <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
+                    <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
+                    <td><input type="text" value="${contractData.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
+                    <td><input type="text" value="${contractData.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
+                    <td><input type="date" value="${contractData.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
+                    <td><input type="date" value="${new Date().toISOString().split('T')[0]}" class="form-control form-control-sm" data-key="data_pagamento"></td>
+                    <td><button class="btn btn-primary btn-sm" onclick="saveSinglePayment(${editableRowCounter}, this)">
+                        <i class="bi bi-save"></i> Salvar
+                    </button></td>
+                `;
+                tbody.appendChild(trEditable);
+                editableRowCounter++;
+            }
         });
-
-        // Armazenar o título do contrato para uso no salvamento
-        tbody.dataset.contractTitle = contractData.titulo;
     } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-        alert('Erro ao carregar dados: ' + error.message);
-    }
-}
-
-// Função para sanitizar strings para JSON
-function sanitizeForJson(str) {
-    if (typeof str !== 'string') return str;
-    // Remover caracteres de controle, quebras de linha e emojis
-    return str
-        .replace(/[\x00-\x1F\x7F-\x9F]/g, '') // Caracteres de controle
-        .replace(/[\u{1F000}-\u{1FFFF}]/gu, '') // Emojis
-        .replace(/\n/g, ' ')
-        .trim();
-}
-
-// Função para validar JSON
-function isValidJson(data) {
-    try {
-        JSON.stringify(data);
-        return true;
-    } catch (e) {
-        console.error('Erro ao validar JSON:', e.message);
-        return false;
+        console.error('Erro ao carregar pagamentos:', error);
+        throw error; // Propaga o erro para ser tratado no caller
     }
 }
 
@@ -172,12 +260,11 @@ async function saveSinglePayment(rowIndex, button) {
         return;
     }
 
-    // Desativar botão para evitar múltiplos cliques
     button.disabled = true;
     button.textContent = 'Salvando...';
 
     const inputs = row.querySelectorAll('input');
-    const paymentData = { contrato_titulo: sanitizeForJson(contractTitle) };
+    const paymentData = { contrato_titulo: contractTitle };
 
     const columns = [
         'mes', 'empenho', 'tipo', 'nota_empenho', 'valor_contrato', 'creditos_ativos', 'fonte',
@@ -194,12 +281,11 @@ async function saveSinglePayment(rowIndex, button) {
             } else if (input.type === "date") {
                 paymentData[key] = input.value || null;
             } else {
-                paymentData[key] = sanitizeForJson(input.value) || null;
+                paymentData[key] = input.value || null;
             }
         }
     });
 
-    // Validações de campos obrigatórios
     if (!paymentData.mes) {
         alert('O campo Mês é obrigatório.');
         button.disabled = false;
@@ -213,27 +299,13 @@ async function saveSinglePayment(rowIndex, button) {
         return;
     }
 
-    // Incluir ID do pagamento apenas para edições
     const paymentId = row.dataset.paymentId;
-    if (paymentId && !row.classList.contains('sub-row')) {
+    if (paymentId) {
         paymentData.id = parseInt(paymentId);
         console.log('Salvando edição para paymentId:', paymentId, 'Dados:', paymentData);
     } else {
         console.log('Salvando novo pagamento:', paymentData);
     }
-
-    // Validar JSON antes de enviar
-    if (!isValidJson(paymentData)) {
-        alert('Erro: Dados inválidos para envio.');
-        console.error('Dados inválidos:', paymentData);
-        button.disabled = false;
-        button.textContent = 'Salvar';
-        return;
-    }
-
-    // Logar JSON antes de enviar
-    const jsonPayload = JSON.stringify(paymentData);
-    console.log('JSON enviado para save_payment.php:', jsonPayload);
 
     try {
         const response = await fetch('./save_payment.php', {
@@ -242,28 +314,24 @@ async function saveSinglePayment(rowIndex, button) {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            body: jsonPayload
+            body: JSON.stringify(paymentData)
         });
 
-        // Verificar Content-Type da resposta
         const contentType = response.headers.get('Content-Type');
         if (!contentType || !contentType.includes('application/json')) {
             const text = await response.text();
             console.error('Resposta não é JSON:', text);
-            throw new Error(`Resposta do servidor não é JSON. Content-Type: ${contentType}. Resposta: ${text.substring(0, 200)}`);
+            throw new Error(`Resposta não é JSON. Content-Type: ${contentType}`);
         }
 
-        if (!response.ok) {
-            const text = await response.text();
-            console.error('Erro HTTP:', response.status, text);
-            throw new Error(`Erro HTTP: ${response.status}. Resposta: ${text.substring(0, 200)}`);
-        }
+        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
         const data = await response.json();
         if (data.success) {
             alert('Pagamento salvo com sucesso!');
-            // Recarregar a tabela com os pagamentos atualizados
-            await loadContractsAndPayments({ titulo: contractTitle });
+            const yearSelect = document.getElementById('yearSelect');
+            const monthSelect = document.getElementById('monthSelect');
+            await loadPaymentsForYearAndMonth({ titulo: contractTitle }, yearSelect.value, monthSelect.value);
         } else {
             console.error('Erro retornado pelo servidor:', data.message);
             alert('Erro ao salvar pagamento: ' + data.message);
@@ -288,7 +356,6 @@ function editPayment(paymentId, button) {
         return;
     }
 
-    // Obter dados do pagamento armazenados na linha
     let payment;
     try {
         payment = JSON.parse(row.dataset.paymentData || '{}');
@@ -299,33 +366,31 @@ function editPayment(paymentId, button) {
     }
     console.log('Editando pagamento:', payment);
 
-    // Alterar a classe da linha para editável
     row.classList.remove('read-only');
     row.classList.add('editable');
     if (payment.fonte_adicional) row.classList.add('sub-row');
-    row.dataset.rowIndex = editableRowCounter; // Atribuir índice único
+    row.dataset.rowIndex = editableRowCounter;
 
-    // Substituir células por inputs
     const cells = row.querySelectorAll('td');
-    cells[0].innerHTML = `<input type="text" value="${sanitizeForJson(payment.mes || '')}" class="form-control form-control-sm" data-key="mes" readonly>`;
-    cells[1].innerHTML = `<input type="text" value="${sanitizeForJson(payment.empenho || '')}" class="form-control form-control-sm" data-key="empenho">`;
-    cells[2].innerHTML = `<input type="text" value="${sanitizeForJson(payment.tipo || '')}" class="form-control form-control-sm" data-key="tipo">`;
-    cells[3].innerHTML = `<input type="text" value="${sanitizeForJson(payment.nota_empenho || '')}" class="form-control form-control-sm" data-key="nota_empenho">`;
+    cells[0].innerHTML = `<input type="text" value="${payment.mes || ''}" class="form-control form-control-sm" data-key="mes" readonly>`;
+    cells[1].innerHTML = `<input type="text" value="${payment.empenho || ''}" class="form-control form-control-sm" data-key="empenho">`;
+    cells[2].innerHTML = `<input type="text" value="${payment.tipo || ''}" class="form-control form-control-sm" data-key="tipo">`;
+    cells[3].innerHTML = `<input type="text" value="${payment.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho">`;
     cells[4].innerHTML = `<input type="number" step="0.01" value="${payment.valor_contrato || 0}" class="form-control form-control-sm" data-key="valor_contrato" readonly>`;
-    cells[5].innerHTML = `<input type="text" value="${sanitizeForJson(payment.creditos_ativos || '')}" class="form-control form-control-sm" data-key="creditos_ativos">`;
-    cells[6].innerHTML = `<input type="text" value="${sanitizeForJson(payment.fonte || '')}" class="form-control form-control-sm" data-key="fonte">`;
-    cells[7].innerHTML = `<input type="text" value="${sanitizeForJson(payment.SEI || '')}" class="form-control form-control-sm" data-key="SEI">`;
-    cells[8].innerHTML = `<input type="text" value="${sanitizeForJson(payment.nota_fiscal || '')}" class="form-control form-control-sm" data-key="nota_fiscal">`;
-    cells[9].innerHTML = `<input type="text" value="${sanitizeForJson(payment.envio_pagamento || '')}" class="form-control form-control-sm" data-key="envio_pagamento">`;
+    cells[5].innerHTML = `<input type="text" value="${payment.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos">`;
+    cells[6].innerHTML = `<input type="text" value="${payment.fonte || ''}" class="form-control form-control-sm" data-key="fonte">`;
+    cells[7].innerHTML = `<input type="text" value="${payment.SEI || ''}" class="form-control form-control-sm" data-key="SEI">`;
+    cells[8].innerHTML = `<input type="text" value="${payment.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal">`;
+    cells[9].innerHTML = `<input type="text" value="${payment.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento">`;
     cells[10].innerHTML = `<input type="date" value="${payment.vencimento_fatura || ''}" class="form-control form-control-sm" data-key="vencimento_fatura">`;
     cells[11].innerHTML = `<input type="number" step="0.01" value="${payment.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado">`;
     cells[12].innerHTML = `<input type="number" step="0.01" value="${payment.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag">`;
-    cells[13].innerHTML = `<input type="text" value="${sanitizeForJson(payment.ordem_bancaria || '')}" class="form-control form-control-sm" data-key="ordem_bancaria">`;
-    cells[14].innerHTML = `<input type="text" value="${sanitizeForJson(payment.agencia_bancaria || '')}" class="form-control form-control-sm" data-key="agencia_bancaria">`;
+    cells[13].innerHTML = `<input type="text" value="${payment.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria">`;
+    cells[14].innerHTML = `<input type="text" value="${payment.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria">`;
     cells[15].innerHTML = `<input type="date" value="${payment.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao">`;
     cells[16].innerHTML = `<input type="date" value="${payment.data_pagamento || ''}" class="form-control form-control-sm" data-key="data_pagamento">`;
     cells[17].innerHTML = `
-        ${payment.fonte_adicional ? `<input type="hidden" value="${sanitizeForJson(payment.fonte_adicional)}" data-key="fonte_adicional">` : ''}
+        ${payment.fonte_adicional ? `<input type="hidden" value="${payment.fonte_adicional}" data-key="fonte_adicional">` : ''}
         <button class="btn btn-primary btn-sm" onclick="saveSinglePayment(${editableRowCounter}, this)">
             <i class="bi bi-save"></i> Salvar
         </button>
@@ -345,7 +410,6 @@ function addSource(paymentId, button) {
         return;
     }
 
-    // Obter dados do pagamento armazenados na linha
     let payment;
     try {
         payment = JSON.parse(row.dataset.paymentData || '{}');
@@ -356,7 +420,6 @@ function addSource(paymentId, button) {
     }
     console.log('Adicionando fonte para pagamento:', payment);
 
-    // Contar fontes existentes para o mesmo mês
     const existingSources = Array.from(document.querySelectorAll(`tr[data-payment-id]`))
         .filter(tr => {
             try {
@@ -369,38 +432,35 @@ function addSource(paymentId, button) {
         .length;
     const fonteNumber = existingSources + 1;
 
-    // Criar nova linha editável como sublinha
     const trEditable = document.createElement('tr');
     trEditable.classList.add('editable', 'sub-row');
-    trEditable.dataset.rowIndex = editableRowCounter; // Índice único
-    // Não definir dataset.paymentId para indicar novo registro
+    trEditable.dataset.rowIndex = editableRowCounter;
     trEditable.innerHTML = `
-        <td><input type="text" value="${sanitizeForJson(payment.mes || '')}" class="form-control form-control-sm" data-key="mes" readonly></td>
-        <td><input type="text" value="${sanitizeForJson(payment.empenho || '')}" class="form-control form-control-sm" data-key="empenho"></td>
-        <td><input type="text" value="${sanitizeForJson(payment.tipo || '')}" class="form-control form-control-sm" data-key="tipo"></td>
-        <td><input type="text" value="${sanitizeForJson(payment.nota_empenho || '')}" class="form-control form-control-sm" data-key="nota_empenho"></td>
+        <td><input type="text" value="${payment.mes || ''}" class="form-control form-control-sm" data-key="mes" readonly></td>
+        <td><input type="text" value="${payment.empenho || ''}" class="form-control form-control-sm" data-key="empenho"></td>
+        <td><input type="text" value="${payment.tipo || ''}" class="form-control form-control-sm" data-key="tipo"></td>
+        <td><input type="text" value="${payment.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho"></td>
         <td><input type="number" step="0.01" value="${payment.valor_contrato || 0}" class="form-control form-control-sm" data-key="valor_contrato" readonly></td>
-        <td><input type="text" value="${sanitizeForJson(payment.creditos_ativos || '')}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
-        <td><input type="text" value="${sanitizeForJson('Fonte ' + fonteNumber)}" class="form-control form-control-sm" data-key="fonte"></td>
-        <td><input type="text" value="${sanitizeForJson(payment.SEI || '')}" class="form-control form-control-sm" data-key="SEI"></td>
-        <td><input type="text" value="${sanitizeForJson(payment.nota_fiscal || '')}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
-        <td><input type="text" value="${sanitizeForJson(payment.envio_pagamento || '')}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
+        <td><input type="text" value="${payment.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
+        <td><input type="text" value="🔗 Fonte ${fonteNumber}" class="form-control form-control-sm" data-key="fonte"></td>
+        <td><input type="text" value="${payment.SEI || ''}" class="form-control form-control-sm" data-key="SEI"></td>
+        <td><input type="text" value="${payment.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
+        <td><input type="text" value="${payment.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
         <td><input type="date" value="${payment.vencimento_fatura || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
         <td><input type="number" step="0.01" value="${payment.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
         <td><input type="number" step="0.01" value="${payment.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
-        <td><input type="text" value="${sanitizeForJson(payment.ordem_bancaria || '')}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
-        <td><input type="text" value="${sanitizeForJson(payment.agencia_bancaria || '')}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
+        <td><input type="text" value="${payment.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
+        <td><input type="text" value="${payment.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
         <td><input type="date" value="${payment.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
         <td><input type="date" value="${payment.data_pagamento || ''}" class="form-control form-control-sm" data-key="data_pagamento"></td>
         <td>
-            <input type="hidden" value="${sanitizeForJson('Fonte ' + fonteNumber)}" data-key="fonte_adicional">
+            <input type="hidden" value="Fonte ${fonteNumber}" data-key="fonte_adicional">
             <button class="btn btn-primary btn-sm" onclick="saveSinglePayment(${editableRowCounter}, this)">
                 <i class="bi bi-save"></i> Salvar
             </button>
         </td>
     `;
 
-    // Inserir a nova linha logo após a linha selecionada
     row.insertAdjacentElement('afterend', trEditable);
     editableRowCounter++;
     console.log('Nova sublinha de fonte adicionada para paymentId:', paymentId, 'Fonte:', fonteNumber);
@@ -418,7 +478,6 @@ async function deletePayment(id, button) {
         return;
     }
 
-    // Desativar botão para evitar múltiplos cliques
     button.disabled = true;
     button.textContent = 'Excluindo...';
 
@@ -434,9 +493,10 @@ async function deletePayment(id, button) {
 
         if (data.success) {
             alert('Pagamento excluído com sucesso!');
-            // Recarregar os pagamentos após exclusão
             const contractTitle = document.getElementById('contratosTableBody').dataset.contractTitle;
-            await loadContractsAndPayments({ titulo: contractTitle });
+            const yearSelect = document.getElementById('yearSelect');
+            const monthSelect = document.getElementById('monthSelect');
+            await loadPaymentsForYearAndMonth({ titulo: contractTitle }, yearSelect.value, monthSelect.value);
         } else {
             alert('Erro ao excluir pagamento: ' + (data.message || 'Erro desconhecido'));
             button.disabled = false;
@@ -534,6 +594,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .btn-sm { 
                 padding: 5px 8px; 
                 font-size: 0.85em; 
+            }
+            select { 
+                font-size: 0.9em; 
             }
         }
     `;

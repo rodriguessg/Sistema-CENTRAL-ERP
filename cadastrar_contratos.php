@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
 
         // Formatar os valores de contrato e aditivo
         $valor_contrato = isset($_POST['valor_contrato']) ? formatarValor($_POST['valor_contrato']) : 0;
-        $valor_aditivo = isset($_POST['valor_aditivo']) ? formatarValor($_POST['valor_aditivo']) : null;
+     
         $valor_nf = isset($_POST['valor_nf']) ? formatarValor($_POST['valor_nf']) : 0;
 
         // Se o campo n_despesas não foi preenchido, atribui "Sem Despesas"
@@ -20,12 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
 
         // Prepara a inserção dos dados na tabela gestao_contratos
         $sql = "INSERT INTO gestao_contratos 
-                (titulo, SEI, objeto, gestor, gestorsb, fiscais, validade, contatos, valor_contrato, valor_aditivo, 
+                (titulo, SEI, objeto, gestor, gestorsb, fiscais, validade, contatos, valor_contrato, 
                 num_parcelas, descricao, situacao, agencia_bancaria, fonte, publicacao, date_service, n_despesas, 
                 valor_nf, parcelamento, outros, servicos) 
                 VALUES 
                 (:titulo, :SEI, :objeto, :gestor, :gestorsb, :fiscais, :validade, :contatos, :valor_contrato, 
-                :valor_aditivo, :num_parcelas, :descricao, 'Ativo', :agencia_bancaria, :fonte, :publicacao, 
+                 :num_parcelas, :descricao, 'Ativo', :agencia_bancaria, :fonte, :publicacao, 
                 :date_service, :n_despesas, :valor_nf, :parcelamento, :outros, :servicos)";
 
         $stmt = $pdo->prepare($sql);
@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
         $stmt->bindParam(':validade', $_POST['validade']);
         $stmt->bindParam(':contatos', $_POST['contatos']);
         $stmt->bindParam(':valor_contrato', $valor_contrato);
-        $stmt->bindParam(':valor_aditivo', $valor_aditivo);
+      
 
         // Se o contrato for parcelado, armazena o número de parcelas, senão define como NULL
         $num_parcelas = isset($_POST['parcelamento']) ? $_POST['num_parcelas'] : null;

@@ -30,3 +30,19 @@
 2025-05-13 20:16:55 - Executando UPDATE para id: 69
 2025-05-13 20:17:35 - Dados recebidos: {"contrato_titulo":"Contrato de Locação de Equipamentos","mes":"05/2025","empenho":"w","tipo":null,"nota_empenho":null,"valor_contrato":800,"creditos_ativos":null,"fonte":null,"SEI":"SEI-003/2023","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2025-09-30","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-13"}
 2025-05-13 20:17:35 - Executando INSERT
+2025-05-14 14:49:34 - Dados recebidos: {"contrato_titulo":"CONTRATO DE MANUTENÇÃO BONDE","mes":"05/2025","empenho":"sdf","tipo":"asf","nota_empenho":"sdf","valor_contrato":101666.67,"creditos_ativos":"asdf","fonte":"100","SEI":"20231600/889345","nota_fiscal":"sdf","envio_pagamento":"sdf","vencimento_fatura":"2029-05-14","valor_liquidado":15105,"valor_liquidado_ag":510,"ordem_bancaria":"256ko51","data_atualizacao":"2025-05-14","data_pagamento":"2025-05-14"}
+2025-05-14 14:49:34 - Executando INSERT
+2025-05-14 14:51:20 - Dados recebidos: {"contrato_titulo":"CONTRATO DE MANUTENÇÃO BONDE","mes":"05/2025","empenho":"e","tipo":null,"nota_empenho":null,"valor_contrato":6250,"creditos_ativos":null,"fonte":"sert","SEI":"ert","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2029-12-14","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-14"}
+2025-05-14 14:51:20 - Executando INSERT
+2025-05-14 14:53:01 - Dados recebidos: {"contrato_titulo":"CONTRATO DE MANUTENÇÃO BONDE","mes":"05/2025","empenho":"w","tipo":null,"nota_empenho":null,"valor_contrato":101666.67,"creditos_ativos":null,"fonte":"100","SEI":"20231600/889345","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2029-05-14","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":"5542-4","data_atualizacao":null,"data_pagamento":"2025-05-14"}
+2025-05-14 14:53:01 - Executando INSERT
+2025-05-14 14:56:09 - Dados recebidos: 
+2025-05-14 14:56:09 - Erro JSON: Syntax error - JSON bruto: 
+2025-05-14 14:56:21 - Dados recebidos: {"contrato_titulo":"CONTRATO DE MANUTENÇÃO BONDE","mes":"05/2025","empenho":"4","tipo":null,"nota_empenho":null,"valor_contrato":101666.67,"creditos_ativos":null,"fonte":"100","SEI":"20231600/889345","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2029-05-14","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":"5542-4","data_atualizacao":null,"data_pagamento":"2025-05-14"}
+2025-05-14 14:56:21 - Executando INSERT
+2025-05-14 14:56:28 - Dados recebidos: {"contrato_titulo":"CONTRATO DE MANUTENÇÃO BONDE","mes":"06/2025","empenho":"4","tipo":null,"nota_empenho":null,"valor_contrato":0,"creditos_ativos":null,"fonte":null,"SEI":null,"nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":null,"valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-14"}
+2025-05-14 14:56:28 - Executando INSERT
+2025-05-14 15:00:12 - Dados recebidos: 
+2025-05-14 15:00:12 - Erro JSON: Syntax error - JSON bruto: 
+2025-05-14 15:14:02 - Dados recebidos: {"contrato_titulo":"CONTRATO DE MANUTENÇÃO BONDE","mes":"05/2025","empenho":"w","tipo":null,"nota_empenho":null,"valor_contrato":101666.67,"creditos_ativos":null,"fonte":"100","SEI":"20231600/889345","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2029-05-14","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":"5542-4","data_atualizacao":null,"data_pagamento":"2025-05-14"}
+2025-05-14 15:14:02 - Executando INSERT

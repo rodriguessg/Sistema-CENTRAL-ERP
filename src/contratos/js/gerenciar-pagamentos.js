@@ -529,7 +529,44 @@ function showTab(tabId) {
 document.addEventListener('DOMContentLoaded', () => {
     const style = document.createElement('style');
     style.textContent = `
-      
+        .table { 
+            border-collapse: separate; 
+            border-spacing: 0; 
+            background-color: #fff; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        .table th, .table td { 
+            padding: 10px; 
+            vertical-align: middle; 
+            border: 1px solid #dee2e6; 
+        }
+        .table th { 
+            background-color: #f8f9fa; 
+            font-weight: 600; 
+        }
+        .read-only td { 
+            background-color: #f0f0f0; 
+        }
+        .read-only td input { 
+            display: none; 
+        }
+        .editable td { 
+            background-color: #e9f7ef; 
+        }
+        .editable td input { 
+            width: 100%; 
+            border-radius: 4px; 
+        }
+        .sub-row td { 
+            padding-left: 30px; 
+            background-color: #f8fafc; 
+            border-top: none; 
+            font-size: 0.95em; 
+        }
+        .sub-row td:first-child:before { 
+            content: '↳ '; 
+            color: #6c757d; 
+        }
         .btn-sm { 
             margin-right: 5px; 
             border-radius: 4px; 

@@ -8,6 +8,7 @@
 [13-May-2025 21:17:14 Europe/Berlin] PHP Warning:  Undefined variable $options_emails in C:\xampp\htdocs\Sistema-CENTRAL-ERP\homecontratos.php on line 739
 [13-May-2025 21:18:34 Europe/Berlin] PHP Warning:  Undefined variable $options_emails in C:\xampp\htdocs\Sistema-CENTRAL-ERP\homecontratos.php on line 739
 [13-May-2025 21:18:35 Europe/Berlin] PHP Warning:  Undefined variable $options_emails in C:\xampp\htdocs\Sistema-CENTRAL-ERP\homecontratos.php on line 739
+<<<<<<< Updated upstream
 [13-May-2025 21:19:17 Europe/Berlin] PHP Warning:  Undefined variable $options_emails in C:\xampp\htdocs\Sistema-CENTRAL-ERP\homecontratos.php on line 739
 [13-May-2025 21:20:03 Europe/Berlin] PHP Warning:  Undefined variable $options_emails in C:\xampp\htdocs\Sistema-CENTRAL-ERP\homecontratos.php on line 739
 [13-May-2025 21:20:04 Europe/Berlin] Certidões retornadas: [{"id":1,"documento":"CND","data_vencimento":"2025-05-15","nome":"Certid\u00e3o Negativa Teste","fornecedor":"Empresa Teste","responsavel":"contratos","arquivo":null,"contrato_id":null,"contrato_titulo":null}]
@@ -28,3 +29,7 @@
 [13-May-2025 21:40:31 Europe/Berlin] PHP Warning:  Undefined variable $options_emails in C:\xampp\htdocs\Sistema-CENTRAL-ERP\homecontratos.php on line 739
 [13-May-2025 21:45:57 Europe/Berlin] PHP Warning:  Undefined variable $options_emails in C:\xampp\htdocs\Sistema-CENTRAL-ERP\homecontratos.php on line 739
 [13-May-2025 21:48:22 Europe/Berlin] PHP Warning:  Undefined variable $options_emails in C:\xampp\htdocs\Sistema-CENTRAL-ERP\homecontratos.php on line 739
+=======
+[14-May-2025 14:26:04 Europe/Berlin] PHP Warning:  Undefined variable $options_emails in C:\xampp\htdocs\Sistema-CENTRAL-ERP\homecontratos.php on line 739
+[14-May-2025 14:26:08 Europe/Berlin] PHP Warning:  Undefined variable $options_emails in C:\xampp\htdocs\Sistema-CENTRAL-ERP\homecontratos.php on line 739
+>>>>>>> Stashed changes

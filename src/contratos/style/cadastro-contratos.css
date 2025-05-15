@@ -37,6 +37,13 @@
     transition: all 0.3s ease;
     box-sizing: border-box;
   }
+
+  .form-cadastro{
+       border: solid 1px #ddd;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+  }
   
 
 /* Contêiner do formulário */
@@ -168,12 +175,11 @@ input[type="checkbox"] {
 
 /* Estilo das labels */
 .form-label {
-    display: flex;
-        font-size: 16px;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 8px;
-        justify-content: space-between;
+       display: flex;
+    font-size: 16px;
+    color: #005A92;
+    margin-bottom: 8px;
+    justify-content: space-between;
     
 }
 
@@ -253,7 +259,7 @@ input[type="checkbox"]:checked + label {
 #icon-cadastrar {
     transition: transform 0.5s ease, color 0.3s ease; /* Adiciona um efeito suave de transição */
     cursor: pointer;
-    color:  #427842;
+    color:  white;
     font-size:smaller;
 }
 
@@ -264,6 +270,14 @@ input[type="checkbox"]:checked + label {
 }
 
 .cadastrar-contratos{
+ 
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    margin-bottom: 30px;
+    background-color: #273051; /* Azul Escuro */
+    color: white;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra suave para dar um efeito de profundidade */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transição para efeitos de hover */
+    margin: 0;
+    font-size: x-large;
+    font-weight: 600;
 }

@@ -215,40 +215,53 @@
 </head>
 
 <body class="caderno">
+    <div>
+     <h1 class="cadastrar-contratos">
+    <i class="fas fa-file-signature" id="icon-cadastrar"></i> Sistema Contratos
+
+    </h1>
 
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
-   <div class="tabs">
+  <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
-        <i class="fas fa-plus-circle"></i> Cadastro de contratos
+        <i class="fas fa-plus-circle"></i>
+        <p class="tab-title">Cadastro</p>
+        <p class="tab-description">Cadastramento de Contratos</p>
     </div>
 
     <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
-        <i class="fas fa-search"></i> Consultar contratos
+        <i class="fas fa-search"></i>
+        <p class="tab-title">Consultar</p>
+        <p class="tab-description">Consultar Contratos</p>
     </div>
 
     <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
-            <i class="fas fa-edit"></i> Gerenciar Contratos
-        </div>
+        <i class="fas fa-edit"></i>
+        <p class="tab-title">Gerenciar</p>
+        <p class="tab-description">Gerenciar Contratos</p>
+    </div>
 
     <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
-            <i class="fas fa-edit"></i> Prestação de Contas
-        </div>
+        <i class="fas fa-file-invoice-dollar"></i>
+        <p class="tab-title">Prestação</p>
+        <p class="tab-description">Prestação de Contas</p>
+    </div>
 
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
-        <i class="fas fa-file-alt"></i> Relatórios
+        <i class="fas fa-file-alt"></i>
+        <p class="tab-title">Relatórios</p>
+        <p class="tab-description">Relatórios de Contratos</p>
     </div>
- </div> <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
+</div>
+ <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
 
     
-
+</div>
 
 
  <div class="form-container" id="cadastrar" style="display:none;">
-    <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data">
-    <h1 class="cadastrar-contratos">
-    <i class="fas fa-file-signature" id="icon-cadastrar"></i> Cadastrar Contratos
-
-    </h1>
+    <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data" class="form-cadastro">
+   
 
     <div class="cadastro">
     <div class="grupo1">
@@ -362,7 +375,7 @@
             </div>
         </div>
         <div class="mb-3">
-            <label for="contatos" class="form-label">Natureza de Despesas</label><span class="text-danger">*</span>
+            <label for="contatos" class="form-label">Natureza de Despesas <span class="text-danger">*</span></label>
             <div class="input-icon">
                 <input type="text" id="n_despesas" name="contatos" class="form-control" placeholder="Digite a natureza de despesa" required>
                 <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
@@ -401,7 +414,7 @@
 
         <div class="button-group" >
         <button class="btn-submit-adicionar" type="button" class="btn-submit" onclick="toggleComplementares()">
-    <i class="fas fa-save white-icon"></i> Adicionar Informações Complementares</button>
+    <i class="fas fa-save blue-icon"></i> Adicionar Informações Complementares</button>
 
     <button type="submit" name="cadastrar_contrato" class="btn-submit">
     <i class="fas fa-plus-circle white-icon"></i> Cadastrar Contrato</button>

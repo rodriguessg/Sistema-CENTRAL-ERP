@@ -1,24 +1,22 @@
 /* Menu Lateral */
 #sidebar {
-  background: #273051;
-  color: white;
-  padding: 30px 12px;
-  position: fixed;
-  height: 100%;
-  top: 0;
-  left: 0;
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 1000;
-  border-radius: 0px 10px 10px 0px;
-  transition: width 0.5s ease, transform 0.3s ease-in-out;
+      background: #273051;
+    color: white;
+    /* padding: 32px 15px; */
+    position: fixed;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex
+;
+    flex-direction: column;
+    align-items: center;
+    transition: width 0.5s ease, transform 0.3s ease-in-out;
 }
 
 .nav-item {
   position: absolute;
-  left: 220px;
+  left: 200px;
   top: 13px;
 }
 
@@ -166,8 +164,13 @@
   text-overflow: ellipsis; /* Adiciona "..." quando o texto for longo */
 }
 
+.nav-link{
+      color: white;
+}
+
 #sidebar .profile-section {
   margin-bottom: 30px; /* Espaço inferior para separar do menu */
+  margin-top: 30px;
 }
 
 #sidebar .profile-section img {
@@ -181,7 +184,7 @@
 #sidebar .profile-section p {
   font-size: 18px;
   font-weight: bold;
-  color: white;
+  color:white;
 }
 
 #sidebar .profile-section a {
@@ -230,11 +233,12 @@
 /* Itens da lista de navegação */
 #sidebar .components li {
   padding: 10px;
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid #ddd;
   transition: background-color 0.3s ease, padding-left 0.3s ease;
 }
 
 #sidebar .components li a {
+  font-weight: bolder;
   color: white;
   text-decoration: none;
   display: flex;

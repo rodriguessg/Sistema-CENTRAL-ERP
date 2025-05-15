@@ -23,7 +23,7 @@ async function loadContractsAndPayments(contractData) {
 
     // Limpar a aba de prestação de contas
     const prestacaoContent = document.getElementById('prestacao');
-    prestacaoContent.innerHTML = ''; // Limpar conteúdo anterior
+
 
     // Atualizar o título com o contrato_titulo
     const contractTitleHeader = document.getElementById('contractTitleHeader');
@@ -291,65 +291,64 @@ async function loadContractsAndPayments(contractData) {
 }
 
 // Função para gerar o relatório de prestação de contas
-function generateAccountabilityReport(year, encodedPayments, appendToPrestacao = false) {
-    const payments = JSON.parse(decodeURIComponent(encodedPayments));
-    const reportContainer = document.createElement('div');
-    reportContainer.classList.add('report-container');
-    reportContainer.innerHTML = `
-        <h3>Prestação de Contas - Ano ${year}</h3>
-        <p><strong>Contrato:</strong> ${document.getElementById('contratosTableBody').dataset.contractTitle}</p>
-        <p><strong>Data do Relatório:</strong> ${new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</p>
-        <table class="table report-table">
-            <thead>
-                <tr>
-                    <th>Mês</th>
-                    <th>Empenho</th>
-                    <th>Fonte</th>
-                    <th>Valor Liquidado</th>
-                    <th>Data Pagamento</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    `;
+// function generateAccountabilityReport(year, encodedPayments, appendToPrestacao = false) {
+//     const payments = JSON.parse(decodeURIComponent(encodedPayments));
+//     const reportContainer = document.createElement('div');
+//     reportContainer.classList.add('report-container');
+//     reportContainer.innerHTML = `
+//         <h3>Prestação de Contas - Ano ${year}</h3>
+//         <p><strong>Contrato:</strong> ${document.getElementById('contratosTableBody').dataset.contractTitle}</p>
+//         <p><strong>Data do Relatório:</strong> ${new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</p>
+//         <table class="table report-table">
+//             <thead>
+//                 <tr>
+//                     <th>Mês</th>
+//                     <th>Empenho</th>
+//                     <th>Fonte</th>
+//                     <th>Valor Liquidado</th>
+//                     <th>Data Pagamento</th>
+//                 </tr>
+//             </thead>
+//             <tbody></tbody>
+//         </table>
+//     `;
     
-    const reportTbody = reportContainer.querySelector('tbody');
-    let totalLiquidado = 0;
-    payments.forEach(payment => {
-        const isSubRow = !!payment.fonte_adicional;
-        if (!isSubRow) {
-            totalLiquidado += parseFloat(payment.valor_liquidado || 0);
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${payment.mes || ''}</td>
-                <td>${payment.empenho || ''}</td>
-                <td>${payment.fonte || ''}${isSubRow ? ` (Fonte ${payment.fonte_adicional})` : ''}</td>
-                <td>R$ ${(parseFloat(payment.valor_liquidado || 0)).toFixed(2)}</td>
-                <td>${payment.data_pagamento || ''}</td>
-            `;
-            reportTbody.appendChild(tr);
-        }
-    });
+//     const reportTbody = reportContainer.querySelector('tbody');
+//     let totalLiquidado = 0;
+//     payments.forEach(payment => {
+//         const isSubRow = !!payment.fonte_adicional;
+//         if (!isSubRow) {
+//             totalLiquidado += parseFloat(payment.valor_liquidado || 0);
+//             const tr = document.createElement('tr');
+//             tr.innerHTML = `
+//                 <td>${payment.mes || ''}</td>
+//                 <td>${payment.empenho || ''}</td>
+//                 <td>${payment.fonte || ''}${isSubRow ? ` (Fonte ${payment.fonte_adicional})` : ''}</td>
+//                 <td>R$ ${(parseFloat(payment.valor_liquidado || 0)).toFixed(2)}</td>
+//                 <td>${payment.data_pagamento || ''}</td>
+//             `;
+//             reportTbody.appendChild(tr);
+//         }
+//     });
 
-    const totalRow = document.createElement('tr');
-    totalRow.innerHTML = `
-        <td colspan="3"><strong>Total</strong></td>
-        <td><strong>R$ ${totalLiquidado.toFixed(2)}</strong></td>
-        <td></td>
-    `;
-    reportTbody.appendChild(totalRow);
+//     const totalRow = document.createElement('tr');
+//     totalRow.innerHTML = `
+//         <td colspan="3"><strong>Total</strong></td>
+//         <td><strong>R$ ${totalLiquidado.toFixed(2)}</strong></td>
+//         <td></td>
+//     `;
+//     reportTbody.appendChild(totalRow);
 
-    // Adicionar o relatório ao container apropriado
-    if (appendToPrestacao) {
-        const prestacaoContainer = document.getElementById('prestacao');
-        prestacaoContainer.appendChild(reportContainer);
-    } else {
-        const container = document.getElementById('gerenciar');
-        const existingReport = container.querySelector('.report-container');
-        if (existingReport) existingReport.remove();
-        container.appendChild(reportContainer);
-    }
-}
+//     // Adicionar o relatório ao container apropriado
+//     if (appendToPrestacao) {
+    
+//     } else {
+//         const container = document.getElementById('gerenciar');
+//         const existingReport = container.querySelector('.report-container');
+//         if (existingReport) existingReport.remove();
+//         container.appendChild(reportContainer);
+//     }
+// }
 
 // Função para sanitizar strings para JSON
 function sanitizeForJson(str) {

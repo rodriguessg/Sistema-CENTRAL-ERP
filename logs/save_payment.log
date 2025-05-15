@@ -74,3 +74,5 @@
 2025-05-15 19:00:23 - Executando INSERT
 2025-05-15 19:08:32 - Dados recebidos: {"contrato_titulo":"teste de prestacao","mes":"05/2025","empenho":"234","tipo":"wer","nota_empenho":"wer","valor_contrato":500000,"creditos_ativos":"500000,00","fonte":"100","SEI":"20231600/889345","nota_fiscal":"qwe","envio_pagamento":"10/05/2025","vencimento_fatura":"2025-05-17","valor_liquidado":500000,"valor_liquidado_ag":500000,"ordem_bancaria":"105s","agencia_bancaria":"5542-4","data_atualizacao":null,"data_pagamento":"2025-05-15"}
 2025-05-15 19:08:32 - Executando INSERT
+2025-05-15 20:09:27 - Dados recebidos: {"contrato_titulo":"teste de prestacao","mes":"06/2025","empenho":"234","tipo":null,"nota_empenho":null,"valor_contrato":19230.77,"creditos_ativos":null,"fonte":"100","SEI":"20231600/889345","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2027-06-15","valor_liquidado":5640,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":"5542-4","data_atualizacao":null,"data_pagamento":"2025-05-15"}
+2025-05-15 20:09:27 - Executando INSERT

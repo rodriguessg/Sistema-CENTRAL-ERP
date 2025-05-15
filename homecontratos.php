@@ -191,6 +191,7 @@
 
     include 'header.php';
     include 'verificar_notificacoes.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

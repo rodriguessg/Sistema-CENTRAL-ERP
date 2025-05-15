@@ -710,35 +710,7 @@
             </div>
         </div>
 
-        <!-- Seção para agendamento de relatórios -->
-        <!-- <div id="agendamento-container">
-            <h3><i class="fas fa-clock"></i> Agendar Relatório</h3>
-            <div class="email-group">
-                <div style="flex: 1;">
-                    <label for="email_destinatario_select">E-mails Salvos</label>
-                    <select id="email_destinatario_select" name="email_destinatario_select" onchange="atualizarCampoEmail()">
-                        <option value="">Selecione um e-mail salvo</option>
-                        <?php echo $options_emails; ?>
-                        <option value="novo">Digitar novo e-mail</option>
-                    </select>
-                </div>
-                <div style="flex: 1;">
-                    <label for="email_destinatario">E-mail do Destinatário</label>
-                    <input type="email" id="email_destinatario" name="email_destinatario" placeholder="Digite o e-mail" required>
-                    <label style="display: none;" id="salvar_email_label">
-                        <input type="checkbox" id="salvar_email" name="salvar_email"> Salvar este e-mail para uso futuro
-                    </label>
-                </div>
-            </div>
-            <label for="periodicidade">Periodicidade</label>
-            <select id="periodicidade" name="periodicidade">
-                <option value="diario">Diário</option>
-                <option value="semanal">Semanal</option>
-                <option value="mensal">Mensal</option>
-            </select>
-            <button type="button" class="btn-submit" onclick="agendarRelatorio()">Agendar Relatório</button>
-        </div> -->
-
+       
         <div class="button-group">
             <!-- Botão para gerar o relatório -->
             <button class="btn-submit" type="button" id="gerar-relatorio" onclick="gerarRelatorio()">Gerar Relatório</button>

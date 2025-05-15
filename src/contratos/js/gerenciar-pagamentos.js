@@ -34,48 +34,176 @@ async function loadContractsAndPayments(contractData) {
         if (!contractResponse.ok) throw new Error('Erro ao carregar detalhes do contrato');
         const contractDetails = await contractResponse.json();
         const numParcelas = contractDetails.num_parcelas || 1;
-        const dataInicio = contractDetails.data_cadastro ? new Date(contractDetails.data_cadastro) : new Date();
-        const valorContrato = contractDetails.valor_contrato || contractData.valor_contrato || 0; // Definido aqui
+        const dataInicio = contractDetails.data_inicio ? new Date(contractDetails.data_inicio) : new Date();
+        const valorContrato = contractDetails.valor_contrato || contractData.valor_contrato || 0;
 
-        // Calcular anos disponíveis
-        const availableYears = calculateYearsFromContract(dataInicio, numParcelas);
-        const currentYear = new Date().getFullYear(); // 2025
+        // Carregar pagamentos anteriores
+        const paymentResponse = await fetch(`./get_payment.php?contrato_titulo=${encodeURIComponent(contractData.titulo)}`);
+        if (!paymentResponse.ok) throw new Error('Erro ao carregar pagamentos');
+        const payments = await paymentResponse.json();
+        console.log('Pagamentos carregados:', payments);
 
-        // Criar ou atualizar o select de ano
-        let yearSelect = document.getElementById('yearSelect');
-        if (!yearSelect) {
-            yearSelect = document.createElement('select');
-            yearSelect.id = 'yearSelect';
-            yearSelect.className = 'form-control form-control-sm mb-3';
-            yearSelect.style.width = '150px';
-            yearSelect.addEventListener('change', async () => {
-                await updateMonthSelect();
-                await loadPaymentsForYearAndMonth(contractData, yearSelect.value, document.getElementById('monthSelect').value, valorContrato);
-            });
-            contractTitleHeader.insertAdjacentElement('afterend', yearSelect);
+        // Agrupar pagamentos por ano
+        const paymentsByYear = {};
+        payments.forEach(payment => {
+            const year = payment.mes ? payment.mes.split('/')[1] : 'Sem Ano';
+            if (!paymentsByYear[year]) {
+                paymentsByYear[year] = [];
+            }
+            paymentsByYear[year].push(payment);
+        });
 
-            const monthSelect = document.createElement('select');
-            monthSelect.id = 'monthSelect';
-            monthSelect.className = 'form-control form-control-sm mb-3';
-            monthSelect.style.width = '120px';
-            monthSelect.addEventListener('change', async () => {
-                await loadPaymentsForYearAndMonth(contractData, yearSelect.value, monthSelect.value, valorContrato);
-            });
-            yearSelect.insertAdjacentElement('afterend', monthSelect);
+        // Gerar meses para as parcelas
+        const mesesPagos = payments
+            .filter(p => !p.fonte_adicional)
+            .map(p => p.mes);
+        const mesesParcelas = [];
+        for (let i = 0; i < numParcelas; i++) {
+            const dataParcela = new Date(dataInicio);
+            dataParcela.setMonth(dataInicio.getMonth() + i);
+            const mesFormatado = `${String(dataParcela.getMonth() + 1).padStart(2, '0')}/${dataParcela.getFullYear()}`;
+            if (!mesesPagos.includes(mesFormatado)) {
+                mesesParcelas.push(mesFormatado);
+            }
         }
 
-        yearSelect.innerHTML = '<option value="">Selecione o ano</option>';
-        availableYears.forEach(year => {
-            const option = document.createElement('option');
-            option.value = year;
-            option.textContent = year;
-            yearSelect.appendChild(option);
+        // Agrupar parcelas não pagas por ano
+        const parcelasByYear = {};
+        mesesParcelas.forEach(mes => {
+            const year = mes.split('/')[1];
+            if (!parcelasByYear[year]) {
+                parcelasByYear[year] = [];
+            }
+            parcelasByYear[year].push(mes);
         });
-        yearSelect.value = String(currentYear);
 
-        // Atualizar meses e carregar dados iniciais
-        await updateMonthSelect();
-        await loadPaymentsForYearAndMonth(contractData, currentYear, document.getElementById('monthSelect').value, valorContrato);
+        // Obter o ano atual
+        const currentYear = new Date().getFullYear().toString(); // "2025"
+
+        // Criar um <details> para cada ano
+        const years = [...new Set([...Object.keys(paymentsByYear), ...Object.keys(parcelasByYear)])].sort((a, b) => b - a);
+        years.forEach(year => {
+            const details = document.createElement('details');
+            details.classList.add('year-details');
+            if (year === currentYear) {
+                details.setAttribute('open', ''); // Ano atual aberto por padrão
+            }
+
+            const summary = document.createElement('summary');
+            summary.textContent = `Ano ${year}`;
+            details.appendChild(summary);
+
+            // Criar tabela para o ano
+            const table = document.createElement('table');
+            table.classList.add('table');
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Mês</th>
+                        <th>Empenho</th>
+                        <th>Tipo</th>
+                        <th>Nota de Empenho</th>
+                        <th>Valor Contrato</th>
+                        <th>Créditos Ativos</th>
+                        <th>Fonte</th>
+                        <th>SEI</th>
+                        <th>Nota Fiscal</th>
+                        <th>Envio Pagamento</th>
+                        <th>Vencimento Fatura</th>
+                        <th>Valor Liquidado</th>
+                        <th>Valor Liquidado AG</th>
+                        <th>Ordem Bancária</th>
+                        <th>Agência Bancária</th>
+                        <th>Data Atualização</th>
+                        <th>Data Pagamento</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="year-tbody" data-year="${year}"></tbody>
+            `;
+            const yearTbody = table.querySelector('tbody');
+            details.appendChild(table);
+            tbody.appendChild(details);
+
+            // Exibir pagamentos existentes para o ano
+            if (paymentsByYear[year]) {
+                paymentsByYear[year].forEach(payment => {
+                    const isSubRow = !!payment.fonte_adicional;
+                    const tr = document.createElement('tr');
+                    tr.classList.add('read-only');
+                    if (isSubRow) tr.classList.add('sub-row');
+                    tr.dataset.paymentId = payment.id;
+                    tr.dataset.paymentData = JSON.stringify(payment);
+                    tr.innerHTML = `
+                        <td>${payment.mes || ''}</td>
+                        <td>${payment.empenho || ''}</td>
+                        <td>${payment.tipo || ''}</td>
+                        <td>${payment.nota_empenho || ''}</td>
+                        <td>${payment.valor_contrato || 0}</td>
+                        <td>${payment.creditos_ativos || ''}</td>
+                        <td>${isSubRow ? '↳ ' : ''}${payment.fonte || ''}${isSubRow ? ` (Fonte ${payment.fonte_adicional})` : ''}</td>
+                        <td>${payment.SEI || ''}</td>
+                        <td>${payment.nota_fiscal || ''}</td>
+                        <td>${payment.envio_pagamento || ''}</td>
+                        <td>${payment.vencimento_fatura || ''}</td>
+                        <td>${payment.valor_liquidado || 0}</td>
+                        <td>${payment.valor_liquidado_ag || 0}</td>
+                        <td>${payment.ordem_bancaria || ''}</td>
+                        <td>${payment.agencia_bancaria || ''}</td>
+                        <td>${payment.data_atualizacao || ''}</td>
+                        <td>${payment.data_pagamento || ''}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editPayment(${payment.id}, this)" title="Editar">
+                                <i class="bi bi-pencil"></i> Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deletePayment(${payment.id}, this)" title="Excluir">
+                                <i class="bi bi-trash"></i> Excluir
+                            </button>
+                            ${!isSubRow ? `
+                                <button class="btn btn-success btn-sm" onclick="addSource(${payment.id}, this)" title="Adicionar Fonte">
+                                    <i class="bi bi-plus-circle"></i> Adicionar Fonte
+                                </button>
+                            ` : ''}
+                        </td>
+                    `;
+                    yearTbody.appendChild(tr);
+                });
+            }
+
+            // Adicionar linhas editáveis para parcelas não pagas do ano
+            if (parcelasByYear[year]) {
+                parcelasByYear[year].forEach(mes => {
+                    const trEditable = document.createElement('tr');
+                    trEditable.classList.add('editable');
+                    trEditable.dataset.rowIndex = editableRowCounter;
+                    const valorParcela = valorContrato / numParcelas;
+                    trEditable.innerHTML = `
+                        <td><input type="text" value="${mes}" class="form-control form-control-sm" data-key="mes" readonly></td>
+                        <td><input type="text" value="${contractData.empenho || ''}" class="form-control form-control-sm" data-key="empenho"></td>
+                        <td><input type="text" value="${contractData.tipo || ''}" class="form-control form-control-sm" data-key="tipo"></td>
+                        <td><input type="text" value="${contractData.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho"></td>
+                        <td><input type="number" step="0.01" value="${valorParcela.toFixed(2)}" class="form-control form-control-sm" data-key="valor_contrato" readonly></td>
+                        <td><input type="text" value="${contractData.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
+                        <td><input type="text" value="${contractData.fonte || ''}" class="form-control form-control-sm" data-key="fonte"></td>
+                        <td><input type="text" value="${contractData.SEI || ''}" class="form-control form-control-sm" data-key="SEI"></td>
+                        <td><input type="text" value="${contractData.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
+                        <td><input type="text" value="${contractData.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
+                        <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
+                        <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
+                        <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
+                        <td><input type="text" value="${contractData.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
+                        <td><input type="text" value="${contractData.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
+                        <td><input type="date" value="${contractData.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
+                        <td><input type="date" value="${new Date().toISOString().split('T')[0]}" class="form-control form-control-sm" data-key="data_pagamento"></td>
+                        <td><button class="btn btn-primary btn-sm" onclick="saveSinglePayment(${editableRowCounter}, this)">
+                            <i class="bi bi-save"></i> Salvar
+                        </button></td>
+                    `;
+                    yearTbody.appendChild(trEditable);
+                    editableRowCounter++;
+                });
+            }
+        });
 
         // Armazenar o título do contrato para uso no salvamento
         tbody.dataset.contractTitle = contractData.titulo;
@@ -85,168 +213,24 @@ async function loadContractsAndPayments(contractData) {
     }
 }
 
-// Função para calcular os anos com base em data_inicio e num_parcelas
-function calculateYearsFromContract(dataInicio, numParcelas) {
-    const years = new Set();
-    const startYear = dataInicio.getFullYear();
-    const startMonth = dataInicio.getMonth();
-
-    for (let i = 0; i < numParcelas; i++) {
-        const currentDate = new Date(dataInicio);
-        currentDate.setMonth(startMonth + i);
-        years.add(currentDate.getFullYear());
-    }
-
-    return Array.from(years).sort((a, b) => b - a); // Ordem decrescente
+// Função para sanitizar strings para JSON
+function sanitizeForJson(str) {
+    if (typeof str !== 'string') return str;
+    return str
+        .replace(/[\x00-\x1F\x7F-\x9F]/g, '')
+        .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')
+        .replace(/\n/g, ' ')
+        .trim();
 }
 
-// Função para atualizar o select de meses
-async function updateMonthSelect() {
-    const monthSelect = document.getElementById('monthSelect');
-    const yearSelect = document.getElementById('yearSelect');
-    const selectedYear = yearSelect.value;
-
-    if (!selectedYear) {
-        monthSelect.innerHTML = '<option value="">Selecione o mês</option>';
-        return;
-    }
-
-    const months = [
-        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-    ];
-
-    monthSelect.innerHTML = '<option value="">Selecione o mês</option>';
-    months.forEach((month, index) => {
-        const option = document.createElement('option');
-        option.value = String(index + 1).padStart(2, '0'); // 01 a 12
-        option.textContent = month;
-        monthSelect.appendChild(option);
-    });
-
-    // Selecionar o mês atual por padrão (maio = 05)
-    const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
-    monthSelect.value = currentMonth;
-}
-
-// Função para carregar pagamentos por ano e mês
-async function loadPaymentsForYearAndMonth(contractData, year, month, valorContrato) {
-    const tbody = document.getElementById('contratosTableBody');
-    tbody.innerHTML = '';
-    editableRowCounter = 0;
-
+// Função para validar JSON
+function isValidJson(data) {
     try {
-        let url = `./get_payment.php?contrato_titulo=${encodeURIComponent(contractData.titulo)}`;
-        if (year) url += `&ano=${year}`;
-        if (month) url += `&mes=${month}`;
-
-        const paymentResponse = await fetch(url);
-        if (!paymentResponse.ok) throw new Error('Erro ao carregar pagamentos');
-        const payments = await paymentResponse.json();
-        console.log('Pagamentos carregados:', payments);
-
-        // Exibir pagamentos anteriores como linhas não editáveis
-        payments.forEach(payment => {
-            const isSubRow = !!payment.fonte_adicional;
-            const tr = document.createElement('tr');
-            tr.classList.add('read-only');
-            if (isSubRow) tr.classList.add('sub-row');
-            tr.dataset.paymentId = payment.id;
-            tr.dataset.paymentData = JSON.stringify(payment);
-            tr.innerHTML = `
-                <td>${payment.mes || ''}</td>
-                <td>${payment.empenho || ''}</td>
-                <td>${payment.tipo || ''}</td>
-                <td>${payment.nota_empenho || ''}</td>
-                <td>${payment.valor_contrato || 0}</td>
-                <td>${payment.creditos_ativos || ''}</td>
-                <td>${isSubRow ? '🔗 ' : ''}${payment.fonte || ''}${isSubRow ? ` (Fonte ${payment.fonte_adicional})` : ''}</td>
-                <td>${payment.SEI || ''}</td>
-                <td>${payment.nota_fiscal || ''}</td>
-                <td>${payment.envio_pagamento || ''}</td>
-                <td>${payment.vencimento_fatura || ''}</td>
-                <td>${payment.valor_liquidado || 0}</td>
-                <td>${payment.valor_liquidado_ag || 0}</td>
-                <td>${payment.ordem_bancaria || ''}</td>
-                <td>${payment.agencia_bancaria || ''}</td>
-                <td>${payment.data_atualizacao || ''}</td>
-                <td>${payment.data_pagamento || ''}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm" onclick="editPayment(${payment.id}, this)" title="Editar">
-                        <i class="bi bi-pencil"></i> Editar
-                    </button>
-                    <button class="btn btn-danger btn-sm" onclick="deletePayment(${payment.id}, this)" title="Excluir">
-                        <i class="bi bi-trash"></i> Excluir
-                    </button>
-                    ${!isSubRow ? `
-                        <button class="btn btn-success btn-sm" onclick="addSource(${payment.id}, this)" title="Adicionar Fonte">
-                            <i class="bi bi-plus-circle"></i> Adicionar Fonte
-                        </button>
-                    ` : ''}
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        // Buscar detalhes do contrato novamente para gerar parcelas restantes
-        const contractResponse = await fetch(`./get_contract_details.php?titulo=${encodeURIComponent(contractData.titulo)}`);
-        if (!contractResponse.ok) throw new Error('Erro ao carregar detalhes do contrato');
-        const contractDetails = await contractResponse.json();
-        const numParcelas = contractDetails.num_parcelas || 1;
-        const dataInicio = contractDetails.data_cadastro ? new Date(contractDetails.data_cadastro) : new Date();
-        const valorParcela = valorContrato / numParcelas;
-
-        const mesesPagos = payments
-            .filter(p => !p.fonte_adicional)
-            .map(p => p.mes.split('/')[0]); // Pegar apenas o mês (ex.: "05" de "05/2025")
-
-        const mesesParcelas = [];
-        for (let i = 0; i < numParcelas; i++) {
-            const dataParcela = new Date(dataInicio);
-            dataParcela.setMonth(dataInicio.getMonth() + i);
-            const mes = String(dataParcela.getMonth() + 1).padStart(2, '0');
-            const ano = dataParcela.getFullYear();
-            if (ano === parseInt(year) && !mesesPagos.includes(mes)) {
-                mesesParcelas.push(`${mes}/${ano}`);
-            }
-        }
-
-        // Adicionar linhas editáveis para cada parcela restante no ano inteiro
-        mesesParcelas.forEach((mes) => {
-            const [mesNum, ano] = mes.split('/');
-            if (ano === year) { // Apenas verificar o ano, ignorar o mês selecionado
-                const trEditable = document.createElement('tr');
-                trEditable.classList.add('editable');
-                trEditable.dataset.rowIndex = editableRowCounter;
-                trEditable.innerHTML = `
-                    <td><input type="text" value="${mes}" class="form-control form-control-sm" data-key="mes" readonly></td>
-                    <td><input type="text" value="${contractData.empenho || ''}" class="form-control form-control-sm" data-key="empenho"></td>
-                    <td><input type="text" value="${contractData.tipo || ''}" class="form-control form-control-sm" data-key="tipo"></td>
-                    <td><input type="text" value="${contractData.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho"></td>
-                    <td><input type="number" step="0.01" value="${valorParcela.toFixed(2)}" class="form-control form-control-sm" data-key="valor_contrato" readonly></td>
-                    <td><input type="text" value="${contractData.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
-                    <td><input type="text" value="${contractData.fonte || ''}" class="form-control form-control-sm" data-key="fonte"></td>
-                    <td><input type="text" value="${contractData.SEI || ''}" class="form-control form-control-sm" data-key="SEI"></td>
-                    <td><input type="text" value="${contractData.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
-                    <td><input type="text" value="${contractData.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
-                    <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
-                    <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
-                    <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
-                    <td><input type="text" value="${contractData.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
-                    <td><input type="text" value="${contractData.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
-                    <td><input type="date" value="${contractData.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
-                    <td><input type="date" value="${new Date().toISOString().split('T')[0]}" class="form-control form-control-sm" data-key="data_pagamento"></td>
-                    <td><button class="btn btn-primary btn-sm" onclick="saveSinglePayment(${editableRowCounter}, this)">
-                        <i class="bi bi-save"></i> Salvar
-                    </button></td>
-                `;
-                tbody.appendChild(trEditable);
-                editableRowCounter++;
-            }
-        });
-    } catch (error) {
-        console.error('Erro ao carregar pagamentos:', error);
-        throw error; // Propaga o erro para ser tratado no caller
+        JSON.stringify(data);
+        return true;
+    } catch (e) {
+        console.error('Erro ao validar JSON:', e.message);
+        return false;
     }
 }
 
@@ -264,7 +248,7 @@ async function saveSinglePayment(rowIndex, button) {
     button.textContent = 'Salvando...';
 
     const inputs = row.querySelectorAll('input');
-    const paymentData = { contrato_titulo: contractTitle };
+    const paymentData = { contrato_titulo: sanitizeForJson(contractTitle) };
 
     const columns = [
         'mes', 'empenho', 'tipo', 'nota_empenho', 'valor_contrato', 'creditos_ativos', 'fonte',
@@ -281,7 +265,7 @@ async function saveSinglePayment(rowIndex, button) {
             } else if (input.type === "date") {
                 paymentData[key] = input.value || null;
             } else {
-                paymentData[key] = input.value || null;
+                paymentData[key] = sanitizeForJson(input.value) || null;
             }
         }
     });
@@ -300,12 +284,23 @@ async function saveSinglePayment(rowIndex, button) {
     }
 
     const paymentId = row.dataset.paymentId;
-    if (paymentId) {
+    if (paymentId && !row.classList.contains('sub-row')) {
         paymentData.id = parseInt(paymentId);
         console.log('Salvando edição para paymentId:', paymentId, 'Dados:', paymentData);
     } else {
         console.log('Salvando novo pagamento:', paymentData);
     }
+
+    if (!isValidJson(paymentData)) {
+        alert('Erro: Dados inválidos para envio.');
+        console.error('Dados inválidos:', paymentData);
+        button.disabled = false;
+        button.textContent = 'Salvar';
+        return;
+    }
+
+    const jsonPayload = JSON.stringify(paymentData);
+    console.log('JSON enviado para save_payment.php:', jsonPayload);
 
     try {
         const response = await fetch('./save_payment.php', {
@@ -314,24 +309,26 @@ async function saveSinglePayment(rowIndex, button) {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify(paymentData)
+            body: jsonPayload
         });
 
         const contentType = response.headers.get('Content-Type');
         if (!contentType || !contentType.includes('application/json')) {
             const text = await response.text();
             console.error('Resposta não é JSON:', text);
-            throw new Error(`Resposta não é JSON. Content-Type: ${contentType}`);
+            throw new Error(`Resposta do servidor não é JSON. Content-Type: ${contentType}. Resposta: ${text.substring(0, 200)}`);
         }
 
-        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+        if (!response.ok) {
+            const text = await response.text();
+            console.error('Erro HTTP:', response.status, text);
+            throw new Error(`Erro HTTP: ${response.status}. Resposta: ${text.substring(0, 200)}`);
+        }
 
         const data = await response.json();
         if (data.success) {
             alert('Pagamento salvo com sucesso!');
-            const yearSelect = document.getElementById('yearSelect');
-            const monthSelect = document.getElementById('monthSelect');
-            await loadPaymentsForYearAndMonth({ titulo: contractTitle }, yearSelect.value, monthSelect.value);
+            await loadContractsAndPayments({ titulo: contractTitle });
         } else {
             console.error('Erro retornado pelo servidor:', data.message);
             alert('Erro ao salvar pagamento: ' + data.message);
@@ -372,25 +369,25 @@ function editPayment(paymentId, button) {
     row.dataset.rowIndex = editableRowCounter;
 
     const cells = row.querySelectorAll('td');
-    cells[0].innerHTML = `<input type="text" value="${payment.mes || ''}" class="form-control form-control-sm" data-key="mes" readonly>`;
-    cells[1].innerHTML = `<input type="text" value="${payment.empenho || ''}" class="form-control form-control-sm" data-key="empenho">`;
-    cells[2].innerHTML = `<input type="text" value="${payment.tipo || ''}" class="form-control form-control-sm" data-key="tipo">`;
-    cells[3].innerHTML = `<input type="text" value="${payment.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho">`;
+    cells[0].innerHTML = `<input type="text" value="${sanitizeForJson(payment.mes || '')}" class="form-control form-control-sm" data-key="mes" readonly>`;
+    cells[1].innerHTML = `<input type="text" value="${sanitizeForJson(payment.empenho || '')}" class="form-control form-control-sm" data-key="empenho">`;
+    cells[2].innerHTML = `<input type="text" value="${sanitizeForJson(payment.tipo || '')}" class="form-control form-control-sm" data-key="tipo">`;
+    cells[3].innerHTML = `<input type="text" value="${sanitizeForJson(payment.nota_empenho || '')}" class="form-control form-control-sm" data-key="nota_empenho">`;
     cells[4].innerHTML = `<input type="number" step="0.01" value="${payment.valor_contrato || 0}" class="form-control form-control-sm" data-key="valor_contrato" readonly>`;
-    cells[5].innerHTML = `<input type="text" value="${payment.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos">`;
-    cells[6].innerHTML = `<input type="text" value="${payment.fonte || ''}" class="form-control form-control-sm" data-key="fonte">`;
-    cells[7].innerHTML = `<input type="text" value="${payment.SEI || ''}" class="form-control form-control-sm" data-key="SEI">`;
-    cells[8].innerHTML = `<input type="text" value="${payment.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal">`;
-    cells[9].innerHTML = `<input type="text" value="${payment.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento">`;
+    cells[5].innerHTML = `<input type="text" value="${sanitizeForJson(payment.creditos_ativos || '')}" class="form-control form-control-sm" data-key="creditos_ativos">`;
+    cells[6].innerHTML = `<input type="text" value="${sanitizeForJson(payment.fonte || '')}" class="form-control form-control-sm" data-key="fonte">`;
+    cells[7].innerHTML = `<input type="text" value="${sanitizeForJson(payment.SEI || '')}" class="form-control form-control-sm" data-key="SEI">`;
+    cells[8].innerHTML = `<input type="text" value="${sanitizeForJson(payment.nota_fiscal || '')}" class="form-control form-control-sm" data-key="nota_fiscal">`;
+    cells[9].innerHTML = `<input type="text" value="${sanitizeForJson(payment.envio_pagamento || '')}" class="form-control form-control-sm" data-key="envio_pagamento">`;
     cells[10].innerHTML = `<input type="date" value="${payment.vencimento_fatura || ''}" class="form-control form-control-sm" data-key="vencimento_fatura">`;
     cells[11].innerHTML = `<input type="number" step="0.01" value="${payment.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado">`;
     cells[12].innerHTML = `<input type="number" step="0.01" value="${payment.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag">`;
-    cells[13].innerHTML = `<input type="text" value="${payment.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria">`;
-    cells[14].innerHTML = `<input type="text" value="${payment.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria">`;
+    cells[13].innerHTML = `<input type="text" value="${sanitizeForJson(payment.ordem_bancaria || '')}" class="form-control form-control-sm" data-key="ordem_bancaria">`;
+    cells[14].innerHTML = `<input type="text" value="${sanitizeForJson(payment.agencia_bancaria || '')}" class="form-control form-control-sm" data-key="agencia_bancaria">`;
     cells[15].innerHTML = `<input type="date" value="${payment.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao">`;
     cells[16].innerHTML = `<input type="date" value="${payment.data_pagamento || ''}" class="form-control form-control-sm" data-key="data_pagamento">`;
     cells[17].innerHTML = `
-        ${payment.fonte_adicional ? `<input type="hidden" value="${payment.fonte_adicional}" data-key="fonte_adicional">` : ''}
+        ${payment.fonte_adicional ? `<input type="hidden" value="${sanitizeForJson(payment.fonte_adicional)}" data-key="fonte_adicional">` : ''}
         <button class="btn btn-primary btn-sm" onclick="saveSinglePayment(${editableRowCounter}, this)">
             <i class="bi bi-save"></i> Salvar
         </button>
@@ -436,25 +433,25 @@ function addSource(paymentId, button) {
     trEditable.classList.add('editable', 'sub-row');
     trEditable.dataset.rowIndex = editableRowCounter;
     trEditable.innerHTML = `
-        <td><input type="text" value="${payment.mes || ''}" class="form-control form-control-sm" data-key="mes" readonly></td>
-        <td><input type="text" value="${payment.empenho || ''}" class="form-control form-control-sm" data-key="empenho"></td>
-        <td><input type="text" value="${payment.tipo || ''}" class="form-control form-control-sm" data-key="tipo"></td>
-        <td><input type="text" value="${payment.nota_empenho || ''}" class="form-control form-control-sm" data-key="nota_empenho"></td>
+        <td><input type="text" value="${sanitizeForJson(payment.mes || '')}" class="form-control form-control-sm" data-key="mes" readonly></td>
+        <td><input type="text" value="${sanitizeForJson(payment.empenho || '')}" class="form-control form-control-sm" data-key="empenho"></td>
+        <td><input type="text" value="${sanitizeForJson(payment.tipo || '')}" class="form-control form-control-sm" data-key="tipo"></td>
+        <td><input type="text" value="${sanitizeForJson(payment.nota_empenho || '')}" class="form-control form-control-sm" data-key="nota_empenho"></td>
         <td><input type="number" step="0.01" value="${payment.valor_contrato || 0}" class="form-control form-control-sm" data-key="valor_contrato" readonly></td>
-        <td><input type="text" value="${payment.creditos_ativos || ''}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
-        <td><input type="text" value="🔗 Fonte ${fonteNumber}" class="form-control form-control-sm" data-key="fonte"></td>
-        <td><input type="text" value="${payment.SEI || ''}" class="form-control form-control-sm" data-key="SEI"></td>
-        <td><input type="text" value="${payment.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
-        <td><input type="text" value="${payment.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
+        <td><input type="text" value="${sanitizeForJson(payment.creditos_ativos || '')}" class="form-control form-control-sm" data-key="creditos_ativos"></td>
+        <td><input type="text" value="${sanitizeForJson('Fonte ' + fonteNumber)}" class="form-control form-control-sm" data-key="fonte"></td>
+        <td><input type="text" value="${sanitizeForJson(payment.SEI || '')}" class="form-control form-control-sm" data-key="SEI"></td>
+        <td><input type="text" value="${sanitizeForJson(payment.nota_fiscal || '')}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
+        <td><input type="text" value="${sanitizeForJson(payment.envio_pagamento || '')}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
         <td><input type="date" value="${payment.vencimento_fatura || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
         <td><input type="number" step="0.01" value="${payment.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
         <td><input type="number" step="0.01" value="${payment.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
-        <td><input type="text" value="${payment.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
-        <td><input type="text" value="${payment.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
+        <td><input type="text" value="${sanitizeForJson(payment.ordem_bancaria || '')}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
+        <td><input type="text" value="${sanitizeForJson(payment.agencia_bancaria || '')}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
         <td><input type="date" value="${payment.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
         <td><input type="date" value="${payment.data_pagamento || ''}" class="form-control form-control-sm" data-key="data_pagamento"></td>
         <td>
-            <input type="hidden" value="Fonte ${fonteNumber}" data-key="fonte_adicional">
+            <input type="hidden" value="${sanitizeForJson('Fonte ' + fonteNumber)}" data-key="fonte_adicional">
             <button class="btn btn-primary btn-sm" onclick="saveSinglePayment(${editableRowCounter}, this)">
                 <i class="bi bi-save"></i> Salvar
             </button>
@@ -494,9 +491,7 @@ async function deletePayment(id, button) {
         if (data.success) {
             alert('Pagamento excluído com sucesso!');
             const contractTitle = document.getElementById('contratosTableBody').dataset.contractTitle;
-            const yearSelect = document.getElementById('yearSelect');
-            const monthSelect = document.getElementById('monthSelect');
-            await loadPaymentsForYearAndMonth({ titulo: contractTitle }, yearSelect.value, monthSelect.value);
+            await loadContractsAndPayments({ titulo: contractTitle });
         } else {
             alert('Erro ao excluir pagamento: ' + (data.message || 'Erro desconhecido'));
             button.disabled = false;
@@ -525,11 +520,50 @@ function showTab(tabId) {
     document.getElementById(tabId).style.display = 'block';
 }
 
-// Estilizar linhas não editáveis, editáveis, sublinhas e botões
+// Estilizar linhas não editáveis, editáveis, sublinhas, botões e details
 document.addEventListener('DOMContentLoaded', () => {
     const style = document.createElement('style');
     style.textContent = `
-      
+        .table { 
+            border-collapse: separate; 
+            border-spacing: 0; 
+            background-color: #fff; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            width: 100%;
+            margin-top: 10px;
+        }
+        .table th, .table td { 
+            padding: 10px; 
+            vertical-align: middle; 
+            border: 1px solid #dee2e6; 
+        }
+        .table th { 
+            background-color: #f8f9fa; 
+            font-weight: 600; 
+        }
+        .read-only td { 
+            background-color: #f0f0f0; 
+        }
+        .read-only td input { 
+            display: none; 
+        }
+        .editable td { 
+            background-color: #e9f7ef; 
+        }
+        .editable td input { 
+            width: 100%; 
+            border-radius: 4px; 
+        }
+        .sub-row td { 
+            padding-left: 30px; 
+            background-color: #f8fafc; 
+            border-top: none; 
+            font-size: 0.95em; 
+        }
+        .sub-row td:first-child:before { 
+            content: '↳ '; 
+            color: #6c757d; 
+        }
         .btn-sm { 
             margin-right: 5px; 
             border-radius: 4px; 
@@ -550,6 +584,23 @@ document.addEventListener('DOMContentLoaded', () => {
         .btn-primary:hover { 
             background-color: #0052cc; 
         }
+        details.year-details {
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        summary {
+            font-size: 1.2em;
+            font-weight: 500;
+            padding: 8px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        summary:hover {
+            background-color: #e9ecef;
+        }
         @media (max-width: 768px) {
             .table { 
                 font-size: 0.9em; 
@@ -558,8 +609,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 padding: 5px 8px; 
                 font-size: 0.85em; 
             }
-            select { 
-                font-size: 0.9em; 
+            summary {
+                font-size: 1em;
             }
         }
     `;

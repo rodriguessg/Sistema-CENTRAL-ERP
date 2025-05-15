@@ -157,23 +157,29 @@ function editacontrato(dados) {
 
         // Função para adicionar campos de valor aditivo
         function addAditivo(valor = '') {
-            if (aditivoCount >= MAX_ADITIVOS) {
-                alert(`Limite de ${MAX_ADITIVOS} aditivos atingido.`);
-                return;
-            }
+             if (aditivoCount >= MAX_ADITIVOS) {
+        alert(`Limite de ${MAX_ADITIVOS} aditivos atingido.`);
+        return;
+    }
 
-            aditivoCount++;
-            const container = document.getElementById('aditivos-container');
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.step = '0.01';
-            input.min = '0';
-            input.name = `valor_aditivo${aditivoCount}`;
-            input.className = 'form-control mb-1';
-            input.placeholder = `Valor Aditivo ${aditivoCount}`;
-            input.value = valor;
-            container.appendChild(input);
-        }
+    aditivoCount++;
+    const container = document.getElementById('aditivos-container');
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.step = '0.01';
+    input.min = '0';
+    input.name = `valor_aditivo${aditivoCount}`;
+    input.className = 'form-control mb-1';
+    input.placeholder = `Valor Aditivo ${aditivoCount}`;
+    input.value = valor;
+    container.appendChild(input);
+
+    // ✅ Altera a situação para "Renovado"
+    const situacaoSelect = document.getElementById('situacao');
+    if (situacaoSelect) {
+        situacaoSelect.value = 'Renovado';
+    }
+}
 
         // Função para abrir o modal de filtro (placeholder)
         function openFilterModal() {

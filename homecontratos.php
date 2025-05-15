@@ -219,15 +219,15 @@
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
    <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
-        <i class="fas fa-plus-circle"></i> Cadastro de contratos
+        <i class="fas fa-plus-circle"></i> Cadastro de Contratos
     </div>
 
     <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
-        <i class="fas fa-search"></i> Consultar contratos
+        <i class="fas fa-search"></i> Consultar Contratos
     </div>
 
     <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
-            <i class="fas fa-edit"></i> Gerenciar Contratos
+            <i class="fas fa-edit"></i> Gerenciar Pagamentos
         </div>
 
     <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
@@ -456,6 +456,7 @@
                     <option value="">Todos</option>
                     <option value="Ativo">Ativo</option>
                     <option value="Inativo">Inativo</option>
+                    <option value="Renovado">Renovado</option>
                     <option value="Encerrado">Encerrado</option>
                 </select>
                 <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
@@ -540,6 +541,7 @@
                         <label for="situacao" class="form-label">Situação</label>
                         <select class="form-select" id="situacao" name="situacao" required>
                             <option value="Ativo">Ativo</option>
+                             <option value="Renovado">Renovado</option>
                             <option value="Inativo">Inativo</option>
                             <option value="Encerrado">Encerrado</option>
                         </select>

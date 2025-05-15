@@ -1,33 +1,41 @@
 <?php
+session_start();
+
+// Verifica se o usuário está logado
+if (!isset($_SESSION['username']) || !isset($_SESSION['setor'])) {
+    die("Acesso negado. Faça login primeiro.");
+}
+
+$usuario_logado = $_SESSION['username'];
+$setor_usuario = $_SESSION['setor'];
+
 // Conexão com o banco de dados
 $pdo = new PDO('mysql:host=localhost;dbname=gm_sicbd', 'root', '');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"])) {
     try {
-        // Função para formatar valores monetários
         function formatarValor($valor) {
             return floatval(str_replace(['R$', '.', ','], ['', '', '.'], trim($valor)));
         }
 
-        // Formatar valores recebidos
         $valor_contrato = isset($_POST['valor_contrato']) ? formatarValor($_POST['valor_contrato']) : 0;
         $valor_nf = isset($_POST['valor_nf']) ? formatarValor($_POST['valor_nf']) : 0;
         $n_despesas = isset($_POST['n_despesas']) && !empty($_POST['n_despesas']) ? $_POST['n_despesas'] : 'Sem Despesas';
 
-        // SQL para inserir contrato
+        // Inserir contrato
         $sql = "INSERT INTO gestao_contratos 
                 (titulo, SEI, objeto, gestor, gestorsb, fiscais, validade, contatos, valor_contrato, 
-                num_parcelas, descricao, situacao, agencia_bancaria, fonte, publicacao, date_service, n_despesas, 
-                valor_nf, parcelamento, outros, servicos) 
+                num_parcelas, descricao, situacao, agencia_bancaria, fonte, publicacao, date_service, 
+                n_despesas, valor_nf, parcelamento, outros, servicos) 
                 VALUES 
                 (:titulo, :SEI, :objeto, :gestor, :gestorsb, :fiscais, :validade, :contatos, :valor_contrato, 
                  :num_parcelas, :descricao, 'Ativo', :agencia_bancaria, :fonte, :publicacao, 
-                :date_service, :n_despesas, :valor_nf, :parcelamento, :outros, :servicos)";
+                 :date_service, :n_despesas, :valor_nf, :parcelamento, :outros, :servicos)";
 
         $stmt = $pdo->prepare($sql);
 
-        // Bind dos parâmetros
+        // Bind dos dados
         $stmt->bindParam(':titulo', $_POST['titulo']);
         $stmt->bindParam(':SEI', $_POST['SEI']);
         $stmt->bindParam(':objeto', $_POST['objeto']);
@@ -49,12 +57,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
         $stmt->bindValue(':parcelamento', isset($_POST['parcelamento']) ? 'Sim' : 'Não');
         $stmt->bindValue(':outros', isset($_POST['outros']) ? 'Sim' : 'Não');
         $stmt->bindValue(':servicos', $_POST['servicos']);
-
-        // Executa o cadastro do contrato
         $stmt->execute();
+
         $contrato_id = $pdo->lastInsertId();
 
-        // Se for parcelado, adiciona parcelas e eventos
+        // Se parcelado, insere parcelas e eventos
         if ($num_parcelas) {
             $valor_parcela = $valor_contrato / $num_parcelas;
             $validade = new DateTime($_POST['validade']);
@@ -64,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
                 $mes = $validade->format('m');
                 $ano = $validade->format('Y');
 
-                // Insere a parcela
+                // Inserir parcela
                 $sql_parcela = "INSERT INTO contratos_parcelas (contrato_id, mes, ano, valor) 
                                 VALUES (:contrato_id, :mes, :ano, :valor)";
                 $stmt_parcela = $pdo->prepare($sql_parcela);
@@ -74,14 +81,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
                 $stmt_parcela->bindParam(':valor', $valor_parcela);
                 $stmt_parcela->execute();
 
-                // Cria evento 5 dias antes do vencimento
+                // Evento para 5 dias antes do vencimento
                 $data_evento = clone $validade;
                 $data_evento->sub(new DateInterval('P5D'));
-
                 $titulo_evento = "Vencimento de Parcela: " . $_POST['titulo'];
                 $descricao_evento = "Parcela referente a " . $validade->format('F/Y') . 
-                    ". Valor: R$ " . number_format($valor_parcela, 2, ',', '.');
+                                    ". Valor: R$ " . number_format($valor_parcela, 2, ',', '.');
 
+                // Inserir evento
                 $sql_evento = "INSERT INTO eventos (titulo, descricao, data, hora, categoria, cor, criado_em) 
                                VALUES (:titulo, :descricao, :data, :hora, :categoria, :cor, NOW())";
                 $stmt_evento = $pdo->prepare($sql_evento);
@@ -92,6 +99,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
                 $stmt_evento->bindValue(':categoria', 'Pagamento');
                 $stmt_evento->bindValue(':cor', '#FF9900');
                 $stmt_evento->execute();
+
+                // Inserir notificação
+                $sql_notificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                                    VALUES (:username, :setor, :mensagem, 'pendente', NOW())";
+                $stmt_notificacao = $pdo->prepare($sql_notificacao);
+                $mensagem = "Lembrete: Vencimento da parcela do contrato \"" . $_POST['titulo'] . "\" em " . $validade->format('d/m/Y');
+                $stmt_notificacao->bindParam(':username', $usuario_logado);
+                $stmt_notificacao->bindParam(':setor', $setor_usuario);
+                $stmt_notificacao->bindParam(':mensagem', $mensagem);
+                $stmt_notificacao->execute();
             }
         }
 

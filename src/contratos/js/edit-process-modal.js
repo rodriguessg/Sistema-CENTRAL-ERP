@@ -23,14 +23,18 @@
             }
             return { class: 'valid', color: 'green', icon: 'fa-check-circle' };
         }
+// Função para determinar estilo da situação
+function getSituacaoStyle(situacao) {
+    if (situacao === 'Ativo') {
+        return { class: 'Ativo', color: 'green', icon: 'fa-arrow-up' };
+    } else if (situacao === 'Renovado') {
+        return { class: 'Renovado', color: 'blue', icon: 'fa-sync-alt' };
+    } else if (situacao === 'Inativo' || situacao === 'Encerrado') {
+        return { class: situacao, color: 'red', icon: 'fa-arrow-down' };
+    }
+    return { class: 'Desconhecido', color: 'gray', icon: 'fa-question-circle' };
+}
 
-        // Função para determinar estilo da situação
-        function getSituacaoStyle(situacao) {
-            if (situacao === 'Ativo') {
-                return { class: 'Ativo', color: 'green', icon: 'fa-arrow-up' };
-            }
-            return { class: situacao, color: 'red', icon: 'fa-arrow-down' };
-        }
 
         // Função para carregar contratos
         function searchContracts() {

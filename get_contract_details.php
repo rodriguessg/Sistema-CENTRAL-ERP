@@ -27,7 +27,7 @@ try {
     }
 
     $titulo = $_GET['titulo'];
-    $sql = "SELECT num_parcelas, data_cadastro, valor_contrato FROM gestao_contratos WHERE titulo = :titulo";
+    $sql = "SELECT num_parcelas, data_cadastro, valor_contrato, validade, situacao FROM gestao_contratos WHERE titulo = :titulo";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['titulo' => $titulo]);
     $contract = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -41,7 +41,9 @@ try {
         'success' => true,
         'num_parcelas' => (int)$contract['num_parcelas'],
         'data_cadastro' => $contract['data_cadastro'] ?? null,
-        'valor_contrato' => (float)$contract['valor_contrato'] ?? 0
+        'valor_contrato' => (float)$contract['valor_contrato'] ?? 0,
+        'validade' => $contract['validade'] ?? null,
+        'situacao' => $contract['situacao'] ?? 'ativo'
     ]);
 } catch (Exception $e) {
     error_log("Erro ao buscar detalhes do contrato: " . $e->getMessage());

@@ -311,94 +311,50 @@
 </head>
 
 <body class="caderno">
+    <div>
+     <h1 class="cadastrar-contratos">
+    <i class="fas fa-file-signature" id="icon-cadastrar"></i> Sistema Contratos
+
+    </h1>
 
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
-   <div class="tabs">
+  <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
-        <i class="fas fa-plus-circle"></i> Cadastro de Contratos
+        <i class="fas fa-plus-circle"></i>
+        <p class="tab-title">Cadastro</p>
+        <p class="tab-description">Cadastramento de Contratos</p>
     </div>
 
     <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
-        <i class="fas fa-search"></i> Consultar Contratos
+        <i class="fas fa-search"></i>
+        <p class="tab-title">Consultar</p>
+        <p class="tab-description">Consultar Contratos</p>
     </div>
 
     <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
-            <i class="fas fa-edit"></i> Gerenciar Pagamentos
-        </div>
+        <i class="fas fa-edit"></i>
+        <p class="tab-title">Gerenciar</p>
+        <p class="tab-description">Gerenciar Contratos</p>
+    </div>
 
     <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
             <i class="fas fa-edit"></i> Prestação de Contas
         </div>
-         <div class="tab" data-tab="andamento" onclick="showTab('andamento')">
-        <i class="fas fa-file-alt"></i> Andamento de contratos
-    </div>
 
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
-        <i class="fas fa-file-alt"></i> Relatórios
+        <i class="fas fa-file-alt"></i>
+        <p class="tab-title">Relatórios</p>
+        <p class="tab-description">Relatórios de Contratos</p>
     </div>
-     
  </div> <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
 
- <div class="form-container" id="andamento" style="display:none;" onclick="exibirFluxoContratos()">
-    <h2 class="text-center mb-4">Fluxo de Contratos</h2>
-    <div class="mb-3">
-        <label for="contractSelect" class="form-label">Selecione um Contrato</label>
-        <select id="contractSelect" class="form-select" onchange="exibirFluxoContratos()">
-            <option value="">Todos os Contratos</option>
-            <?php
-            try {
-                $sql = "SELECT id, titulo FROM gestao_contratos";
-                $stmt = $pdo->query($sql);
-                $contratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                if (empty($contratos)) {
-                    echo "<option value=\"\">Nenhum contrato encontrado</option>";
-                } else {
-                    foreach ($contratos as $contrato) {
-                        echo "<option value=\"{$contrato['id']}\">{$contrato['titulo']}</option>";
-                    }
-                }
-            } catch (PDOException $e) {
-                error_log("Erro ao buscar contratos: " . $e->getMessage());
-                echo "<option value=\"\">Erro ao carregar contratos</option>";
-            }
-            ?>
-        </select>
-    </div>
-    <div class="timeline-container" id="timeline"></div>
-    <div class="text-center mt-4">
-        <a href="#" class="btn btn-primary btn-rastrear" data-bs-toggle="modal" data-bs-target="#rastreamentoModal">Rastrear Contrato Selecionado</a>
-    </div>
-
-    <!-- Modal de Rastreamento -->
-    <div class="modal fade" id="rastreamentoModal" tabindex="-1" aria-labelledby="rastreamentoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rastreamentoModalLabel">Detalhes do Rastreamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="modalContent">
-                    <p>Carregando detalhes...</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-   
-
     
-</div>
+
 
 
  <div class="form-container" id="cadastrar" style="display:none;">
-    <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data">
-    <h1 class="cadastrar-contratos">
-    <i class="fas fa-file-signature" id="icon-cadastrar"></i> Cadastrar Contratos
-
-    </h1>
+    <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data" class="form-cadastro">
+   
 
     <div class="cadastro">
     <div class="grupo1">
@@ -512,7 +468,7 @@
             </div>
         </div>
         <div class="mb-3">
-            <label for="contatos" class="form-label">Natureza de Despesas</label><span class="text-danger">*</span>
+            <label for="contatos" class="form-label">Natureza de Despesas <span class="text-danger">*</span></label>
             <div class="input-icon">
                 <input type="text" id="n_despesas" name="contatos" class="form-control" placeholder="Digite a natureza de despesa" required>
                 <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
@@ -551,7 +507,7 @@
 
         <div class="button-group" >
         <button class="btn-submit-adicionar" type="button" class="btn-submit" onclick="toggleComplementares()">
-    <i class="fas fa-save white-icon"></i> Adicionar Informações Complementares</button>
+    <i class="fas fa-save blue-icon"></i> Adicionar Informações Complementares</button>
 
     <button type="submit" name="cadastrar_contrato" class="btn-submit">
     <i class="fas fa-plus-circle white-icon"></i> Cadastrar Contrato</button>

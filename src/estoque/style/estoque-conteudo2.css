@@ -12,96 +12,130 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #E0E0E0; /* Cinza bem claro */
-
-
-
-
+  
 }
 
 /* Container principal - "Caderno" */
 .caderno {
   display: flex; /* Flexbox para alinhamento do menu e conteúdo */
-  margin-left: 280px; /* Deixa espaço para o menu lateral */
-  padding: 5px;
-  width: 85%;
+  margin-left: 252px; /* Deixa espaço para o menu lateral */
+  width: 87%;
   flex-direction: column;
 }
 
 /* Container para as Tabs e o Conteúdo */
 
-/* Estilo geral das abas */
-/* Estilo geral das abas */
+/* Estilo da área de Tabs (botões) */
 .tabs {
-  display: flex;
-  justify-content: space-between;
-  background-color: #f5f5f5;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-
-
-.tab {
-  border: solid 1px  #A0A0A0;
-  padding: 12px 20px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  background-color: #A0A0A0;
-}
-
-/* Estilo das abas ativas */
-.tab.active {
-  background-color:#273051; 
-  color: white;
-  transform: scale(1.05);
-}
-
-/* Estilo de hover em abas não ativas */
-.tab:hover {
-  background-color: #ddd;
-  transform: scale(1.02);
-  color: black;
-}
-
-/* Ícones nas abas */
-.tab i {
-  font-size: 18px;
-}
-
-/* Responsividade para dispositivos móveis */
-@media (max-width: 768px) {
-  .tabs {
-    flex-direction: column; /* Coloca as abas em uma coluna em telas pequenas */
+    display: flex;
+    justify-content: space-around;
     align-items: center;
-  }
-  .tab {
-    width: 100%; /* As abas ocuparão toda a largura */
-    text-align: left; /* Alinha o texto à esquerda */
-  }
+    width: 100%;
+    padding: 20px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
+/* Estilo das Tabs individuais (Cards) */
+.tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+   padding: 5px 50px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    text-align: center;
+    border-radius: 8px;
+    position: relative;
+    border-left: 5px solid #00aaff; /* Borda colorida visível o tempo todo */
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Estilo da borda colorida visível para todas as tabs */
+.tab.active {
+    border-left: 5px solid #00aaff; /* Bordas coloridas visíveis (azul quando ativo) */
+    color: white; /* Cor do texto quando a tab está ativa */
+    background-color: #273051; /* Cor de fundo da tab ativa */
+}
+
+.tab:hover {
+    border-left: 5px solid #ff5722; /* Borda laranja ao passar o mouse */
+}
+
+/* Ícones das Tabs */
+.tab i {
+    font-size: 24px;
+    color: #273051;  /* Azul escuro */
+    margin-bottom: 5px;
+}
+
+/* Títulos e descrições das Tabs */
+.tab-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #273051;
+}
+
+.tab-description {
+    font-size: 12px;
+    color: #606c75;
+}
+
+/* Efeito de Hover para as Tabs */
+.tab:hover {
+    background-color: #e1f0f8;  /* Azul claro */
+    transform: scale(1.05);
+}
+
+/* Efeito de quando a tab está ativa */
+.tab.active {
+    background-color: #273051;
+    color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Mudando a cor do ícone quando a tab está ativa */
+.tab.active i {
+    color: white;
+}
+
+
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .tabs {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .tab {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .tab-title {
+        font-size: 14px;
+    }
+
+    .tab-description {
+        font-size: 10px;
+    }
+}
+
 
 /* CONTEUDO LABELS INPUTS */
 
-/* Estilo para o formulário */
 .form-container {
-  display: none; /* Inicialmente todas as abas ficam ocultas */
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.9); /* Fundo levemente transparente */
-  border-radius: 12px; /* Cantos mais arredondados */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra mais suave */
-  backdrop-filter: blur(10px); /* Adiciona um efeito de desfoque no fundo */
-  max-width: 100%; /* Garante que o formulário ocupe toda a largura disponível */
-  margin: 10px 0px; /* Centraliza o formulário */
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Font mais moderna */
+    display: none;
+    max-width: 100%;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin-top: 20px;
+    padding: 20px;  /* Adicionando um padding para o conteúdo não ficar colado nas bordas */
+    background-color: white;  /* Definindo o fundo branco */
+    border-radius: 8px;  /* Bordas arredondadas para suavizar o visual */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Box-shadow para criar profundidade */
 }
 
 
@@ -269,25 +303,23 @@ h3 {
 }
 
 .button-group button {
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.5s ease;
+ padding: 10px 20px;
+    font-size: 16px;
+    border: solid 1px #005A92;
+    border-radius: 5px;
 }
 
 .btn-submit {
-  background: #427842;
-  color: white;
+  background-color:#0056b3 ;
+    color: white;
 }
+
 .btn-submit-adicionar {
-  background: #BC9D32;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+    color: #005A92;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .white-icon {
@@ -295,6 +327,10 @@ h3 {
   margin-right: 8px; /* Para adicionar um pequeno espaçamento entre o ícone e o texto */
 }
 
+.blue-icon {
+  color:#005A92;
+  margin-right: 8px; /* Para adicionar um pequeno espaçamento entre o ícone e o texto */
+}
 
 .btn-clear {
   background: linear-gradient(180deg, #2d3e50, #1a242f);
@@ -892,7 +928,7 @@ h3 {
   display: flex;
       gap: 10px;
       margin-top: 20px;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
 }
 
@@ -1266,7 +1302,6 @@ tr:hover {
 
 #imprimirBtn:hover,
 #exportarExcelBtn:hover {
-  background-color: #218838;
   transform: scale(1.03); /* Efeito de hover suave */
 }
 
@@ -1280,7 +1315,6 @@ tr:hover {
   font-size: 14px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  background-color: #f9f9f9;
   width: 100%;
   height: 40px;
 }
@@ -1353,7 +1387,7 @@ tr:hover {
 /* Botão de salvar */
 .btn-salvar {
   margin-top: 25px;
-  background-color: #007bff;
+
   color: white;
   border: none;
   padding: 12px 20px;
@@ -1365,7 +1399,7 @@ tr:hover {
 }
 
 .btn-salvar:hover {
-  background-color: #0056b3;
+
   transform: scale(1.02);
 }
 
@@ -1378,7 +1412,6 @@ tr:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
   z-index: 998;
 }
 
@@ -1482,7 +1515,6 @@ tr:hover {
 .pagination a {
   padding: 8px 16px;
   margin: 0 5px;
-  background-color: #007bff;
   color: white;
   text-decoration: none;
   border-radius: 5px;

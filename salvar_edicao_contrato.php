@@ -29,7 +29,7 @@ function validateData($data) {
     if (empty($data['titulo'])) $errors[] = 'Título é obrigatório.';
     if (empty($data['descricao'])) $errors[] = 'Descrição é obrigatória.';
     if (empty($data['validade']) || !strtotime($data['validade'])) $errors[] = 'Validade inválida.';
-    if (!in_array($data['situacao'], ['Ativo', 'Inativo', 'Encerrado'])) $errors[] = 'Situação inválida.';
+    if (!in_array($data['situacao'], ['Ativo', 'Inativo', 'Encerrado', 'Renovado'])) $errors[] = 'Situação inválida.';
     
     $valores_aditivos = [];
     for ($i = 1; $i <= 5; $i++) {

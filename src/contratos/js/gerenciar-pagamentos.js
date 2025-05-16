@@ -5,8 +5,14 @@ let editableRowCounter = 0;
 async function showResumoProcesso(rowData) {
     const contractData = typeof rowData === 'string' ? JSON.parse(rowData) : rowData;
     console.log('Abrindo resumo para contrato:', contractData);
-    showTab('gerenciar');
     await loadContractsAndPayments(contractData);
+}
+
+// Função para calcular a diferença em meses entre duas datas
+function getMonthDifference(startDate, endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
 }
 
 // Função para carregar os dados do contrato e os pagamentos anteriores
@@ -14,6 +20,10 @@ async function loadContractsAndPayments(contractData) {
     const tbody = document.getElementById('contratosTableBody');
     tbody.innerHTML = ''; // Limpar tabela
     editableRowCounter = 0; // Resetar contador
+
+    // Limpar a aba de prestação de contas
+    const prestacaoContent = document.getElementById('prestacao');
+
 
     // Atualizar o título com o contrato_titulo
     const contractTitleHeader = document.getElementById('contractTitleHeader');
@@ -29,13 +39,15 @@ async function loadContractsAndPayments(contractData) {
     contractTitleHeader.innerHTML = `Pagamentos do contrato ${titulo} (${seiLink}) Conta Bancária ${agencia_bancaria}`;
 
     try {
-        // Buscar num_parcelas e data_inicio do contrato
+        // Buscar num_parcelas, data_inicio, validade e situacao do contrato
         const contractResponse = await fetch(`./get_contract_details.php?titulo=${encodeURIComponent(contractData.titulo)}`);
         if (!contractResponse.ok) throw new Error('Erro ao carregar detalhes do contrato');
         const contractDetails = await contractResponse.json();
-        const numParcelas = contractDetails.num_parcelas || 1;
-        const dataInicio = contractDetails.data_inicio ? new Date(contractDetails.data_inicio) : new Date();
+        let numParcelas = contractDetails.num_parcelas || 1;
+        const dataInicio = contractDetails.data_cadastro ? new Date(contractDetails.data_cadastro) : new Date();
+        const dataValidade = contractDetails.validade ? new Date(contractDetails.validade) : null;
         const valorContrato = contractDetails.valor_contrato || contractData.valor_contrato || 0;
+        const situacao = contractData.situacao || 'ativo'; // Usando situacao do contractData, pois contractDetails não retorna situacao
 
         // Carregar pagamentos anteriores
         const paymentResponse = await fetch(`./get_payment.php?contrato_titulo=${encodeURIComponent(contractData.titulo)}`);
@@ -43,8 +55,11 @@ async function loadContractsAndPayments(contractData) {
         const payments = await paymentResponse.json();
         console.log('Pagamentos carregados:', payments);
 
-        // Agrupar pagamentos por ano
+        // Agrupar pagamentos por ano e verificar parcelas pagas
         const paymentsByYear = {};
+        const mesesPagos = payments
+            .filter(p => !p.fonte_adicional)
+            .map(p => p.mes);
         payments.forEach(payment => {
             const year = payment.mes ? payment.mes.split('/')[1] : 'Sem Ano';
             if (!paymentsByYear[year]) {
@@ -53,10 +68,18 @@ async function loadContractsAndPayments(contractData) {
             paymentsByYear[year].push(payment);
         });
 
+        // Se o contrato for "renovado", calcular novas parcelas com base na coluna validade
+        if (situacao.toLowerCase() === 'renovado') {
+            if (dataValidade && !isNaN(dataValidade) && dataValidade >= dataInicio) {
+                numParcelas = getMonthDifference(dataInicio, dataValidade);
+                console.log(`Contrato renovado: Novo número de parcelas (${numParcelas}) com base na validade (${dataValidade.toISOString().split('T')[0]})`);
+            } else {
+                console.warn('Data de validade inválida ou não fornecida. Usando num_parcelas original:', numParcelas);
+                alert('Aviso: Data de validade do contrato renovado inválida ou não fornecida. Usando número de parcelas original.');
+            }
+        }
+
         // Gerar meses para as parcelas
-        const mesesPagos = payments
-            .filter(p => !p.fonte_adicional)
-            .map(p => p.mes);
         const mesesParcelas = [];
         for (let i = 0; i < numParcelas; i++) {
             const dataParcela = new Date(dataInicio);
@@ -66,6 +89,10 @@ async function loadContractsAndPayments(contractData) {
                 mesesParcelas.push(mesFormatado);
             }
         }
+
+        // Verificar se todas as parcelas estão pagas
+        const todasParcelasPagas = mesesParcelas.length === 0;
+        const isEncerrado = situacao.toLowerCase() === 'encerrado' || todasParcelasPagas;
 
         // Agrupar parcelas não pagas por ano
         const parcelasByYear = {};
@@ -78,15 +105,18 @@ async function loadContractsAndPayments(contractData) {
         });
 
         // Obter o ano atual
-        const currentYear = new Date().getFullYear().toString(); // "2025"
+        const currentYear = new Date().getFullYear().toString();
 
-        // Criar um <details> para cada ano
+        // Sempre abrir a aba "gerenciar" por padrão
+        showTab('gerenciar');
+
+        // Criar um <details> para cada ano na aba "gerenciar"
         const years = [...new Set([...Object.keys(paymentsByYear), ...Object.keys(parcelasByYear)])].sort((a, b) => b - a);
         years.forEach(year => {
             const details = document.createElement('details');
             details.classList.add('year-details');
             if (year === currentYear) {
-                details.setAttribute('open', ''); // Ano atual aberto por padrão
+                details.setAttribute('open', '');
             }
 
             const summary = document.createElement('summary');
@@ -122,12 +152,16 @@ async function loadContractsAndPayments(contractData) {
             `;
             const yearTbody = table.querySelector('tbody');
             details.appendChild(table);
-            tbody.appendChild(details);
 
-            // Exibir pagamentos existentes para o ano
+            // Calcular total de valor_liquidado para o ano (apenas linhas principais)
+            let totalValorLiquidado = 0;
             if (paymentsByYear[year]) {
                 paymentsByYear[year].forEach(payment => {
                     const isSubRow = !!payment.fonte_adicional;
+                    if (!isSubRow) {
+                        totalValorLiquidado += parseFloat(payment.valor_liquidado || 0);
+                    }
+
                     const tr = document.createElement('tr');
                     tr.classList.add('read-only');
                     if (isSubRow) tr.classList.add('sub-row');
@@ -148,28 +182,31 @@ async function loadContractsAndPayments(contractData) {
                         <td>${payment.valor_liquidado || 0}</td>
                         <td>${payment.valor_liquidado_ag || 0}</td>
                         <td>${payment.ordem_bancaria || ''}</td>
+                    
                         <td>${payment.data_atualizacao || ''}</td>
                         <td>${payment.data_pagamento || ''}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm" onclick="editPayment(${payment.id}, this)" title="Editar">
-                                <i class="bi bi-pencil"></i> Editar
-                            </button>
-                            <button class="btn btn-danger btn-sm" onclick="deletePayment(${payment.id}, this)" title="Excluir">
-                                <i class="bi bi-trash"></i> Excluir
-                            </button>
-                            ${!isSubRow ? `
-                                <button class="btn btn-success btn-sm" onclick="addSource(${payment.id}, this)" title="Adicionar Fonte">
-                                    <i class="bi bi-plus-circle"></i> Adicionar Fonte
+                            ${isEncerrado ? '' : `
+                                <button class="btn btn-warning btn-sm" onclick="editPayment(${payment.id}, this)" title="Editar">
+                                    <i class="bi bi-pencil"></i> Editar
                                 </button>
-                            ` : ''}
+                                <button class="btn btn-danger btn-sm" onclick="deletePayment(${payment.id}, this)" title="Excluir">
+                                    <i class="bi bi-trash"></i> Excluir
+                                </button>
+                                ${!isSubRow ? `
+                                    <button class="btn btn-success btn-sm" onclick="addSource(${payment.id}, this)" title="Adicionar Fonte">
+                                        <i class="bi bi-plus-circle"></i> Adicionar Fonte
+                                    </button>
+                                ` : ''}
+                            `}
                         </td>
                     `;
                     yearTbody.appendChild(tr);
                 });
             }
 
-            // Adicionar linhas editáveis para parcelas não pagas do ano
-            if (parcelasByYear[year]) {
+            // Adicionar linhas editáveis para parcelas não pagas do ano (se não encerrado)
+            if (parcelasByYear[year] && !isEncerrado) {
                 parcelasByYear[year].forEach(mes => {
                     const trEditable = document.createElement('tr');
                     trEditable.classList.add('editable');
@@ -185,7 +222,7 @@ async function loadContractsAndPayments(contractData) {
                         <td><input type="text" value="${contractData.fonte || ''}" class="form-control form-control-sm" data-key="fonte"></td>
                         <td><input type="text" value="${contractData.SEI || ''}" class="form-control form-control-sm" data-key="SEI"></td>
                         <td><input type="text" value="${contractData.nota_fiscal || ''}" class="form-control form-control-sm" data-key="nota_fiscal"></td>
-                        <td><input type="date" value="${contractData.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
+                        <td><input type="text" value="${contractData.envio_pagamento || ''}" class="form-control form-control-sm" data-key="envio_pagamento"></td>
                         <td><input type="date" value="${contractData.validade || ''}" class="form-control form-control-sm" data-key="vencimento_fatura"></td>
                         <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
                         <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
@@ -199,7 +236,48 @@ async function loadContractsAndPayments(contractData) {
                     yearTbody.appendChild(trEditable);
                     editableRowCounter++;
                 });
+            } else if (parcelasByYear[year] && isEncerrado) {
+                // Se encerrado, exibir apenas como texto, sem campos editáveis
+                parcelasByYear[year].forEach(mes => {
+                    const trEditable = document.createElement('tr');
+                    trEditable.classList.add('read-only');
+                    const valorParcela = valorContrato / numParcelas;
+                    trEditable.innerHTML = `
+                        <td>${mes}</td>
+                        <td>${contractData.empenho || ''}</td>
+                        <td>${contractData.tipo || ''}</td>
+                        <td>${contractData.nota_empenho || ''}</td>
+                        <td>${valorParcela.toFixed(2)}</td>
+                        <td>${contractData.creditos_ativos || ''}</td>
+                        <td>${contractData.fonte || ''}</td>
+                        <td>${contractData.SEI || ''}</td>
+                        <td>${contractData.nota_fiscal || ''}</td>
+                        <td>${contractData.envio_pagamento || ''}</td>
+                        <td>${contractData.validade || ''}</td>
+                        <td>${contractData.valor_liquidado || 0}</td>
+                        <td>${contractData.valor_liquidado_ag || 0}</td>
+                        <td>${contractData.ordem_bancaria || ''}</td>
+                        
+                        <td>${contractData.data_atualizacao || ''}</td>
+                        <td>${new Date().toISOString().split('T')[0]}</td>
+                        <td></td>
+                    `;
+                    yearTbody.appendChild(trEditable);
+                });
             }
+
+            // Adicionar total de valor_liquidado e botão de prestação de contas
+            const totalDiv = document.createElement('div');
+            totalDiv.classList.add('year-total');
+            const paymentsData = encodeURIComponent(JSON.stringify(paymentsByYear[year] || []));
+            totalDiv.innerHTML = `
+                <p><strong>Total Valor Liquidado (${year}):</strong> R$ ${totalValorLiquidado.toFixed(2)}</p>
+                <button class="btn btn-info btn-sm" onclick="showTab('prestacao'); generateAccountabilityReport('${year}', '${paymentsData}', true)">
+                    <i class="bi bi-file-earmark-text"></i> Prestação de Contas
+                </button>
+            `;
+            details.appendChild(totalDiv);
+            tbody.appendChild(details);
         });
 
         // Armazenar o título do contrato para uso no salvamento
@@ -209,6 +287,66 @@ async function loadContractsAndPayments(contractData) {
         alert('Erro ao carregar dados: ' + error.message);
     }
 }
+
+// Função para gerar o relatório de prestação de contas
+// function generateAccountabilityReport(year, encodedPayments, appendToPrestacao = false) {
+//     const payments = JSON.parse(decodeURIComponent(encodedPayments));
+//     const reportContainer = document.createElement('div');
+//     reportContainer.classList.add('report-container');
+//     reportContainer.innerHTML = `
+//         <h3>Prestação de Contas - Ano ${year}</h3>
+//         <p><strong>Contrato:</strong> ${document.getElementById('contratosTableBody').dataset.contractTitle}</p>
+//         <p><strong>Data do Relatório:</strong> ${new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</p>
+//         <table class="table report-table">
+//             <thead>
+//                 <tr>
+//                     <th>Mês</th>
+//                     <th>Empenho</th>
+//                     <th>Fonte</th>
+//                     <th>Valor Liquidado</th>
+//                     <th>Data Pagamento</th>
+//                 </tr>
+//             </thead>
+//             <tbody></tbody>
+//         </table>
+//     `;
+    
+//     const reportTbody = reportContainer.querySelector('tbody');
+//     let totalLiquidado = 0;
+//     payments.forEach(payment => {
+//         const isSubRow = !!payment.fonte_adicional;
+//         if (!isSubRow) {
+//             totalLiquidado += parseFloat(payment.valor_liquidado || 0);
+//             const tr = document.createElement('tr');
+//             tr.innerHTML = `
+//                 <td>${payment.mes || ''}</td>
+//                 <td>${payment.empenho || ''}</td>
+//                 <td>${payment.fonte || ''}${isSubRow ? ` (Fonte ${payment.fonte_adicional})` : ''}</td>
+//                 <td>R$ ${(parseFloat(payment.valor_liquidado || 0)).toFixed(2)}</td>
+//                 <td>${payment.data_pagamento || ''}</td>
+//             `;
+//             reportTbody.appendChild(tr);
+//         }
+//     });
+
+//     const totalRow = document.createElement('tr');
+//     totalRow.innerHTML = `
+//         <td colspan="3"><strong>Total</strong></td>
+//         <td><strong>R$ ${totalLiquidado.toFixed(2)}</strong></td>
+//         <td></td>
+//     `;
+//     reportTbody.appendChild(totalRow);
+
+//     // Adicionar o relatório ao container apropriado
+//     if (appendToPrestacao) {
+    
+//     } else {
+//         const container = document.getElementById('gerenciar');
+//         const existingReport = container.querySelector('.report-container');
+//         if (existingReport) existingReport.remove();
+//         container.appendChild(reportContainer);
+//     }
+// }
 
 // Função para sanitizar strings para JSON
 function sanitizeForJson(str) {
@@ -443,6 +581,7 @@ function addSource(paymentId, button) {
         <td><input type="number" step="0.01" value="${payment.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
         <td><input type="number" step="0.01" value="${payment.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
         <td><input type="text" value="${sanitizeForJson(payment.ordem_bancaria || '')}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
+        
         <td><input type="date" value="${payment.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
         <td><input type="date" value="${payment.data_pagamento || ''}" class="form-control form-control-sm" data-key="data_pagamento"></td>
         <td>
@@ -515,11 +654,36 @@ function showTab(tabId) {
     document.getElementById(tabId).style.display = 'block';
 }
 
-// Estilizar linhas não editáveis, editáveis, sublinhas, botões e details
+// Estilizar linhas não editáveis, editáveis, sublinhas, botões, details e relatório
 document.addEventListener('DOMContentLoaded', () => {
     const style = document.createElement('style');
     style.textContent = `
-   
+        .table { 
+            border-collapse: separate; 
+            border-spacing: 0; 
+            background-color: #fff; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            width: 100%;
+            margin-top: 10px;
+        }
+        .table th, .table td { 
+            padding: 10px; 
+            vertical-align: middle; 
+            border: 1px solid #dee2e6; 
+        }
+        .table th { 
+            background-color: #f8f9fa; 
+            font-weight: 600; 
+        }
+        .read-only td { 
+            background-color: #f0f0f0; 
+        }
+        .read-only td input { 
+            display: none; 
+        }
+        .editable td { 
+            background-color: #e9f7ef; 
+        }
         .editable td input { 
             width: 100%; 
             border-radius: 4px; 
@@ -554,6 +718,13 @@ document.addEventListener('DOMContentLoaded', () => {
         .btn-primary:hover { 
             background-color: #0052cc; 
         }
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+        .btn-info:hover {
+            background-color: #138496;
+        }
         details.year-details {
             margin-bottom: 15px;
             border: 1px solid #dee2e6;
@@ -571,6 +742,25 @@ document.addEventListener('DOMContentLoaded', () => {
         summary:hover {
             background-color: #e9ecef;
         }
+        .year-total {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .report-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        .report-table {
+            margin-top: 10px;
+        }
         @media (max-width: 768px) {
             .table { 
                 font-size: 0.9em; 
@@ -581,6 +771,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             summary {
                 font-size: 1em;
+            }
+            .year-total {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .year-total button {
+                margin-top: 10px;
             }
         }
     `;

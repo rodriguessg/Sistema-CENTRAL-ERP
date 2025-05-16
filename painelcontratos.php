@@ -154,11 +154,22 @@ $result_vencendo = $conn->query($sql_vencendo);
 $row_vencendo = $result_vencendo->fetch_assoc();
 $total_vencendo = $row_vencendo['total_vencendo'];
 
-// Consulta para contar os agendamentos
-$sql_agendamentos = "SELECT COUNT(*) AS total_agendamentos FROM eventos";
+// Consulta para contar os agendamentos do dia atual
+$sql_agendamentos = "SELECT COUNT(*) AS total_agendamentos 
+                     FROM eventos 
+                     WHERE DATE(data) = CURDATE()";
+
 $result_agendamentos = $conn->query($sql_agendamentos);
-$row_agendamentos = $result_agendamentos->fetch_assoc();
-$total_agendamentos = $row_agendamentos['total_agendamentos'];
+
+if ($result_agendamentos) {
+    $row_agendamentos = $result_agendamentos->fetch_assoc();
+    $total_agendamentos = $row_agendamentos['total_agendamentos'];
+} else {
+    // Em caso de erro, define como 0 e/ou exibe mensagem
+    $total_agendamentos = 0;
+    echo "Erro ao contar agendamentos: " . $conn->error;
+}
+
 
 $conn->close();
 include 'header.php';
@@ -174,22 +185,20 @@ $dbname = "gm_sicbd";
 try {
     // Criação da conexão com PDO
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    // Definir o modo de erro do PDO para exceção
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    // Consulta SQL para selecionar os eventos
-    $sql = "SELECT id, titulo, descricao, data, hora, categoria FROM eventos";
-    
-    // Preparando a consulta
+
+    // Consulta apenas os eventos do dia atual
+    $sql = "SELECT id, titulo, descricao, data, hora, categoria 
+            FROM eventos 
+            WHERE data = CURDATE()";
+
     $stmt = $pdo->prepare($sql);
-    // Executando a consulta
     $stmt->execute();
-    
-    // Fetch os resultados como um array associativo
+
+    // Obtem os resultados
     $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
-    // Exibe mensagem de erro caso a conexão falhe
     echo "Erro: " . $e->getMessage();
     exit;
 }
@@ -338,7 +347,7 @@ try {
                 <p><?php echo $total_vencendo; ?></p>
             </div>
             <div class="card">
-                <h3>Total de Eventos</h3>
+                <h3>Eventos de Hoje</h3>
                 <p><?php echo $total_agendamentos; ?></p>
             </div>
         </div>

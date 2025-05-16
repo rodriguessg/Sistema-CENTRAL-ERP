@@ -1,0 +1,25 @@
+
+        .status-encerrado {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-em-andamento {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-action {
+            margin-right: 5px;
+        }
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        canvas {
+            max-height: 300px;
+        }

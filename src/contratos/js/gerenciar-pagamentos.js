@@ -183,7 +183,7 @@ async function loadContractsAndPayments(contractData) {
                         <td>${payment.valor_liquidado || 0}</td>
                         <td>${payment.valor_liquidado_ag || 0}</td>
                         <td>${payment.ordem_bancaria || ''}</td>
-                        <td>${payment.agencia_bancaria || ''}</td>
+                    
                         <td>${payment.data_atualizacao || ''}</td>
                         <td>${payment.data_pagamento || ''}</td>
                         <td>
@@ -228,7 +228,6 @@ async function loadContractsAndPayments(contractData) {
                         <td><input type="number" step="0.01" value="${contractData.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
                         <td><input type="number" step="0.01" value="${contractData.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
                         <td><input type="text" value="${contractData.ordem_bancaria || ''}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
-                        <td><input type="text" value="${contractData.agencia_bancaria || ''}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
                         <td><input type="date" value="${contractData.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
                         <td><input type="date" value="${new Date().toISOString().split('T')[0]}" class="form-control form-control-sm" data-key="data_pagamento"></td>
                         <td><button class="btn btn-primary btn-sm" onclick="saveSinglePayment(${editableRowCounter}, this)">
@@ -259,7 +258,7 @@ async function loadContractsAndPayments(contractData) {
                         <td>${contractData.valor_liquidado || 0}</td>
                         <td>${contractData.valor_liquidado_ag || 0}</td>
                         <td>${contractData.ordem_bancaria || ''}</td>
-                        <td>${contractData.agencia_bancaria || ''}</td>
+                        
                         <td>${contractData.data_atualizacao || ''}</td>
                         <td>${new Date().toISOString().split('T')[0]}</td>
                         <td></td>
@@ -390,7 +389,7 @@ async function saveSinglePayment(rowIndex, button) {
     const columns = [
         'mes', 'empenho', 'tipo', 'nota_empenho', 'valor_contrato', 'creditos_ativos', 'fonte',
         'SEI', 'nota_fiscal', 'envio_pagamento', 'vencimento_fatura', 'valor_liquidado',
-        'valor_liquidado_ag', 'ordem_bancaria', 'agencia_bancaria', 'data_atualizacao', 'data_pagamento',
+        'valor_liquidado_ag', 'ordem_bancaria',  'data_atualizacao', 'data_pagamento',
         'fonte_adicional'
     ];
 
@@ -520,7 +519,6 @@ function editPayment(paymentId, button) {
     cells[11].innerHTML = `<input type="number" step="0.01" value="${payment.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado">`;
     cells[12].innerHTML = `<input type="number" step="0.01" value="${payment.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag">`;
     cells[13].innerHTML = `<input type="text" value="${sanitizeForJson(payment.ordem_bancaria || '')}" class="form-control form-control-sm" data-key="ordem_bancaria">`;
-    cells[14].innerHTML = `<input type="text" value="${sanitizeForJson(payment.agencia_bancaria || '')}" class="form-control form-control-sm" data-key="agencia_bancaria">`;
     cells[15].innerHTML = `<input type="date" value="${payment.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao">`;
     cells[16].innerHTML = `<input type="date" value="${payment.data_pagamento || ''}" class="form-control form-control-sm" data-key="data_pagamento">`;
     cells[17].innerHTML = `
@@ -584,7 +582,7 @@ function addSource(paymentId, button) {
         <td><input type="number" step="0.01" value="${payment.valor_liquidado || 0}" class="form-control form-control-sm" data-key="valor_liquidado"></td>
         <td><input type="number" step="0.01" value="${payment.valor_liquidado_ag || 0}" class="form-control form-control-sm" data-key="valor_liquidado_ag"></td>
         <td><input type="text" value="${sanitizeForJson(payment.ordem_bancaria || '')}" class="form-control form-control-sm" data-key="ordem_bancaria"></td>
-        <td><input type="text" value="${sanitizeForJson(payment.agencia_bancaria || '')}" class="form-control form-control-sm" data-key="agencia_bancaria"></td>
+        
         <td><input type="date" value="${payment.data_atualizacao || ''}" class="form-control form-control-sm" data-key="data_atualizacao"></td>
         <td><input type="date" value="${payment.data_pagamento || ''}" class="form-control form-control-sm" data-key="data_pagamento"></td>
         <td>

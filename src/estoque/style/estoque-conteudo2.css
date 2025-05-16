@@ -18,69 +18,86 @@ body {
 /* Container principal - "Caderno" */
 .caderno {
   display: flex; /* Flexbox para alinhamento do menu e conteúdo */
-  margin-left: 252px; /* Deixa espaço para o menu lateral */
-  width: 87%;
+  margin-left: 250px; /* Deixa espaço para o menu lateral */
+  width: 88%;
   flex-direction: column;
 }
 
 /* Container para as Tabs e o Conteúdo */
-
 /* Estilo da área de Tabs (botões) */
 .tabs {
     display: flex;
-    justify-content: space-around;
+    justify-content: end; /* Ajustado para começar da esquerda */
     align-items: center;
     width: 100%;
-    padding: 20px 0;
+    padding: 20px 15px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(90deg, #192844 67.81%, #472774 100%);
 }
 
 /* Estilo das Tabs individuais (Cards) */
 .tab {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-   padding: 5px 50px;
+    justify-content: flex-start;
+    padding: 10px 10px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s;
-    text-align: center;
+    text-align: left;
     border-radius: 8px;
     position: relative;
-    border-left: 5px solid #00aaff; /* Borda colorida visível o tempo todo */
     background-color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 0 10px;
+        border-radius: 0px 10px 10px 0px;
 }
 
-
-/* Estilo da borda colorida visível para todas as tabs */
-.tab.active {
-    border-left: 5px solid #00aaff; /* Bordas coloridas visíveis (azul quando ativo) */
-    color: white; /* Cor do texto quando a tab está ativa */
-    background-color: #273051; /* Cor de fundo da tab ativa */
+/* Pseudo-elemento para criar a borda no canto direito com gradiente */
+.tab::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 7px; /* Tamanho da borda */
+    background: linear-gradient(to top, #00bcd4, #ff4081); /* Gradiente para combinar com as tabs */
+    border-radius: 0 5px 5px 0; /* Borda arredondada no canto direito */
 }
 
-.tab:hover {
-    border-left: 5px solid #ff5722; /* Borda laranja ao passar o mouse */
+/* Ajustando conteúdo da tab */
+.tab-content {
+    margin-left: 10px; /* Espaço entre o ícone e o texto */
 }
 
 /* Ícones das Tabs */
 .tab i {
-    font-size: 24px;
-    color: #273051;  /* Azul escuro */
-    margin-bottom: 5px;
+    font-size: 28px; /* Aumentado o tamanho dos ícones */
+    color: white; /* Cor dos ícones */
+    background-image: linear-gradient(45deg, #00bcd4, #ff4081); /* Gradiente de azul para rosa */
+    border-radius: 50%; /* Tornando os ícones redondos */
+    padding: 10px; /* Espaciamento dentro do círculo */
+    margin-right: 5px;
+    margin-left: 5px;/* Separação entre o ícone e o texto */
+}
+
+/* Mudando a cor do ícone quando a tab está ativa */
+.tab.active i {
+    background-image: linear-gradient(45deg, #ff4081, #00bcd4); /* Gradiente invertido para o ícone ativo */
 }
 
 /* Títulos e descrições das Tabs */
 .tab-title {
-    font-size: 16px;
+    font-size: 18px; /* Aumentado para maior destaque */
     font-weight: bold;
     color: #273051;
+    margin: 0; /* Removendo a margem */
 }
 
 .tab-description {
-    font-size: 12px;
+    font-size: 14px; /* Aumentado para maior legibilidade */
     color: #606c75;
+    margin-top: 2px; /* Pequeno espaço entre título e descrição */
+    margin-bottom: 0; /* Removendo a margem inferior */
 }
 
 /* Efeito de Hover para as Tabs */
@@ -91,14 +108,9 @@ body {
 
 /* Efeito de quando a tab está ativa */
 .tab.active {
-    background-color: #273051;
+    background-color: #d7e7f4;  /* Azul bem claro, quase branco */
     color: white;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Mudando a cor do ícone quando a tab está ativa */
-.tab.active i {
-    color: white;
 }
 
 
@@ -131,9 +143,7 @@ body {
     display: none;
     max-width: 100%;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    margin-top: 20px;
     padding: 20px;  /* Adicionando um padding para o conteúdo não ficar colado nas bordas */
-    background-color: white;  /* Definindo o fundo branco */
     border-radius: 8px;  /* Bordas arredondadas para suavizar o visual */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Box-shadow para criar profundidade */
 }
@@ -302,44 +312,87 @@ h3 {
   outline: none;
 }
 
+/* Container para os Botões */
 .button-group button {
- padding: 10px 20px;
+    padding: 10px 20px;
     font-size: 16px;
-    border: solid 1px #005A92;
+    border: solid 1px #A2B9C4; /* Cor suave que combina com o gradiente */
     border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Suaviza a sombra */
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease; /* Transições mais suaves */
 }
 
+/* Botão de Envio (btn-submit) */
 .btn-submit {
-  background-color:#0056b3 ;
-    color: white;
+    background-color: #192844; /* Cor do fundo */
+    color: white; /* Texto branco */
+    border: solid 1px #6C7C91; /* Cor da borda que combina com o gradiente */
 }
 
+/* Botão Adicionar (btn-submit-adicionar) */
 .btn-submit-adicionar {
-    color: #005A92;
+    color: #192844; /* Cor mais suave */
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    border: solid 1px #A2B9C4; /* Bordas suaves */
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
+/* Efeito de Hover para as Tabs e Botões */
+.button-group button:hover {
+    background-color: #E0E4E8;  /* Fundo mais claro no hover */
+    border-color: #B0C3D2; /* Bordas mais claras no hover */
+      transform: scale(1.02); /* Suaviza a escala do botão */
+}
+
+.btn-submit:hover {
+    background-color: #566E84; /* Cor de fundo mais escura no hover */
+     background: #192844; /* Cor de fundo com a cor #192844 */
+      transform: scale(1.02); /* Efeito de leve aumento no hover */
+      color: #192844;
+}
+
+.btn-submit-adicionar:hover {
+    background-color: #E0E4E8; /* Fundo mais claro no hover */
+    border-color: #B0C3D2; /* Bordas mais claras no hover */
+   background: #192844; /* Cor de fundo com a cor #192844 */
+    transform: scale(1.02); /* Leve aumento do botão */
+}
+
+/* Ícones brancos e azuis */
 .white-icon {
-  color: white;
-  margin-right: 8px; /* Para adicionar um pequeno espaçamento entre o ícone e o texto */
+    color: white;
+    margin-right: 8px; /* Espaçamento entre o ícone e o texto */
+}
+/* Efeito de Hover para os ícones dentro do botão */
+.btn-submit:hover i {
+    color: #192844; /* Cor do ícone no hover */
 }
 
 .blue-icon {
-  color:#005A92;
-  margin-right: 8px; /* Para adicionar um pequeno espaçamento entre o ícone e o texto */
+  color: #192844;
+  
+    -webkit-background-clip: text; /* Aplica o gradiente ao texto (ícone) */
+    background-clip: text;
+    margin-right: 8px; /* Espaçamento entre o ícone e o texto */
 }
 
+/* Botão Limpar (btn-clear) */
 .btn-clear {
-  background: linear-gradient(180deg, #2d3e50, #1a242f);
-  color: white;
+    background: linear-gradient(180deg, #2d3e50, #1a242f); /* Gradiente escuro para o botão limpar */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
 }
 
+/* Efeito Hover para o botão Limpar */
 .btn-clear:hover {
-  background: linear-gradient(180deg, #2d3e50, #1a242f);
-  transform: scale(1.05);
+    background: linear-gradient(180deg, #2d3e50, #1a242f); /* Mantém o gradiente ao passar o mouse */
 }
 
 /* Responsividade */
@@ -796,11 +849,6 @@ tr:hover {
   transform: scale(1.02);
 }
 
-/* Ícones nas abas */
-.tab i {
-  font-size: 18px;
-}
-
 /* Responsividade para dispositivos móveis */
 @media (max-width: 768px) {
   .tabs {
@@ -925,11 +973,11 @@ h3 {
 
 /* Botões de ação */
 .button-group {
-  display: flex;
-      gap: 10px;
-      margin-top: 20px;
-      justify-content: flex-start;
-      align-items: center;
+      display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
 }
 
 

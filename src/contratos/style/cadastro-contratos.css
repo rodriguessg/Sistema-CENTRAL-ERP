@@ -39,11 +39,18 @@
   }
 
   .form-cadastro{
-       border: solid 1px #ddd;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-  }
+    border: solid 1px #ddd;  /* Borda cinza claro */
+    background-color: white;  /* Cor de fundo branco */
+    border-radius: 10px;  /* Bordas arredondadas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Sombras suaves ao redor */
+    transition: box-shadow 0.3s ease;  /* Efeito suave para quando a sombra mudar */
+}
+
+.form-cadastro:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);  /* Efeito de sombra mais intensa no hover */
+}
+
+
   
 
 /* Contêiner do formulário */
@@ -52,11 +59,12 @@
     flex-wrap: wrap; /* Garante que os grupos possam ir para a linha seguinte se necessário */
     justify-content: space-between;
     gap: 20px;
+    padding: 20px;
 }
 
 /* Estilo para os grupos (grupo1 e grupo2) */
 .grupo1, .grupo2 {
-    width: 48%; /* Cada grupo ocupa 48% da largura disponível */
+    width: 30%; /* Cada grupo ocupa 48% da largura disponível */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -155,10 +163,10 @@
 
 /* Estilo geral do container */
 #complementares {
-    background-color: #bbb;
+    background-color: #f9f9f9; /* Cor de fundo mais clara */
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra mais suave e expandida */
     margin-top: 20px;
     display: none; /* Inicialmente escondido */
 }
@@ -168,23 +176,18 @@
     margin-bottom: 20px;
 }
 
-/* Estilo dos inputs de checkbox */
-input[type="checkbox"] {
-    margin-right: 10px;
-}
-
 /* Estilo das labels */
 .form-label {
-       display: flex;
-    font-size: 16px;
-    color: #005A92;
+    font-size: 18px;
+    color: #192844;
     margin-bottom: 8px;
+    display: flex;
     justify-content: space-between;
-    
+    font-weight: normal; /* Alinhamento do texto */
 }
 
 /* Estilo do campo de número de parcelas */
-#parcelas-container {
+#parcelas-container, #aditivos-container, #outros-container {
     background-color: #f1f1f1;
     padding: 15px;
     border-radius: 8px;
@@ -208,12 +211,9 @@ input[type="checkbox"] {
     outline: none;
 }
 
-textarea.form-control {
-    height: 400px;
-}
-
 /* Estilo do campo de texto (observação) */
-textarea {
+textarea.form-control {
+    height: 200px; /* Ajuste a altura do textarea */
     width: 100%;
     padding: 12px;
     font-size: 14px;
@@ -224,7 +224,7 @@ textarea {
     box-sizing: border-box;
 }
 
-textarea:focus {
+textarea.form-control:focus {
     border-color: #007bff;
     outline: none;
 }
@@ -236,8 +236,26 @@ input[type="checkbox"]:checked + label {
 }
 
 /* Estilo para os campos dentro do container */
-#complementares .mb-3 label {
+#complementares .mb-4 label {
     color: #333;
+    margin: 0px;
+}
+
+.geral-parcelas{
+    background-color: #f1f1f1;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.mb-4{
+    display: flex;
+    gap: 5px;
+    align-items: center;
+        background-color: #f1f1f1;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
 }
 
 /* Responsividade para telas pequenas */
@@ -255,6 +273,12 @@ input[type="checkbox"]:checked + label {
     }
 }
 
+/* Espaçamento entre os elementos dentro do form */
+form .mb-3 {
+    margin-bottom: 20px;
+}
+
+
 /* Estilo para o ícone */
 #icon-cadastrar {
     transition: transform 0.5s ease, color 0.3s ease; /* Adiciona um efeito suave de transição */
@@ -271,13 +295,47 @@ input[type="checkbox"]:checked + label {
 
 .cadastrar-contratos{
  
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #273051; /* Azul Escuro */
+  display: flex;
+   background: linear-gradient(90deg, #192844 67.81%, #472774 100%);
     color: white;
-    padding: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra suave para dar um efeito de profundidade */
-    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transição para efeitos de hover */
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
     margin: 0;
     font-size: x-large;
     font-weight: 600;
+    border-radius: 10px 10px 0px 0px;
+    align-items: center;
+    gap: 10px;
 }
+
+   .novo-contrato-container {
+     padding: 10px;
+      background-color: transparent; /* Removido o fundo */
+      border-radius: 10px;
+      width: 80%;
+   }
+
+   .novo-contrato-titulo {
+      font-size: 28px;
+      color: #273051; /* Texto azul */
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+   }
+
+   .novo-contrato-titulo i {
+      color: #273051; /* Ícone azul */
+      margin-right: 10px;
+   }
+
+   .novo-contrato-descricao {
+      font-size: 18px;
+      color: #273051; /* Texto azul */
+      margin-top: 10px;
+   }
+
+   .icon-novo{
+
+    color:#273051;
+   }

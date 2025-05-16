@@ -222,47 +222,61 @@
 </head>
 
 <body class="caderno">
-    <div>
-     <h1 class="cadastrar-contratos">
-    <i class="fas fa-file-signature" id="icon-cadastrar"></i> Sistema Contratos
-
-    </h1>
-
-        <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
-  <div class="tabs">
+   
+ <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
         <i class="fas fa-plus-circle"></i>
-        <p class="tab-title">Cadastro</p>
-        <p class="tab-description">Cadastramento de Contratos</p>
+        <div class="tab-content">
+            <p class="tab-title">Cadastro</p>
+            <p class="tab-description">Cadastramento de Contratos</p>
+        </div>
     </div>
 
     <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
         <i class="fas fa-search"></i>
-        <p class="tab-title">Consultar</p>
-        <p class="tab-description">Consultar Contratos</p>
+        <div class="tab-content">
+            <p class="tab-title">Consultar</p>
+            <p class="tab-description">Consultar Contratos</p>
+        </div>
     </div>
 
     <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
         <i class="fas fa-edit"></i>
-        <p class="tab-title">Gerenciar</p>
-        <p class="tab-description">Gerenciar Contratos</p>
+        <div class="tab-content">
+            <p class="tab-title">Gerenciar</p>
+            <p class="tab-description">Gerenciar Contratos</p>
+        </div>
     </div>
 
     <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
+
             <i class="fas fa-edit"></i> Prestação de Contas
         </div>
         <div class="tab" data-tab="andamento" onclick="showTab('andamento')">
             <i class="fas fa-edit"></i> Andamento dos contratos
         </div>
 
+        <i class="fas fa-file-invoice-dollar"></i>
+        <div class="tab-content">
+            <p class="tab-title">Prestação</p>
+            <p class="tab-description">Prestação de Contas</p>
+        </div>
+    </div>
+
+
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
         <i class="fas fa-file-alt"></i>
-        <p class="tab-title">Relatórios</p>
-        <p class="tab-description">Relatórios de Contratos</p>
+        <div class="tab-content">
+            <p class="tab-title">Relatórios</p>
+            <p class="tab-description">Relatórios de Contratos</p>
+        </div>
     </div>
+
  </div> <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
 
-    
+
+ <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
+
 
 <div class="form-container" id="andamento" style="display:none;" onclick="exibirFluxoContratos()">
     <h2 class="text-center mb-4">Fluxo de Contratos</h2>
@@ -314,8 +328,22 @@
     
 </div>
 
+
  <div class="form-container" id="cadastrar" style="display:none;">
+
+ <div class="novo-contrato-container">
+   <h1 class="novo-contrato-titulo">
+      <i class="fas fa-clipboard-list" id="icon-novo"></i> Cadastrar Contratos
+   </h1>
+   <p class="novo-contrato-descricao">Preencha os dados do contrato abaixo:</p>
+</div>
+
     <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data" class="form-cadastro">
+
+     <h1 class="cadastrar-contratos">
+    <i class="fas fa-plus-circle" id="icon-cadastrar"></i> Novo Contrato
+</h1>
+
    
 
     <div class="cadastro">
@@ -364,7 +392,12 @@
             </div>
         </div>
 
-        <div class="mb-3">
+      
+    </div>
+
+    <div class="grupo2">
+
+  <div class="mb-3">
             <label for="gestor" class="form-label">
                 Gestor <span class="text-danger">*</span>
             </label>
@@ -392,12 +425,38 @@
                 <i class="fas fa-balance-scale"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
+       
+        <div class="mb-3">
+            <label for="contatos" class="form-label">
+                Contatos <span class="text-danger">*</span>
+            </label>
+            <div class="input-icon">
+                <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Digite o  número de contato ou email " required>
+                <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="contatos" class="form-label">Natureza de Despesas <span class="text-danger">*</span></label>
+            <div class="input-icon">
+                <input type="text" id="n_despesas" name="contatos" class="form-control" placeholder="Digite a natureza de despesa" required>
+                <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
+            </div>
+        </div>
+        
+
+        <!-- <div class="mb-3">
+            <label for="valor-aditivo" class="form-label">
+                Valor Aditivo <span class="text-danger">*</span>
+            </label>
+            <div class="input-icon">
+                <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" placeholder="Digite o valor aditivo" required>
+                <i class="fas fa-plus-circle"></i> <-- Ícone dentro do input -->
+            <!-- </div> -->
+        <!-- </div> -->
     </div>
 
     <div class="grupo2">
-
-
-        <div class="mb-3">
+ <div class="mb-3">
             <label for="validade" class="form-label">
                 Vigência <span class="text-danger">*</span>
             </label>
@@ -421,22 +480,6 @@
             </div>
         </div>
         <div class="mb-3">
-            <label for="contatos" class="form-label">
-                Contatos <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Digite o  número de contato ou email " required>
-                <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
-        <div class="mb-3">
-            <label for="contatos" class="form-label">Natureza de Despesas <span class="text-danger">*</span></label>
-            <div class="input-icon">
-                <input type="text" id="n_despesas" name="contatos" class="form-control" placeholder="Digite a natureza de despesa" required>
-                <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
-        <div class="mb-3">
             <label for="valor-valor" class="form-label">Valor do Nota fiscal <span class="text-danger">*</span></label>
             <div class="input-icon">
                 <input type="text" id="valor-NF" name="valor" class="form-control" placeholder="Digite o número da nota fiscal" required>
@@ -453,18 +496,8 @@
                 <i class="fas fa-dollar-sign"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
-
-        <!-- <div class="mb-3">
-            <label for="valor-aditivo" class="form-label">
-                Valor Aditivo <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" placeholder="Digite o valor aditivo" required>
-                <i class="fas fa-plus-circle"></i> <!-- Ícone dentro do input -->
-            <!-- </div> -->
-        <!-- </div> -->
     </div>
-    </div>
+</div>
 
 
         <div class="button-group" >
@@ -476,7 +509,7 @@
 
         </div>
         <div id="complementares" style="display:none;">
-            <div class="mb-3">
+            <div class="mb-4">
                 <input type="checkbox" id="parcelamento" name="parcelamento" onchange="toggleParcelas()">
                 <label for="parcelamento">Este contrato é um parcelamento?</label>
                 <input type="checkbox" id="outros" name="outros" onchange="toggleOutros()">
@@ -499,7 +532,7 @@
         </select>
     </div>
 
-            <div class="mb-3">
+            <div class="mb-3" id="aditivos-container">
                 <label for="descricao" class="form-label">Observação</label>
                 <textarea id="descricao" name="descricao" class="form-control" rows="3" required></textarea>
             </div>

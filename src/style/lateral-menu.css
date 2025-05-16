@@ -1,14 +1,14 @@
 /* Menu Lateral */
 #sidebar {
-      background: #273051;
+      background: #192844;
     color: white;
     /* padding: 32px 15px; */
     position: fixed;
     height: 100%;
     top: 0;
     left: 0;
-    display: flex
-;
+    display: flex;
+    border-radius: 0px 0px 10px 0px;
     flex-direction: column;
     align-items: center;
     transition: width 0.5s ease, transform 0.3s ease-in-out;

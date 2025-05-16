@@ -1,25 +1,89 @@
 
-        .status-encerrado {
-            background-color: #d4edda;
-            color: #155724;
+        .timeline-container {
+            max-width: 100%;
+            overflow-x: auto;
+            padding: 20px 0;
         }
-        .status-em-andamento {
-            background-color: #fff3cd;
-            color: #856404;
+        .timeline {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            padding: 20px 0;
+            position: relative;
         }
-        .card {
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        .timeline::before {
+            content: '';
+            position: absolute;
+            height: 6px;
+            background-color: #ddd;
+            top: 50%;
+            left: 0;
+            right: 0;
+            margin-top: -3px;
+            z-index: 0;
         }
-        .btn-action {
-            margin-right: 5px;
+        .timeline-item {
+            flex: 0 0 auto;
+            min-width: 200px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
         }
-        .floating-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
+        .timeline-item.active {
+            opacity: 1;
+            transform: translateY(0);
         }
-        canvas {
-            max-height: 300px;
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: #fff;
+            border: 3px solid #ddd;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border-radius: 50%;
+            z-index: 1;
+            transition: all 0.5s ease;
         }
+        .status-completo::after {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .status-em-andamento::after {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+        .status-previsto::after {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .status-em-elaboracao::after {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+        .timeline-item.current::after {
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.7); }
+            50% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.9); }
+            100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.7); }
+        }
+        .btn-rastrear {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        #rastreamentoModal .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+    

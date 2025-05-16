@@ -206,8 +206,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
     <link rel="stylesheet" href="src/contratos/style/consultar-contratos.css">
-    <link rel="stylesheet" href="src/contratos/style/cadastro-contratos.css">
-    
+    <link rel="stylesheet" href="src/contratos/style/cadastro-contratos.css">   
     <link rel="stylesheet" href="src/contratos/style/analise.css">
     <!-- Carregar jQuery (se necessário) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -219,95 +218,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .timeline-container {
-            max-width: 100%;
-            overflow-x: auto;
-            padding: 20px 0;
-        }
-        .timeline {
-            display: flex;
-            flex-direction: row;
-            gap: 20px;
-            padding: 20px 0;
-            position: relative;
-        }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            height: 6px;
-            background-color: #ddd;
-            top: 50%;
-            left: 0;
-            right: 0;
-            margin-top: -3px;
-            z-index: 0;
-        }
-        .timeline-item {
-            flex: 0 0 auto;
-            min-width: 200px;
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 5px;
-            position: relative;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-        }
-        .timeline-item.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .timeline-item::after {
-            content: '';
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            background-color: #fff;
-            border: 3px solid #ddd;
-            top: 50%;
-            left: 50%;
-            margin-left: -8px;
-            margin-top: -8px;
-            border-radius: 50%;
-            z-index: 1;
-            transition: all 0.5s ease;
-        }
-        .status-completo::after {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-        .status-em-andamento::after {
-            background-color: #ffc107;
-            border-color: #ffc107;
-        }
-        .status-previsto::after {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-        .status-em-elaboracao::after {
-            background-color: #17a2b8;
-            border-color: #17a2b8;
-        }
-        .timeline-item.current::after {
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.7); }
-            50% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.9); }
-            100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.7); }
-        }
-        .btn-rastrear {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-        #rastreamentoModal .modal-body {
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-    </style>
+    
 </head>
 
 <body class="caderno">
@@ -340,6 +251,9 @@
     <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
             <i class="fas fa-edit"></i> Prestação de Contas
         </div>
+        <div class="tab" data-tab="andamento" onclick="showTab('andamento')">
+            <i class="fas fa-edit"></i> Andamento dos contratos
+        </div>
 
     <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
         <i class="fas fa-file-alt"></i>
@@ -350,7 +264,55 @@
 
     
 
+<div class="form-container" id="andamento" style="display:none;" onclick="exibirFluxoContratos()">
+    <h2 class="text-center mb-4">Fluxo de Contratos</h2>
+    <div class="mb-3">
+        <label for="contractSelect" class="form-label">Selecione um Contrato</label>
+        <select id="contractSelect" class="form-select" onchange="exibirFluxoContratos()">
+            <option value="">Todos os Contratos</option>
+            <?php
+            try {
+                $sql = "SELECT id, titulo FROM gestao_contratos";
+                $stmt = $pdo->query($sql);
+                $contratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                if (empty($contratos)) {
+                    echo "<option value=\"\">Nenhum contrato encontrado</option>";
+                } else {
+                    foreach ($contratos as $contrato) {
+                        echo "<option value=\"{$contrato['id']}\">{$contrato['titulo']}</option>";
+                    }
+                }
+            } catch (PDOException $e) {
+                error_log("Erro ao buscar contratos: " . $e->getMessage());
+                echo "<option value=\"\">Erro ao carregar contratos</option>";
+            }
+            ?>
+        </select>
+    </div>
+    <div class="timeline-container" id="timeline"></div>
+    <div class="text-center mt-4">
+        <a href="#" class="btn btn-primary btn-rastrear" data-bs-toggle="modal" data-bs-target="#rastreamentoModal">Rastrear Contrato Selecionado</a>
+    </div>
 
+    <!-- Modal de Rastreamento -->
+    <div class="modal fade" id="rastreamentoModal" tabindex="-1" aria-labelledby="rastreamentoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rastreamentoModalLabel">Detalhes do Rastreamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <p>Carregando detalhes...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
 
  <div class="form-container" id="cadastrar" style="display:none;">
     <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data" class="form-cadastro">

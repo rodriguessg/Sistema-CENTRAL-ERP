@@ -143,7 +143,6 @@ async function loadContractsAndPayments(contractData) {
                         <th>Valor Liquidado</th>
                         <th>Valor Liquidado AG</th>
                         <th>Ordem Bancária</th>
-                        <th>Agência Bancária</th>
                         <th>Data Atualização</th>
                         <th>Data Pagamento</th>
                         <th>Ações</th>

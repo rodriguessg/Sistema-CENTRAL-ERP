@@ -734,6 +734,8 @@
         <!-- Botão Flutuante -->
         <button class="btn btn-primary floating-btn" data-bs-toggle="modal" data-bs-target="#novaPrestacaoModal">+</button>
     </div>
+</div>
+</div>
 
   <!-- Formulário para selecionar contrato e tipo de relatório -->
 

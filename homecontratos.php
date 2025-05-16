@@ -191,6 +191,7 @@
 
     include 'header.php';
     include 'verificar_notificacoes.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -206,12 +207,21 @@
     <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
     <link rel="stylesheet" href="src/contratos/style/consultar-contratos.css">
     <link rel="stylesheet" href="src/contratos/style/cadastro-contratos.css">
+    
+    <link rel="stylesheet" href="src/contratos/style/analise.css">
     <!-- Carregar jQuery (se necessário) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Carregar Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+     <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+       
+    </style>
 </head>
 
 <body class="caderno">
@@ -224,6 +234,7 @@
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
   <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
+<<<<<<< HEAD
         <i class="fas fa-plus-circle"></i>
         <p class="tab-title">Cadastro</p>
         <p class="tab-description">Cadastramento de Contratos</p>
@@ -240,6 +251,18 @@
         <p class="tab-title">Gerenciar</p>
         <p class="tab-description">Gerenciar Contratos</p>
     </div>
+=======
+        <i class="fas fa-plus-circle"></i> Cadastro de Contratos
+    </div>
+
+    <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
+        <i class="fas fa-search"></i> Consultar Contratos
+    </div>
+
+    <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
+            <i class="fas fa-edit"></i> Gerenciar Pagamentos
+        </div>
+>>>>>>> 1ba953507c470111d10e2e8859b2dbc1512b8ed7
 
     <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
         <i class="fas fa-file-invoice-dollar"></i>
@@ -469,6 +492,7 @@
                     <option value="">Todos</option>
                     <option value="Ativo">Ativo</option>
                     <option value="Inativo">Inativo</option>
+                    <option value="Renovado">Renovado</option>
                     <option value="Encerrado">Encerrado</option>
                 </select>
                 <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
@@ -553,6 +577,7 @@
                         <label for="situacao" class="form-label">Situação</label>
                         <select class="form-select" id="situacao" name="situacao" required>
                             <option value="Ativo">Ativo</option>
+                             <option value="Renovado">Renovado</option>
                             <option value="Inativo">Inativo</option>
                             <option value="Encerrado">Encerrado</option>
                         </select>
@@ -639,35 +664,104 @@
 
     <div id="prestacao-container" style="display:none;">
         <h3>Prestação de Contas</h3>
-        <form id="prestacao-form">
-            <label for="contrato_titulo">Nome do Contrato</label>
-            <input type="text" id="contrato_titulo" name="contrato_titulo" readonly><br>
+       <div class="container">
+        <!-- Título e Botões -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Contratos Encerrados</h2>
+            <div>
+                <button class="btn btn-outline-primary me-2" onclick="window.location.href='consultar.html'">Consultar Contratos</button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#novaPrestacaoModal">Gerenciar Pagamentos</button>
+            </div>
+        </div>
 
-            <label for="valor-inicial">Valor Inicial</label>
-            <input type="text" id="valor-inicial" name="valor_inicial" readonly><br>
+        <!-- Filtros -->
+        <div class="card p-3 mb-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="filtroStatus" class="form-label">Filtrar por Status</label>
+                    <select id="filtroStatus" class="form-select" onchange="filtrarContratos()">
+                        <option value="">Todos</option>
+                        <option value="Encerrado">Encerrado</option>
+                        <option value="Em andamento">Em andamento</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="filtroData" class="form-label">Filtrar por Data</label>
+                    <input type="date" id="filtroData" class="form-control" onchange="filtrarContratos()">
+                </div>
+            </div>
+        </div>
 
-            <label for="valor-total">Valor Total Pago</label>
-            <input type="text" id="valor-total" name="valor_total_pago" readonly><br>
+        <!-- Tabela de Contratos -->
+        <div class="card p-3 mb-4">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nome do Contrato</th>
+                        <th>Valor Inicial</th>
+                        <th>Situação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaContratos"></tbody>
+            </table>
+        </div>
 
-            <label for="situacao">Situação do Contrato</label>
-            <input type="text" id="situacao" name="situacao" readonly><br>
+        <!-- Gráfico -->
+        <div class="card p-3 mb-4">
+            <h5>Distribuição de Valores</h5>
+            <canvas id="graficoValores"></canvas>
+        </div>
 
-            <label for="valor-a-prestar">Valor a Ser Prestado</label>
-            <input type="number" id="valor-a-prestar" name="valor_a_prestar" required><br>
+        <!-- Modal de Nova Prestação -->
+        <div class="modal fade" id="novaPrestacaoModal" tabindex="-1" aria-labelledby="novaPrestacaoModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="novaPrestacaoModalLabel">Prestação de Contas</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formPrestacao">
+                            <div class="mb-3">
+                                <label for="nomeContrato" class="form-label">Nome do Contrato</label>
+                                <select id="nomeContrato" class="form-select" required></select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="valorInicial" class="form-label">Valor Inicial</label>
+                                <input type="text" id="valorInicial" class="form-control" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="valorPago" class="form-label">Valor Total Pago</label>
+                                <input type="text" id="valorPago" class="form-control" placeholder="R$ 0,00" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="dataPagamento" class="form-label">Data do Último Pagamento</label>
+                                <input type="date" id="dataPagamento" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="anexos" class="form-label">Documentos Comprobatórios</label>
+                                <input type="file" id="anexos" class="form-control" multiple>
+                            </div>
+                            <div class="mb-3">
+                                <label for="observacoes" class="form-label">Observações</label>
+                                <textarea id="observacoes" class="form-control" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-primary" onclick="finalizarPrestacao()">Finalizar Prestação</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <label for="data-pagamento">Data do Último Pagamento</label>
-            <input type="date" id="data-pagamento" name="data_pagamento" required><br>
-
-            <label for="documentos">Documentos Comprovantes</label>
-            <input type="file" id="documentos" name="documentos[]" multiple><br>
-
-            <label for="observacoes">Observações</label><br>
-            <textarea id="observacoes" name="observacoes" rows="4" cols="50"></textarea><br>
-
-            <button type="button" onclick="salvarPrestacao()">Finalizar Prestação de Contas</button>
-        </form>
+        <!-- Botão Flutuante -->
+        <button class="btn btn-primary floating-btn" data-bs-toggle="modal" data-bs-target="#novaPrestacaoModal">+</button>
     </div>
- </div>
+</div>
+</div>
 
   <!-- Formulário para selecionar contrato e tipo de relatório -->
 
@@ -721,35 +815,7 @@
             </div>
         </div>
 
-        <!-- Seção para agendamento de relatórios -->
-        <!-- <div id="agendamento-container">
-            <h3><i class="fas fa-clock"></i> Agendar Relatório</h3>
-            <div class="email-group">
-                <div style="flex: 1;">
-                    <label for="email_destinatario_select">E-mails Salvos</label>
-                    <select id="email_destinatario_select" name="email_destinatario_select" onchange="atualizarCampoEmail()">
-                        <option value="">Selecione um e-mail salvo</option>
-                        <?php echo $options_emails; ?>
-                        <option value="novo">Digitar novo e-mail</option>
-                    </select>
-                </div>
-                <div style="flex: 1;">
-                    <label for="email_destinatario">E-mail do Destinatário</label>
-                    <input type="email" id="email_destinatario" name="email_destinatario" placeholder="Digite o e-mail" required>
-                    <label style="display: none;" id="salvar_email_label">
-                        <input type="checkbox" id="salvar_email" name="salvar_email"> Salvar este e-mail para uso futuro
-                    </label>
-                </div>
-            </div>
-            <label for="periodicidade">Periodicidade</label>
-            <select id="periodicidade" name="periodicidade">
-                <option value="diario">Diário</option>
-                <option value="semanal">Semanal</option>
-                <option value="mensal">Mensal</option>
-            </select>
-            <button type="button" class="btn-submit" onclick="agendarRelatorio()">Agendar Relatório</button>
-        </div> -->
-
+       
         <div class="button-group">
             <!-- Botão para gerar o relatório -->
             <button class="btn-submit" type="button" id="gerar-relatorio" onclick="gerarRelatorio()">Gerar Relatório</button>

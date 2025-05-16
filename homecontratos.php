@@ -250,16 +250,19 @@
 
     <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
 
-            <i class="fas fa-edit"></i> Prestação de Contas
-        </div>
-        <div class="tab" data-tab="andamento" onclick="showTab('andamento')">
-            <i class="fas fa-edit"></i> Andamento dos contratos
-        </div>
-
         <i class="fas fa-file-invoice-dollar"></i>
         <div class="tab-content">
             <p class="tab-title">Prestação</p>
             <p class="tab-description">Prestação de Contas</p>
+        </div>
+    </div>
+
+      <!-- Tab Andamento -->
+    <div class="tab" data-tab="andamento" onclick="showTab('andamento')">
+        <i class="fas fa-sync-alt"></i> <!-- Ícone de andamento -->
+        <div class="tab-content">
+            <p class="tab-title">Andamento</p>
+            <p class="tab-description">Andamento dos Contratos</p>
         </div>
     </div>
 
@@ -271,8 +274,8 @@
             <p class="tab-description">Relatórios de Contratos</p>
         </div>
     </div>
-
  </div> <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
+
 
 
  <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
@@ -327,7 +330,6 @@
     </div>
     
 </div>
-
 
  <div class="form-container" id="cadastrar" style="display:none;">
 
@@ -450,7 +452,11 @@
             </label>
             <div class="input-icon">
                 <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" placeholder="Digite o valor aditivo" required>
+<<<<<<< Updated upstream
                 <i class="fas fa-plus-circle"></i> <-- Ícone dentro do input -->
+=======
+                <i class="fas fa-plus-circle"></i> <!-- Ícone dentro do input -->
+>>>>>>> Stashed changes
             <!-- </div> -->
         <!-- </div> -->
     </div>

@@ -234,7 +234,6 @@
         <!-- <h1 class="text-center text-success">Gestão de Contratos</h1> -->
   <div class="tabs">
     <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
-<<<<<<< HEAD
         <i class="fas fa-plus-circle"></i>
         <p class="tab-title">Cadastro</p>
         <p class="tab-description">Cadastramento de Contratos</p>
@@ -251,18 +250,6 @@
         <p class="tab-title">Gerenciar</p>
         <p class="tab-description">Gerenciar Contratos</p>
     </div>
-=======
-        <i class="fas fa-plus-circle"></i> Cadastro de Contratos
-    </div>
-
-    <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
-        <i class="fas fa-search"></i> Consultar Contratos
-    </div>
-
-    <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
-            <i class="fas fa-edit"></i> Gerenciar Pagamentos
-        </div>
->>>>>>> 1ba953507c470111d10e2e8859b2dbc1512b8ed7
 
     <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
         <i class="fas fa-file-invoice-dollar"></i>

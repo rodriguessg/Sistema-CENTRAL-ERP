@@ -1,16 +1,16 @@
 let currentContractId = null;
 let steps = [];
 
-function showTab(tabName) {
-    const tabs = document.querySelectorAll('.tab');
-    const contents = document.querySelectorAll('.form-container');
-    tabs.forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.tab === tabName);
-    });
-    contents.forEach(content => {
-        content.style.display = content.id === tabName ? 'block' : 'none';
-    });
-}
+// function showTab(tabName) {
+//     const tabs = document.querySelectorAll('.tab');
+//     const contents = document.querySelectorAll('.form-container');
+//     tabs.forEach(tab => {
+//         tab.classList.toggle('active', tab.dataset.tab === tabName);
+//     });
+//     contents.forEach(content => {
+//         content.style.display = content.id === tabName ? 'block' : 'none';
+//     });
+// }
 
 function exibirFluxoContratos() {
     const contractId = document.getElementById('contractSelect').value || '';

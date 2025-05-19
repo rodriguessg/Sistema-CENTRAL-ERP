@@ -576,21 +576,21 @@ function verificarGestorEFiscal() {
     }
 }
 
-// Função que atualiza o valor do contrato considerando a garantia selecionada
-function atualizarValorContrato() {
-    const valorContratoInput = document.getElementById('valor-contrato');
-    const garantiaSelect = document.getElementById('garantia');
-    const valorContrato = parseFloat(valorContratoInput.value.replace(/[^0-9.-]+/g,"")); // Remove símbolos, se houver
-    const garantiaPercentual = parseInt(garantiaSelect.value);
+// // Função que atualiza o valor do contrato considerando a garantia selecionada
+// function atualizarValorContrato() {
+//     const valorContratoInput = document.getElementById('valor-contrato');
+//     const garantiaSelect = document.getElementById('garantia');
+//     const valorContrato = parseFloat(valorContratoInput.value.replace(/[^0-9.-]+/g,"")); // Remove símbolos, se houver
+//     const garantiaPercentual = parseInt(garantiaSelect.value);
 
-    if (!isNaN(valorContrato)) {
-        const valorGarantia = (valorContrato * garantiaPercentual) / 100;
-        const novoValorContrato = valorContrato - valorGarantia;
+//     if (!isNaN(valorContrato)) {
+//         const valorGarantia = (valorContrato * garantiaPercentual) / 100;
+//         const novoValorContrato = valorContrato - valorGarantia;
 
-        // Atualiza o campo de valor do contrato com o novo valor após o desconto
-        valorContratoInput.value = novoValorContrato.toFixed(2);
-    }
-}
+//         // Atualiza o campo de valor do contrato com o novo valor após o desconto
+//         valorContratoInput.value = novoValorContrato.toFixed(2);
+//     }
+// }
 </script>
 
 

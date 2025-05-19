@@ -278,219 +278,196 @@
 
 
 
- <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
 
-
-<div class="form-container" id="andamento" style="display:none;" onclick="exibirFluxoContratos()">
-    <h2 class="text-center mb-4">Fluxo de Contratos</h2>
-    <div class="mb-3">
-        <label for="contractSelect" class="form-label">Selecione um Contrato</label>
-        <select id="contractSelect" class="form-select" onchange="exibirFluxoContratos()">
-            <option value="">Todos os Contratos</option>
-            <?php
-            try {
-                $sql = "SELECT id, titulo FROM gestao_contratos";
-                $stmt = $pdo->query($sql);
-                $contratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                if (empty($contratos)) {
-                    echo "<option value=\"\">Nenhum contrato encontrado</option>";
-                } else {
-                    foreach ($contratos as $contrato) {
-                        echo "<option value=\"{$contrato['id']}\">{$contrato['titulo']}</option>";
+       <div id="andamento" class="form-container" style="display: block;">
+            <div class="mb-3">
+                <label for="contractSelect" class="form-label">Selecione o Contrato:</label>
+                <select id="contractSelect" class="form-select" onchange="exibirFluxoContratos()">
+                    <option value="">Selecione um contrato</option>
+                    <?php
+                    try {
+                        $pdo = new PDO('mysql:host=localhost;dbname=gm_sicbd', 'root', '');
+                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                        $stmt = $pdo->query("SELECT id, titulo FROM gestao_contratos");
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            echo "<option value='{$row['id']}'>" . htmlspecialchars($row['titulo']) . "</option>";
+                        }
+                    } catch (PDOException $e) {
+                        echo "<option value=''>Erro ao carregar contratos</option>";
                     }
-                }
-            } catch (PDOException $e) {
-                error_log("Erro ao buscar contratos: " . $e->getMessage());
-                echo "<option value=\"\">Erro ao carregar contratos</option>";
-            }
-            ?>
-        </select>
-    </div>
-    <div class="timeline-container" id="timeline"></div>
-    <div class="text-center mt-4">
-        <a href="#" class="btn btn-primary btn-rastrear" data-bs-toggle="modal" data-bs-target="#rastreamentoModal">Rastrear Contrato Selecionado</a>
-    </div>
-
-    <!-- Modal de Rastreamento -->
-    <div class="modal fade" id="rastreamentoModal" tabindex="-1" aria-labelledby="rastreamentoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rastreamentoModalLabel">Detalhes do Rastreamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="modalContent">
-                    <p>Carregando detalhes...</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    ?>
+                </select>
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <input type="text" id="newStepInput" class="form-control" placeholder="Digite o nome da nova etapa" aria-label="Nova etapa">
+                    <button class="btn btn-primary" type="button" id="addStepBtn">Adicionar Etapa</button>
                 </div>
             </div>
+            <div id="timeline"></div>
         </div>
-    </div>
-    
-</div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
  <div class="form-container" id="cadastrar" style="display:none;">
 
- <div class="novo-contrato-container">
-   <h1 class="novo-contrato-titulo">
-      <i class="fas fa-clipboard-list" id="icon-novo"></i> Cadastrar Contratos
-   </h1>
-   <p class="novo-contrato-descricao">Preencha os dados do contrato abaixo:</p>
-</div>
-
-    <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data" class="form-cadastro">
-
-     <h1 class="cadastrar-contratos">
-    <i class="fas fa-plus-circle" id="icon-cadastrar"></i> Novo Contrato
-</h1>
-
-   
-
-    <div class="cadastro">
-    <div class="grupo1">
-        <div class="mb-3">
-            <label for="titulo" class="form-label">
-                Título do Contrato <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="titulo" name="titulo" class="form-control" placeholder="Coloque o título do contrato" required>
-                <i class="fas fa-pencil-alt"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
-        <div class="mb-3">
-            <label for="account-bank" class="form-label">Conta Bancária</label>
-            <div class="input-icon">
-                <input type="text" id="account-bank" name="account-bank" class="form-control" placeholder=" Digite o número e agência da conta bancária" required >
-                <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
-        <div class="mb-3">
-            <label for="fonte" class="form-label">Fonte</label>
-            <div class="input-icon">
-                <input type="text" id="fonte" name="fonte" class="form-control"placeholder=" Digite a fonte" required >
-                <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="SEI" class="form-label">
-                Nº SEI <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="SEI" name="SEI" class="form-control" placeholder="Digite o número do SEI" required>
-                <i class="fas fa-file-alt"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="objeto" class="form-label">
-                Objeto <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="objeto" name="objeto" class="form-control" placeholder="Descreva o objeto do contrato" required>
-                <i class="fas fa-cogs"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
-
-      
+    <div class="novo-contrato-container">
+    <h1 class="novo-contrato-titulo">
+        <i class="fas fa-clipboard-list" id="icon-novo"></i> Cadastrar Contratos
+    </h1>
+    <p class="novo-contrato-descricao">Preencha os dados do contrato abaixo:</p>
     </div>
 
-    <div class="grupo2">
+        <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data" class="form-cadastro">
 
-  <div class="mb-3">
-            <label for="gestor" class="form-label">
-                Gestor <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="gestor" name="gestor" class="form-control" placeholder="Digite o nome do gestor" required>
-                <i class="fas fa-user"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
+        <h1 class="cadastrar-contratos">
+        <i class="fas fa-plus-circle" id="icon-cadastrar"></i> Novo Contrato
+    </h1>
 
-        <div class="mb-3">
-            <label for="gestorsb" class="form-label">
-                Gestor Substituto <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="gestorsb" name="gestorsb" class="form-control" placeholder="Digite o nome do gestor substituto" required>
-                <i class="fas fa-user-slash"></i> <!-- Ícone dentro do input -->
+    
+
+        <div class="cadastro">
+        <div class="grupo1">
+            <div class="mb-3">
+                <label for="titulo" class="form-label">
+                    Título do Contrato <span class="text-danger">*</span>
+                </label>
+                <div class="input-icon">
+                    <input type="text" id="titulo" name="titulo" class="form-control" placeholder="Coloque o título do contrato" required>
+                    <i class="fas fa-pencil-alt"></i> <!-- Ícone dentro do input -->
+                </div>
             </div>
-        </div>
-        <div class="mb-3">
-            <label for="fiscais" class="form-label">
-                Fiscais <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="fiscais" name="fiscais" class="form-control" placeholder="Digite os fiscais responsáveis" required>
-                <i class="fas fa-balance-scale"></i> <!-- Ícone dentro do input -->
+            <div class="mb-3">
+                <label for="account-bank" class="form-label">Conta Bancária</label>
+                <div class="input-icon">
+                    <input type="text" id="account-bank" name="account-bank" class="form-control" placeholder=" Digite o número e agência da conta bancária" required >
+                    <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
+                </div>
             </div>
-        </div>
-       
-        <div class="mb-3">
-            <label for="contatos" class="form-label">
-                Contatos <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Digite o  número de contato ou email " required>
-                <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
+            <div class="mb-3">
+                <label for="fonte" class="form-label">Fonte</label>
+                <div class="input-icon">
+                    <input type="text" id="fonte" name="fonte" class="form-control"placeholder=" Digite a fonte" required >
+                    <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
+                </div>
             </div>
-        </div>
-        <div class="mb-3">
-            <label for="contatos" class="form-label">Natureza de Despesas <span class="text-danger">*</span></label>
-            <div class="input-icon">
-                <input type="text" id="n_despesas" name="contatos" class="form-control" placeholder="Digite a natureza de despesa" required>
-                <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
+
+            <div class="mb-3">
+                <label for="SEI" class="form-label">
+                    Nº SEI <span class="text-danger">*</span>
+                </label>
+                <div class="input-icon">
+                    <input type="text" id="SEI" name="SEI" class="form-control" placeholder="Digite o número do SEI" required>
+                    <i class="fas fa-file-alt"></i> <!-- Ícone dentro do input -->
+                </div>
             </div>
-        </div>
+
+            <div class="mb-3">
+                <label for="objeto" class="form-label">
+                    Objeto <span class="text-danger">*</span>
+                </label>
+                <div class="input-icon">
+                    <input type="text" id="objeto" name="objeto" class="form-control" placeholder="Descreva o objeto do contrato" required>
+                    <i class="fas fa-cogs"></i> <!-- Ícone dentro do input -->
+                </div>
+            </div>
+
         
-
-       
-    </div>
-
-    <div class="grupo2">
- <div class="mb-3">
-            <label for="validade" class="form-label">
-                Vigência <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="date" id="validade" name="validade" class="form-control" required onchange="atualizarParcelas()">
-                <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
-        <div class="mb-3">
-            <label for="publicacao" class="form-label">Data de Publicação <span class="text-danger">*</span></label>
-            <div class="input-icon">
-                <input type="date" id="publicacao" name="publicacao" class="form-control" required >
-                <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
-        <div class="mb-3">
-            <label for="date_service" class="form-label">Data de Serviço <span class="text-danger">*</span></label>
-            <div class="input-icon">
-                <input type="date" id="date_service" name="date_service" class="form-control" required >
-                <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
-            </div>
-        </div>
-        <div class="mb-3">
-            <label for="valor-valor" class="form-label">Valor do Nota fiscal <span class="text-danger">*</span></label>
-            <div class="input-icon">
-                <input type="text" id="valor-NF" name="valor" class="form-control" placeholder="Digite o número da nota fiscal" required>
-                <i class="fas fa-dollar-sign"></i> <!-- Ícone dentro do input -->
-            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="valor-contrato" class="form-label">
-                Valor do Contrato <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" placeholder="Digite o valor do contrato" required>
-                <i class="fas fa-dollar-sign"></i> <!-- Ícone dentro do input -->
+        <div class="grupo2">
+
+    <div class="mb-3">
+                <label for="gestor" class="form-label">
+                    Gestor <span class="text-danger">*</span>
+                </label>
+                <div class="input-icon">
+                    <input type="text" id="gestor" name="gestor" class="form-control" placeholder="Digite o nome do gestor" required>
+                    <i class="fas fa-user"></i> <!-- Ícone dentro do input -->
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="gestorsb" class="form-label">
+                    Gestor Substituto <span class="text-danger">*</span>
+                </label>
+                <div class="input-icon">
+                    <input type="text" id="gestorsb" name="gestorsb" class="form-control" placeholder="Digite o nome do gestor substituto" required>
+                    <i class="fas fa-user-slash"></i> <!-- Ícone dentro do input -->
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="fiscais" class="form-label">
+                    Fiscais <span class="text-danger">*</span>
+                </label>
+                <div class="input-icon">
+                    <input type="text" id="fiscais" name="fiscais" class="form-control" placeholder="Digite os fiscais responsáveis" required>
+                    <i class="fas fa-balance-scale"></i> <!-- Ícone dentro do input -->
+                </div>
+            </div>
+        
+            <div class="mb-3">
+                <label for="contatos" class="form-label">
+                    Contatos <span class="text-danger">*</span>
+                </label>
+                <div class="input-icon">
+                    <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Digite o  número de contato ou email " required>
+                    <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="contatos" class="form-label">Natureza de Despesas <span class="text-danger">*</span></label>
+                <div class="input-icon">
+                    <input type="text" id="n_despesas" name="contatos" class="form-control" placeholder="Digite a natureza de despesa" required>
+                    <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
+                </div>
+            </div>
+            
+
+        
+        </div>
+
+        <div class="grupo2">
+    <div class="mb-3">
+                <label for="validade" class="form-label">
+                    Vigência <span class="text-danger">*</span>
+                </label>
+                <div class="input-icon">
+                    <input type="date" id="validade" name="validade" class="form-control" required onchange="atualizarParcelas()">
+                    <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="publicacao" class="form-label">Data de Publicação <span class="text-danger">*</span></label>
+                <div class="input-icon">
+                    <input type="date" id="publicacao" name="publicacao" class="form-control" required >
+                    <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="date_service" class="form-label">Data de Serviço <span class="text-danger">*</span></label>
+                <div class="input-icon">
+                    <input type="date" id="date_service" name="date_service" class="form-control" required >
+                    <i class="fas fa-calendar-alt"></i> <!-- Ícone dentro do input -->
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="valor-valor" class="form-label">Valor do Nota fiscal <span class="text-danger">*</span></label>
+                <div class="input-icon">
+                    <input type="text" id="valor-NF" name="valor" class="form-control" placeholder="Digite o número da nota fiscal" required>
+                    <i class="fas fa-dollar-sign"></i> <!-- Ícone dentro do input -->
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="valor-contrato" class="form-label">
+                    Valor do Contrato <span class="text-danger">*</span>
+                </label>
+                <div class="input-icon">
+                    <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" placeholder="Digite o valor do contrato" required>
+                    <i class="fas fa-dollar-sign"></i> <!-- Ícone dentro do input -->
+                </div>
             </div>
         </div>
-    </div>
 </div>
 
 

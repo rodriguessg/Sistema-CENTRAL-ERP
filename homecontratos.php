@@ -337,7 +337,7 @@
    <h1 class="novo-contrato-titulo">
       <i class="fas fa-clipboard-list" id="icon-novo"></i> Cadastrar Contratos
    </h1>
-   <p class="novo-contrato-descricao">Preencha os dados do contrato abaixo:</p>
+   <p class="consultar-subtitulo">Preencha os dados do contrato abaixo</p>
 </div>
 
     <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data" class="form-cadastro">
@@ -444,21 +444,6 @@
                 <i class="fas fa-phone-alt"></i> <!-- Ícone dentro do input -->
             </div>
         </div>
-        
-
-        <!-- <div class="mb-3">
-            <label for="valor-aditivo" class="form-label">
-                Valor Aditivo <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" placeholder="Digite o valor aditivo" required>
-<<<<<<< Updated upstream
-                <i class="fas fa-plus-circle"></i> <-- Ícone dentro do input -->
-=======
-                <i class="fas fa-plus-circle"></i> <!-- Ícone dentro do input -->
->>>>>>> Stashed changes
-            <!-- </div> -->
-        <!-- </div> -->
     </div>
 
     <div class="grupo2">
@@ -552,9 +537,14 @@
 
 
  <div class="form-container" id="consultar">
-        <h2 class="text-center mt-3">
-            <span class="icon-before fas fa-box"></span> Lista de Contratos
-        </h2>
+
+ <div class="novo-contrato-container">
+    
+<h2 class="novo-contrato-titulo">
+    <span class="icon-before fas fa-search"></span> Consultar Contratos
+</h2>
+<p class="consultar-subtitulo">Pesquise e visualize os contratos cadastrados no sistema.</p>
+</div>
         <!-- Pesquisa -->
         <div class="search-bar">
             <div class="search-filters">
@@ -571,7 +561,10 @@
         </div>
         <!-- Lista de Contratos -->
         <div class="table-container-contratos">
-            <table class="table table-bordered table-hover">
+            <h2 class="titulo-tabela">
+    <i class="fas fa-box"></i> Lista de Contratos
+</h2>
+            <table class="table">
                 <thead>
                     <tr>
                         <th><i class="fas fa-hashtag"></i> ID</th>

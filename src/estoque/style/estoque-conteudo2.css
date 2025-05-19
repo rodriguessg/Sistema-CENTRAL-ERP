@@ -72,8 +72,8 @@ body {
 /* Ícones das Tabs */
 .tab i {
     font-size: 28px; /* Aumentado o tamanho dos ícones */
-    color: white; /* Cor dos ícones */
-    background-image: linear-gradient(45deg, #00bcd4, #ff4081); /* Gradiente de azul para rosa */
+    color: var(--dark-blue);
+    background: linear-gradient(135deg, rgba(25, 40, 68, 0.1) 0%, rgba(71, 39, 116, 0.1) 100%);
     border-radius: 50%; /* Tornando os ícones redondos */
     padding: 10px; /* Espaciamento dentro do círculo */
     margin-right: 5px;

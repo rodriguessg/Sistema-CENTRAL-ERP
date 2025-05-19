@@ -44,6 +44,8 @@
     border-radius: 10px;  /* Bordas arredondadas */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Sombras suaves ao redor */
     transition: box-shadow 0.3s ease;  /* Efeito suave para quando a sombra mudar */
+    margin-top: 20px;
+
 }
 
 .form-cadastro:hover {
@@ -329,11 +331,6 @@ form .mb-3 {
       margin-right: 10px;
    }
 
-   .novo-contrato-descricao {
-      font-size: 18px;
-      color: #273051; /* Texto azul */
-      margin-top: 10px;
-   }
 
    .icon-novo{
 

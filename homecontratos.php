@@ -446,19 +446,7 @@
         </div>
         
 
-        <!-- <div class="mb-3">
-            <label for="valor-aditivo" class="form-label">
-                Valor Aditivo <span class="text-danger">*</span>
-            </label>
-            <div class="input-icon">
-                <input type="text" id="valor-aditivo" name="valor_aditivo" class="form-control" placeholder="Digite o valor aditivo" required>
-<<<<<<< Updated upstream
-                <i class="fas fa-plus-circle"></i> <-- Ícone dentro do input -->
-=======
-                <i class="fas fa-plus-circle"></i> <!-- Ícone dentro do input -->
->>>>>>> Stashed changes
-            <!-- </div> -->
-        <!-- </div> -->
+       
     </div>
 
     <div class="grupo2">

@@ -115,3 +115,81 @@ Stack trace:
 #0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(49): PDOStatement->execute(Array)
 #1 {main}
   thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 49
+[19-May-2025 15:21:15 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:31
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(31): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 31
+[19-May-2025 15:21:20 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:31
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(31): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 31
+[19-May-2025 15:21:20 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:31
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(31): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 31
+[19-May-2025 15:21:20 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:31
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(31): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 31
+[19-May-2025 15:21:21 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:31
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(31): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 31
+[19-May-2025 15:21:22 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:31
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(31): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 31
+[19-May-2025 15:21:22 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:31
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(31): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 31
+[19-May-2025 15:21:22 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:31
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(31): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 31
+[19-May-2025 15:22:08 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:31
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(31): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 31
+[19-May-2025 15:25:52 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:31
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(31): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 31
+[19-May-2025 15:25:54 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:31
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(31): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 31
+[19-May-2025 15:26:07 Europe/Berlin] PHP Warning:  Undefined array key "data_atualizacao" in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 55
+[19-May-2025 15:26:07 Europe/Berlin] PHP Warning:  Undefined array key "data_atualizacao" in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 55
+[19-May-2025 15:26:07 Europe/Berlin] PHP Fatal error:  Cannot redeclare calcularHora() (previously declared in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:58) in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 58
+[19-May-2025 15:26:54 Europe/Berlin] PHP Fatal error:  Cannot redeclare calcularHora() (previously declared in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:58) in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 58
+[19-May-2025 15:27:08 Europe/Berlin] PHP Fatal error:  Cannot redeclare calcularHora() (previously declared in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:58) in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 58
+[19-May-2025 15:27:10 Europe/Berlin] PHP Fatal error:  Cannot redeclare calcularHora() (previously declared in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:58) in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 58
+[19-May-2025 15:28:26 Europe/Berlin] PHP Fatal error:  Cannot redeclare calcularHora() (previously declared in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:58) in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 58
+[19-May-2025 15:36:50 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:38
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(38): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 38
+[19-May-2025 15:36:52 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:38
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(38): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 38
+[19-May-2025 15:36:55 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'data_atualizacao' in 'field list' in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php:38
+Stack trace:
+#0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(38): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 38
+[19-May-2025 15:38:58 Europe/Berlin] Certidões retornadas: [{"id":1,"documento":"CND","data_vencimento":"2025-05-15","nome":"Certid\u00e3o Negativa Teste","fornecedor":"Empresa Teste","responsavel":"contratos","arquivo":null,"contrato_id":null,"contrato_titulo":null}]

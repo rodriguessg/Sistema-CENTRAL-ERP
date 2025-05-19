@@ -76,3 +76,7 @@
 2025-05-15 19:08:32 - Executando INSERT
 2025-05-15 20:09:27 - Dados recebidos: {"contrato_titulo":"teste de prestacao","mes":"06/2025","empenho":"234","tipo":null,"nota_empenho":null,"valor_contrato":19230.77,"creditos_ativos":null,"fonte":"100","SEI":"20231600/889345","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2027-06-15","valor_liquidado":5640,"valor_liquidado_ag":0,"ordem_bancaria":null,"agencia_bancaria":"5542-4","data_atualizacao":null,"data_pagamento":"2025-05-15"}
 2025-05-15 20:09:27 - Executando INSERT
+2025-05-19 15:00:13 - Dados recebidos: {"contrato_titulo":"Contrato de Consultoria TIwsd","mes":"05/2025","empenho":"5","tipo":"6","nota_empenho":"51","valor_contrato":10000,"creditos_ativos":"02","fonte":"100","SEI":"20231600/889","nota_fiscal":"2","envio_pagamento":"30/05/2025","vencimento_fatura":"2025-05-31","valor_liquidado":620,"valor_liquidado_ag":510,"ordem_bancaria":"10153050","data_atualizacao":"2025-05-19","data_pagamento":"2025-05-19"}
+2025-05-19 15:00:13 - Executando INSERT
+2025-05-19 15:02:27 - Dados recebidos: {"contrato_titulo":"Contrato teste de nova atualização","mes":"05/2025","empenho":"2334","tipo":"100","nota_empenho":"te10","valor_contrato":1440880,"creditos_ativos":"10e","fonte":"100","SEI":"101","nota_fiscal":"10e","envio_pagamento":"10/06/2025","vencimento_fatura":"2025-05-31","valor_liquidado":1061,"valor_liquidado_ag":1601,"ordem_bancaria":"160","data_atualizacao":"2025-05-19","data_pagamento":"2025-05-19"}
+2025-05-19 15:02:27 - Executando INSERT

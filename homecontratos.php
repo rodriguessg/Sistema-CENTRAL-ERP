@@ -363,6 +363,21 @@
                         <i class="fas fa-shield-alt"></i>
                     </div>
                 </div>
+
+                <!-- Nova Categoria do Contrato -->
+                <div class="mb-3">
+                    <label for="categoria" class="form-label">
+                        Categoria do Contrato <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-icon">
+                        <select id="categoria" name="categoria" class="form-control">
+                            <option value="obra">Obra</option>
+                            <option value="servico">Serviço</option>
+                        </select>
+                        <i class="fas fa-list"></i>
+                    </div>
+                </div>
+
             </div>
 
             <div class="grupo2">
@@ -577,6 +592,7 @@ function atualizarValorContrato() {
     }
 }
 </script>
+
 
 
 

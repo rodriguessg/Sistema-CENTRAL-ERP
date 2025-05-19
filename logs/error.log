@@ -476,3 +476,4 @@ Stack trace:
 #0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(130): PDOStatement->execute(Array)
 #1 {main}
   thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 130
+[19-May-2025 20:38:58 Europe/Berlin] Certidões retornadas: [{"id":1,"documento":"CND","data_vencimento":"2025-05-15","nome":"Certid\u00e3o Negativa Teste","fornecedor":"Empresa Teste","responsavel":"contratos","arquivo":null,"contrato_id":null,"contrato_titulo":null}]

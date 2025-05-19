@@ -597,9 +597,14 @@ function verificarGestorEFiscal() {
 
 
  <div class="form-container" id="consultar">
-        <h2 class="text-center mt-3">
-            <span class="icon-before fas fa-box"></span> Lista de Contratos
-        </h2>
+
+ <div class="novo-contrato-container">
+    
+<h2 class="novo-contrato-titulo">
+    <span class="icon-before fas fa-search"></span> Consultar Contratos
+</h2>
+<p class="consultar-subtitulo">Pesquise e visualize os contratos cadastrados no sistema.</p>
+</div>
         <!-- Pesquisa -->
         <div class="search-bar">
             <div class="search-filters">
@@ -616,7 +621,10 @@ function verificarGestorEFiscal() {
         </div>
         <!-- Lista de Contratos -->
         <div class="table-container-contratos">
-            <table class="table table-bordered table-hover">
+            <h2 class="titulo-tabela">
+    <i class="fas fa-box"></i> Lista de Contratos
+</h2>
+            <table class="table">
                 <thead>
                     <tr>
                         <th><i class="fas fa-hashtag"></i> ID</th>

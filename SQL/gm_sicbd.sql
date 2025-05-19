@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 16-Maio-2025 às 12:46
+-- Tempo de geração: 19-Maio-2025 às 20:37
 -- Versão do servidor: 10.4.32-MariaDB
 -- versão do PHP: 8.2.12
 
@@ -113,6 +113,24 @@ CREATE TABLE `contratos_parcelas` (
   `valor` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Extraindo dados da tabela `contratos_parcelas`
+--
+
+INSERT INTO `contratos_parcelas` (`id`, `contrato_id`, `mes`, `ano`, `valor`) VALUES
+(255, 20, 7, 2025, 41666.67),
+(256, 20, 8, 2025, 41666.67),
+(257, 20, 9, 2025, 41666.67),
+(258, 20, 10, 2025, 41666.67),
+(259, 20, 11, 2025, 41666.67),
+(260, 20, 12, 2025, 41666.67),
+(261, 20, 1, 2026, 41666.67),
+(262, 20, 2, 2026, 41666.67),
+(263, 20, 3, 2026, 41666.67),
+(264, 20, 4, 2026, 41666.67),
+(265, 20, 5, 2026, 41666.67),
+(266, 20, 6, 2026, 41666.67);
+
 -- --------------------------------------------------------
 
 --
@@ -174,6 +192,35 @@ INSERT INTO `emails_salvos` (`id`, `email`, `username`, `criado_em`) VALUES
 (4, 'maikgtx2@gmail.com', 'CONTRATOS', '2025-04-25 02:54:18'),
 (8, 'gabrielzsouzarodrigues@gmail.com', 'CONTRATOS', '2025-04-26 00:40:45'),
 (9, 'gabrielzsouzarodrigues23@gmail.com', 'MASTER', '2025-04-26 00:42:33');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `etapas_contratos`
+--
+
+CREATE TABLE `etapas_contratos` (
+  `id` int(11) NOT NULL,
+  `contract_id` int(11) NOT NULL,
+  `etapa` varchar(255) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `data` date DEFAULT NULL,
+  `hora` time DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'Em Andamento',
+  `order` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `etapas_contratos`
+--
+
+INSERT INTO `etapas_contratos` (`id`, `contract_id`, `etapa`, `descricao`, `data`, `hora`, `status`, `order`) VALUES
+(1, 12, 'Execução do Contrato', 'Atualização de status', '2025-05-19', '19:35:00', 'Em Andamento', 0),
+(7, 7, 'Pagamentos', 'Atualização de status', '2025-05-19', '19:36:00', 'Completo', 0),
+(11, 14, 'Finalização do Contrato', 'Atualização de status', '2025-05-19', '19:36:00', 'Completo', 0),
+(15, 14, 'Execução do Contrato', 'Atualização de status', '2025-05-19', '19:36:00', 'Completo', 0),
+(20, 2, 'Finalização do Contrato', 'Atualização de status', '2025-05-19', '19:37:00', 'Completo', 0),
+(22, 2, 'Prestação de Contas', 'Atualização de status', '2025-05-19', '19:37:00', 'Completo', 0);
 
 -- --------------------------------------------------------
 
@@ -246,7 +293,19 @@ INSERT INTO `eventos` (`id`, `titulo`, `descricao`, `data`, `hora`, `categoria`,
 (47, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a March/2029. Valor: R$ 90.055,00', '2029-03-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
 (48, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a April/2029. Valor: R$ 90.055,00', '2029-04-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
 (49, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a May/2029. Valor: R$ 90.055,00', '2029-05-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(50, 'TESTE', 'TESTE', '2025-05-15', '10:34:00', 'Geral', '#7e4e4e', '2025-05-15 18:32:28', 0);
+(50, 'TESTE', 'TESTE', '2025-05-15', '10:34:00', 'Geral', '#7e4e4e', '2025-05-15 18:32:28', 0),
+(51, 'Vencimento de Parcela: andamento 2', 'Parcela referente a July/2025. Valor: R$ 41.666,67', '2025-07-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(52, 'Vencimento de Parcela: andamento 2', 'Parcela referente a August/2025. Valor: R$ 41.666,67', '2025-08-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(53, 'Vencimento de Parcela: andamento 2', 'Parcela referente a September/2025. Valor: R$ 41.666,67', '2025-09-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(54, 'Vencimento de Parcela: andamento 2', 'Parcela referente a October/2025. Valor: R$ 41.666,67', '2025-10-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(55, 'Vencimento de Parcela: andamento 2', 'Parcela referente a November/2025. Valor: R$ 41.666,67', '2025-11-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(56, 'Vencimento de Parcela: andamento 2', 'Parcela referente a December/2025. Valor: R$ 41.666,67', '2025-12-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(57, 'Vencimento de Parcela: andamento 2', 'Parcela referente a January/2026. Valor: R$ 41.666,67', '2026-01-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(58, 'Vencimento de Parcela: andamento 2', 'Parcela referente a February/2026. Valor: R$ 41.666,67', '2026-02-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(59, 'Vencimento de Parcela: andamento 2', 'Parcela referente a March/2026. Valor: R$ 41.666,67', '2026-03-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(60, 'Vencimento de Parcela: andamento 2', 'Parcela referente a April/2026. Valor: R$ 41.666,67', '2026-04-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(61, 'Vencimento de Parcela: andamento 2', 'Parcela referente a May/2026. Valor: R$ 41.666,67', '2026-05-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(62, 'Vencimento de Parcela: andamento 2', 'Parcela referente a June/2026. Valor: R$ 41.666,67', '2026-06-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0);
 
 -- --------------------------------------------------------
 
@@ -413,25 +472,32 @@ CREATE TABLE `gestao_contratos` (
   `valor_aditivo3` decimal(15,2) DEFAULT NULL,
   `valor_aditivo4` decimal(15,2) DEFAULT NULL,
   `valor_aditivo5` decimal(15,2) DEFAULT NULL,
-  `etapa_atual` enum('Criação do Contrato','Aprovação Interna','Assinatura do Contrato','Execução do Contrato','Pagamentos','Finalização do Contrato','Prestação de Contas') DEFAULT 'Criação do Contrato'
+  `etapa_atual` enum('Criação do Contrato','Aprovação Interna','Assinatura do Contrato','Execução do Contrato','Pagamentos','Finalização do Contrato','Prestação de Contas') DEFAULT 'Criação do Contrato',
+  `categoria` varchar(50) NOT NULL,
+  `garantia` decimal(5,2) DEFAULT 0.00,
+  `gestor_portaria` varchar(50) DEFAULT NULL,
+  `fiscal_portaria` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Extraindo dados da tabela `gestao_contratos`
 --
 
-INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `agencia_bancaria`, `fonte`, `publicacao`, `date_service`, `contatos`, `n_despesas`, `outros`, `servicos`, `valor_nf`, `valor_contrato`, `valor_aditivo1`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`, `setor`, `parcelamento`, `valor_aditivo2`, `valor_aditivo3`, `valor_aditivo4`, `valor_aditivo5`, `etapa_atual`) VALUES
-(2, 'Contrato de Consultoria TI', 'SEI-002/2024', 'Consultoria em TI', 'Ana Costa', 'Pedro Souza', 'Mariana Lopes', '2024-08-31', '', '', NULL, NULL, 'consultoria@ti.com', '', 'Não', NULL, 0.00, 12000.00, NULL, 6, 'Consultoria para implementação de sistemas.', 'Inativo', '2024-03-01 03:00:00', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Execução do Contrato'),
-(3, 'Contrato de Locação de Equipamentos', 'SEI-003/2023', 'Locação de equipamentos', 'Carlos Mendes', 'Luiza Almeida', 'Rafael Lima', '2025-09-30', '', '', NULL, NULL, 'locacao@equip.com', '', 'Não', NULL, 0.00, 19200.00, 5000.00, 12, 'Locação de equipamentos para eventos.', 'Encerrado', '2025-06-01 03:00:00', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato'),
-(5, 'teste de atualização', '7890', 'CENTRAL', 'CHEFE', 'GERENTE', 'GABRIEL, MAIK', '2025-05-16', '', '', NULL, NULL, '400289222', '', 'Não', NULL, 0.00, 500000.00, NULL, 1, 'teste', 'Ativo', '2025-04-27 20:50:03', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato'),
-(7, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '100006/001752/2023', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'N/A', 'Raphaela Batista Saldanha - 99.000.900 - ASSCON / VALDENICE ALVES DA SILVA DE PAULA - GERGEP - 99.000.517 / André Miranda Lobão Tavares Mendonça - 99.000.610 - CHEGAB', '2025-12-19', '2430-6', '', NULL, NULL, 'susiane.kempfer@grupogreencard.com.br', '', 'Não', NULL, 0.00, 432264000.00, 0.00, 1, 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'Ativo', '2025-05-06 17:45:31', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato'),
-(10, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', '20231600/889345', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'CARUSO', 'MAIK', 'ALEXANDRE', '2025-05-07', '', '', NULL, NULL, '40028922', '', 'Não', NULL, 0.00, 500.00, 0.00, 12, 'TESTE', 'Ativo', '2025-05-07 18:53:25', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato'),
-(11, 'Contrato teste de nova atualização', '100006/001752/2023', 'teste', 'MAIK', 'ALEXANDRE', 'CELSO', '2025-05-31', '5542', '100', '2025-04-16', '2025-04-30', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, 0.00, 3, 'TESTE', 'Ativo', '2025-05-08 19:35:16', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato'),
-(12, 'CONTRATO DE MANUTENÇÃO BONDE', '20231600/889345', 'CENTRAL', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'GERENTE', 'CELSO', '2029-05-14', '5542-4', '100', '2026-11-14', '2026-11-19', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 1220000.00, NULL, 12, 'TESTE', 'Ativo', '2025-05-14 12:14:57', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato'),
-(14, 'Contrato de Consultoria TIdg', 'ert', 'ert', '234', '234', '234', '2025-05-14', '5542', 'sert', '2025-05-15', '2025-05-30', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 500000.00, NULL, 80, 'teste', 'Encerrado', '2025-05-14 12:35:03', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato'),
-(15, 'Contrato de Consultoria TId', '20231600/889345', 'CENTRAL', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'MAIK', 'CELSO', '2025-05-16', '5542-4', 'qw', '2025-05-14', '2025-05-14', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, NULL, 80, 'teste', 'Ativo', '2025-05-14 12:41:14', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato'),
-(16, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', '20231600/889', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'GERENTE', 'CELSO', '2025-05-22', '5542', '100', '2025-05-16', '2025-05-16', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, NULL, 48, ']', 'Ativo', '2025-05-15 13:25:01', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato'),
-(17, 'teste de prestacao', '20231600/889345', 'TESTE', 'GABRIEL', 'MAIK', 'CELSO', '2025-05-14', '5542-4', '100', '2025-05-15', '2025-05-16', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 500000.00, NULL, 12, 'TESTE', 'Encerrado', '2025-05-15 17:07:44', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato');
+INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `agencia_bancaria`, `fonte`, `publicacao`, `date_service`, `contatos`, `n_despesas`, `outros`, `servicos`, `valor_nf`, `valor_contrato`, `valor_aditivo1`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`, `setor`, `parcelamento`, `valor_aditivo2`, `valor_aditivo3`, `valor_aditivo4`, `valor_aditivo5`, `etapa_atual`, `categoria`, `garantia`, `gestor_portaria`, `fiscal_portaria`) VALUES
+(2, 'Contrato de Consultoria TI', 'SEI-002/2024', 'Consultoria em TI', 'Ana Costa', 'Pedro Souza', 'Mariana Lopes', '2024-08-31', '', '', NULL, NULL, 'consultoria@ti.com', '', 'Não', NULL, 0.00, 12000.00, NULL, 6, 'Consultoria para implementação de sistemas.', 'Inativo', '2024-03-01 03:00:00', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Execução do Contrato', '', 0.00, NULL, NULL),
+(3, 'Contrato de Locação de Equipamentos', 'SEI-003/2023', 'Locação de equipamentos', 'Carlos Mendes', 'Luiza Almeida', 'Rafael Lima', '2025-09-30', '', '', NULL, NULL, 'locacao@equip.com', '', 'Não', NULL, 0.00, 19200.00, 5000.00, 12, 'Locação de equipamentos para eventos.', 'Encerrado', '2025-06-01 03:00:00', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(5, 'teste de atualização', '7890', 'CENTRAL', 'CHEFE', 'GERENTE', 'GABRIEL, MAIK', '2025-05-16', '', '', NULL, NULL, '400289222', '', 'Não', NULL, 0.00, 500000.00, NULL, 1, 'teste', 'Ativo', '2025-04-27 20:50:03', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(7, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '100006/001752/2023', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'N/A', 'Raphaela Batista Saldanha - 99.000.900 - ASSCON / VALDENICE ALVES DA SILVA DE PAULA - GERGEP - 99.000.517 / André Miranda Lobão Tavares Mendonça - 99.000.610 - CHEGAB', '2025-12-19', '2430-6', '', NULL, NULL, 'susiane.kempfer@grupogreencard.com.br', '', 'Não', NULL, 0.00, 432264000.00, 0.00, 1, 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'Ativo', '2025-05-06 17:45:31', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(10, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', '20231600/889345', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'CARUSO', 'MAIK', 'ALEXANDRE', '2025-05-07', '', '', NULL, NULL, '40028922', '', 'Não', NULL, 0.00, 500.00, 0.00, 12, 'TESTE', 'Ativo', '2025-05-07 18:53:25', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(11, 'Contrato teste de nova atualização', '100006/001752/2023', 'teste', 'MAIK', 'ALEXANDRE', 'CELSO', '2027-06-08', '5542', '100', '2025-04-16', '2025-04-30', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, NULL, 3, 'TESTE', 'Renovado', '2025-05-08 19:35:16', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(12, 'CONTRATO DE MANUTENÇÃO BONDE', '20231600/889345', 'CENTRAL', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'GERENTE', 'CELSO', '2029-05-14', '5542-4', '100', '2026-11-14', '2026-11-19', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 1220000.00, NULL, 12, 'TESTE', 'Ativo', '2025-05-14 12:14:57', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(14, 'Contrato de Consultoria TIdg', 'ert', 'ert', '234', '234', '234', '2025-05-14', '5542', 'sert', '2025-05-15', '2025-05-30', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 500000.00, NULL, 80, 'teste', 'Encerrado', '2025-05-14 12:35:03', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(15, 'Contrato de Consultoria TId', '20231600/889345', 'CENTRAL', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'MAIK', 'CELSO', '2025-05-16', '5542-4', 'qw', '2025-05-14', '2025-05-14', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, NULL, 80, 'teste', 'Ativo', '2025-05-14 12:41:14', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(16, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', '20231600/889', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'GERENTE', 'CELSO', '2025-05-22', '5542', '100', '2025-05-16', '2025-05-16', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, NULL, 48, ']', 'Ativo', '2025-05-15 13:25:01', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(17, 'teste de prestacao', '20231600/889345', 'TESTE', 'GABRIEL', 'MAIK', 'CELSO', '2025-05-14', '5542-4', '100', '2025-05-15', '2025-05-16', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 500000.00, NULL, 12, 'TESTE', 'Encerrado', '2025-05-15 17:07:44', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(18, 'Contrato de Consultoria TIwsd', '20231600/889', '23', 'GABRIEL', 'MAIK', 'CELSO', '2025-05-31', '23341', '100', '2025-05-23', '2025-05-22', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 10000.00, NULL, 0, 'teset', 'Ativo', '2025-05-19 12:59:01', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(19, 'andamento do contrato', '889/2025', 'TESTE', 'GABRIEL', 'MAIK', 'ALTAMIR', '2026-04-14', '038397', '100', '2025-04-14', '2025-04-15', '400289222', 'Sem Despesas', 'Sim', 'servico1', 0.00, 500000.00, NULL, NULL, 'teste', 'Encerrado', '2025-05-19 17:41:03', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
+(20, 'andamento 2', '20231600/889', 'TESTE', 'GABRIEL', 'MAIK', 'CELSO', '2025-06-14', '55423', '100', '2025-04-14', '2025-04-15', '400289222', 'Sem Despesas', 'Não', 'servico1', 0.00, 500000.00, NULL, 12, 'teste', 'Ativo', '2025-05-19 17:46:36', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -843,7 +909,21 @@ INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `
 (10, 'CONTRATOS', 'contratos', 'Contrato \'teste de prestacao\' com validade em 2025-05-17 prestes a expirar.', 'lida', '2025-05-15 22:07:45', 0),
 (11, 'CONTRATOS', 'contratos', 'Contrato \'teste de prestacao\' com validade em 2025-05-15 prestes a expirar.', 'lida', '2025-05-15 22:25:06', 0),
 (12, 'CONTRATOS', 'contratos', 'Contrato \'teste de prestacao\' com validade em 2025-05-28 prestes a expirar.', 'lida', '2025-05-15 22:27:03', 0),
-(13, 'CONTRATOS', 'contratos', 'Contrato \'teste de prestacao\' com validade em 2025-05-31 prestes a expirar.', 'lida', '2025-05-15 22:31:41', 0);
+(13, 'CONTRATOS', 'contratos', 'Contrato \'teste de prestacao\' com validade em 2025-05-31 prestes a expirar.', 'lida', '2025-05-15 22:31:41', 0),
+(14, 'CONTRATOS', 'contratos', 'Contrato \'Contrato de Consultoria TIwsd\' com validade em 2025-05-31 prestes a expirar.', 'lida', '2025-05-19 17:59:03', 0),
+(15, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/07/2025', '', '2025-05-19 17:46:36', 0),
+(16, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/08/2025', '', '2025-05-19 17:46:36', 0),
+(17, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/09/2025', '', '2025-05-19 17:46:36', 0),
+(18, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/10/2025', '', '2025-05-19 17:46:36', 0),
+(19, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/11/2025', '', '2025-05-19 17:46:36', 0),
+(20, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/12/2025', '', '2025-05-19 17:46:36', 0),
+(21, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/01/2026', '', '2025-05-19 17:46:36', 0),
+(22, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/02/2026', '', '2025-05-19 17:46:36', 0),
+(23, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/03/2026', '', '2025-05-19 17:46:36', 0),
+(24, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/04/2026', '', '2025-05-19 17:46:36', 0),
+(25, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/05/2026', '', '2025-05-19 17:46:36', 0),
+(26, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/06/2026', '', '2025-05-19 17:46:36', 0),
+(27, 'CONTRATOS', 'contratos', 'Contrato \'andamento 2\' com validade em 2025-06-14 prestes a expirar.', 'lida', '2025-05-19 22:46:38', 0);
 
 -- --------------------------------------------------------
 
@@ -928,7 +1008,9 @@ INSERT INTO `ordens_compra` (`id`, `produto_id`, `quantidade`, `data_criacao`) V
 (63, 2, 5, '2025-04-27 20:39:40'),
 (64, 2, 5, '2025-05-06 21:16:44'),
 (65, 2, 5, '2025-05-06 21:21:03'),
-(66, 2, 5, '2025-05-15 21:21:04');
+(66, 2, 5, '2025-05-15 21:21:04'),
+(67, 2, 5, '2025-05-19 17:37:50'),
+(68, 2, 5, '2025-05-19 18:56:09');
 
 -- --------------------------------------------------------
 
@@ -966,7 +1048,12 @@ INSERT INTO `pagamentos` (`id`, `contrato_titulo`, `data_pagamento`, `valor_cont
 (82, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '2025-05-14', 432264000.00, '05/2025', '3', NULL, 432264000.00, NULL, NULL, NULL, '2025-12-19', NULL, NULL, '100006/001752/2023', NULL, NULL, 0.00, NULL),
 (86, 'Contrato de Locação de Equipamentos', '2025-05-15', 1600.00, '05/2025', 'v', NULL, 0.00, NULL, NULL, NULL, '2025-09-30', NULL, NULL, 'SEI-003/2023', NULL, NULL, 0.00, NULL),
 (87, 'teste de prestacao', '2025-05-15', 500000.00, '05/2025', '234', 'wer', 500000.00, '105s', NULL, '0000-00-00', '2025-05-17', NULL, 'wer', '20231600/889345', 'qwe', '500000,00', 500000.00, '100'),
-(88, 'teste de prestacao', '2025-05-15', 19230.77, '06/2025', '234', NULL, 5640.00, NULL, NULL, NULL, '2027-06-15', NULL, NULL, '20231600/889345', NULL, NULL, 0.00, '100');
+(88, 'teste de prestacao', '2025-05-15', 19230.77, '06/2025', '234', NULL, 5640.00, NULL, NULL, NULL, '2027-06-15', NULL, NULL, '20231600/889345', NULL, NULL, 0.00, '100'),
+(89, 'Contrato de Consultoria TIwsd', '2025-05-19', 10000.00, '05/2025', '5', '51', 620.00, '10153050', '2025-05-19', '0000-00-00', '2025-05-31', NULL, '6', '20231600/889', '2', '02', 510.00, '100'),
+(90, 'Contrato teste de nova atualização', '2025-05-19', 1440880.00, '05/2025', '2334', 'te10', 1061.00, '160', '2025-05-19', '0000-00-00', '2025-05-31', NULL, '100', '101', '10e', '10e', 1601.00, '100'),
+(91, 'andamento do contrato', '2025-05-19', 500000.00, '05/2025', 'teste andamento', '500.000,00', 500.00, '15023', '2025-05-19', '0000-00-00', '2026-04-14', NULL, '150', '889/2025', '500.000,00', '500.000,00', 500.00, '100'),
+(92, 'andamento 2', '2025-05-19', 41666.67, '05/2025', '500.000,00', '500.000,00', 50000000.00, '15w50', '2025-05-19', '0000-00-00', '2025-06-14', NULL, '100', '20231600/889', '500.000,00', '150', 50000000.00, '100'),
+(93, 'andamento 2', '2025-05-19', 41666.67, '06/2025', '500.000,00', NULL, 0.00, NULL, NULL, NULL, '2025-06-14', NULL, '23', '20231600/889', NULL, NULL, 0.00, '100');
 
 -- --------------------------------------------------------
 
@@ -1330,6 +1417,13 @@ ALTER TABLE `emails_salvos`
   ADD UNIQUE KEY `unique_email_user` (`email`,`username`);
 
 --
+-- Índices para tabela `etapas_contratos`
+--
+ALTER TABLE `etapas_contratos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_etapa` (`contract_id`,`etapa`);
+
+--
 -- Índices para tabela `eventos`
 --
 ALTER TABLE `eventos`
@@ -1502,7 +1596,7 @@ ALTER TABLE `configuracoes`
 -- AUTO_INCREMENT de tabela `contratos_parcelas`
 --
 ALTER TABLE `contratos_parcelas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=255;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=267;
 
 --
 -- AUTO_INCREMENT de tabela `controle_transicao`
@@ -1523,10 +1617,16 @@ ALTER TABLE `emails_salvos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
+-- AUTO_INCREMENT de tabela `etapas_contratos`
+--
+ALTER TABLE `etapas_contratos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+
+--
 -- AUTO_INCREMENT de tabela `eventos`
 --
 ALTER TABLE `eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT de tabela `fechamento`
@@ -1544,7 +1644,7 @@ ALTER TABLE `funcionario`
 -- AUTO_INCREMENT de tabela `gestao_contratos`
 --
 ALTER TABLE `gestao_contratos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de tabela `log_eventos`
@@ -1556,19 +1656,19 @@ ALTER TABLE `log_eventos`
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT de tabela `ordens_compra`
 --
 ALTER TABLE `ordens_compra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT de tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- AUTO_INCREMENT de tabela `painel_config`
@@ -1657,6 +1757,12 @@ ALTER TABLE `certidoes`
 --
 ALTER TABLE `contratos_parcelas`
   ADD CONSTRAINT `contratos_parcelas_ibfk_1` FOREIGN KEY (`contrato_id`) REFERENCES `gestao_contratos` (`id`);
+
+--
+-- Limitadores para a tabela `etapas_contratos`
+--
+ALTER TABLE `etapas_contratos`
+  ADD CONSTRAINT `etapas_contratos_ibfk_1` FOREIGN KEY (`contract_id`) REFERENCES `gestao_contratos` (`id`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `pagamentos`

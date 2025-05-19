@@ -19,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
             return floatval(str_replace(['R$', '.', ','], ['', '', '.'], trim($valor)));
         }
 
+        // Formatar os valores dos campos
         $valor_contrato = isset($_POST['valor_contrato']) ? formatarValor($_POST['valor_contrato']) : 0;
         $valor_nf = isset($_POST['valor_nf']) ? formatarValor($_POST['valor_nf']) : 0;
         $n_despesas = isset($_POST['n_despesas']) && !empty($_POST['n_despesas']) ? $_POST['n_despesas'] : 'Sem Despesas';
@@ -27,11 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
         $sql = "INSERT INTO gestao_contratos 
                 (titulo, SEI, objeto, gestor, gestorsb, fiscais, validade, contatos, valor_contrato, 
                 num_parcelas, descricao, situacao, agencia_bancaria, fonte, publicacao, date_service, 
-                n_despesas, valor_nf, parcelamento, outros, servicos) 
+                n_despesas, valor_nf, parcelamento, outros, servicos, categoria) 
                 VALUES 
                 (:titulo, :SEI, :objeto, :gestor, :gestorsb, :fiscais, :validade, :contatos, :valor_contrato, 
                  :num_parcelas, :descricao, 'Ativo', :agencia_bancaria, :fonte, :publicacao, 
-                 :date_service, :n_despesas, :valor_nf, :parcelamento, :outros, :servicos)";
+                 :date_service, :n_despesas, :valor_nf, :parcelamento, :outros, :servicos, :categoria)";
 
         $stmt = $pdo->prepare($sql);
 
@@ -57,6 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
         $stmt->bindValue(':parcelamento', isset($_POST['parcelamento']) ? 'Sim' : 'Não');
         $stmt->bindValue(':outros', isset($_POST['outros']) ? 'Sim' : 'Não');
         $stmt->bindValue(':servicos', $_POST['servicos']);
+        $stmt->bindValue(':categoria', $_POST['categoria']); // Categoria adicionada
         $stmt->execute();
 
         $contrato_id = $pdo->lastInsertId();

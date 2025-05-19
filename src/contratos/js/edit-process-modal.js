@@ -125,7 +125,7 @@ function getSituacaoStyle(situacao) {
            display: inline-flex;
            justify-content: center;
            align-items: center;
-           margin-top: 18px;
+           margin-top: 13px;
            font-size: 12px;
            border: solid 1px ${situacaoStyle.color};">
     <i class="fas ${situacaoStyle.icon}"></i> ${contrato.situacao}

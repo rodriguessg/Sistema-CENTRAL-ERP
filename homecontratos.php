@@ -287,7 +287,7 @@
         <h1 class="novo-contrato-titulo">
             <i class="fas fa-clipboard-list" id="icon-novo"></i> Cadastrar Contratos
         </h1>
-        <p class="novo-contrato-descricao">Preencha os dados do contrato abaixo:</p>
+        <p class="consultar-subtitulo">Preencha os dados do contrato abaixo:</p>
     </div>
 
     <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data" class="form-cadastro">

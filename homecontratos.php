@@ -209,6 +209,7 @@
     <link rel="stylesheet" href="src/contratos/style/consultar-contratos.css">
     <link rel="stylesheet" href="src/contratos/style/cadastro-contratos.css">   
     <link rel="stylesheet" href="src/contratos/style/analise.css">
+     <link rel="stylesheet" href="src/contratos/style/gerenciar-pagamentos.css">
     <!-- Carregar jQuery (se necessário) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -248,8 +249,8 @@
     <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
         <i class="fas fa-edit"></i>
         <div class="tab-content">
-            <p class="tab-title">Gerenciar</p>
-            <p class="tab-description">Gerenciar Contratos</p>
+            <p class="tab-title">Pagamentos</p>
+            <p class="tab-description">Gerenciar Pagamentos</p>
         </div>
     </div>
 
@@ -368,13 +369,7 @@
                     </div>
                 </div>
 
-              
-
-            </div>
-
-            <div class="grupo2">
-
-              <!-- Nova Categoria do Contrato -->
+               <!-- Nova Categoria do Contrato -->
                 <div class="mb-3">
                     <label for="categoria" class="form-label">
                         Categoria do Contrato <span class="text-danger">*</span>
@@ -387,6 +382,81 @@
                         <i class="fas fa-list"></i>
                     </div>
                 </div>
+
+            </div>
+
+
+             <div class="grupo2">
+                    <!-- Contatos -->
+                <div class="mb-3">
+                    <label for="contatos" class="form-label">
+                        Contatos <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-icon">
+                        <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Digite o número de contato ou email " required>
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                </div>
+
+                <!-- Natureza de Despesas -->
+                <div class="mb-3">
+                    <label for="n_despesas" class="form-label">Natureza de Despesas <span class="text-danger">*</span></label>
+                    <div class="input-icon">
+                        <input type="text" id="n_despesas" name="contatos" class="form-control" placeholder="Digite a natureza de despesa" required>
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                </div>
+                <!-- Vigência -->
+                <div class="mb-3">
+                    <label for="validade" class="form-label">
+                        Vigência <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-icon">
+                        <input type="date" id="validade" name="validade" class="form-control" required onchange="atualizarParcelas()">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+
+                <!-- Data de Publicação -->
+                <div class="mb-3">
+                    <label for="publicacao" class="form-label">Data de Publicação <span class="text-danger">*</span></label>
+                    <div class="input-icon">
+                        <input type="date" id="publicacao" name="publicacao" class="form-control" required >
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+
+                <!-- Data de Serviço -->
+                <div class="mb-3">
+                    <label for="date_service" class="form-label">Data de Serviço <span class="text-danger">*</span></label>
+                    <div class="input-icon">
+                        <input type="date" id="date_service" name="date_service" class="form-control" required >
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+
+                <!-- Valor da Nota Fiscal -->
+                <div class="mb-3">
+                    <label for="valor-valor" class="form-label">Valor da Nota fiscal <span class="text-danger">*</span></label>
+                    <div class="input-icon">
+                        <input type="text" id="valor-NF" name="valor" class="form-control" placeholder="Digite o número da nota fiscal" required>
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+
+                <!-- Valor do Contrato -->
+                <div class="mb-3">
+                    <label for="valor-contrato" class="form-label">
+                        Valor do Contrato <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-icon">
+                        <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" placeholder="Digite o valor do contrato" required>
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grupo2">
                 <!-- Gestor -->
                 <div class="mb-3">
                     <label for="gestor" class="form-label">
@@ -442,77 +512,10 @@
                     </div>
                 </div>
 
-                <!-- Contatos -->
-                <div class="mb-3">
-                    <label for="contatos" class="form-label">
-                        Contatos <span class="text-danger">*</span>
-                    </label>
-                    <div class="input-icon">
-                        <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Digite o número de contato ou email " required>
-                        <i class="fas fa-phone-alt"></i>
-                    </div>
-                </div>
-
-                <!-- Natureza de Despesas -->
-                <div class="mb-3">
-                    <label for="n_despesas" class="form-label">Natureza de Despesas <span class="text-danger">*</span></label>
-                    <div class="input-icon">
-                        <input type="text" id="n_despesas" name="contatos" class="form-control" placeholder="Digite a natureza de despesa" required>
-                        <i class="fas fa-phone-alt"></i>
-                    </div>
-                </div>
+            
             </div>
 
-            <div class="grupo2">
-                <!-- Vigência -->
-                <div class="mb-3">
-                    <label for="validade" class="form-label">
-                        Vigência <span class="text-danger">*</span>
-                    </label>
-                    <div class="input-icon">
-                        <input type="date" id="validade" name="validade" class="form-control" required onchange="atualizarParcelas()">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                </div>
-
-                <!-- Data de Publicação -->
-                <div class="mb-3">
-                    <label for="publicacao" class="form-label">Data de Publicação <span class="text-danger">*</span></label>
-                    <div class="input-icon">
-                        <input type="date" id="publicacao" name="publicacao" class="form-control" required >
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                </div>
-
-                <!-- Data de Serviço -->
-                <div class="mb-3">
-                    <label for="date_service" class="form-label">Data de Serviço <span class="text-danger">*</span></label>
-                    <div class="input-icon">
-                        <input type="date" id="date_service" name="date_service" class="form-control" required >
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                </div>
-
-                <!-- Valor da Nota Fiscal -->
-                <div class="mb-3">
-                    <label for="valor-valor" class="form-label">Valor da Nota fiscal <span class="text-danger">*</span></label>
-                    <div class="input-icon">
-                        <input type="text" id="valor-NF" name="valor" class="form-control" placeholder="Digite o número da nota fiscal" required>
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                </div>
-
-                <!-- Valor do Contrato -->
-                <div class="mb-3">
-                    <label for="valor-contrato" class="form-label">
-                        Valor do Contrato <span class="text-danger">*</span>
-                    </label>
-                    <div class="input-icon">
-                        <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" placeholder="Digite o valor do contrato" required>
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                </div>
-            </div>
+           
         </div>
 
         <div class="button-group">
@@ -798,7 +801,13 @@ function verificarGestorEFiscal() {
 
 
    <div class="form-container" id="gerenciar" style="display:none;">
-     <h2 id="contractTitleHeader">Pagamentos do</h2>
+  <div class="novo-contrato-container">
+    <h2 id="contractTitleHeader" class="payment-title">
+        <i class="fa fa-credit-card"></i> Parcelas de Contratos
+    </h2>
+    <p id="contractSubtitle" class="consultar-subtitulo">Abaixo você visualiza todas as parcelas de contratos.</p>
+</div>
+
 
      <table id="contratosTable" class="table table-bordered">
         <thead>

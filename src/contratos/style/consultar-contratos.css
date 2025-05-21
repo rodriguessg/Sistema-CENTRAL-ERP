@@ -527,7 +527,7 @@ h2 .icon-before {
 }
 
 /* Estilo do ícone */
-.fas.fa-arrow-up, .fas.fa-arrow-down,.fa-ban {
+.fas.fa-arrow-up, .fas.fa-arrow-down,.fa-ban, .fa-sync-alt {
   margin-right: 5px; /* Espaçamento entre o ícone e o texto */
 }
 

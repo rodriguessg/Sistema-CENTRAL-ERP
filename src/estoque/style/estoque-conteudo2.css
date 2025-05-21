@@ -60,7 +60,7 @@ body {
     top: 0;
     height: 100%;
     width: 7px; /* Tamanho da borda */
-    background: linear-gradient(to top, #00bcd4, #ff4081); /* Gradiente para combinar com as tabs */
+    background: linear-gradient(to top, #A0A0A0, #777); /* Gradiente para combinar com as tabs */
     border-radius: 0 5px 5px 0; /* Borda arredondada no canto direito */
 }
 

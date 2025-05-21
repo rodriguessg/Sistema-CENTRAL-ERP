@@ -1,144 +1,136 @@
 <?php
-    include 'header.php';
+// Inicia a sessão
+session_start();
 
+// Conexão com o banco de dados
+include 'banco.php';
 
-    // Incluir a conexão com o banco de dados
-include 'banco.php'; 
-
-// Verificar se o formulário foi enviado via POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Recuperar o valor de custo do formulário
-    $custo = isset($_POST['custo']) ? $_POST['custo'] : 0;
-
-    // Verificar se o custo está em um formato correto (por exemplo, um número válido)
-    if (!is_numeric($custo)) {
-        echo "Custo inválido!";
+// Função para verificar o login do usuário
+function verificarLogin() {
+    if (!isset($_SESSION['username'])) {
+        header('Location: index.php');
         exit();
     }
+}
 
-    // Formatando o custo para 4 casas decimais antes de salvar no banco de dados
-    $custo = number_format($custo, 4, '.', ''); // Formata para 4 casas decimais
+// Função para inserir um novo produto no banco
+function inserirProduto($custo) {
+    global $con;
 
-    // Consulta SQL para inserir o valor de custo na tabela produtos
-    $query = "INSERT INTO produtos (custo) VALUES ('$custo')";
+    // Formatando o custo para 4 casas decimais
+    $custo = number_format($custo, 4, '.', '');
 
-    // Executar a consulta
-    if ($con->query($query) === TRUE) {
+    // Prepara a consulta SQL com um statement preparado (prevenção contra SQL Injection)
+    $query = "INSERT INTO produtos (custo) VALUES (?)";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("d", $custo); // 'd' para double, que é o tipo de dado para custo
+    if ($stmt->execute()) {
         echo "Produto inserido com sucesso!";
     } else {
         echo "Erro ao inserir produto: " . $con->error;
     }
-
-    // Fechar a conexão com o banco de dados
-    $con->close();
+    $stmt->close();
 }
-?>
-<?php
-// Conectar ao banco de dados
-include 'banco.php';
 
-// Obter todos os produtos com quantidade e estoque mínimo
-$query_produtos = "SELECT id, produto, quantidade, estoque_minimo FROM produtos";
-$resultado_produtos = $con->query($query_produtos);
+// Função para verificar o estoque e gerar notificações e ordens de compra
+function verificarEstoque() {
+    global $con;
 
-// Checar se algum produto atingiu o estoque mínimo
-while ($produto = $resultado_produtos->fetch_assoc()) {
-    if ($produto['quantidade'] <= $produto['estoque_minimo']) {
-        // Definir a data e hora atuais
-        $data_criacao = date('Y-m-d H:i:s');
+    $query_produtos = "SELECT id, produto, quantidade, estoque_minimo FROM produtos";
+    $resultado_produtos = $con->query($query_produtos);
 
-        // Verificar se já existe uma notificação para este produto
-        $query_notificacao_existente = "SELECT * FROM notificacoes WHERE mensagem LIKE '%{$produto['produto']}%' AND situacao = 'nao lida'";
-        $resultado_notificacao = $con->query($query_notificacao_existente);
-
-        // Se não existir notificação para este produto, insere uma nova
-        if ($resultado_notificacao->num_rows == 0) {
-            // Inserir notificação na tabela "notificacoes"
-            $username = 'estoque';
-            $setor = 'estoque';
-            $mensagem = "#".$produto['produto']." chegou ao seu limite de estoque.";
-            $situacao = 'nao lida';
+    while ($produto = $resultado_produtos->fetch_assoc()) {
+        if ($produto['quantidade'] <= $produto['estoque_minimo']) {
+            $data_criacao = date('Y-m-d H:i:s');
             
-            $query_notificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
-                                  VALUES ('$username', '$setor', '$mensagem', '$situacao', '$data_criacao')";
-            $con->query($query_notificacao);
+            // Verifica se já existe uma notificação para o produto
+            $query_notificacao_existente = "SELECT * FROM notificacoes WHERE mensagem LIKE ? AND situacao = 'nao lida'";
+            $stmt = $con->prepare($query_notificacao_existente);
+            $mensagem = "%" . $produto['produto'] . "%";
+            $stmt->bind_param("s", $mensagem);
+            $stmt->execute();
+            $resultado_notificacao = $stmt->get_result();
+            $stmt->close();
+
+            // Se não existir notificação, insere uma nova
+            if ($resultado_notificacao->num_rows == 0) {
+                $username = 'estoque';
+                $setor = 'estoque';
+                $mensagem = "#{$produto['produto']} chegou ao seu limite de estoque.";
+                $situacao = 'nao lida';
+                
+                $query_notificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                                      VALUES (?, ?, ?, ?, ?)";
+                $stmt = $con->prepare($query_notificacao);
+                $stmt->bind_param("sssss", $username, $setor, $mensagem, $situacao, $data_criacao);
+                $stmt->execute();
+                $stmt->close();
+            }
+            
+            // Gerar ordem de compra
+            $query_ordem_compra = "INSERT INTO ordens_compra (produto_id, quantidade, data_criacao) 
+                                   VALUES (?, ?, ?)";
+            $stmt = $con->prepare($query_ordem_compra);
+            $stmt->bind_param("iis", $produto['id'], $produto['estoque_minimo'], $data_criacao);
+            $stmt->execute();
+            $stmt->close();
         }
-        
-        // Gerar ordem de compra
-        $query_ordem_compra = "INSERT INTO ordens_compra (produto_id, quantidade, data_criacao) 
-                               VALUES ('{$produto['id']}', '{$produto['estoque_minimo']}', '$data_criacao')";
-        $con->query($query_ordem_compra);
     }
 }
-?>
-<?php
-// Conexão com o banco de dados
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$dbname = 'gm_sicbd';
 
-$conn = new mysqli($host, $user, $password, $dbname);
+// Função para gerenciar a transição de estoque
+function gerenciarTransicao() {
+    global $con;
 
-// Verificar conexão
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    // Verifica se o mês mudou e limpa a tabela 'transicao'
+    $current_month = date('Y-m');
+    $query_check_month = "SELECT mes FROM controle_transicao ORDER BY id DESC LIMIT 1";
+    $result_check_month = $con->query($query_check_month);
 
-// Buscar todos os produtos da tabela materiais
-$sql = "SELECT codigo, descricao, natureza, classificacao, contabil FROM materiais";
-$result = $conn->query($sql);
-
-// Gerar as opções do select com os dados 'data-*'
-$options = '';
-while ($row = $result->fetch_assoc()) {
-    $options .= "<option value='" . $row['codigo'] . "' 
-                    data-descricao='" . $row['descricao'] . "' 
-                    data-natureza='" . $row['natureza'] . "' 
-                    data-classificacao='" . $row['classificacao'] . "' 
-                    data-contabil='" . $row['contabil'] . "'>
-                    " . $row['descricao'] . "
-                </option>";
-}
-
-$conn->close();
-?>
-<?php
-include 'banco.php'; // Conexão com o banco de dados
-
-// Verifica se o mês mudou e limpa a tabela 'transicao'
-$current_month = date('Y-m');
-$query_check_month = "SELECT mes FROM controle_transicao ORDER BY id DESC LIMIT 1";
-$result_check_month = $con->query($query_check_month);
-
-if ($result_check_month->num_rows > 0) {
-    $last_month = $result_check_month->fetch_assoc()['mes'];
-    if ($last_month !== $current_month) {
-        $con->query("TRUNCATE TABLE transicao"); // Limpa a tabela
-        $con->query("INSERT INTO controle_transicao (mes) VALUES ('$current_month')"); // Atualiza o controle
-    }
-} else {
-    $con->query("INSERT INTO controle_transicao (mes) VALUES ('$current_month')");
-}
-
-// Se um produto foi retirado, insere na tabela 'transicao' e atualiza a quantidade em 'produtos'
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $material_id = $_POST['material-nome'];
-    $quantidade = (int) $_POST['material-quantidade'];
-    $data = date('Y-m-d');
-
-    // Atualizar a quantidade no estoque
-    $query_update = "UPDATE produtos SET quantidade = quantidade - $quantidade WHERE id = '$material_id' AND quantidade >= $quantidade";
-    if ($con->query($query_update)) {
-        $con->query("INSERT INTO transicao (material_id, quantidade, data, tipo) VALUES ('$material_id', '$quantidade', '$data', 'Saída')");
+    if ($result_check_month->num_rows > 0) {
+        $last_month = $result_check_month->fetch_assoc()['mes'];
+        if ($last_month !== $current_month) {
+            $con->query("TRUNCATE TABLE transicao");
+            $con->query("INSERT INTO controle_transicao (mes) VALUES ('$current_month')");
+        }
     } else {
-        echo "<script>alert('Erro: Estoque insuficiente!');</script>";
+        $con->query("INSERT INTO controle_transicao (mes) VALUES ('$current_month')");
+    }
+
+    // Se um produto foi retirado, insere na tabela 'transicao' e atualiza a quantidade em 'produtos'
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['material-nome']) && isset($_POST['material-quantidade'])) {
+        $material_id = $_POST['material-nome'];
+        $quantidade = (int) $_POST['material-quantidade'];
+        $data = date('Y-m-d');
+
+        // Atualiza a quantidade no estoque
+        $query_update = "UPDATE produtos SET quantidade = quantidade - ? WHERE id = ? AND quantidade >= ?";
+        $stmt = $con->prepare($query_update);
+        $stmt->bind_param("iii", $quantidade, $material_id, $quantidade);
+        if ($stmt->execute()) {
+            $query_transicao = "INSERT INTO transicao (material_id, quantidade, data, tipo) VALUES (?, ?, ?, 'Saída')";
+            $stmt = $con->prepare($query_transicao);
+            $stmt->bind_param("iis", $material_id, $quantidade, $data);
+            $stmt->execute();
+        } else {
+            echo "<script>alert('Erro: Estoque insuficiente!');</script>";
+        }
+        $stmt->close();
     }
 }
 
-// Consulta os registros da tabela 'transicao'
-$query_transicao = "SELECT t.id, p.produto, p.classificacao, p.localizacao, p.descricao, p.natureza, t.quantidade, p.preco_medio, t.data, t.tipo FROM transicao t INNER JOIN produtos p ON t.material_id = p.id";
-$resultado_transicao = $con->query($query_transicao);
+// Chama a função de verificação de login ao acessar a página
+verificarLogin();
+
+// Exemplo de uso das funções acima
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['custo'])) {
+        inserirProduto($_POST['custo']);
+    }
+    gerenciarTransicao();
+    verificarEstoque();
+}
+include 'header.php';
 ?>
 
 
@@ -852,6 +844,7 @@ $conn->close();
         }
     }
 
+
     // Função para carregar os exercícios (anos) disponíveis
     async function fetchExercicios() {
         try {
@@ -870,7 +863,10 @@ $conn->close();
             console.error('Erro ao carregar exercícios:', error);
         }
     }
-
+ // Verificar sessão
+    if (!isset($_SESSION['username']) || !isset($_SESSION['setor'])) {
+        setMessageAndRedirect('error', 'Sessão inválida. Faça login.', 'index.php');
+    }
     // Preencher o campo de usuário logado dinamicamente
     document.addEventListener("DOMContentLoaded", () => {
         const usuario = "<?php echo $_SESSION['username'] ?? 'Desconhecido'; ?>";

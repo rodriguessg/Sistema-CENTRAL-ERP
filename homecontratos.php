@@ -255,13 +255,12 @@
     </div>
 
     <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
-
-        <i class="fas fa-file-invoice-dollar"></i>
-        <div class="tab-content">
-            <p class="tab-title">Prestação</p>
-            <p class="tab-description">Prestação de Contas</p>
-        </div>
+    <i class="fas fa-money-check-alt"></i>
+    <div class="tab-content">
+        <p class="tab-title">Prestação</p>
+        <p class="tab-description">Prestação de Contas</p>
     </div>
+</div>
 
       <!-- Tab Andamento -->
     <div class="tab" data-tab="andamento" onclick="showTab('andamento')">
@@ -273,13 +272,13 @@
     </div>
 
 
-    <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
-        <i class="fas fa-file-alt"></i>
-        <div class="tab-content">
-            <p class="tab-title">Relatórios</p>
-            <p class="tab-description">Relatórios de Contratos</p>
-        </div>
+   <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
+    <i class="fas fa-chart-line"></i>
+    <div class="tab-content">
+        <p class="tab-title">Relatórios</p>
+        <p class="tab-description">Relatórios de Contratos</p>
     </div>
+</div>
  </div> <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
 
 

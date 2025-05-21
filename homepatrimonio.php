@@ -1,4 +1,9 @@
 <?php
+   session_start();
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+    exit();
+}
 // Incluir o arquivo de conexão com o banco de dados
 include 'banco.php';
 

@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Verifique se a sessão está ativa
 if (!isset($_SESSION['username']) || !isset($_SESSION['setor'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 // Incluindo a conexão com o banco de dados, verificando se o arquivo existe

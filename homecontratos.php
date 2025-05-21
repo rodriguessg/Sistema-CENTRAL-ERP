@@ -1,7 +1,10 @@
 <?php
     // Iniciar sessão
-    session_start();
-
+   session_start();
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+    exit();
+}
     // Configurar logging de erros
     ini_set('log_errors', 1);
     ini_set('error_log', __DIR__ . '/logs/error.log');

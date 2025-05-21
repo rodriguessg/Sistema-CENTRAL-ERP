@@ -486,3 +486,4 @@ Stack trace:
 #0 C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php(51): PDOStatement->execute(Array)
 #1 {main}
   thrown in C:\xampp\htdocs\Sistema-CENTRAL-ERP\get_fluxo_contrato.php on line 51
+[21-May-2025 14:54:39 Europe/Berlin] Erro ao buscar certidões: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'gm_sicbd.certidoes' doesn't exist

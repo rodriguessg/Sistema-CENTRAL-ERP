@@ -1,3 +1,12 @@
+.truncated-text {
+    white-space: nowrap;         /* Impede a quebra de linha */
+    overflow: hidden;            /* Oculta o texto que ultrapassa */
+    text-overflow: ellipsis;     /* Adiciona "..." quando o texto é truncado */
+    max-width: 200px;            /* Defina uma largura máxima para a célula, se necessário */
+}
+
+
+
 .input-group-contratos {
     width: 50%;
     margin-bottom: 10px;
@@ -69,7 +78,6 @@
     width: 30%; /* Cada grupo ocupa 48% da largura disponível */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
 
 /* Estilo das seções de entrada */

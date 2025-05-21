@@ -28,15 +28,6 @@
     "Open Sans", "Helvetica Neue", sans-serif;
 }
 
-/* ========== ESTILOS BÁSICOS ========== */
-body {
-  font-family: var(--font-family);
-  background-color: var(--light-gray);
-  color: var(--dark-gray);
-  line-height: 1.6;
-  margin: 0;
-  padding: 0;
-}
 
 .payment-container {
   padding: 20px;

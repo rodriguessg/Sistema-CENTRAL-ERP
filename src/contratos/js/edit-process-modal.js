@@ -31,7 +31,7 @@ function getSituacaoStyle(situacao) {
             class: 'Ativo', 
             color: 'green', 
             icon: 'fa-arrow-up',
-           background: 'rgba(144, 238, 144, 0.3)', // lightgreen com transparência
+            background: 'lightgreen', 
             borderRadius: '15px',
             padding: '5px 10px',
             display: 'inline-block' // Ajusta o fundo para o tamanho do texto
@@ -51,7 +51,7 @@ function getSituacaoStyle(situacao) {
             class: 'Inativo', 
             color: 'red', 
             icon: 'fa-arrow-down',
-            background: 'rgba(240, 128, 128, 0.3)', // lightcoral com transparência
+            background: 'lightcoral', 
             borderRadius: '15px',
             padding: '5px 10px',
             display: 'inline-block'
@@ -61,7 +61,7 @@ function getSituacaoStyle(situacao) {
             class: 'Encerrado', 
             color: 'darkred', 
             icon: 'fa-ban',
-            background: 'rgba(139, 0, 0, 0.2)', // Fundo darkred mais claro e transparente
+            background: 'lightgray', 
             borderRadius: '15px',
             padding: '5px 10px',
             display: 'inline-block'
@@ -84,33 +84,33 @@ function getSituacaoStyle(situacao) {
 
 
 
-// Função para carregar contratos
-function searchContracts() {
-    const searchInput = document.getElementById('searchInput').value;
-    const statusSelect = document.getElementById('statusSelect').value;
-    const tableBody = document.getElementById('contractTableBody');
-    tableBody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
 
-    fetch(`${GET_CONTRATOS_URL}?search=${encodeURIComponent(searchInput)}&situacao=${encodeURIComponent(statusSelect)}`)
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(`Erro HTTP ${response.status}: ${text}`);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            tableBody.innerHTML = '';
-            if (data.success && data.contratos.length > 0) {
-                // Ordenar contratos pelo título (ordem alfabética)
-                data.contratos.sort((a, b) => a.titulo.localeCompare(b.titulo));
+        // Função para carregar contratos
+        function searchContracts() {
+            const searchInput = document.getElementById('searchInput').value;
+            const statusSelect = document.getElementById('statusSelect').value;
+            const tableBody = document.getElementById('contractTableBody');
+            tableBody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
 
-                data.contratos.forEach(contrato => {
-                    const validadeStyle = getValidadeStyle(contrato.validade);
-                    const situacaoStyle = getSituacaoStyle(contrato.situacao);
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
+            fetch(`${GET_CONTRATOS_URL}?search=${encodeURIComponent(searchInput)}&situacao=${encodeURIComponent(statusSelect)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`Erro HTTP ${response.status}: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    //EXIBI NO JASON ASSO, QUE ABRE O SISTEMA
+                    // console.log('Resposta do servidor (get_contratos):', data);
+                    tableBody.innerHTML = '';
+                    if (data.success && data.contratos.length > 0) {
+                        data.contratos.forEach(contrato => {
+                            const validadeStyle = getValidadeStyle(contrato.validade);
+                            const situacaoStyle = getSituacaoStyle(contrato.situacao);
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
 <td class="truncated-text" title="${contrato.id}">${contrato.id}</td>
 <td class="truncated-text" title="${contrato.titulo}">${contrato.titulo}</td>
 <td class="truncated-text" title="${contrato.descricao}">${contrato.descricao}</td>
@@ -125,7 +125,7 @@ function searchContracts() {
            display: inline-flex;
            justify-content: center;
            align-items: center;
-           margin-top: 13px;
+           margin-top: 18px;
            font-size: 12px;
            border: solid 1px ${situacaoStyle.color};">
     <i class="fas ${situacaoStyle.icon}"></i> ${contrato.situacao}
@@ -141,19 +141,20 @@ function searchContracts() {
         <i class="fas fa-pen"></i>
     </button>
 </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            } else {
-                tableBody.innerHTML = '<tr><td colspan="6">Nenhum contrato encontrado.</td></tr>';
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao carregar contratos:', error);
-            tableBody.innerHTML = `<tr><td colspan="6">Erro ao carregar contratos: ${error.message}</td></tr>`;
-        });
-}
 
+
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="6">Nenhum contrato encontrado.</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar contratos:', error);
+                    tableBody.innerHTML = `<tr><td colspan="6">Erro ao carregar contratos: ${error.message}</td></tr>`;
+                });
+        }
 
         // Função para abrir o modal de visualização
         function openModal(contrato) {

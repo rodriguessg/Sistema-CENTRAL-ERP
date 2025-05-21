@@ -23,7 +23,7 @@
         }
 
         footer {
-            background: var(--cor-gradiente);
+            background: linear-gradient(90deg, #192844 67.81%, #472774 100%);
             color: var(--cor-secundaria);
             text-align: center;
             padding: 15px;
@@ -37,10 +37,6 @@
             font-size: 14px;
             transition: background 0.3s ease;
             z-index: 10;
-        }
-
-        footer:hover {
-            background: var(--cor-hover);
         }
 
         footer p {
@@ -67,7 +63,7 @@
         }
 
         /* Modal Styles */
-        .modal {
+        .modal-footer {
             display: none;
             position: fixed;
             top: 0;
@@ -80,7 +76,7 @@
             z-index: 1000;
         }
 
-        .modal-content {
+        .modal-content-footer {
             background-color: var(--cor-secundaria);
             color: var(--cor-texto);
             padding: 25px;
@@ -94,23 +90,23 @@
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
-        .modal-content.show {
+        .modal-content-footer.show {
             opacity: 1;
             transform: scale(1);
         }
 
-        .modal-content h2 {
+        .modal-content-footer h2 {
             margin-top: 0;
             color: var(--cor-primaria);
             font-size: 1.5em;
         }
 
-        .modal-content p, .modal-content label {
+        .modal-content-footer p, .modal-content-footer label {
             font-size: 14px;
             line-height: 1.5;
         }
 
-        .modal-content input, .modal-content textarea {
+        .modal-content-footer input, .modal-content-footer textarea {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -119,7 +115,7 @@
             font-size: 14px;
         }
 
-        .modal-content button {
+        .modal-content-footer button {
             background-color: var(--cor-primaria);
             color: var(--cor-secundaria);
             border: none;
@@ -130,7 +126,7 @@
             transition: background-color 0.3s ease;
         }
 
-        .modal-content button:hover {
+        .modal-content-footer button:hover {
             background-color: var(--cor-hover);
         }
 
@@ -149,7 +145,7 @@
         }
 
         /* Accessibility */
-        .modal-content:focus-within, button:focus, .version:focus, .company-info:focus, .newsletter:focus, .social-link:focus {
+        .modal-content-footer:focus-within, button:focus, .version:focus, .company-info:focus, .newsletter:focus, .social-link:focus {
             outline: 2px solid var(--cor-accent);
             outline-offset: 2px;
         }
@@ -171,9 +167,9 @@
     </footer>
 
     <!-- Version Info Modal -->
-    <div id="versionModal" class="modal" role="dialog" aria-labelledby="versionModalTitle">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('versionModal')" role="button" tabindex="0" aria-label="Fechar modal">&times;</span>
+    <div id="versionModal" class="modal-footer" role="dialog" aria-labelledby="versionModalTitle">
+        <div class="modal-content-footer">
+            <span class="close" onclick="closeModal('versionModal')" role="button" tabindex="0" aria-label="Fechar modal">×</span>
             <h2 id="versionModalTitle">Informações da Versão</h2>
             <p><strong>ERP CENTRAL</strong> - Versão: <span id="versionNumber">1.0.0</span></p>
             <p><strong>Última atualização:</strong> <span id="lastUpdate">21/05/2025</span></p>
@@ -183,9 +179,9 @@
     </div>
 
     <!-- Company Info Modal -->
-    <div id="companyModal" class="modal" role="dialog" aria-labelledby="companyModalTitle">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('companyModal')" role="button" tabindex="0" aria-label="Fechar modal">&times;</span>
+    <div id="companyModal" class="modal-footer" role="dialog" aria-labelledby="companyModalTitle">
+        <div class="modal-content-footer">
+            <span class="close" onclick="closeModal('companyModal')" role="button" tabindex="0" aria-label="Fechar modal">×</span>
             <h2 id="companyModalTitle">Sobre a ERP CENTRAL</h2>
             <p><strong>ERP CENTRAL</strong> é um sistema integrado de gestão pública desenvolvido para otimizar os processos administrativos do Governo do Estado do Rio de Janeiro. Nossa missão é promover eficiência, transparência e inovação na administração pública, em alinhamento com as diretrizes do portal oficial do governo (<a href="https://www.rj.gov.br" target="_blank">www.rj.gov.br</a>).</p>
             <p><strong>Fundação:</strong> 2024</p>
@@ -197,9 +193,9 @@
     </div>
 
     <!-- Contact Form Modal -->
-    <div id="contactModal" class="modal" role="dialog" aria-labelledby="contactModalTitle">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('contactModal')" role="button" tabindex="0" aria-label="Fechar modal">&times;</span>
+    <div id="contactModal" class="modal-footer" role="dialog" aria-labelledby="contactModalTitle">
+        <div class="modal-content-footer">
+            <span class="close" onclick="closeModal('contactModal')" role="button" tabindex="0" aria-label="Fechar modal">×</span>
             <h2 id="contactModalTitle">Entre em Contato</h2>
             <p>Envie sua mensagem para a equipe da ERP CENTRAL:</p>
             <form id="contactForm">
@@ -215,9 +211,9 @@
     </div>
 
     <!-- Newsletter Subscription Modal -->
-    <div id="newsletterModal" class="modal" role="dialog" aria-labelledby="newsletterModalTitle">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('newsletterModal')" role="button" tabindex="0" aria-label="Fechar modal">&times;</span>
+    <div id="newsletterModal" class="modal-footer" role="dialog" aria-labelledby="newsletterModalTitle">
+        <div class="modal-content-footer">
+            <span class="close" onclick="closeModal('newsletterModal')" role="button" tabindex="0" aria-label="Fechar modal">×</span>
             <h2 id="newsletterModalTitle">Inscreva-se na Newsletter</h2>
             <p>Receba atualizações sobre o ERP CENTRAL e notícias do Governo do Rio de Janeiro.</p>
             <form id="newsletterForm">
@@ -246,14 +242,14 @@
         function showVersionInfo() {
             const modal = document.getElementById('versionModal');
             modal.style.display = 'flex';
-            setTimeout(() => modal.querySelector('.modal-content').classList.add('show'), 10);
+            setTimeout(() => modal.querySelector('.modal-content-footer').classList.add('show'), 10);
         }
 
         // Show company info modal
         function showCompanyInfo() {
             const modal = document.getElementById('companyModal');
             modal.style.display = 'flex';
-            setTimeout(() => modal.querySelector('.modal-content').classList.add('show'), 10);
+            setTimeout(() => modal.querySelector('.modal-content-footer').classList.add('show'), 10);
         }
 
         // Open contact form modal
@@ -261,20 +257,20 @@
             closeModal('companyModal');
             const modal = document.getElementById('contactModal');
             modal.style.display = 'flex';
-            setTimeout(() => modal.querySelector('.modal-content').classList.add('show'), 10);
+            setTimeout(() => modal.querySelector('.modal-content-footer').classList.add('show'), 10);
         }
 
         // Open newsletter form modal
         function showNewsletterForm() {
             const modal = document.getElementById('newsletterModal');
             modal.style.display = 'flex';
-            setTimeout(() => modal.querySelector('.modal-content').classList.add('show'), 10);
+            setTimeout(() => modal.querySelector('.modal-content-footer').classList.add('show'), 10);
         }
 
         // Close modal
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
-            modal.querySelector('.modal-content').classList.remove('show');
+            modal.querySelector('.modal-content-footer').classList.remove('show');
             setTimeout(() => modal.style.display = 'none', 300);
         }
 

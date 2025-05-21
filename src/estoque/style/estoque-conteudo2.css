@@ -18,8 +18,8 @@ body {
 /* Container principal - "Caderno" */
 .caderno {
   display: flex; /* Flexbox para alinhamento do menu e conteúdo */
-  margin-left: 250px; /* Deixa espaço para o menu lateral */
-  width: 88%;
+  margin-left: 260px; /* Deixa espaço para o menu lateral */
+  /* width: 88%; */
   flex-direction: column;
 }
 

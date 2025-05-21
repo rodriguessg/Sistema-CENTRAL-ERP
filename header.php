@@ -359,9 +359,6 @@ function markAsRead(notificationId) {
 </script>
 
 
-<!-- <?php
-include 'footer.php';
-?> -->
 </body>
 
 

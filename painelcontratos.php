@@ -675,6 +675,8 @@ const configAtivos = {
 const ctxAtivos = document.getElementById('ativosChart').getContext('2d');
 new Chart(ctxAtivos, configAtivos);
 </script>
-
+<?php
+include 'footer.php'
+?>
 </body>
 </html>

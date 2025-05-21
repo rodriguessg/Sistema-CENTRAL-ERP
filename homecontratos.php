@@ -1110,5 +1110,9 @@ function verificarGestorEFiscal() {
 <script src="./src/contratos/js/prestacao-contas.js"></script>
 <!--  FUNCTION DE API - CAMPOS EDITAVEIS DE TABELA E INSERÇÃO DE DADOS -->
 <script src="./src/contratos/js/gerenciar-pagamentos.js"></script>
+
+<?php
+include 'footer.php'
+?>
 </body>
 </html>

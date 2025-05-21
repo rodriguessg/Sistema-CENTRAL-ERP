@@ -68,6 +68,7 @@ include 'header.php';
     </style>
 </head>
 <body>
+    
     <div class="form-container">
         <h2 class="mb-4"><i class="fas fa-certificate"></i> Cadastramento de Certidões</h2>
         <form id="certidaoForm" enctype="multipart/form-data">
@@ -566,5 +567,9 @@ include 'header.php';
         // Inicializar
         document.addEventListener('DOMContentLoaded', loadCertidoes);
     </script>
+    <?php
+include 'footer.php'
+?>
+
 </body>
 </html>

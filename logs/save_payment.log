@@ -86,3 +86,11 @@
 2025-05-19 19:47:59 - Executando INSERT
 2025-05-19 19:48:31 - Dados recebidos: {"contrato_titulo":"andamento 2","mes":"06/2025","empenho":"500.000,00","tipo":"23","nota_empenho":null,"valor_contrato":41666.67,"creditos_ativos":null,"fonte":"100","SEI":"20231600/889","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2025-06-14","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-19"}
 2025-05-19 19:48:31 - Executando INSERT
+2025-05-21 14:41:19 - Dados recebidos: {"contrato_titulo":"CONTRATO DE MANUTENÇÃO BONDE","mes":"05/2025","empenho":"2","tipo":null,"nota_empenho":null,"valor_contrato":101666.67,"creditos_ativos":null,"fonte":"100","SEI":"20231600/889345","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2029-05-14","valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-21"}
+2025-05-21 14:41:19 - Executando INSERT
+2025-05-21 14:41:30 - Dados recebidos: {"contrato_titulo":"CONTRATO DE MANUTENÇÃO BONDE","mes":"01/2026","empenho":"2","tipo":null,"nota_empenho":null,"valor_contrato":101666.67,"creditos_ativos":null,"fonte":null,"SEI":null,"nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":null,"valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-21"}
+2025-05-21 14:41:30 - Executando INSERT
+2025-05-21 14:41:43 - Dados recebidos: {"contrato_titulo":"CONTRATO DE MANUTENÇÃO BONDE","mes":"05/2025","empenho":"21","tipo":null,"nota_empenho":null,"valor_contrato":101666.67,"creditos_ativos":null,"fonte":null,"SEI":null,"nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":null,"valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-21"}
+2025-05-21 14:41:43 - Executando INSERT
+2025-05-21 14:41:50 - Dados recebidos: {"contrato_titulo":"CONTRATO DE MANUTENÇÃO BONDE","mes":"05/2025","empenho":"21","tipo":null,"nota_empenho":null,"valor_contrato":101666.67,"creditos_ativos":null,"fonte":"Fonte 1","SEI":null,"nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":null,"valor_liquidado":0,"valor_liquidado_ag":0,"ordem_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-21","fonte_adicional":"Fonte 1"}
+2025-05-21 14:41:50 - Executando INSERT

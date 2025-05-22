@@ -1,7 +1,10 @@
 <?php
     // Iniciar sessão
-    session_start();
-
+   session_start();
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+    exit();
+}
     // Configurar logging de erros
     ini_set('log_errors', 1);
     ini_set('error_log', __DIR__ . '/logs/error.log');
@@ -209,8 +212,12 @@
     <link rel="stylesheet" href="src/contratos/style/consultar-contratos.css">
     <link rel="stylesheet" href="src/contratos/style/cadastro-contratos.css">   
     <link rel="stylesheet" href="src/contratos/style/analise.css">
+     <link rel="stylesheet" href="src/contratos/style/gerenciar-pagamentos.css">
     <!-- Carregar jQuery (se necessário) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
     <!-- Carregar Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -218,6 +225,7 @@
      <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Chart.js -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
 </head>
@@ -244,19 +252,18 @@
     <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
         <i class="fas fa-edit"></i>
         <div class="tab-content">
-            <p class="tab-title">Gerenciar</p>
-            <p class="tab-description">Gerenciar Contratos</p>
+            <p class="tab-title">Pagamentos</p>
+            <p class="tab-description">Gerenciar Pagamentos</p>
         </div>
     </div>
 
     <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
-
-        <i class="fas fa-file-invoice-dollar"></i>
-        <div class="tab-content">
-            <p class="tab-title">Prestação</p>
-            <p class="tab-description">Prestação de Contas</p>
-        </div>
+    <i class="fas fa-money-check-alt"></i>
+    <div class="tab-content">
+        <p class="tab-title">Prestação</p>
+        <p class="tab-description">Prestação de Contas</p>
     </div>
+</div>
 
       <!-- Tab Andamento -->
     <div class="tab" data-tab="andamento" onclick="showTab('andamento')">
@@ -268,13 +275,13 @@
     </div>
 
 
-    <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
-        <i class="fas fa-file-alt"></i>
-        <div class="tab-content">
-            <p class="tab-title">Relatórios</p>
-            <p class="tab-description">Relatórios de Contratos</p>
-        </div>
+   <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
+    <i class="fas fa-chart-line"></i>
+    <div class="tab-content">
+        <p class="tab-title">Relatórios</p>
+        <p class="tab-description">Relatórios de Contratos</p>
     </div>
+</div>
  </div> <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
 
 
@@ -287,7 +294,7 @@
         <h1 class="novo-contrato-titulo">
             <i class="fas fa-clipboard-list" id="icon-novo"></i> Cadastrar Contratos
         </h1>
-        <p class="novo-contrato-descricao">Preencha os dados do contrato abaixo:</p>
+        <p class="consultar-subtitulo">Preencha os dados do contrato abaixo:</p>
     </div>
 
     <form action="cadastrar_contratos.php" method="POST" enctype="multipart/form-data" class="form-cadastro">
@@ -364,7 +371,7 @@
                     </div>
                 </div>
 
-                <!-- Nova Categoria do Contrato -->
+               <!-- Nova Categoria do Contrato -->
                 <div class="mb-3">
                     <label for="categoria" class="form-label">
                         Categoria do Contrato <span class="text-danger">*</span>
@@ -378,6 +385,77 @@
                     </div>
                 </div>
 
+            </div>
+
+
+             <div class="grupo2">
+                    <!-- Contatos -->
+                <div class="mb-3">
+                    <label for="contatos" class="form-label">
+                        Contatos <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-icon">
+                        <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Digite o número de contato ou email " required>
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                </div>
+
+                <!-- Natureza de Despesas -->
+                <div class="mb-3">
+                    <label for="n_despesas" class="form-label">Natureza de Despesas <span class="text-danger">*</span></label>
+                    <div class="input-icon">
+                        <input type="text" id="n_despesas" name="contatos" class="form-control" placeholder="Digite a natureza de despesa" required>
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                </div>
+                <!-- Vigência -->
+                <div class="mb-3">
+                    <label for="validade" class="form-label">
+                        Vigência <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-icon">
+                        <input type="date" id="validade" name="validade" class="form-control" required onchange="atualizarParcelas()">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+
+                <!-- Data de Publicação -->
+                <div class="mb-3">
+                    <label for="publicacao" class="form-label">Data de Publicação <span class="text-danger">*</span></label>
+                    <div class="input-icon">
+                        <input type="date" id="publicacao" name="publicacao" class="form-control" required >
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+
+                <!-- Data de Serviço -->
+                <div class="mb-3">
+                    <label for="date_service" class="form-label">Data de Serviço <span class="text-danger">*</span></label>
+                    <div class="input-icon">
+                        <input type="date" id="date_service" name="date_service" class="form-control" required >
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+
+                <!-- Valor da Nota Fiscal -->
+                <div class="mb-3">
+                    <label for="valor-valor" class="form-label">Valor da Nota fiscal <span class="text-danger">*</span></label>
+                    <div class="input-icon">
+                        <input type="text" id="valor-NF" name="valor" class="form-control" placeholder="Digite o número da nota fiscal" required>
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+
+                <!-- Valor do Contrato -->
+                <div class="mb-3">
+                    <label for="valor-contrato" class="form-label">
+                        Valor do Contrato <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-icon">
+                        <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" placeholder="Digite o valor do contrato" required>
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
             </div>
 
             <div class="grupo2">
@@ -436,77 +514,10 @@
                     </div>
                 </div>
 
-                <!-- Contatos -->
-                <div class="mb-3">
-                    <label for="contatos" class="form-label">
-                        Contatos <span class="text-danger">*</span>
-                    </label>
-                    <div class="input-icon">
-                        <input type="text" id="contatos" name="contatos" class="form-control" placeholder="Digite o número de contato ou email " required>
-                        <i class="fas fa-phone-alt"></i>
-                    </div>
-                </div>
-
-                <!-- Natureza de Despesas -->
-                <div class="mb-3">
-                    <label for="n_despesas" class="form-label">Natureza de Despesas <span class="text-danger">*</span></label>
-                    <div class="input-icon">
-                        <input type="text" id="n_despesas" name="contatos" class="form-control" placeholder="Digite a natureza de despesa" required>
-                        <i class="fas fa-phone-alt"></i>
-                    </div>
-                </div>
+            
             </div>
 
-            <div class="grupo2">
-                <!-- Vigência -->
-                <div class="mb-3">
-                    <label for="validade" class="form-label">
-                        Vigência <span class="text-danger">*</span>
-                    </label>
-                    <div class="input-icon">
-                        <input type="date" id="validade" name="validade" class="form-control" required onchange="atualizarParcelas()">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                </div>
-
-                <!-- Data de Publicação -->
-                <div class="mb-3">
-                    <label for="publicacao" class="form-label">Data de Publicação <span class="text-danger">*</span></label>
-                    <div class="input-icon">
-                        <input type="date" id="publicacao" name="publicacao" class="form-control" required >
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                </div>
-
-                <!-- Data de Serviço -->
-                <div class="mb-3">
-                    <label for="date_service" class="form-label">Data de Serviço <span class="text-danger">*</span></label>
-                    <div class="input-icon">
-                        <input type="date" id="date_service" name="date_service" class="form-control" required >
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                </div>
-
-                <!-- Valor da Nota Fiscal -->
-                <div class="mb-3">
-                    <label for="valor-valor" class="form-label">Valor da Nota fiscal <span class="text-danger">*</span></label>
-                    <div class="input-icon">
-                        <input type="text" id="valor-NF" name="valor" class="form-control" placeholder="Digite o número da nota fiscal" required>
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                </div>
-
-                <!-- Valor do Contrato -->
-                <div class="mb-3">
-                    <label for="valor-contrato" class="form-label">
-                        Valor do Contrato <span class="text-danger">*</span>
-                    </label>
-                    <div class="input-icon">
-                        <input type="text" id="valor-contrato" name="valor_contrato" class="form-control" placeholder="Digite o valor do contrato" required>
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                </div>
-            </div>
+           
         </div>
 
         <div class="button-group">
@@ -597,9 +608,14 @@ function verificarGestorEFiscal() {
 
 
  <div class="form-container" id="consultar">
-        <h2 class="text-center mt-3">
-            <span class="icon-before fas fa-box"></span> Lista de Contratos
-        </h2>
+
+ <div class="novo-contrato-container">
+    
+<h2 class="novo-contrato-titulo">
+    <span class="icon-before fas fa-search"></span> Consultar Contratos
+</h2>
+<p class="consultar-subtitulo">Pesquise e visualize os contratos cadastrados no sistema.</p>
+</div>
         <!-- Pesquisa -->
         <div class="search-bar">
             <div class="search-filters">
@@ -616,7 +632,10 @@ function verificarGestorEFiscal() {
         </div>
         <!-- Lista de Contratos -->
         <div class="table-container-contratos">
-            <table class="table table-bordered table-hover">
+            <h2 class="titulo-tabela">
+    <i class="fas fa-box"></i> Lista de Contratos
+</h2>
+            <table class="table">
                 <thead>
                     <tr>
                         <th><i class="fas fa-hashtag"></i> ID</th>
@@ -784,7 +803,13 @@ function verificarGestorEFiscal() {
 
 
    <div class="form-container" id="gerenciar" style="display:none;">
-     <h2 id="contractTitleHeader">Pagamentos do</h2>
+  <div class="novo-contrato-container">
+    <h2 id="contractTitleHeader" class="payment-title">
+        <i class="fa fa-credit-card"></i> Parcelas de Contratos
+    </h2>
+    <p id="contractSubtitle" class="consultar-subtitulo">Abaixo você visualiza todas as parcelas de contratos.</p>
+</div>
+
 
      <table id="contratosTable" class="table table-bordered">
         <thead>
@@ -1096,5 +1121,9 @@ function verificarGestorEFiscal() {
 <script src="./src/contratos/js/prestacao-contas.js"></script>
 <!--  FUNCTION DE API - CAMPOS EDITAVEIS DE TABELA E INSERÇÃO DE DADOS -->
 <script src="./src/contratos/js/gerenciar-pagamentos.js"></script>
+
+<?php
+include 'footer.php'
+?>
 </body>
 </html>

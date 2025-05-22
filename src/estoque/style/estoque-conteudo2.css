@@ -18,8 +18,8 @@ body {
 /* Container principal - "Caderno" */
 .caderno {
   display: flex; /* Flexbox para alinhamento do menu e conteúdo */
-  margin-left: 250px; /* Deixa espaço para o menu lateral */
-  width: 88%;
+  margin-left: 260px; /* Deixa espaço para o menu lateral */
+  /* width: 88%; */
   flex-direction: column;
 }
 
@@ -60,7 +60,7 @@ body {
     top: 0;
     height: 100%;
     width: 7px; /* Tamanho da borda */
-    background: linear-gradient(to top, #00bcd4, #ff4081); /* Gradiente para combinar com as tabs */
+    background: linear-gradient(to top, #A0A0A0, #777); /* Gradiente para combinar com as tabs */
     border-radius: 0 5px 5px 0; /* Borda arredondada no canto direito */
 }
 
@@ -72,8 +72,8 @@ body {
 /* Ícones das Tabs */
 .tab i {
     font-size: 28px; /* Aumentado o tamanho dos ícones */
-    color: white; /* Cor dos ícones */
-    background-image: linear-gradient(45deg, #00bcd4, #ff4081); /* Gradiente de azul para rosa */
+    color: var(--dark-blue);
+    background: linear-gradient(135deg, rgba(25, 40, 68, 0.1) 0%, rgba(71, 39, 116, 0.1) 100%);
     border-radius: 50%; /* Tornando os ícones redondos */
     padding: 10px; /* Espaciamento dentro do círculo */
     margin-right: 5px;

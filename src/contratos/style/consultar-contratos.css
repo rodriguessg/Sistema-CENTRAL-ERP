@@ -1,56 +1,211 @@
-/* Tabela */
+/* Container da Tabela */
 .table-container-contratos {
     width: 100%;
     margin-top: 30px;
     overflow-x: auto;
-    border-radius: 10px;
-  }
-
-  /* Remover bordas verticais e manter apenas horizontais */
-  .table-container-contratos th,
-td {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  padding: 10px;
-  text-align: center;
-  border-left: none;
-  border-right: none;
-  border-top: none;
-  border-bottom: 1px solid #ddd; /* linha horizontal */
-  font-size: 1rem;
-  
+    border-radius: 10px; /* Border-radius no container */
+    background: none; /* Removendo o fundo */
 }
 
-/* Truncar o texto dentro das células da tabela */
-.truncated-text {
-  white-space: nowrap; /* Impede que o texto quebre em várias linhas */
-  overflow: hidden; /* Esconde o texto que ultrapassar o tamanho da célula */
-  text-overflow: ellipsis; /* Adiciona "..." quando o texto ultrapassar */
-  max-width: 150px; /* Ajuste a largura conforme necessário */
-  cursor: pointer; /* Para que pareça interativo */
+.table tr {
+    border-color: inherit !important;
+    border-style: solid !important;
+    border-width: 2px !important;
 }
 
-
-
-
-/* Cabeçalho */
-.table-container-contratos th {
-  color: white;
-  text-transform: uppercase;
-  font-weight: bold;
-  text-align: center;
+/* Cabeçalho da Tabela */
+.table th {
+    background: #3f51b5; /* Cor de fundo no cabeçalho */
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: white; /* Cor do texto no cabeçalho */
+    border-bottom: 2px solid var(--medium-gray);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    font-size: 1rem;
+    text-align: center; /* Garantir que o texto no cabeçalho esteja centralizado */
 }
 
-/* Linhas alternadas */
+/* Cor de fundo no cabeçalho */
+.table thead th {
+    background: linear-gradient(90deg, rgba(25, 40, 68, 0.05) 0%, rgba(71, 39, 116, 0.05) 100%);
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #472774; /* Cor do texto no cabeçalho */
+    border-bottom: 2px solid var(--medium-gray);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    font-size: 1rem;
+    text-align: center; /* Garantir que o texto no cabeçalho esteja centralizado */
+}
+
+/* Tabela */
+.table-container-contratos table {
+    width: 100%;
+    border-collapse: collapse; /* Elimina as bordas internas */
+    background: none; /* Removendo o fundo */
+    border-radius: 0 0 10px 10px; /* Arredondando o fundo da tabela */
+    margin: 0;
+    text-align: center;
+}
+
+/* Estilo para as células */
+.table-container-contratos th,
+.table-container-contratos td {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 10px;
+    text-align: center; /* Alinhamento central para todas as células */
+    border-bottom: 1px solid #ddd; /* Borda horizontal */
+    border-left: none;  /* Remover borda esquerda */
+    border-right: none; /* Remover borda direita */
+    background: none; /* Removendo fundo */
+}
+
+/* Linhas alternadas removidas */
 tr:nth-child(even) {
-  background-color: #f9f9f9;
+    background-color: transparent;
 }
 
 tr:hover {
-  background-color: #f1f1f1;
-  transition: background-color 0.3s ease;
+    background-color: #f1f1f1;
+    transition: background-color 0.3s ease;
 }
+
+/* Estilo para os ícones nas células de cabeçalho */
+.table-container-contratos th i {
+    margin-right: 8px; /* Espaço entre ícone e texto */
+    font-size: 1.2rem;
+    color: #472774; /* Cor do ícone */
+}
+
+/* Estilo para o status */
+.status.ativo {
+    background-color: #4caf50; /* Verde para ativo */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.status.encerrado {
+    background-color: #f44336; /* Vermelho para encerrado */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.status.renovado {
+    background-color: #00bcd4; /* Azul para renovado */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.status.inativo {
+    background-color: #9e9e9e; /* Cinza para inativo */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Ícones de Status */
+.status i {
+    margin-right: 5px; /* Espaço entre o ícone e o texto */
+}
+
+/* Botões de Ações */
+.btn-action {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin: 0 5px;
+    transition: color 0.3s ease;
+}
+
+/* Estilo do título com ícone e fundo gradient */
+.titulo-tabela {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--dark-blue);
+    padding: 15px;
+    position: relative; /* Para garantir que o ícone e o texto fiquem no mesmo nível */
+    background: linear-gradient(90deg, #192844 67.81%, #472774 100%);
+    border-radius: 10px 10px 0 0; /* Arredondar o topo esquerdo e direito */
+    display: flex;
+    align-items: center;
+    margin: 0;
+    color: white;
+}
+
+/* Ícone do título */
+.titulo-tabela i {
+    margin-right: 10px; /* Espaço entre o ícone e o texto */
+    font-size: 1.3rem; /* Tamanho do ícone */
+    color: white; /* Cor do ícone */
+}
+
+
+
+
+/* Media Queries para Responsividade */
+@media (max-width: 1024px) {
+    .table-container-contratos th,
+    .table-container-contratos td {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    /* Ajuste para botões de ação em telas médias */
+    .btn-action {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .table-container-contratos th,
+    .table-container-contratos td {
+        font-size: 0.85rem;
+        padding: 6px;
+    }
+
+    /* Ajuste de layout para telas menores */
+    .table-container-contratos {
+        overflow-x: scroll;
+    }
+
+    /* Ajuste para botões de ação em telas pequenas */
+    .btn-action {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .table-container-contratos th,
+    .table-container-contratos td {
+        font-size: 0.8rem;
+        padding: 5px;
+    }
+
+    /* Ajusta o layout para telas muito pequenas */
+    .table-container-contratos {
+        overflow-x: scroll;
+    }
+}
+
 
 .input-group-contratos label, .email-group label {
   display: block;
@@ -154,99 +309,174 @@ button:hover i {
   color: #28a745 !important; /* Cor do ícone no hover forçando com !important */
 }
 
-
-/* Estilo geral da barra de pesquisa */
+/* Barra de Pesquisa */
 .search-bar {
-  margin-top: 40px;
-  margin-bottom: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    margin-bottom: 25px;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 5px;  /* Bordas arredondadas ajustadas */
+    padding: 12px 20px; /* Menos padding */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap; /* Adiciona quebra de linha quando necessário */
 }
 
-/* Estilo para o container dos filtros */
+/* Filtros */
 .search-filters {
-  display: flex;
-  flex-direction: column; /* Coloca os inputs e botão empilhados um abaixo do outro */
-  align-items: flex-start; /* Alinha os itens à esquerda */
-  gap: 15px; /* Espaçamento entre os elementos */
-  width: 100%; /* Garante que o container ocupe toda a largura disponível */
+    display: flex;
+    gap: 10px; /* Menos espaço entre os elementos */
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
 }
 
-/* Estilo para os inputs e select */
-.input-field {
-  width: 100%; /* Garante que os inputs ocupem toda a largura */
-  padding: 10px 16px;
-  padding-left: 35px; /* Espaço extra à esquerda, pode ser usado para ícones ou outros elementos */
-  border: 2px solid #BBB; /* Borda cinza */
-  border-radius: 8px; /* Bordas arredondadas */
-  font-size: 16px; /* Tamanho da fonte */
-  color: #333; /* Cor do texto */
-  background-color: #f9f9f9; /* Cor de fundo */
-  transition: all 0.3s ease; /* Transição suave para alterações */
-  box-sizing: border-box; /* Garante que o padding e a borda não afetem o tamanho */
+/* Estilo para o input com ID searchInput (ajustado) */
+#searchInput {
+    flex: 1;  /* Deixa o input maior em relação ao select */
+    padding: 12px 15px; /* Ajuste de padding para alinhar com select */
+    font-size: 1rem;  /* Tamanho da fonte ajustado */
+    border: 1px solid #ccc;
+    border-radius: 5px;  /* Bordas arredondadas ajustadas */
+    box-sizing: border-box;
+    width: 100%; /* Garante que ocupe a largura disponível */
+    height: 40px; /* Altura ajustada */
 }
 
-/* Foco nos inputs e select */
-.input-field:focus {
-  border-color: #777; /* Cor da borda quando o campo recebe foco */
-  outline: none; /* Remove o contorno padrão */
+/* Estilo para o select com ID (ajustado) */
+#statusSelect {
+    padding: 8px 15px; /* Ajuste de padding para alinhar com input */
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;  /* Bordas arredondadas ajustadas */
+    background-color: white;
+    appearance: none;
+    padding-right: 25px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23343a40' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    width: 200px;  /* Largura fixa para o select */
+    height: 40px;  /* Altura ajustada */
 }
 
-/* Estilo para o botão */
+#statusSelect:focus {
+    border-color: #00bcd4;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 188, 212, 0.2);
+}
+
+/* Botão Filtros Avançados */
 .btn-filters {
-  padding: 10px 20px;
-  font-size: 16px;
-  background: linear-gradient(180deg, #273051, #273051) !important; /* Cor de fundo do botão */
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease; /* Transição suave para mudança de cor */
-  width: auto; /* Garante que o botão tenha tamanho adequado */
+    padding: 12px 20px; /* Ajuste de padding para alinhar */
+    background: linear-gradient(90deg, #192844 67.81%, #472774 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;  /* Bordas arredondadas ajustadas */
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    height: 40px;  /* Altura ajustada */
 }
 
-/* Efeito de hover para o botão */
 .btn-filters:hover {
-  background-color: #5a6268; /* Cor do botão ao passar o mouse */
+    background: linear-gradient(135deg, #00bcd4, #ff80c0);  /* Efeito hover */
 }
 
-/* Responsividade para telas menores */
+/* Media Queries para Responsividade */
+@media (max-width: 1024px) {
+    /* Ajuste para tablets e telas de 1024px de largura */
+    .search-bar {
+        padding: 15px; /* Padding maior para telas médias */
+        flex-direction: column; /* Empilha os itens */
+    }
+
+    .search-filters {
+        flex-direction: column; /* Coloca cada elemento em uma linha */
+        gap: 15px;
+    }
+
+    #searchInput, #statusSelect {
+        width: 100%; /* Input e select ocupando toda a largura disponível */
+    }
+
+    .btn-filters {
+        width: 100%; /* O botão ocupa toda a largura */
+        margin-top: 10px;
+    }
+}
+
 @media (max-width: 768px) {
-  .search-filters {
-    width: 100%; /* Garante que o container ocupe toda a largura */
-    gap: 20px; /* Aumenta o espaçamento entre os elementos */
-  }
+    /* Ajuste para telas menores, como tablets e smartphones */
+    .search-bar {
+        padding: 10px 15px; /* Menos padding em telas menores */
+        flex-direction: column; /* Empilha os itens */
+    }
 
-  .input-field {
-    width: 100%; /* Garante que os inputs ocupem toda a largura */
-  }
+    .search-filters {
+        flex-direction: column; /* Coloca cada elemento em uma linha */
+        gap: 10px;
+    }
 
-  .btn-filters {
-    width: 100%; /* Faz com que o botão ocupe toda a largura disponível */
-  }
+    #searchInput, #statusSelect {
+        width: 100%; /* Input e select ocupando toda a largura disponível */
+    }
+
+    .btn-filters {
+        width: 100%; /* O botão ocupa toda a largura */
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Ajuste para telas muito pequenas, como smartphones */
+    #searchInput {
+        padding: 10px 12px; /* Menos padding em telas menores */
+    }
+
+    #statusSelect {
+        padding: 10px 15px; /* Menos padding */
+    }
+
+    .btn-filters {
+        padding: 10px 15px; /* Ajuste no padding */
+    }
+}
+
+/* Título com ícone */
+h2 {
+    font-size: 1.5rem; /* Ajuste do tamanho da fonte */
+    font-weight: bold;
+    color: #333; /* Cor do texto */
+    margin-top: 30px;
+    display: flex; /* Alinha o ícone e o texto na horizontal */
+    align-items: center; /* Alinha verticalmente o ícone com o texto */
+}
+
+/* Ícone antes do título */
+h2 .icon-before {
+    margin-right: 10px; /* Espaço entre o ícone e o texto */
+    color:#273051; /* Cor do ícone */
+}
+
+/* Subtítulo com classe específica */
+.consultar-subtitulo {
+     font-size: 1.2rem;
+    color: #666; /* Cor do texto do subtítulo */
+    margin-top: 10px;
+    position: relative; /* Necessário para o efeito "before" */
 }
 
 
-/* Estilo para o título h2 com ícone */
-h2.text-center {
-  display: flex; /* Flexbox para alinhar o ícone e o texto */
-  justify-content: center; /* Centraliza horizontalmente o conteúdo */
-  align-items: center; /* Alinha verticalmente o ícone e o texto */
-  font-size: 24px;
-  font-weight: bold;
-  color: #333; /* Cor do texto */
-  text-align: center; /* Garante que o texto fique centralizado */
-  padding-bottom: 5px; /* Espaçamento entre o texto e o sublinhado */
-  width: 100%; /* Garante que o título ocupe toda a largura do contêiner */
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0 auto; /* Centraliza o título no contêiner */
-}
-
-/* Estilo para o ícone ao lado do texto */
-h2.text-center .icon-before {
-  margin-right: 10px; /* Espaço entre o ícone e o texto */
-  font-size: 24px; /* Tamanho do ícone */
+/* Adiciona uma linha abaixo do subtítulo com a classe específica */
+.consultar-subtitulo::after {
+   content: "";
+    position: absolute;
+    bottom: -15px;
+    left: 0px;
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(135deg, #00bcd4, #ff4081);
 }
 
 
@@ -297,7 +527,7 @@ h2.text-center .icon-before {
 }
 
 /* Estilo do ícone */
-.fas.fa-arrow-up, .fas.fa-arrow-down {
+.fas.fa-arrow-up, .fas.fa-arrow-down,.fa-ban, .fa-sync-alt {
   margin-right: 5px; /* Espaçamento entre o ícone e o texto */
 }
 
@@ -324,3 +554,102 @@ h2.text-center .icon-before {
 
 
 
+/* Botões de Ação */
+.btn-info,
+.btn-primary,
+.btn-warning {
+    background-color: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    font-size: 1.2rem !important;
+    margin: 0 5px !important;
+    transition: background-color 0.3s ease !important;
+    border-radius: 50% !important; /* Garantir bordas arredondadas (botões circulares) */
+    padding: 12px !important; /* Ajuste de padding para garantir círculo perfeito */
+    display: inline-flex !important;
+    align-items: center !important; /* Alinha o ícone e texto */
+    justify-content: center !important; /* Garante que o ícone fique centralizado */
+    width: 40px !important; /* Define uma largura fixa */
+    height: 40px !important; /* Define uma altura fixa para manter o formato circular */
+}
+
+/* Estilo do botão "Visualizar" (btn-info) */
+.btn-info {
+    background-color: #00bcd4 !important; /* Azul claro */
+    color: white !important;
+}
+
+.btn-info:hover {
+    background-color:#472774  !important; /* Azul escuro */
+}
+
+/* Estilo do botão "Relatório" (btn-primary) */
+.btn-primary {
+    background-color: #472774 !important; /* Cor de fundo pink */
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background-color: #ff1c56 !important; /* Cor mais forte de pink */
+}
+
+/* Estilo do botão "Editar" (btn-warning) */
+.btn-warning {
+    background-color: #dc3545 !important; /* Vermelho */
+    color: white !important;
+}
+
+.btn-warning:hover {
+    background-color: #00bcd4 !important; /* Vermelho mais forte */
+}
+
+/* Tamanho do ícone nos botões */
+.btn-info i,
+.btn-primary i,
+.btn-warning i {
+    font-size: 1.3rem !important; /* Tamanho do ícone */
+    color: white !important; /* Cor do ícone */
+    margin-right: 0 !important; /* Removendo o espaço entre ícone e texto */
+}
+
+
+/* Estilos gerais para a célula de status */
+.status {
+    font-weight: bold;
+    display: inline-flex; /* Faz com que o fundo se ajuste ao tamanho do conteúdo */
+    align-items: center; /* Alinha o texto verticalmente */
+    justify-content: center; /* Centraliza o texto horizontalmente */
+    padding: 5px 10px; /* Ajusta o padding ao redor do texto */
+    border-radius: 15px; /* Aplica as bordas arredondadas */
+    background-clip: padding-box; /* Garante que o fundo se ajuste ao padding */
+}
+
+/* Estilos para "Ativo" */
+.Ativo {
+    background-color: #e0f7e0; /* Cor de fundo para "Ativo" */
+    color: green;
+}
+
+/* Estilos para "Renovado" */
+.Renovado {
+    background-color: #f0f4ff; /* Cor de fundo para "Renovado" */
+    color: blue;
+}
+
+/* Estilos para "Inativo" */
+.Inativo {
+    background-color: #f8d7da; /* Cor de fundo para "Inativo" */
+    color: red;
+}
+
+/* Estilos para "Encerrado" */
+.Encerrado {
+    background-color: #f8d7da; /* Cor de fundo para "Encerrado" */
+    color: darkred;
+}
+
+/* Estilos para "Desconhecido" */
+.Desconhecido {
+    background-color: #f1f1f1; /* Cor de fundo para "Desconhecido" */
+    color: gray;
+}

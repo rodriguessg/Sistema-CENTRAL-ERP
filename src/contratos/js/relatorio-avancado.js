@@ -260,50 +260,60 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
     }
-
-    // Função para exportar para PDF
-    function exportarPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const tabelaVisivel = document.querySelector('div[id$="-tabela"][style*="block"] table');
-        if (!tabelaVisivel) {
-            alert('Nenhum relatório gerado para exportar.');
-            return;
-        }
-
-        const tipoRelatorio = tabelaVisivel.id;
-        doc.text(`Relatório ${tipoRelatorio.replace('-', ' ').toUpperCase()}`, 10, 10);
-        doc.autoTable({ html: tabelaVisivel });
-        doc.save(`relatorio_${tipoRelatorio}.pdf`);
+//  Funcao para exportar pdf e xlsx em sequencia
+  function exportarPDF() {
+    // Ensure jsPDF is available
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert('Erro: A biblioteca jsPDF não está carregada.');
+        return;
     }
 
-    // Função para exportar para CSV
-    function exportarCSV() {
-        const tabelaVisivel = document.querySelector('div[id$="-tabela"][style*="block"] table');
-        if (!tabelaVisivel) {
-            alert('Nenhum relatório gerado para exportar.');
-            return;
-        }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const tabelaVisivel = document.querySelector('div[id$="-tabela"][style*="block"] table');
+    if (!tabelaVisivel) {
+        alert('Nenhum relatório gerado para exportar.');
+        return;
+    }
 
-        const tipoRelatorio = tabelaVisivel.id;
-        const rows = tabelaVisivel.querySelectorAll('tr');
-        const data = [];
+    const tipoRelatorio = tabelaVisivel.id;
+    doc.text(`Relatório ${tipoRelatorio.replace('-', ' ').toUpperCase()}`, 10, 10);
+    doc.autoTable({ html: tabelaVisivel });
+    doc.save(`relatorio_${tipoRelatorio}.pdf`);
+}
+   function exportarCSV() {
+    const tabelaVisivel = document.querySelector('div[id$="-tabela"][style*="block"] table');
+    if (!tabelaVisivel) {
+        alert('Nenhum relatório gerado para exportar.');
+        return;
+    }
 
-        rows.forEach(row => {
-            const rowData = [];
-            row.querySelectorAll('th, td').forEach(cell => {
-                rowData.push(cell.innerText);
-            });
-            data.push(rowData);
+    if (typeof Papa === 'undefined') {
+        alert('Erro: A biblioteca Papa Parse não está carregada.');
+        return;
+    }
+
+    const tipoRelatorio = tabelaVisivel.id;
+    const rows = tabelaVisivel.querySelectorAll('tr');
+    const data = [];
+
+    rows.forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('th, td').forEach(cell => {
+            rowData.push(cell.innerText);
         });
+        data.push(rowData);
+    });
 
-        const csv = Papa.unparse(data);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `relatorio_${tipoRelatorio}.csv`;
-        link.click();
-    }
+    const csv = Papa.unparse(data);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `relatorio_${tipoRelatorio}.csv`;
+    link.click();
+}
+
+// fim do export pdf e xlsx
 
     // Funções auxiliares para preencher as tabelas específicas
     function preencherTabelaCompleta(dados) {

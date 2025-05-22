@@ -1,3 +1,12 @@
+.truncated-text {
+    white-space: nowrap;         /* Impede a quebra de linha */
+    overflow: hidden;            /* Oculta o texto que ultrapassa */
+    text-overflow: ellipsis;     /* Adiciona "..." quando o texto é truncado */
+    max-width: 200px;            /* Defina uma largura máxima para a célula, se necessário */
+}
+
+
+
 .input-group-contratos {
     width: 50%;
     margin-bottom: 10px;
@@ -44,6 +53,8 @@
     border-radius: 10px;  /* Bordas arredondadas */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Sombras suaves ao redor */
     transition: box-shadow 0.3s ease;  /* Efeito suave para quando a sombra mudar */
+    margin-top: 20px;
+
 }
 
 .form-cadastro:hover {
@@ -67,7 +78,6 @@
     width: 30%; /* Cada grupo ocupa 48% da largura disponível */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
 
 /* Estilo das seções de entrada */
@@ -79,7 +89,20 @@
 .input-icon input {
     width: 100%;
     padding: 2px 16px;
-    padding-left: 40px; /* Espaço para o ícone à esquerda */
+    padding-left: 30px; /* Espaço para o ícone à esquerda */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.input-icon select {
+    width: 100%;
+    padding: 2px 16px;
+    padding-left: 30px; /* Espaço para o ícone à esquerda */
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 14px;
@@ -108,7 +131,7 @@
     left: 10px; /* Posição do ícone dentro do campo */
     top: 50%;
     transform: translateY(-50%);
-    font-size: 16px;
+    font-size: 14px;
 }
 
 /* Responsividade para telas menores */
@@ -329,11 +352,6 @@ form .mb-3 {
       margin-right: 10px;
    }
 
-   .novo-contrato-descricao {
-      font-size: 18px;
-      color: #273051; /* Texto azul */
-      margin-top: 10px;
-   }
 
    .icon-novo{
 

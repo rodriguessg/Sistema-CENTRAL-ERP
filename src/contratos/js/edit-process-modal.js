@@ -23,17 +23,66 @@
             }
             return { class: 'valid', color: 'green', icon: 'fa-check-circle' };
         }
-// Função para determinar estilo da situação
 function getSituacaoStyle(situacao) {
+    let style = {};
+
     if (situacao === 'Ativo') {
-        return { class: 'Ativo', color: 'green', icon: 'fa-arrow-up' };
+        style = { 
+            class: 'Ativo', 
+            color: 'green', 
+            icon: 'fa-arrow-up',
+            background: 'lightgreen', 
+            borderRadius: '15px',
+            padding: '5px 10px',
+            display: 'inline-block' // Ajusta o fundo para o tamanho do texto
+        };
     } else if (situacao === 'Renovado') {
-        return { class: 'Renovado', color: 'blue', icon: 'fa-sync-alt' };
-    } else if (situacao === 'Inativo' || situacao === 'Encerrado') {
-        return { class: situacao, color: 'red', icon: 'fa-arrow-down' };
+        style = { 
+            class: 'Renovado', 
+            color: 'blue', 
+            icon: 'fa-sync-alt',
+            background: 'lightblue', 
+            borderRadius: '15px',
+            padding: '5px 10px',
+            display: 'inline-block'
+        };
+    } else if (situacao === 'Inativo') {
+        style = { 
+            class: 'Inativo', 
+            color: 'red', 
+            icon: 'fa-arrow-down',
+            background: 'lightcoral', 
+            borderRadius: '15px',
+            padding: '5px 10px',
+            display: 'inline-block'
+        };
+    } else if (situacao === 'Encerrado') {
+        style = { 
+            class: 'Encerrado', 
+            color: 'darkred', 
+            icon: 'fa-ban',
+            background: 'lightgray', 
+            borderRadius: '15px',
+            padding: '5px 10px',
+            display: 'inline-block'
+        };
+    } else {
+        style = { 
+            class: 'Desconhecido', 
+            color: 'gray', 
+            icon: 'fa-question-circle',
+            background: 'lightgray', 
+            borderRadius: '15px',
+            padding: '5px 10px',
+            display: 'inline-block'
+        };
     }
-    return { class: 'Desconhecido', color: 'gray', icon: 'fa-question-circle' };
+
+    // Retorna o estilo com a configuração para ajustar o fundo ao tamanho do texto
+    return style;
 }
+
+
 
 
         // Função para carregar contratos
@@ -62,26 +111,38 @@ function getSituacaoStyle(situacao) {
                             const situacaoStyle = getSituacaoStyle(contrato.situacao);
                             const row = document.createElement('tr');
                             row.innerHTML = `
-                                <td class="truncated-text" title="${contrato.id}">${contrato.id}</td>
-                                <td class="truncated-text" title="${contrato.titulo}">${contrato.titulo}</td>
-                                <td class="truncated-text" title="${contrato.descricao}">${contrato.descricao}</td>
-                                <td class="${validadeStyle.class}" style="color: ${validadeStyle.color}">
-                                    <i class="fas ${validadeStyle.icon}"></i> ${formatDate(contrato.validade)}
-                                </td>
-                                <td class="${situacaoStyle.class}" style="color: ${situacaoStyle.color}">
-                                    <i class="fas ${situacaoStyle.icon}"></i> ${contrato.situacao}
-                                </td>
-                                <td>
-                                    <button class="btn btn-info btn-sm" onclick='openModal(${JSON.stringify(contrato)}); event.stopPropagation()' title="Visualizar">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-primary btn-sm" onclick='showResumoProcesso(${JSON.stringify(contrato)}); event.stopPropagation()' title="Relatório">
-                                        <i class="fas fa-file-alt"></i>
-                                    </button>
-                                    <button class="btn btn-warning btn-sm" onclick='editacontrato(${JSON.stringify(contrato)})' title="Editar contrato">
-                                        <i class="fas fa-file-contract"></i>
-                                    </button>
-                                </td>
+<td class="truncated-text" title="${contrato.id}">${contrato.id}</td>
+<td class="truncated-text" title="${contrato.titulo}">${contrato.titulo}</td>
+<td class="truncated-text" title="${contrato.descricao}">${contrato.descricao}</td>
+<td class="${validadeStyle.class}" style="color: ${validadeStyle.color}">
+    <i class="fas ${validadeStyle.icon}"></i> ${formatDate(contrato.validade)}
+</td>
+<td class="${situacaoStyle.class}" 
+    style="color: ${situacaoStyle.color}; 
+           background-color: ${situacaoStyle.background}; 
+           border-radius: ${situacaoStyle.borderRadius}; 
+           padding: ${situacaoStyle.padding};
+           display: inline-flex;
+           justify-content: center;
+           align-items: center;
+           margin-top: 18px;
+           font-size: 12px;
+           border: solid 1px ${situacaoStyle.color};">
+    <i class="fas ${situacaoStyle.icon}"></i> ${contrato.situacao}
+</td>
+<td>
+    <button class="btn btn-info btn-sm" onclick='openModal(${JSON.stringify(contrato)}); event.stopPropagation()' title="Visualizar">
+        <i class="fas fa-eye"></i>
+    </button>
+    <button class="btn btn-primary btn-sm" onclick='showResumoProcesso(${JSON.stringify(contrato)}); event.stopPropagation()' title="Relatório">
+        <i class="fas fa-file-alt"></i>
+    </button>
+    <button class="btn btn-warning btn-sm" onclick='editacontrato(${JSON.stringify(contrato)})' title="Editar contrato">
+        <i class="fas fa-pen"></i>
+    </button>
+</td>
+
+
                             `;
                             tableBody.appendChild(row);
                         });

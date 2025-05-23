@@ -191,9 +191,6 @@
   transition: var(--transition-normal);
 }
 
-.custom-year-details:hover {
-  box-shadow: var(--shadow-lg);
-}
 
 .custom-year-details summary {
   padding: 16px 20px;

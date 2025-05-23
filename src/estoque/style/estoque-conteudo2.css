@@ -27,12 +27,11 @@ body {
 /* Estilo da área de Tabs (botões) */
 .tabs {
     display: flex;
-    justify-content: end; /* Ajustado para começar da esquerda */
+    justify-content: space-between;
     align-items: center;
     width: 100%;
     padding: 20px 15px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(90deg, #192844 67.81%, #472774 100%);
 }
 
 /* Estilo das Tabs individuais (Cards) */
@@ -40,7 +39,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 10px 10px;
+    padding: 25px 30px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s;
     text-align: left;
@@ -87,14 +86,14 @@ body {
 
 /* Títulos e descrições das Tabs */
 .tab-title {
-    font-size: 18px; /* Aumentado para maior destaque */
+    font-size: 20px; /* Aumentado para maior destaque */
     font-weight: bold;
     color: #273051;
     margin: 0; /* Removendo a margem */
 }
 
 .tab-description {
-    font-size: 14px; /* Aumentado para maior legibilidade */
+    font-size: 18px; /* Aumentado para maior legibilidade */
     color: #606c75;
     margin-top: 2px; /* Pequeno espaço entre título e descrição */
     margin-bottom: 0; /* Removendo a margem inferior */
@@ -140,12 +139,12 @@ body {
 /* CONTEUDO LABELS INPUTS */
 
 .form-container {
-    display: none;
+       display: none;
     max-width: 100%;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    padding: 20px;  /* Adicionando um padding para o conteúdo não ficar colado nas bordas */
-    border-radius: 8px;  /* Bordas arredondadas para suavizar o visual */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Box-shadow para criar profundidade */
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 

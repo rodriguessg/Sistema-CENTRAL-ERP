@@ -23,8 +23,6 @@
         }
 
         footer {
-            background: linear-gradient(90deg, #192844 67.81%, #472774 100%);
-            color: var(--cor-secundaria);
             text-align: center;
             padding: 15px;
             width: 100%;
@@ -36,6 +34,8 @@
             align-items: center;
             font-size: 14px;
             transition: background 0.3s ease;
+
+            color:black;
             z-index: 10;
         }
 

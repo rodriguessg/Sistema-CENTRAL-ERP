@@ -327,7 +327,7 @@ async function loadContractsAndPayments(contractData) {
       const paymentsData = encodeURIComponent(JSON.stringify(paymentsByYear[year] || []));
       totalDiv.innerHTML = `
         <p><strong>Total Valor Liquidado (${year}):</strong> R$ ${calculateYearTotal(year, currentPayments, true).toFixed(2)}</p>
-        <button class="btn btn-info" onclick="showTab('prestacao'); generateAccountabilityReport('${year}', '${paymentsData}', true)">
+        <button class="prestacao" onclick="showTab('prestacao'); generateAccountabilityReport('${year}', '${paymentsData}', true)">
           <i class="bi bi-file-earmark-text"></i> Prestação de Contas
         </button>
       `;

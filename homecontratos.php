@@ -1,10 +1,7 @@
 <?php
     // Iniciar sessão
-   session_start();
-if (!isset($_SESSION['username'])) {
-    header("Location: index.php");
-    exit();
-}
+    session_start();
+
     // Configurar logging de erros
     ini_set('log_errors', 1);
     ini_set('error_log', __DIR__ . '/logs/error.log');
@@ -227,6 +224,7 @@ if (!isset($_SESSION['username'])) {
     <!-- Chart.js -->
      <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     
 </head>
 
@@ -275,13 +273,13 @@ if (!isset($_SESSION['username'])) {
     </div>
 
 
-   <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
-    <i class="fas fa-chart-line"></i>
-    <div class="tab-content">
-        <p class="tab-title">Relatórios</p>
-        <p class="tab-description">Relatórios de Contratos</p>
+    <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
+        <i class="fas fa-file-alt"></i>
+        <div class="tab-content">
+            <p class="tab-title">Relatórios</p>
+            <p class="tab-description">Relatórios de Contratos</p>
+        </div>
     </div>
-</div>
  </div> <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
 
 
@@ -768,10 +766,32 @@ function verificarGestorEFiscal() {
   <script src="./src/js/filtroModal.js"></script>
 
       <div id="andamento" class="form-container" style="display: none;">
-            <div class="mb-3">
-                <label for="contractSelect" class="form-label">Selecione o Contrato:</label>
-                <select id="contractSelect" class="form-select" onchange="exibirFluxoContratos()">
-                    <option value="">Selecione um contrato</option>
+        <div class="header-gradient">
+    <h2 class="mb-1 d-flex align-items-center">
+        <i class="bi bi-kanban me-2"></i>
+        Andamento dos Contratos
+    </h2>
+    <p class="mb-0 opacity-75 small">Visualize e gerencie as etapas do contrato selecionado</p>
+</div>
+
+<div class="progress-container">
+    <h5 class="mb-2">Progresso do Contrato</h5>
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+    <div class="progress-label">
+        <span>0 de 0 etapas concluídas</span>
+        <span>0%</span>
+    </div>
+</div>
+           <div class="add-step-form">
+            <div class="row g-3">
+                  <option value="">Selecione um contrato</option>
+                <div class="col-md-6">
+                   
+                    <div class="form-floating">
+                         <select id="contractSelect" class="form-select" onchange="exibirFluxoContratos()">
+                   
                     <?php
                     try {
                         $pdo = new PDO('mysql:host=localhost;dbname=gm_sicbd', 'root', '');
@@ -785,14 +805,26 @@ function verificarGestorEFiscal() {
                     }
                     ?>
                 </select>
-            </div>
-            <div class="mb-3">
-                <div class="input-group">
-                    <input type="text" id="newStepInput" class="form-control" placeholder="Digite o nome da nova etapa" aria-label="Nova etapa">
-                    <button class="btn btn-primary" type="button" id="addStepBtn">Adicionar Etapa</button>
+                        <label for="contractSelect">Selecione o Contrato</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="newStepInput" placeholder="Digite o nome da nova etapa">
+                        <label for="newStepInput">Nova Etapa</label>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary" type="button" id="addStepBtn">
+                        <i class="bi bi-plus-lg me-1"></i> Adicionar Nova Etapa
+                    </button>
                 </div>
             </div>
-            <div id="timeline"></div>
+        </div>
+            <!-- Substitua seu div timeline por este -->
+<div class="contract-timeline">
+    <div id="timeline"></div>
+</div>
         </div>
 
 

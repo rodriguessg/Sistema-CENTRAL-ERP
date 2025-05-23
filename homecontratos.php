@@ -815,7 +815,7 @@ function verificarGestorEFiscal() {
                     </div>
                 </div>
                 <div class="col-12">
-                    <button class="btn btn-primary" type="button" id="addStepBtn">
+                    <button class="nova-etapa" type="button" id="addStepBtn">
                         <i class="bi bi-plus-lg me-1"></i> Adicionar Nova Etapa
                     </button>
                 </div>

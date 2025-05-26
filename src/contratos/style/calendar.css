@@ -1,788 +1,882 @@
-/* Layout Principal */
-.calendar-and-events {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(1, 1fr);
-    gap: 10px;
-    width: 100%;
-}
-
-/* Sidebar - Formulário Adicionar Evento */
-.event-sidebar {
-    grid-area: 1 / 1 / 2 / 2;
-    background: #f9f9f9;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    height: 100%;
-    box-sizing: border-box;
-}
-
-/* Formulário Principal */
-#event-form {
-    display: flex;
-    flex-direction: column;
-}
-
-/* Título do Formulário */
-#event-form h3 {
-    margin-bottom: 20px;
-    font-size: 22px;
-    color: #333;
-}
-
-/* Inputs Gerais */
-#event-form input[type="text"],
-#event-form input[type="date"],
-#event-form input[type="time"],
-#event-form input[type="email"],
-#event-form textarea,
-#event-form select {
-    width: 100%;
-    padding: 5px 10px;
-    border: 2px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    box-sizing: border-box;
-    margin-top: 5px;
-}
-
-.input-category {
-    width: 100%;
-    padding: 5px 10px;
-    border: 2px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    box-sizing: border-box;
-    margin-top: 5px;
-}
-
-#event-form input[type="color"] {
-    -webkit-appearance: none;  /* Remove a aparência padrão do navegador */
-    -moz-appearance: none;
-    appearance: none;
-    width: 30px;  /* Define o tamanho da bolinha */
-    height: 30px;  /* Garante que a bolinha seja circular */
-    border-radius: 50%;  /* Faz o input ter o formato circular */
-    border: 2px solid #ccc;  /* Adiciona uma borda de destaque */
-    background-color: transparent;  /* Garante que o fundo seja transparente */
-    padding: 0;  /* Remove qualquer preenchimento extra */
-    cursor: pointer;  /* Torna o cursor em forma de ponteiro */
-    transition: border-color 0.3s ease;  /* Suaviza a transição da cor da borda */
-}
-
-#event-form input[type="color"]:hover {
-    border-color: #999;  /* Altera a cor da borda ao passar o mouse */
-}
-
-#event-form input[type="color"]:focus {
-    border-color: #000;  /* Altera a cor da borda quando em foco */
-}
-
-#event-form input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 0;  /* Remove qualquer preenchimento ao redor da cor */
-}
-
-#event-form input[type="color"]::-webkit-color-swatch {
-    border-radius: 50%;  /* Garante que a cor também tenha formato circular */
-    width: 100%;  /* Faz a cor ocupar toda a bolinha */
-    height: 100%;  /* Faz a cor ocupar toda a bolinha */
-}
-
-
-
-
-/* Botões Principais do Formulário */
-/* Botões Principais do Formulário */
-#submit-btn,
-#cancel-btn,
-#toggle-category-form,
-#add-category-form button {
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 10px 15px;
-    width: 100%;
-    text-align: center;
-    box-sizing: border-box;
-}
-
-/* Botão Enviar */
-#cancel-btn {
-    background-color: #dc3545;
-    color: white;
-}
-
-#cancel-btn:hover {
-    background-color: #c82333;
-}
-
-/* Botões de Ação (Adicionar Categoria, etc.) */
-.form-actions button {
- background-color: #427842;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.85em;
-    text-align: center;
-    transform: none;
-}
-
-/* Botão de Cancelar dentro de .form-actions */
-.form-actions .cancel-btn {
-    background-color: #ccc;
-}
-
-#toggle-category-form {
-background-color:#BC9D32;
-}
-
-
-
-
-
-/* Botão Enviar */
-
-
-.form-actions {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-}
-
-/* Formulário Adicionar Categoria */
-#add-category-form {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-/* Botão Adicionar Categoria */
-#add-category-form button {
-   background-color: #427842;
-    color: white;
-    transform: none;
-}
-
-#add-category-form button:hover {
-    background-color: white;
-}
-
-
-
-/* Eventos do Dia */
-.daily-events-preview {
-    grid-area: 3 / 1 / 2 / 3;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    height: 100%;
-    box-sizing: border-box;
-}
-
-
-/* Cabeçalho da seção de eventos */
-.daily-events-preview h3 {
-    font-size: 24px;
-    color: #333333;
-    font-weight: 600;
-    margin-bottom: 15px;
-    text-align: center;
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 10px;
-}
-
-/* Mensagem quando não há eventos */
-.daily-events-preview p {
-    color: #888;
-    text-align: center;
-    font-size: 18px;
-}
-
-/* Estilo de cada evento */
-.daily-event {
-    display: flex;
-    align-items: center;
-    background-color: #ffffff;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    height: auto; /* Garante que o evento ocupe a altura necessária */
-    flex-grow: 1; /* Faz o evento crescer conforme necessário */
-}
-
-/* Efeito de hover para interatividade */
-.daily-event:hover {
-    transform: translateY(-5px);
-}
-
-/* Barra de cor do evento */
-.event-color-bar {
-    width: 10px;
-    height: 130px;
-    margin-right: 10px;
-    border-radius: 0px 3px 3px 0px;
-    background-color: #FF5959; /* Cor de exemplo */
-}
-
-/* Responsividade para telas menores */
-@media (max-width: 768px) {
-    .event-color-bar {
-        height: 80px; /* Ajusta a altura para telas menores */
-        width: 8px;   /* Reduz a largura para telas menores */
-    }
-
-    .daily-event {
-        padding: 8px; /* Aumenta o padding para melhorar a estética em telas pequenas */
-    }
-}
-
-@media (max-width: 480px) {
-    .event-color-bar {
-        height: 60px; /* Ajusta ainda mais a altura para telas muito pequenas */
-        width: 6px;   /* Ajusta a largura para telas muito pequenas */
-    }
-
-    .daily-event {
-        flex-direction: column; /* Muda a direção para coluna em telas pequenas */
-        align-items: flex-start; /* Alinha os itens à esquerda */
-        padding: 10px; /* Aumenta o padding para melhorar o layout em dispositivos móveis */
-    }
-}
-
-
-/* Conteúdo do evento */
-.daily-event-content {
-    flex-grow: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* Informações do evento */
-/* Estilo para o título e horário do evento */
-.daily-event-info {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    color: #333333;
-    display: flex;
-    flex-direction: column;
-    gap: 10px; /* Espaçamento entre os elementos */
-}
-
-/* Estilo do título do evento */
-.event-title,
-.event-time,.event-description, .event-category { 
-    display: flex;
-    align-items: center;
-}
-
-/* Estilo do ícone no título e horário do evento */
-.event-title .event-icon, 
-.event-time .event-icon,
-.event-description .event-icon, .event-category .event-icon { /* Adicionado .event-description */
-    margin-right: 8px; /* Espaçamento entre o ícone e o texto */
-}
-
-
-.event-title .event-icon {
-    font-size: 18px;
-    color: #45B5A9; /* Cor do ícone */
-}
-
-.event-time .event-icon {
-    font-size: 16px;
-    color: #7ED321; /* Cor do ícone do relógio */
-}
-
-/* Estilo para o título e horário do evento */
-.daily-event-info strong {
-    font-size: 18px;
-    color: #222;
-    display: block;
-}
-
-.daily-event-info small {
-    color: #888;
-    font-size: 16px;
-}
-
-/* Menu de ações do evento */
-.daily-event-menu {
-    position: relative;
-    cursor: pointer;
-    margin-right: 20px;
-}
-
-.menu-icon {
-    font-size: 20px;
-    color: #888;
-}
-
-.daily-event-menu:hover .menu-icon {
-    color: #45B5A9; /* Muda a cor ao passar o mouse */
-}
-
-/* Correção: Posicionamento do menu dropdown para a esquerda */
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: -160px; /* Alinha o dropdown à esquerda do botão */
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    padding: 10px 15px;
-    width: 150px;
-    z-index: 10;
-}
-
-.daily-event-menu:hover .dropdown-menu {
-    display: block; /* Exibe o menu ao passar o mouse */
-}
-
-.dropdown-menu a {
-    display: block;
-    font-size: 14px;
-    color: #333;
-    text-decoration: none;
-    padding: 8px 0;
-    transition: background-color 0.2s ease;
-}
-
-.dropdown-menu a:hover {
-    background-color: #f1f1f1;
-}
-
-.dropdown-menu a i {
-    margin-right: 8px;
-}
-
-/* Estilo de ícones dentro do menu de evento */
-.daily-event-menu i {
-    font-size: 18px;
-    color: #333;
-    margin-left: 10px;
-}
-
-/* Responsividade para telas pequenas */
-@media (max-width: 768px) {
-    .daily-events-preview {
-        padding: 15px;
-    }
-
-    .daily-event-info strong {
-        font-size: 16px;
-    }
-
-    .daily-event-info small {
-        font-size: 12px;
-    }
-
-    .daily-event-menu i {
-        font-size: 16px;
-    }
-}
-
-/* Estilos gerais para o container do input */
-.input-icon {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 16px;
-}
-
-/* Estilo do rótulo */
-.input-icon label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-/* Container para o seletor de cor */
-.color-picker-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-
-/* Efeito de hover no input de cor */
-input[type="color"]:hover {
-    transform: scale(1.1);
-}
-
-/* Estilos responsivos para telas menores */
-@media (max-width: 768px) {
-    .input-icon {
-        width: 100%;
-    }
-
-    .color-picker-container {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    input[type="color"], .color-display {
-        width: 35px;
-        height: 35px;
-    }
-}
-
-
-
-/* Inputs com Ícones */
-.input-with-icon {
-    position: relative;
-}
-
-.input-with-icon i {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ccc;
-    font-size: 0.9em;
-}
-
-/* Campo de Email com Ícone */
-#email-field.input-icon {
-    display: grid;
-    gap: 10px;
-}
-
-
-
-/* ========================= */
-/*          RESPONSIVO       */
-/* ========================= */
-@media (max-width: 768px) {
-    .calendar-and-events {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-    }
-
-    .event-sidebar {
-        grid-area: auto;
-        width: 100%;
-        height: auto;
-    }
-
-    .calendar-container {
-        grid-area: auto;
-        width: 100%;
-        height: auto;
-        margin-top: 20px;
-    }
-
-    .daily-events-preview {
-        grid-area: auto;
-        width: 100%;
-        height: auto;
-        margin-top: 20px;
-    }
-
-    #submit-btn,
-    #cancel-btn,
-    #toggle-category-form,
-    #add-category-form button {
-        width: 100%;
-    }
-
-    .form-actions {
-        flex-direction: column;
-        gap: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    #event-form h3 {
-        font-size: 18px;
-    }
-
-    #event-form input,
-    #event-form textarea,
-    #event-form select {
-        font-size: 13px;
-    }
-}
-
-/* Container Calendário */
-/* Container Calendário */
-.calendar-container {
-    grid-area: 1 / 2 / 2 / 3;
-    border-radius: 10px; /* Borda mais suave */
-    padding: 10px;
-    width: 100%;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Sombra mais suave */
-    box-sizing: border-box;
-    background-color: #ffffff;
-}
-
-/* Cabeçalho do Calendário */
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #ffffff; /* Alteração para contraste */
-    font-size: 18px;
-    background:#273051;
-    border-top-left-radius: 16px; /* Bordas arredondadas mais suaves */
-    border-top-right-radius: 16px;
-    padding: 12px 20px;
-}
-
-#month-year {
-    font-size: 24px;
-    font-weight: bold;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-}
-
-#month-year i {
-    margin-right: 10px;
-}
-
-/* Botões de Navegação */
-.calendar-header button {
-    background: white;
-    color: black;
-    font-size: 16px;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.data-tempo{
-    display: flex;
-        justify-content: start;
-        width: 100%;
-        align-items: center;
-        gap: 15px;
-}
-
-.calendar-header button:hover {
-    background-color: #28303d; /* Cor de hover ajustada para combinar com o gradiente */
-    transform: translateY(-3px); /* Efeito de leve elevação */
-}
-
-.calendar-header button i {
-    font-size: 18px;
-}
-
-/* Estilos dos dias da semana */
-.calendar-weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    font-weight: bold;
-    color: #ffffff;
-    background-color: #273051; /* Cor de fundo das semanas, combinando com o gradiente */
-    margin-bottom: 10px;
-    border-radius: 8px; /* Bordas arredondadas */
-}
-
-.calendar-weekdays div {
-    text-align: center;
-    padding: 12px 0;
-    border-radius: 6px;
-    font-size: 16px;
-}
-
-/* Estilos dos dias do mês */
-.calendar-day-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-}
-
-.day-cell {
-    background-color: #f9f9f9;
-    padding: 20px;
-    font-size: 16px;
-    color: #444444;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    position: relative;
-}
-
-.day-number {
-    font-weight: bold;
-}
-
-/* Seleção do dia */
-.selected-day {
-    background-color: #A0A0A0; /* Cor do dia selecionado */
-    color: white;
-    font-weight: bold;
-}
-
-/* Hover nos dias */
-.day-cell:hover {
-    background-color: #3a4a64; /* Cor de fundo clara para hover */
-    color: #ffffff; /* Cor do texto no hover */
-}
-
-
-/* Estilos dos eventos dentro dos dias */
-.evento {
-    background-color: #FF5959;
-    color: white;
-    font-size: 14px;
-    padding: 8px;
-    margin-top: 5px;
-    text-align: center;
-    position: absolute;
-    bottom: 10px;
-    left: 5px;
-    right: 5px;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
-}
-
-.evento i {
-    margin-right: 5px;
-}
-
-.evento:hover {
-    background-color: #d9534f; /* Cor de hover para eventos */
-}
-
-/* Responsividade para telas pequenas */
-@media (max-width: 768px) {
-    .calendar-container {
-        padding: 15px;
-    }
-
-    .calendar-header button {
-        font-size: 14px;
-        padding: 8px 14px;
-    }
-
-    .calendar-weekdays {
-        font-size: 14px;
-    }
-
-    .calendar-day-grid {
-        grid-template-columns: repeat(7, 1fr);
-    }
-
-    .day-cell {
-        padding: 15px;
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .calendar-header {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .calendar-header button {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .calendar-weekdays {
-        grid-template-columns: repeat(7, 1fr);
-    }
-
-    .day-cell {
-        font-size: 12px;
-    }
-
-    .evento {
-        font-size: 12px;
-    }
-}
-
-
-/* Estilos para os Eventos no Calendário */
-.evento {
-    background-color: #FF5959; /* Cor de evento vermelho */
-    border-radius: 8px;
-    color: white;
-    font-size: 12px;
-    display: inline-block;
-    padding: 8px;
-    margin-top: 5px;
-    text-align: center;
-    transition: background-color 0.3s ease;
-    position: absolute; /* Garante que o evento fique dentro da célula */
-    bottom: 5px; /* Coloca os eventos no fundo da célula */
-    left: 5px;
-    right: 5px;
-    box-sizing: border-box;
-}
-
-.evento i {
-    position: absolute;
-    top: 50%;
-    left: 5px;
-    transform: translateY(-50%);
-}
-
-/* Outros tipos de eventos (cores diferentes) */
-.evento-blue {
-    background-color: #4A90E2; /* Azul */
-}
-
-.evento-green {
-    background-color: #7ED321; /* Verde */
-}
-
-.evento-black {
-    background-color: #000; /* Preto */
-}
-
-/* Ajustes de Responsividade */
-@media (max-width: 768px) {
-    .calendar-container {
-        width: 90%;
-        padding: 20px;
-    }
-
-    .calendar-header {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .calendar-header button {
-        font-size: 14px;
-        padding: 8px 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    .calendar-container {
-        width: 100%;
-        padding: 15px;
-    }
-
-    .calendar-weekdays div, .day-cell {
-        font-size: 14px;
-        padding: 10px;
-    }
-
-    .calendar-header button {
-        font-size: 12px;
-    }
-}
-
-
-
-
-
-
-
+   /* Variáveis CSS para o tema */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --accent-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --bg-white: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --shadow-xl: 0 20px 40px rgba(0,0,0,0.2);
+            --border-radius: 16px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+     
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+    
+        /* Layout Principal - MANTENDO SUA ESTRUTURA ORIGINAL */
+        .calendar-and-events {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(1, 1fr);
+            gap: 2rem;
+            width: 100%;
+        }
+
+        /* Sidebar - Formulário Adicionar Evento - MANTENDO GRID AREA ORIGINAL */
+        .event-sidebar {
+            grid-area: 1 / 1 / 2 / 2;
+            background: var(--bg-white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .event-sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        /* Container Calendário - MANTENDO GRID AREA ORIGINAL */
+        .calendar-container {
+            grid-area: 1 / 2 / 2 / 3;
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            position: relative;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .calendar-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        /* Eventos do Dia - MANTENDO GRID AREA ORIGINAL */
+        .daily-events-preview {
+            grid-area: 3 / 1 / 2 / 3;
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            background-color: #f9f9f9;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .daily-events-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--secondary-gradient);
+        }
+
+        /* Formulário Principal */
+        #event-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Título do Formulário */
+        #event-form h3 {
+            font-size: 1.375rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        #event-form h3 i {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            font-size: 1rem;
+        }
+
+        /* Container de Input Moderno */
+        .input-icon {
+            position: relative;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
+        }
+
+        .input-icon label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Inputs Gerais Modernos */
+        #event-form input[type="text"],
+        #event-form input[type="date"],
+        #event-form input[type="time"],
+        #event-form input[type="email"],
+        #event-form textarea,
+        #event-form select,
+        .input-category {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            color: var(--text-dark);
+            background: var(--bg-white);
+            transition: var(--transition);
+            font-family: inherit;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+
+        #event-form input:focus,
+        #event-form textarea:focus,
+        #event-form select:focus,
+        .input-category:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        #event-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Select Customizado */
+        #event-form select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 3rem;
+        }
+
+        /* Input de Cor Moderno */
+        #event-form input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid var(--border-color);
+            background-color: transparent;
+            padding: 0;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        #event-form input[type="color"]:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+            box-shadow: var(--shadow-md);
+        }
+
+        #event-form input[type="color"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        #event-form input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        #event-form input[type="color"]::-webkit-color-swatch {
+            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Container Data e Tempo - MANTENDO ESTRUTURA ORIGINAL */
+        .data-tempo {
+            display: flex;
+            justify-content: start;
+            width: 100%;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Container do Seletor de Cor */
+        .color-picker-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Checkbox Estilizado */
+        input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        /* Botões Modernos */
+        #submit-btn,
+        #cancel-btn,
+        #toggle-category-form,
+        #add-category-form button {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        #submit-btn,
+        .form-actions button {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        #submit-btn:hover,
+        .form-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        #cancel-btn {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        #toggle-category-form {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        /* Ações do Formulário */
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-direction: column;
+        }
+
+        /* Formulário Adicionar Categoria */
+        #add-category-form {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-sm);
+            border: 2px solid var(--border-color);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cabeçalho do Calendário */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 18px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            padding: 12px 20px;
+            margin-top: 4px;
+        }
+
+        #month-year {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+        }
+
+        #month-year i {
+            margin-right: 10px;
+        }
+
+        /* Botões de Navegação do Calendário */
+        .calendar-header button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .calendar-header button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .calendar-header button i {
+            font-size: 18px;
+        }
+
+        /* Dias da Semana */
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #273051;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .calendar-weekdays div {
+            text-align: center;
+            padding: 12px 0;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        /* Grid dos Dias */
+        .calendar-day-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .day-cell {
+            background-color: #f9f9f9;
+            padding: 20px;
+            font-size: 16px;
+            color: #444444;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .day-cell:hover {
+            background-color: #3a4a64;
+            color: #ffffff;
+            transform: scale(1.02);
+            z-index: 2;
+            box-shadow: var(--shadow-md);
+        }
+
+        .day-number {
+            font-weight: bold;
+        }
+
+        .selected-day {
+            background-color: #A0A0A0;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Eventos no Calendário */
+        .evento {
+            background-color: #FF5959;
+            color: white;
+            font-size: 14px;
+            padding: 8px;
+            margin-top: 5px;
+            text-align: center;
+            position: absolute;
+            bottom: 10px;
+            left: 5px;
+            right: 5px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .evento i {
+            margin-right: 5px;
+        }
+
+        .evento:hover {
+            background-color: #d9534f;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Cabeçalho da seção de eventos */
+        .daily-events-preview h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            text-align: center;
+        }
+
+        .daily-events-preview h3 i {
+            background: var(--secondary-gradient);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+
+        /* Mensagem quando não há eventos */
+        .daily-events-preview p {
+            color: #888;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        /* Evento Individual */
+        .daily-event {
+            display: flex;
+            align-items: center;
+            background: var(--bg-white);
+            margin-bottom: 1.5rem;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: var(--transition);
+            height: auto;
+            flex-grow: 1;
+        }
+
+        .daily-event:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .event-color-bar {
+            width: 10px;
+            height: 168px;
+            margin-right: 10px;
+            border-radius: 0px 3px 3px 0px;
+            background: var(--danger-gradient);
+            flex-shrink: 0;
+        }
+
+        .daily-event-content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .daily-event-info {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: #333333;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .event-title,
+        .event-time,
+        .event-description,
+        .event-category {
+            display: flex;
+            align-items: center;
+        }
+
+        .event-title .event-icon,
+        .event-time .event-icon,
+        .event-description .event-icon,
+        .event-category .event-icon {
+            margin-right: 8px;
+        }
+
+        .event-title .event-icon {
+            font-size: 18px;
+            color: #45B5A9;
+        }
+
+        .event-time .event-icon {
+            font-size: 16px;
+            color: #7ED321;
+        }
+
+        .daily-event-info strong {
+            font-size: 18px;
+            color: #222;
+            display: block;
+        }
+
+        .daily-event-info small {
+            color: #888;
+            font-size: 16px;
+        }
+
+        /* Menu de Ações */
+        .daily-event-menu {
+            position: relative;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+
+        .menu-icon {
+            font-size: 20px;
+            color: #888;
+            transition: var(--transition);
+        }
+
+        .daily-event-menu:hover .menu-icon {
+            color: #45B5A9;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: -160px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: var(--shadow-lg);
+            padding: 10px 15px;
+            width: 150px;
+            z-index: 10;
+        }
+
+        .daily-event-menu:hover .dropdown-menu {
+            display: block;
+            animation: fadeInUp 0.2s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-menu a {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            text-decoration: none;
+            padding: 8px 0;
+            transition: var(--transition);
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown-menu a i {
+            margin-right: 8px;
+        }
+
+        /* Modal de Notificações */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-dialog {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-content {
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 2rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* Mensagens */
+        #messages {
+            margin-bottom: 2rem;
+        }
+
+        .msg {
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .msg-success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .msg-error {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsividade - MANTENDO ESTRUTURA ORIGINAL */
+        @media (max-width: 768px) {
+            .calendar-and-events {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .event-sidebar {
+                grid-area: auto;
+                width: 100%;
+                height: auto;
+            }
+
+            .calendar-container {
+                grid-area: auto;
+                width: 100%;
+                height: auto;
+                margin-top: 20px;
+            }
+
+            .daily-events-preview {
+                grid-area: auto;
+                width: 100%;
+                height: auto;
+                margin-top: 20px;
+            }
+
+            .calendar-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .calendar-header button {
+                width: 100%;
+            }
+
+            .data-tempo {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .daily-event-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .daily-event-menu {
+                align-self: flex-end;
+            }
+
+            .event-color-bar {
+                height: 80px;
+                width: 8px;
+            }
+
+            .daily-event {
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+
+            .event-sidebar,
+            .calendar-container,
+            .daily-events-preview {
+                padding: 1rem;
+            }
+
+            #event-form h3 {
+                font-size: 18px;
+            }
+
+            #event-form input,
+            #event-form textarea,
+            #event-form select {
+                font-size: 13px;
+            }
+
+            .calendar-weekdays div {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            .day-cell {
+                padding: 15px;
+                font-size: 14px;
+            }
+
+            .evento {
+                font-size: 12px;
+            }
+
+            .event-color-bar {
+                height: 60px;
+                width: 6px;
+            }
+
+            .daily-event {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px;
+            }
+        }
+
+        /* Animações de entrada */
+        .event-sidebar,
+        .calendar-container,
+        .daily-events-preview {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .event-sidebar {
+            animation-delay: 0.1s;
+        }
+
+        .calendar-container {
+            animation-delay: 0.2s;
+        }
+
+        .daily-events-preview {
+            animation-delay: 0.3s;
+        }

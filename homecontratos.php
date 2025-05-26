@@ -210,6 +210,7 @@
     <link rel="stylesheet" href="src/contratos/style/cadastro-contratos.css">   
     <link rel="stylesheet" href="src/contratos/style/analise.css">
      <link rel="stylesheet" href="src/contratos/style/gerenciar-pagamentos.css">
+      <link rel="stylesheet" href="src/contratos/style/relatorio.css">
     <!-- Carregar jQuery (se necessário) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

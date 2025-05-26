@@ -1,0 +1,430 @@
+/* Variáveis CSS para o tema */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --bg-white: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+       
+        /* Container principal dos relatórios */
+        .form-container#relatorio {
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .form-container#relatorio::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        /* Título da seção */
+        .form-container#relatorio h2 {
+            color: var(--text-dark);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .form-container#relatorio h2 i {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Formulário de relatórios */
+        #relatorio-form {
+            margin-bottom: 3rem;
+        }
+
+        /* Grupo de formulário */
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        /* Container dos inputs em grupo */
+        .input-group-contratos {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Estilo dos containers de input individuais */
+        .input-group-contratos > div {
+            background: var(--bg-light);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            border: 2px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .input-group-contratos > div::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: var(--transition);
+        }
+
+        .input-group-contratos > div:hover::before {
+            left: 100%;
+        }
+
+        .input-group-contratos > div:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Labels dos formulários */
+        .input-group-contratos label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .input-group-contratos label i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        /* Selects estilizados */
+        .input-group-contratos select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            color: var(--text-dark);
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            z-index: 1;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 3rem;
+        }
+
+        .input-group-contratos select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group-contratos select:hover {
+            border-color: var(--primary-color);
+        }
+
+        /* Containers ocultos */
+        #tipo-relatorio-container,
+        #mes-container,
+        #ano-container {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: var(--transition);
+        }
+
+        #tipo-relatorio-container[style*="block"],
+        #mes-container[style*="block"],
+        #ano-container[style*="block"] {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Grupo de botões */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Botões estilizados */
+        .btn-submit {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            min-width: 180px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: var(--transition);
+        }
+
+        .btn-submit:hover::before {
+            left: 100%;
+        }
+
+        #gerar-relatorio {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        #gerar-relatorio:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        #btnExportPDF {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        #btnExportPDF:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        #btnExportCSV {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        #btnExportCSV:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Containers das tabelas */
+        [id$="-tabela"] {
+            margin-top: 2rem;
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tabelas estilizadas */
+        [id$="-tabela"] table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        [id$="-tabela"] thead {
+            background: var(--primary-gradient);
+        }
+
+        [id$="-tabela"] th {
+            color: white;
+            padding: 1.25rem 1rem;
+            font-weight: 600;
+            text-align: left;
+            border: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        [id$="-tabela"] th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255,255,255,0.3);
+        }
+
+        [id$="-tabela"] td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+            color: var(--text-dark);
+            transition: var(--transition);
+        }
+
+        [id$="-tabela"] tbody tr {
+            transition: var(--transition);
+        }
+
+        [id$="-tabela"] tbody tr:hover {
+            background: var(--bg-light);
+            transform: scale(1.01);
+        }
+
+        [id$="-tabela"] tbody tr:nth-child(even) {
+            background: rgba(102, 126, 234, 0.02);
+        }
+
+        [id$="-tabela"] tbody tr:nth-child(even):hover {
+            background: var(--bg-light);
+        }
+
+        /* Animações adicionais */
+        .input-group-contratos > div {
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .input-group-contratos > div:nth-child(1) { animation-delay: 0.1s; }
+        .input-group-contratos > div:nth-child(2) { animation-delay: 0.2s; }
+        .input-group-contratos > div:nth-child(3) { animation-delay: 0.3s; }
+        .input-group-contratos > div:nth-child(4) { animation-delay: 0.4s; }
+        .input-group-contratos > div:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Efeitos de hover nos botões */
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-submit:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .form-container#relatorio {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .form-container#relatorio h2 {
+                font-size: 1.5rem;
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            
+            .input-group-contratos {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .input-group-contratos > div {
+                padding: 1rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+                padding: 1rem;
+            }
+            
+            .btn-submit {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            [id$="-tabela"] {
+                overflow-x: auto;
+            }
+            
+            [id$="-tabela"] table {
+                min-width: 600px;
+            }
+            
+            [id$="-tabela"] th,
+            [id$="-tabela"] td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.85rem;
+            }
+        }

@@ -1,713 +1,1315 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Andamento de Contratos - Timeline Interativa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <title>Calendário Interativo - Redesenhado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
+        /* Variáveis CSS para o tema */
         :root {
-            --primary-gradient: linear-gradient(90deg, #192844 67.81%, #472774 100%);
-            --primary-color: #192844;
-            --secondary-color: #472774;
-            --completed-color: #10b981;
-            --in-progress-color: #3b82f6;
-            --pending-color: #9ca3af;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --accent-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --bg-white: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --shadow-xl: 0 20px 40px rgba(0,0,0,0.2);
+            --border-radius: 16px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #f9fafb;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem;
         }
-        
-        .header-gradient {
-            background: var(--primary-gradient);
-            border-radius: 10px;
-            color: white;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+
+        .caderno {
+            max-width: 1400px;
+            margin: 0 auto;
         }
-        
-        .contract-timeline {
+
+        /* Layout Principal */
+        .calendar-and-events {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 2rem;
+            width: 100%;
+            min-height: 80vh;
+        }
+
+        /* Sidebar - Formulário Adicionar Evento */
+        .event-sidebar {
+            grid-area: 1 / 1 / 3 / 2;
+            background: var(--bg-white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
             position: relative;
-            margin-top: 2rem;
+            overflow: hidden;
         }
-        
-        .timeline-container {
+
+        .event-sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        /* Formulário Principal */
+        #event-form {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
         }
-        
-        .timeline-item {
+
+        /* Título do Formulário */
+        #event-form h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
             display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        #event-form h3 i {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            font-size: 1rem;
+        }
+
+        /* Container de Input Moderno */
+        .input-icon {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-icon label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Inputs Gerais Modernos */
+        #event-form input[type="text"],
+        #event-form input[type="date"],
+        #event-form input[type="time"],
+        #event-form input[type="email"],
+        #event-form textarea,
+        #event-form select,
+        .input-category {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            color: var(--text-dark);
+            background: var(--bg-white);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        #event-form input:focus,
+        #event-form textarea:focus,
+        #event-form select:focus,
+        .input-category:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        #event-form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Select Customizado */
+        #event-form select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 3rem;
+        }
+
+        /* Input de Cor Moderno */
+        #event-form input[type="color"] {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid var(--border-color);
+            background: transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0;
+        }
+
+        #event-form input[type="color"]:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+            box-shadow: var(--shadow-md);
+        }
+
+        #event-form input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+            border-radius: 50%;
+        }
+
+        #event-form input[type="color"]::-webkit-color-swatch {
+            border-radius: 50%;
+            border: none;
+        }
+
+        /* Container Data e Tempo */
+        .data-tempo {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        /* Container do Seletor de Cor */
+        .color-picker-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Checkbox Estilizado */
+        input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        /* Botões Modernos */
+        #submit-btn,
+        #cancel-btn,
+        #toggle-category-form,
+        #add-category-form button {
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #submit-btn,
+        .form-actions button {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        #submit-btn:hover,
+        .form-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        #cancel-btn {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        #toggle-category-form {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        /* Ações do Formulário */
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Formulário Adicionar Categoria */
+        #add-category-form {
+            display: none;
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-sm);
+            border: 2px solid var(--border-color);
+            margin-top: 1rem;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Container Calendário */
+        .calendar-container {
+            grid-area: 1 / 2 / 2 / 3;
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
             position: relative;
         }
-        
-        .timeline-item::before {
+
+        .calendar-container::before {
             content: '';
             position: absolute;
-            top: 3rem;
-            left: 1.5rem;
-            bottom: -1.5rem;
-            width: 2px;
-            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
-            z-index: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
         }
-        
-        .timeline-item:last-child::before {
-            display: none;
+
+        /* Cabeçalho do Calendário */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1.5rem 2rem;
+            margin-top: 4px;
         }
-        
-        .timeline-icon {
+
+        #month-year {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Botões de Navegação do Calendário */
+        .calendar-header button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .calendar-header button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Dias da Semana */
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .calendar-weekdays div {
+            text-align: center;
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Grid dos Dias */
+        .calendar-day-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border-color);
+            padding: 1px;
+        }
+
+        .day-cell {
+            background: var(--bg-white);
+            padding: 1.5rem 1rem;
+            min-height: 120px;
+            cursor: pointer;
+            transition: var(--transition);
             position: relative;
-            width: 3rem;
-            height: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .day-cell:hover {
+            background: var(--bg-light);
+            transform: scale(1.02);
+            z-index: 2;
+            box-shadow: var(--shadow-md);
+        }
+
+        .day-number {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .selected-day {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .selected-day .day-number {
+            color: white;
+        }
+
+        /* Eventos no Calendário */
+        .evento {
+            background: var(--danger-gradient);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            margin-top: 0.25rem;
+            text-align: center;
+            font-weight: 500;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .evento:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Eventos do Dia */
+        .daily-events-preview {
+            grid-area: 2 / 2 / 3 / 3;
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .daily-events-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--secondary-gradient);
+        }
+
+        .daily-events-preview h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .daily-events-preview h3 i {
+            background: var(--secondary-gradient);
+            color: white;
+            padding: 0.5rem;
             border-radius: 50%;
+            font-size: 1rem;
+        }
+
+        /* Evento Individual */
+        .daily-event {
+            display: flex;
+            align-items: stretch;
+            background: var(--bg-white);
+            margin-bottom: 1.5rem;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .daily-event:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .event-color-bar {
+            width: 6px;
+            background: var(--danger-gradient);
+            flex-shrink: 0;
+        }
+
+        .daily-event-content {
+            flex: 1;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .daily-event-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .event-title,
+        .event-time,
+        .event-description,
+        .event-category {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .event-title strong {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .event-time small,
+        .event-description small,
+        .event-category small {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .event-icon {
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        /* Menu de Ações */
+        .daily-event-menu {
+            position: relative;
+            padding: 1rem;
+            cursor: pointer;
+        }
+
+        .menu-icon {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .daily-event-menu:hover .menu-icon {
+            color: var(--primary-color);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-white);
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            min-width: 150px;
+            z-index: 10;
+        }
+
+        .daily-event-menu:hover .dropdown-menu {
+            display: block;
+            animation: fadeInUp 0.2s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+            font-size: 0.875rem;
+        }
+
+        .dropdown-menu a:hover {
+            background: var(--bg-light);
+            color: var(--primary-color);
+        }
+
+        /* Modal de Notificações */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-dialog {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-content {
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 2rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* Mensagens */
+        #messages {
+            margin-bottom: 2rem;
+        }
+
+        .msg {
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .msg-success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .msg-error {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1200px) {
+            .calendar-and-events {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .calendar-and-events {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 1.5rem;
+            }
+
+            .event-sidebar {
+                grid-area: 1 / 1 / 2 / 2;
+            }
+
+            .calendar-container {
+                grid-area: 2 / 1 / 3 / 2;
+            }
+
+            .daily-events-preview {
+                grid-area: 3 / 1 / 4 / 2;
+            }
+
+            .data-tempo {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .calendar-and-events {
+                gap: 1rem;
+            }
+
+            .event-sidebar,
+            .calendar-container,
+            .daily-events-preview {
+                padding: 1.5rem;
+            }
+
+            .calendar-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .calendar-header button {
+                width: 100%;
+            }
+
+            .data-tempo {
+                grid-template-columns: 1fr;
+            }
+
+            .day-cell {
+                min-height: 80px;
+                padding: 1rem 0.5rem;
+            }
+
+            .daily-event-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .daily-event-menu {
+                align-self: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calendar-weekdays div {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            .day-cell {
+                min-height: 60px;
+                padding: 0.5rem 0.25rem;
+            }
+
+            .day-number {
+                font-size: 0.9rem;
+            }
+
+            .evento {
+                font-size: 0.65rem;
+                padding: 0.125rem 0.25rem;
+            }
+        }
+
+        /* Animações de entrada */
+        .event-sidebar,
+        .calendar-container,
+        .daily-events-preview {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .event-sidebar {
+            animation-delay: 0.1s;
+        }
+
+        .calendar-container {
+            animation-delay: 0.2s;
+        }
+
+        .daily-events-preview {
+            animation-delay: 0.3s;
+        }
+
+        /* Estados de loading */
+        .loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            z-index: 1;
-            margin-right: 1.5rem;
-            flex-shrink: 0;
+            z-index: 10;
         }
-        
-        .timeline-icon.completed {
-            background: var(--completed-color);
-        }
-        
-        .timeline-icon.in-progress {
-            background: var(--in-progress-color);
-        }
-        
-        .timeline-icon.pending {
-            background: var(--pending-color);
-        }
-        
-        .timeline-content {
-            flex: 1;
-            background-color: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .timeline-content:hover {
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-        
-        .timeline-header {
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e5e7eb;
-            cursor: pointer;
-        }
-        
-        .timeline-title {
+
+        .loading::before {
+            content: 'Carregando...';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 11;
             font-weight: 600;
-            font-size: 1.125rem;
             color: var(--primary-color);
-            margin: 0;
-        }
-        
-        .timeline-date {
-            font-size: 0.875rem;
-            color: #6b7280;
-            display: flex;
-            align-items: center;
-        }
-        
-        .timeline-body {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease;
-        }
-        
-        .timeline-body.expanded {
-            max-height: 500px;
-        }
-        
-        .timeline-body-content {
-            padding: 1.5rem;
-        }
-        
-        .timeline-description {
-            color: #4b5563;
-            margin-bottom: 1rem;
-        }
-        
-        .timeline-details {
-            background-color: #f9fafb;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .timeline-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e5e7eb;
-        }
-        
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-        
-        .status-badge.completed {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: var(--completed-color);
-        }
-        
-        .status-badge.in-progress {
-            background-color: rgba(59, 130, 246, 0.1);
-            color: var(--in-progress-color);
-        }
-        
-        .status-badge.pending {
-            background-color: rgba(156, 163, 175, 0.1);
-            color: var(--pending-color);
-        }
-        
-        .btn-primary {
-            background: var(--primary-gradient);
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            background: linear-gradient(90deg, #192844 67.81%, #5a3191 100%);
-        }
-        
-        .btn-outline-primary {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .add-step-form {
-            background-color: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .form-floating > label {
-            color: #6b7280;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(25, 40, 68, 0.25);
-        }
-        
-        .progress-container {
-            margin-bottom: 2rem;
-        }
-        
-        .progress {
-            height: 0.5rem;
-            border-radius: 9999px;
-            overflow: hidden;
-        }
-        
-        .progress-bar {
-            background: var(--primary-gradient);
-        }
-        
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 0.5rem;
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-        
-        .checklist-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        
-        .checklist-item input[type="checkbox"] {
-            margin-right: 0.5rem;
-        }
-        
-        .checklist-item label {
-            margin-bottom: 0;
-            color: #4b5563;
-        }
-        
-        .checklist-item input[type="checkbox"]:checked + label {
-            text-decoration: line-through;
-            color: #9ca3af;
-        }
-        
-        @media (max-width: 768px) {
-            .timeline-item {
-                flex-direction: column;
-            }
-            
-            .timeline-icon {
-                margin-right: 0;
-                margin-bottom: 1rem;
-            }
-            
-            .timeline-item::before {
-                left: 1.5rem;
-                top: 3rem;
-            }
         }
     </style>
 </head>
+
 <body>
-    <div class="container py-4">
-        <div class="header-gradient">
-            <h2 class="mb-1 d-flex align-items-center">
-                <i class="bi bi-kanban me-2"></i>
-                Andamento dos Contratos
-            </h2>
-            <p class="mb-0 opacity-75 small">Visualize e gerencie as etapas do contrato selecionado</p>
-        </div>
-        
-        <div class="add-step-form">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="form-floating">
-                         <select id="contractSelect" class="form-select" onchange="exibirFluxoContratos()">
-                    <option value="">Selecione um contrato</option>
-                    <?php
-                    try {
-                        $pdo = new PDO('mysql:host=localhost;dbname=gm_sicbd', 'root', '');
-                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                        $stmt = $pdo->query("SELECT id, titulo FROM gestao_contratos");
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            echo "<option value='{$row['id']}'>" . htmlspecialchars($row['titulo']) . "</option>";
-                        }
-                    } catch (PDOException $e) {
-                        echo "<option value=''>Erro ao carregar contratos</option>";
-                    }
-                    ?>
-                </select>
-                        <label for="contractSelect">Selecione o Contrato</label>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input type="text" class="form-control" id="newStepInput" placeholder="Digite o nome da nova etapa">
-                        <label for="newStepInput">Nova Etapa</label>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <button class="btn btn-primary" type="button" id="addStepBtn">
-                        <i class="bi bi-plus-lg me-1"></i> Adicionar Nova Etapa
-                    </button>
-                </div>
+<div class="caderno">
+
+<!-- Modal de notificações -->
+<div class="modal" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationModalLabel">
+                    <i class="fas fa-bell"></i> Notificações
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        </div>
-        
-        <div class="progress-container">
-            <h5 class="mb-2">Progresso do Contrato</h5>
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="modal-body">
+                <p>Nenhuma notificação no momento.</p>
             </div>
-            <div class="progress-label">
-                <span>2 de 4 etapas concluídas</span>
-                <span>50%</span>
-            </div>
-        </div>
-        
-        <div class="contract-timeline">
-            <div class="timeline-container" id="timelineContainer">
-                <!-- Timeline Item 1 -->
-                <div class="timeline-item">
-                    <div class="timeline-icon completed">
-                        <i class="bi bi-check-lg"></i>
-                    </div>
-                    <div class="timeline-content">
-                        <div class="timeline-header" onclick="toggleExpand(this)">
-                            <h3 class="timeline-title">Criação do Contrato</h3>
-                            <div class="timeline-date">
-                                <span class="status-badge completed me-2">Concluído</span>
-                                <i class="bi bi-calendar me-1"></i> 08/05/2025
-                            </div>
-                        </div>
-                        <div class="timeline-body">
-                            <div class="timeline-body-content">
-                                <p class="timeline-description">Contrato criado. Situação: Encerrado</p>
-                                
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                            <small class="text-muted">Data de Criação</small>
-                                            <div>08/05/2025</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                            <small class="text-muted">Hora</small>
-                                            <div>09:00</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="timeline-details">
-                                    <h6 class="mb-2">Checklist de Criação:</h6>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check1-1" checked disabled>
-                                        <label for="check1-1">Documentação recebida</label>
-                                    </div>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check1-2" checked disabled>
-                                        <label for="check1-2">Contrato assinado</label>
-                                    </div>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check1-3" checked disabled>
-                                        <label for="check1-3">Registro no sistema</label>
-                                    </div>
-                                </div>
-                                
-                                <div class="timeline-actions">
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-file-earmark-text me-1"></i> Ver Documentos
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="bi bi-pencil me-1"></i> Editar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Timeline Item 2 -->
-                <div class="timeline-item">
-                    <div class="timeline-icon completed">
-                        <i class="bi bi-check-lg"></i>
-                    </div>
-                    <div class="timeline-content">
-                        <div class="timeline-header" onclick="toggleExpand(this)">
-                            <h3 class="timeline-title">Execução do Contrato</h3>
-                            <div class="timeline-date">
-                                <span class="status-badge completed me-2">Concluído</span>
-                                <i class="bi bi-calendar me-1"></i> 30/05/2025
-                            </div>
-                        </div>
-                        <div class="timeline-body">
-                            <div class="timeline-body-content">
-                                <p class="timeline-description">A execução do contrato começou. Situação: Encerrado</p>
-                                
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                            <small class="text-muted">Data de Início</small>
-                                            <div>30/05/2025</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                            <small class="text-muted">Hora</small>
-                                            <div>08:00</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="timeline-details">
-                                    <h6 class="mb-2">Checklist de Execução:</h6>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check2-1" checked disabled>
-                                        <label for="check2-1">Início dos serviços</label>
-                                    </div>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check2-2" checked disabled>
-                                        <label for="check2-2">Acompanhamento inicial</label>
-                                    </div>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check2-3" checked disabled>
-                                        <label for="check2-3">Relatório de execução</label>
-                                    </div>
-                                </div>
-                                
-                                <div class="timeline-actions">
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-file-earmark-text me-1"></i> Ver Relatórios
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="bi bi-pencil me-1"></i> Editar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Timeline Item 3 -->
-                <div class="timeline-item">
-                    <div class="timeline-icon in-progress">
-                        <i class="bi bi-clock"></i>
-                    </div>
-                    <div class="timeline-content">
-                        <div class="timeline-header" onclick="toggleExpand(this)">
-                            <h3 class="timeline-title">Pagamentos</h3>
-                            <div class="timeline-date">
-                                <span class="status-badge in-progress me-2">Em Andamento</span>
-                                <i class="bi bi-calendar me-1"></i> 21/05/2025
-                            </div>
-                        </div>
-                        <div class="timeline-body expanded">
-                            <div class="timeline-body-content">
-                                <p class="timeline-description">Pagamentos estão sendo feitos. Situação: Encerrado</p>
-                                
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                            <small class="text-muted">Data de Início</small>
-                                            <div>21/05/2025</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                            <small class="text-muted">Hora</small>
-                                            <div>09:00</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="timeline-details">
-                                    <h6 class="mb-3">Detalhes do Processo:</h6>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-2">
-                                                <small class="text-muted">Empenho</small>
-                                                <div>2000</div>
-                                            </div>
-                                            <div class="mb-2">
-                                                <small class="text-muted">Nota de Empenho</small>
-                                                <div>Não informado</div>
-                                            </div>
-                                            <div class="mb-2">
-                                                <small class="text-muted">Valor Liquidado</small>
-                                                <div>0.00</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-2">
-                                                <small class="text-muted">Ordem Bancária</small>
-                                                <div>Não informado</div>
-                                            </div>
-                                            <div class="mb-2">
-                                                <small class="text-muted">Nota Fiscal</small>
-                                                <div>Não informado</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <h6 class="mb-2 mt-3">Checklist de Pagamentos:</h6>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check3-1" checked>
-                                        <label for="check3-1">Empenho registrado</label>
-                                    </div>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check3-2">
-                                        <label for="check3-2">Nota fiscal recebida</label>
-                                    </div>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check3-3">
-                                        <label for="check3-3">Pagamento efetuado</label>
-                                    </div>
-                                </div>
-                                
-                                <div class="timeline-actions">
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-file-earmark-text me-1"></i> Ver Comprovantes
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="bi bi-pencil me-1"></i> Editar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Timeline Item 4 -->
-                <div class="timeline-item">
-                    <div class="timeline-icon pending">
-                        <i class="bi bi-hourglass"></i>
-                    </div>
-                    <div class="timeline-content">
-                        <div class="timeline-header" onclick="toggleExpand(this)">
-                            <h3 class="timeline-title">Finalização do Contrato</h3>
-                            <div class="timeline-date">
-                                <span class="status-badge pending me-2">Pendente</span>
-                                <i class="bi bi-calendar me-1"></i> Pendente
-                            </div>
-                        </div>
-                        <div class="timeline-body">
-                            <div class="timeline-body-content">
-                                <p class="timeline-description">Pendente</p>
-                                
-                                <div class="timeline-details">
-                                    <h6 class="mb-2">Checklist de Finalização:</h6>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check4-1">
-                                        <label for="check4-1">Entrega final</label>
-                                    </div>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check4-2">
-                                        <label for="check4-2">Relatório de encerramento</label>
-                                    </div>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="check4-3">
-                                        <label for="check4-3">Termo de aceite</label>
-                                    </div>
-                                </div>
-                                
-                                <div class="timeline-actions">
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-file-earmark-text me-1"></i> Ver Documentos
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="bi bi-pencil me-1"></i> Editar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const addStepBtn = document.getElementById('addStepBtn');
-            const newStepInput = document.getElementById('newStepInput');
-            const timelineContainer = document.getElementById('timelineContainer');
-            
-            addStepBtn.addEventListener('click', function() {
-                if (!newStepInput.value.trim()) return;
-                
-                const now = new Date();
-                const formattedDate = now.toLocaleDateString();
-                const formattedTime = now.getHours().toString().padStart(2, '0') + ':' + 
-                                     now.getMinutes().toString().padStart(2, '0');
-                
-                const newItem = document.createElement('div');
-                newItem.className = 'timeline-item';
-                
-                newItem.innerHTML = `
-                    <div class="timeline-icon pending">
-                        <i class="bi bi-hourglass"></i>
-                    </div>
-                    <div class="timeline-content">
-                        <div class="timeline-header" onclick="toggleExpand(this)">
-                            <h3 class="timeline-title">${newStepInput.value}</h3>
-                            <div class="timeline-date">
-                                <span class="status-badge pending me-2">Pendente</span>
-                                <i class="bi bi-calendar me-1"></i> ${formattedDate}
-                            </div>
-                        </div>
-                        <div class="timeline-body">
-                            <div class="timeline-body-content">
-                                <p class="timeline-description">Nova etapa adicionada</p>
-                                
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                            <small class="text-muted">Data de Criação</small>
-                                            <div>${formattedDate}</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                            <small class="text-muted">Hora</small>
-                                            <div>${formattedTime}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="timeline-details">
-                                    <h6 class="mb-2">Checklist:</h6>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="new-check-1">
-                                        <label for="new-check-1">Item 1</label>
-                                    </div>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="new-check-2">
-                                        <label for="new-check-2">Item 2</label>
-                                    </div>
-                                    <div class="checklist-item">
-                                        <input type="checkbox" id="new-check-3">
-                                        <label for="new-check-3">Item 3</label>
-                                    </div>
-                                </div>
-                                
-                                <div class="timeline-actions">
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-file-earmark-text me-1"></i> Ver Documentos
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="bi bi-pencil me-1"></i> Editar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                timelineContainer.appendChild(newItem);
-                newStepInput.value = '';
-                
-                updateProgress();
+<!-- Messages -->
+<div id="messages" aria-live="polite">
+    <div class="msg msg-success">
+        <i class="fas fa-check-circle"></i>
+        Evento adicionado com sucesso!
+    </div>
+</div>
+
+<div class="calendar-and-events">
+  <!-- Formulário Adicionar Evento -->
+  <div class="event-sidebar">
+    <form id="event-form" method="POST">
+      <h3><i class="fas fa-plus-circle"></i> Adicionar Evento</h3>
+      <input type="hidden" name="action" id="form-action" value="add_event">
+      <input type="hidden" name="event_id" id="event-id">
+
+      <!-- Título -->
+      <div class="input-icon">
+        <label for="titulo">Título</label>
+        <input type="text" name="titulo" id="titulo" required aria-required="true" placeholder="Digite o título do evento">
+      </div>
+
+      <!-- Descrição -->
+      <div class="input-icon">
+        <label for="descricao">Descrição</label>
+        <textarea name="descricao" id="descricao" aria-describedby="desc-help" placeholder="Descreva o evento"></textarea>
+      </div>
+
+      <div class="data-tempo">
+        <!-- Data -->
+        <div class="input-icon input-with-icon">
+          <label for="data">Data</label>
+          <input type="date" name="data" id="data" required aria-required="true" value="2024-01-15">
+        </div>
+
+        <!-- Tempo -->
+        <div class="input-icon input-with-icon">
+          <label for="hora">Horário</label>
+          <input type="time" name="hora" id="hora" required aria-required="true">
+        </div>
+
+        <!-- Categoria -->
+        <div class="input-icon">
+          <label for="categoria">Categoria</label>
+          <select name="categoria" id="categoria" required aria-required="true">
+            <option value="reuniao">Reunião</option>
+            <option value="evento">Evento</option>
+            <option value="compromisso">Compromisso</option>
+            <option value="lembrete">Lembrete</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Cor -->
+      <div class="input-icon">
+        <label for="cor">Cor do Evento</label>
+        <div class="color-picker-container">
+          <input type="color" name="cor" id="cor" value="#ff0000" required aria-required="true">
+          <span>Escolha uma cor para identificar o evento</span>
+        </div>
+      </div>
+
+      <!-- Enviar por e-mail -->
+      <div class="input-icon">
+        <label for="enviar-email">
+          <input type="checkbox" name="enviar_email" id="enviar-email"> 
+          Enviar notificação por e-mail
+        </label>
+      </div>
+
+      <!-- E-mail do destinatário -->
+      <div class="input-icon" id="email-field">
+        <label for="email_destinatario">E-mail do Destinatário</label>
+        <select name="email_destinatario" id="email-destinatario">
+          <option value="">Selecione ou digite um e-mail</option>
+          <option value="admin@empresa.com">admin@empresa.com</option>
+          <option value="gestor@empresa.com">gestor@empresa.com</option>
+        </select>
+        <input type="email" name="email_destinatario" id="email-destinatario-input" placeholder="Digite o e-mail" style="margin-top: 0.5rem;">
+      </div>
+
+      <!-- Salvar e-mail para eventos futuros -->
+      <div class="input-icon" id="salvar-email-field">
+        <label>
+          <input type="checkbox" name="salvar_email" id="salvar-email">
+          Salvar este e-mail para eventos futuros
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" id="submit-btn">
+          <i class="fas fa-check-circle"></i> Adicionar Evento
+        </button>
+        
+        <button type="button" id="toggle-category-form">
+          <i class="fas fa-tags"></i> Adicionar Nova Categoria
+        </button>
+        
+        <button type="button" class="cancel-btn" id="cancel-btn" style="display: none;">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+      </div>
+    </form>
+
+    <form id="add-category-form" method="POST">
+      <input type="hidden" name="action" value="add_category">
+      <div class="input-icon">
+        <label for="new_category">Nova Categoria:</label>
+        <input class="input-category" type="text" name="new_category" id="new_category" placeholder="Digite o nome da categoria">
+      </div>
+      <button type="submit">
+        <i class="fas fa-plus"></i> Adicionar Categoria
+      </button>
+    </form>
+  </div>
+
+  <!-- Calendário -->
+  <div class="calendar-container">
+    <div class="calendar-header">
+      <button id="prev-month" data-url="#" aria-label="Mês anterior">
+        <i class="fas fa-chevron-left"></i> Anterior
+      </button>
+      <h2 id="month-year" aria-live="polite">
+        <i class="fas fa-calendar-alt"></i> Janeiro 2024
+      </h2>
+      <button id="next-month" data-url="#" aria-label="Próximo mês">
+        Próximo <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+    
+    <div class="calendar-weekdays">
+      <div>Dom</div>
+      <div>Seg</div>
+      <div>Ter</div>
+      <div>Qua</div>
+      <div>Qui</div>
+      <div>Sex</div>
+      <div>Sáb</div>
+    </div>
+    
+    <div class="calendar-day-grid">
+      <!-- Exemplo de dias do calendário -->
+      <div class="day-cell">
+        <div class="day-number">1</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">2</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">3</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">4</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">5</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">6</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">7</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">8</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">9</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">10</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">11</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">12</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">13</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">14</div>
+      </div>
+      <div class="day-cell selected-day">
+        <div class="day-number">15</div>
+        <div class="evento">Reunião Importante</div>
+        <div class="evento" style="background: var(--success-gradient);">Workshop</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">16</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">17</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">18</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">19</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">20</div>
+        <div class="evento" style="background: var(--warning-gradient);">Apresentação</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">21</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">22</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">23</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">24</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">25</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">26</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">27</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">28</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">29</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">30</div>
+      </div>
+      <div class="day-cell">
+        <div class="day-number">31</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Eventos do Dia -->
+  <div class="daily-events-preview">
+    <h3>
+      <i class="fas fa-calendar-day"></i>
+      Eventos do Dia 15/01/2024
+    </h3>
+
+    <div class="daily-event">
+      <div class="event-color-bar" style="background: var(--danger-gradient);"></div>
+      <div class="daily-event-content">
+        <div class="daily-event-info">
+          <div class="event-title">
+            <i class="fas fa-calendar-alt event-icon"></i>
+            <strong>Reunião Importante</strong>
+          </div>
+
+          <div class="event-category">
+            <i class="fas fa-tags event-icon"></i>
+            <small>Reunião</small>
+          </div>
+
+          <div class="event-time">
+            <i class="fas fa-clock event-icon"></i>
+            <small>Agendado para 14:30 HR</small>
+          </div>
+
+          <div class="event-description">
+            <i class="fas fa-info-circle event-icon"></i>
+            <small>Discussão sobre o projeto Q1 2024</small>
+          </div>
+        </div>
+
+        <div class="daily-event-menu">
+          <i class="fas fa-ellipsis-v menu-icon"></i>
+          <div class="dropdown-menu">
+            <a href="#" class="edit-link" data-id="1">
+              <i class="fas fa-edit"></i> Editar
+            </a>
+            <a href="#" class="delete-link" data-id="1">
+              <i class="fas fa-trash"></i> Excluir
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="daily-event">
+      <div class="event-color-bar" style="background: var(--success-gradient);"></div>
+      <div class="daily-event-content">
+        <div class="daily-event-info">
+          <div class="event-title">
+            <i class="fas fa-calendar-alt event-icon"></i>
+            <strong>Workshop de Desenvolvimento</strong>
+          </div>
+
+          <div class="event-category">
+            <i class="fas fa-tags event-icon"></i>
+            <small>Evento</small>
+          </div>
+
+          <div class="event-time">
+            <i class="fas fa-clock event-icon"></i>
+            <small>Agendado para 16:00 HR</small>
+          </div>
+
+          <div class="event-description">
+            <i class="fas fa-info-circle event-icon"></i>
+            <small>Workshop sobre novas tecnologias</small>
+          </div>
+        </div>
+
+        <div class="daily-event-menu">
+          <i class="fas fa-ellipsis-v menu-icon"></i>
+          <div class="dropdown-menu">
+            <a href="#" class="edit-link" data-id="2">
+              <i class="fas fa-edit"></i> Editar
+            </a>
+            <a href="#" class="delete-link" data-id="2">
+              <i class="fas fa-trash"></i> Excluir
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// JavaScript para funcionalidades básicas
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle do formulário de categoria
+    const toggleCategoryBtn = document.getElementById('toggle-category-form');
+    const categoryForm = document.getElementById('add-category-form');
+    
+    toggleCategoryBtn.addEventListener('click', function() {
+        if (categoryForm.style.display === 'none' || categoryForm.style.display === '') {
+            categoryForm.style.display = 'block';
+            this.innerHTML = '<i class="fas fa-times"></i> Cancelar';
+        } else {
+            categoryForm.style.display = 'none';
+            this.innerHTML = '<i class="fas fa-tags"></i> Adicionar Nova Categoria';
+        }
+    });
+
+    // Navegação do calendário
+    const prevBtn = document.getElementById('prev-month');
+    const nextBtn = document.getElementById('next-month');
+    
+    prevBtn.addEventListener('click', function() {
+        console.log('Navegando para mês anterior');
+    });
+    
+    nextBtn.addEventListener('click', function() {
+        console.log('Navegando para próximo mês');
+    });
+
+    // Seleção de dias
+    const dayCells = document.querySelectorAll('.day-cell');
+    dayCells.forEach(cell => {
+        cell.addEventListener('click', function() {
+            // Remove seleção anterior
+            document.querySelectorAll('.selected-day').forEach(day => {
+                day.classList.remove('selected-day');
             });
+            // Adiciona seleção atual
+            this.classList.add('selected-day');
             
-            // Initialize checkboxes to update progress
-            const checkboxes = document.querySelectorAll('.checklist-item input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', updateProgress);
-            });
-            
-            updateProgress();
+            const dayNumber = this.querySelector('.day-number').textContent;
+            console.log('Dia selecionado:', dayNumber);
         });
-        
-        function toggleExpand(header) {
-            const body = header.nextElementSibling;
-            body.classList.toggle('expanded');
+    });
+
+    // Modal de notificações
+    const modal = document.getElementById('notificationModal');
+    const closeBtn = modal.querySelector('.close');
+    
+    closeBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+
+    // Fechar modal clicando fora
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
         }
+    });
+
+    // Submissão do formulário
+    const eventForm = document.getElementById('event-form');
+    eventForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('Evento adicionado!');
         
-        function updateProgress() {
-            const totalSteps = document.querySelectorAll('.timeline-item').length;
-            const completedSteps = document.querySelectorAll('.timeline-icon.completed').length;
-            
-            const progressBar = document.querySelector('.progress-bar');
-            const progressText = document.querySelector('.progress-label span:first-child');
-            const progressPercentage = document.querySelector('.progress-label span:last-child');
-            
-            const percentage = Math.round((completedSteps / totalSteps) * 100);
-            
-            progressBar.style.width = `${percentage}%`;
-            progressBar.setAttribute('aria-valuenow', percentage);
-            
-            progressText.textContent = `${completedSteps} de ${totalSteps} etapas concluídas`;
-            progressPercentage.textContent = `${percentage}%`;
-        }
-    </script>
+        // Simular sucesso
+        const messagesDiv = document.getElementById('messages');
+        messagesDiv.innerHTML = `
+            <div class="msg msg-success">
+                <i class="fas fa-check-circle"></i>
+                Evento adicionado com sucesso!
+            </div>
+        `;
+        
+        // Limpar formulário
+        this.reset();
+    });
+
+    // Ações dos eventos
+    document.querySelectorAll('.edit-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const eventId = this.dataset.id;
+            console.log('Editando evento:', eventId);
+        });
+    });
+
+    document.querySelectorAll('.delete-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const eventId = this.dataset.id;
+            if (confirm('Tem certeza que deseja excluir este evento?')) {
+                console.log('Excluindo evento:', eventId);
+            }
+        });
+    });
+});
+</script>
+
 </body>
 </html>

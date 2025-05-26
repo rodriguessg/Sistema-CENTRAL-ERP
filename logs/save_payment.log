@@ -116,3 +116,5 @@
 2025-05-23 20:22:57 - Executando INSERT
 2025-05-23 20:24:08 - Dados recebidos: {"contrato_titulo":"MAIK CONTRATO","mes":"06/2025","empenho":"70","tipo":"70","nota_empenho":"70","valor_contrato":350000,"creditos_ativos":"70","fonte":"TEST","SEI":"123456789/1234","nota_fiscal":"70","envio_pagamento":"70","vencimento_fatura":"2025-08-16","valor_liquidado":70,"valor_liquidado_ag":70,"ordem_bancaria":"70","data_atualizacao":"2025-05-23","data_pagamento":"2025-05-23"}
 2025-05-23 20:24:08 - Executando INSERT
+2025-05-26 21:55:18 - Dados recebidos: {"contrato_titulo":"GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS","mes":"05/2025","empenho":"3","tipo":null,"nota_empenho":null,"valor_contrato":432264000,"creditos_ativos":null,"fonte":null,"SEI":"100006/001752/2023","nota_fiscal":null,"envio_pagamento":null,"vencimento_fatura":"2025-12-19","valor_liquidado":432264000,"valor_liquidado_ag":0,"ordem_bancaria":null,"data_atualizacao":null,"data_pagamento":"2025-05-14","id":82}
+2025-05-26 21:55:18 - Executando UPDATE para id: 82

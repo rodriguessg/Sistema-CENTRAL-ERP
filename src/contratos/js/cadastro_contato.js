@@ -46,4 +46,30 @@ function toggleOutros() {
 }
 
 
+  function showTab(tabName) {
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all tab content panels
+            const tabContents = document.querySelectorAll('.tab-content-panel');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Add active class to clicked tab
+            const clickedTab = document.querySelector(`[data-tab="${tabName}"]`);
+            if (clickedTab) {
+                clickedTab.classList.add('active');
+            }
+
+            // Show corresponding content
+            const contentPanel = document.getElementById(tabName);
+            if (contentPanel) {
+                contentPanel.classList.add('active');
+            }
+        }
+
 

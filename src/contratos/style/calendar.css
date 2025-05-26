@@ -1,6 +1,6 @@
    /* Variáveis CSS para o tema */
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+           --primary-gradient: linear-gradient(90deg, #192844 67.81%, #472774 100%);
             --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
@@ -38,11 +38,11 @@
     
         /* Layout Principal - MANTENDO SUA ESTRUTURA ORIGINAL */
         .calendar-and-events {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(1, 1fr);
-            gap: 2rem;
-            width: 100%;
+               display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    gap: 1rem;
+    width: 99%;
         }
 
         /* Sidebar - Formulário Adicionar Evento - MANTENDO GRID AREA ORIGINAL */

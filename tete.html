@@ -3,585 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário Interativo - Redesenhado</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <title>Sistema de Tabs Redesenhado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Variáveis CSS para o tema */
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --primary-gradient: linear-gradient(90deg, #192844 67.81%, #472774 100%);
+            --secondary-gradient: linear-gradient(135deg, #472774 0%, #6a4c93 100%);
+            --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
             --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            --accent-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --accent-color: #f093fb;
+            --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+            --primary-color: #192844;
+            --secondary-color: #472774;
+            --accent-color: #667eea;
             --text-dark: #2d3748;
             --text-light: #718096;
             --bg-light: #f7fafc;
             --bg-white: #ffffff;
             --border-color: #e2e8f0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
-            --shadow-xl: 0 20px 40px rgba(0,0,0,0.2);
-            --border-radius: 16px;
-            --border-radius-sm: 8px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --border-radius: 10px;
+            --border-radius-sm: 6px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: var(--text-dark);
-            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
             min-height: 100vh;
-            padding: 2rem;
+            font-size: 14px;
         }
 
-        .caderno {
-            max-width: 1400px;
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* Layout Principal */
-        .calendar-and-events {
-            display: grid;
-            grid-template-columns: 400px 1fr;
-            grid-template-rows: auto 1fr;
-            gap: 2rem;
-            width: 100%;
-            min-height: 80vh;
-        }
-
-        /* Sidebar - Formulário Adicionar Evento */
-        .event-sidebar {
-            grid-area: 1 / 1 / 3 / 2;
+        /* Container das Tabs Redesenhado */
+        .tabs-container {
             background: var(--bg-white);
-            padding: 2rem;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border-color);
-            position: relative;
             overflow: hidden;
+            margin-bottom: 2rem;
+            position: relative;
         }
 
-        .event-sidebar::before {
+        .tabs-container::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 3px;
             background: var(--primary-gradient);
         }
 
-        /* Formulário Principal */
-        #event-form {
+        /* Lista de Tabs */
+        .tabs {
+            display: flex;
+            background: var(--bg-light);
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Tab Individual */
+        .tab {
+            flex: 1;
+            position: relative;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0;
+            margin: 0;
+        }
+
+        .tab-button {
+            width: 100%;
+            padding: 1rem 0.75rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        /* Título do Formulário */
-        #event-form h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        #event-form h3 i {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 0.5rem;
-            border-radius: 50%;
-            font-size: 1rem;
-        }
-
-        /* Container de Input Moderno */
-        .input-icon {
+            gap: 0.5rem;
+            text-align: center;
             position: relative;
-            margin-bottom: 1.5rem;
+            color: var(--text-light);
         }
 
-        .input-icon label {
-            display: block;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Inputs Gerais Modernos */
-        #event-form input[type="text"],
-        #event-form input[type="date"],
-        #event-form input[type="time"],
-        #event-form input[type="email"],
-        #event-form textarea,
-        #event-form select,
-        .input-category {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius-sm);
-            font-size: 1rem;
-            color: var(--text-dark);
-            background: var(--bg-white);
-            transition: var(--transition);
-            font-family: inherit;
-        }
-
-        #event-form input:focus,
-        #event-form textarea:focus,
-        #event-form select:focus,
-        .input-category:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            transform: translateY(-1px);
-        }
-
-        #event-form textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        /* Select Customizado */
-        #event-form select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.75rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 3rem;
-        }
-
-        /* Input de Cor Moderno */
-        #event-form input[type="color"] {
-            width: 60px;
-            height: 60px;
+        /* Ícone da Tab */
+        .tab-icon {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            border: 3px solid var(--border-color);
-            background: transparent;
-            cursor: pointer;
-            transition: var(--transition);
-            padding: 0;
-        }
-
-        #event-form input[type="color"]:hover {
-            border-color: var(--primary-color);
-            transform: scale(1.1);
-            box-shadow: var(--shadow-md);
-        }
-
-        #event-form input[type="color"]::-webkit-color-swatch-wrapper {
-            padding: 0;
-            border-radius: 50%;
-        }
-
-        #event-form input[type="color"]::-webkit-color-swatch {
-            border-radius: 50%;
-            border: none;
-        }
-
-        /* Container Data e Tempo */
-        .data-tempo {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 1rem;
-            align-items: end;
-        }
-
-        /* Container do Seletor de Cor */
-        .color-picker-container {
+            background: var(--glass-gradient);
             display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        /* Checkbox Estilizado */
-        input[type="checkbox"] {
-            width: 1.25rem;
-            height: 1.25rem;
-            accent-color: var(--primary-color);
-            margin-right: 0.5rem;
-        }
-
-        /* Botões Modernos */
-        #submit-btn,
-        #cancel-btn,
-        #toggle-category-form,
-        #add-category-form button {
-            padding: 1rem 1.5rem;
-            border: none;
-            border-radius: var(--border-radius-sm);
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #submit-btn,
-        .form-actions button {
-            background: var(--primary-gradient);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-
-        #submit-btn:hover,
-        .form-actions button:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        #cancel-btn {
-            background: var(--danger-gradient);
-            color: white;
-        }
-
-        #toggle-category-form {
-            background: var(--warning-gradient);
-            color: white;
-        }
-
-        /* Ações do Formulário */
-        .form-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        /* Formulário Adicionar Categoria */
-        #add-category-form {
-            display: none;
-            background: var(--bg-light);
-            padding: 1.5rem;
-            border-radius: var(--border-radius-sm);
-            border: 2px solid var(--border-color);
-            margin-top: 1rem;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Container Calendário */
-        .calendar-container {
-            grid-area: 1 / 2 / 2 / 3;
-            background: var(--bg-white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .calendar-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--primary-gradient);
-        }
-
-        /* Cabeçalho do Calendário */
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--primary-gradient);
-            color: white;
-            padding: 1.5rem 2rem;
-            margin-top: 4px;
-        }
-
-        #month-year {
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        /* Botões de Navegação do Calendário */
-        .calendar-header button {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--border-radius-sm);
-            cursor: pointer;
-            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-light);
             transition: var(--transition);
+            border: 1px solid var(--border-color);
             backdrop-filter: blur(10px);
         }
 
-        .calendar-header button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        /* Dias da Semana */
-        .calendar-weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .calendar-weekdays div {
-            text-align: center;
-            padding: 1rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Grid dos Dias */
-        .calendar-day-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            background: var(--border-color);
-            padding: 1px;
-        }
-
-        .day-cell {
-            background: var(--bg-white);
-            padding: 1.5rem 1rem;
-            min-height: 120px;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
+        /* Conteúdo da Tab */
+        .tab-content {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
+            gap: 0.25rem;
         }
 
-        .day-cell:hover {
-            background: var(--bg-light);
-            transform: scale(1.02);
-            z-index: 2;
+        .tab-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            transition: var(--transition);
+        }
+
+        .tab-description {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin: 0;
+            transition: var(--transition);
+            line-height: 1.3;
+        }
+
+        /* Estados da Tab */
+        .tab:hover .tab-button {
+            background: rgba(25, 40, 68, 0.05);
+        }
+
+        .tab:hover .tab-icon {
+            background: var(--accent-gradient);
+            color: white;
+            transform: scale(1.1);
+            border-color: transparent;
             box-shadow: var(--shadow-md);
         }
 
-        .day-number {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
+        .tab:hover .tab-title {
+            color: var(--primary-color);
         }
 
-        .selected-day {
+        .tab:hover .tab-description {
+            color: var(--text-dark);
+        }
+
+        /* Tab Ativa */
+        .tab.active .tab-button {
             background: var(--primary-gradient);
             color: white;
         }
 
-        .selected-day .day-number {
+        .tab.active .tab-icon {
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-        }
-
-        /* Eventos no Calendário */
-        .evento {
-            background: var(--danger-gradient);
-            color: white;
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            margin-top: 0.25rem;
-            text-align: center;
-            font-weight: 500;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            width: 100%;
-        }
-
-        .evento:hover {
-            transform: translateY(-1px);
+            border-color: rgba(255, 255, 255, 0.3);
             box-shadow: var(--shadow-md);
         }
 
-        /* Eventos do Dia */
-        .daily-events-preview {
-            grid-area: 2 / 2 / 3 / 3;
-            background: var(--bg-white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
+        .tab.active .tab-title {
+            color: white;
+            font-weight: 700;
         }
 
-        .daily-events-preview::before {
+        .tab.active .tab-description {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Indicador de Tab Ativa */
+        .tab.active::after {
             content: '';
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: var(--secondary-gradient);
+            height: 3px;
+            background: var(--accent-gradient);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
         }
 
-        .daily-events-preview h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .daily-events-preview h3 i {
-            background: var(--secondary-gradient);
-            color: white;
-            padding: 0.5rem;
-            border-radius: 50%;
-            font-size: 1rem;
-        }
-
-        /* Evento Individual */
-        .daily-event {
-            display: flex;
-            align-items: stretch;
-            background: var(--bg-white);
-            margin-bottom: 1.5rem;
-            border-radius: var(--border-radius-sm);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .daily-event:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .event-color-bar {
-            width: 6px;
-            background: var(--danger-gradient);
-            flex-shrink: 0;
-        }
-
-        .daily-event-content {
-            flex: 1;
-            padding: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .daily-event-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .event-title,
-        .event-time,
-        .event-description,
-        .event-category {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .event-title strong {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .event-time small,
-        .event-description small,
-        .event-category small {
-            color: var(--text-light);
-            font-size: 0.875rem;
-        }
-
-        .event-icon {
-            color: var(--primary-color);
-            font-size: 1rem;
-        }
-
-        /* Menu de Ações */
-        .daily-event-menu {
-            position: relative;
-            padding: 1rem;
-            cursor: pointer;
-        }
-
-        .menu-icon {
-            font-size: 1.25rem;
-            color: var(--text-light);
-            transition: var(--transition);
-        }
-
-        .daily-event-menu:hover .menu-icon {
-            color: var(--primary-color);
-        }
-
-        .dropdown-menu {
+        /* Conteúdo das Tabs */
+        .tab-content-panel {
             display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
+            padding: 2rem;
             background: var(--bg-white);
-            border-radius: var(--border-radius-sm);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
-            padding: 0.5rem;
-            min-width: 150px;
-            z-index: 10;
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .daily-event-menu:hover .dropdown-menu {
+        .tab-content-panel.active {
             display: block;
-            animation: fadeInUp 0.2s ease-out;
         }
 
-        @keyframes fadeInUp {
+        @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(10px);
@@ -592,724 +222,339 @@
             }
         }
 
-        .dropdown-menu a {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem;
-            color: var(--text-dark);
-            text-decoration: none;
-            border-radius: var(--border-radius-sm);
-            transition: var(--transition);
-            font-size: 0.875rem;
-        }
-
-        .dropdown-menu a:hover {
-            background: var(--bg-light);
-            color: var(--primary-color);
-        }
-
-        /* Modal de Notificações */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-dialog {
+        /* Badge de Notificação */
+        .notification-badge {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 500px;
-        }
-
-        .modal-content {
-            background: var(--bg-white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-xl);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-
-        .modal-header {
-            background: var(--primary-gradient);
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--danger-gradient);
             color: white;
-            padding: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .close:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .modal-body {
-            padding: 2rem;
-        }
-
-        .modal-footer {
-            padding: 1rem 2rem;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-        }
-
-        /* Mensagens */
-        #messages {
-            margin-bottom: 2rem;
-        }
-
-        .msg {
-            padding: 1rem 1.5rem;
-            border-radius: var(--border-radius-sm);
-            margin-bottom: 1rem;
-            font-weight: 500;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.125rem 0.375rem;
+            border-radius: 10px;
+            min-width: 16px;
+            height: 16px;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-        }
-
-        .msg-success {
-            background: linear-gradient(135deg, #d4edda, #c3e6cb);
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .msg-error {
-            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid white;
         }
 
         /* Responsividade */
-        @media (max-width: 1200px) {
-            .calendar-and-events {
-                grid-template-columns: 350px 1fr;
-            }
-        }
-
-        @media (max-width: 968px) {
-            .calendar-and-events {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto auto;
-                gap: 1.5rem;
+        @media (max-width: 1024px) {
+            .tab-button {
+                padding: 0.875rem 0.625rem;
             }
 
-            .event-sidebar {
-                grid-area: 1 / 1 / 2 / 2;
+            .tab-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 13px;
             }
 
-            .calendar-container {
-                grid-area: 2 / 1 / 3 / 2;
+            .tab-title {
+                font-size: 0.8rem;
             }
 
-            .daily-events-preview {
-                grid-area: 3 / 1 / 4 / 2;
-            }
-
-            .data-tempo {
-                grid-template-columns: 1fr 1fr;
+            .tab-description {
+                font-size: 0.7rem;
             }
         }
 
         @media (max-width: 768px) {
-            body {
-                padding: 1rem;
+            .tabs {
+                flex-wrap: wrap;
             }
 
-            .calendar-and-events {
-                gap: 1rem;
+            .tab {
+                flex: 1 1 50%;
+                min-width: 0;
             }
 
-            .event-sidebar,
-            .calendar-container,
-            .daily-events-preview {
-                padding: 1.5rem;
-            }
-
-            .calendar-header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            .calendar-header button {
-                width: 100%;
-            }
-
-            .data-tempo {
-                grid-template-columns: 1fr;
-            }
-
-            .day-cell {
-                min-height: 80px;
+            .tab-button {
                 padding: 1rem 0.5rem;
             }
 
-            .daily-event-content {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-
-            .daily-event-menu {
-                align-self: flex-end;
+            .tab-description {
+                display: none;
             }
         }
 
         @media (max-width: 480px) {
-            .calendar-weekdays div {
-                padding: 0.5rem;
-                font-size: 0.75rem;
+            .tab {
+                flex: 1 1 100%;
             }
 
-            .day-cell {
-                min-height: 60px;
-                padding: 0.5rem 0.25rem;
+            .tab-button {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 0.75rem;
+                padding: 0.875rem 1rem;
+                text-align: left;
             }
 
-            .day-number {
-                font-size: 0.9rem;
+            .tab-content {
+                align-items: flex-start;
             }
 
-            .evento {
-                font-size: 0.65rem;
-                padding: 0.125rem 0.25rem;
+            .tab-icon {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
             }
-        }
-
-        /* Animações de entrada */
-        .event-sidebar,
-        .calendar-container,
-        .daily-events-preview {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .event-sidebar {
-            animation-delay: 0.1s;
-        }
-
-        .calendar-container {
-            animation-delay: 0.2s;
-        }
-
-        .daily-events-preview {
-            animation-delay: 0.3s;
         }
 
         /* Estados de loading */
-        .loading {
+        .tab.loading .tab-icon {
             position: relative;
-            pointer-events: none;
         }
 
-        .loading::after {
+        .tab.loading .tab-icon::after {
             content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-
-        .loading::before {
-            content: 'Carregando...';
             position: absolute;
             top: 50%;
             left: 50%;
+            width: 12px;
+            height: 12px;
+            border: 1px solid currentColor;
+            border-top: 1px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
             transform: translate(-50%, -50%);
-            z-index: 11;
-            font-weight: 600;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Melhorias de acessibilidade */
+        .tab-button:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: -2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Exemplo de conteúdo */
+        .demo-content {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-sm);
+            margin-top: 1rem;
+        }
+
+        .demo-content h3 {
             color: var(--primary-color);
+            margin: 0 0 1rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .demo-content p {
+            color: var(--text-dark);
+            margin: 0;
+            line-height: 1.5;
         }
     </style>
 </head>
-
 <body>
-<div class="caderno">
+    <div class="container">
+        <h1 style="text-align: center; color: #192844; margin-bottom: 2rem; font-size: 1.75rem; font-weight: 700;">
+            Sistema de Tabs Redesenhado
+        </h1>
 
-<!-- Modal de notificações -->
-<div class="modal" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="notificationModalLabel">
-                    <i class="fas fa-bell"></i> Notificações
-                </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+        <div class="tabs-container">
+            <!-- Lista de Tabs -->
+            <ul class="tabs" role="tablist">
+                <li class="tab active" role="presentation">
+                    <button class="tab-button" role="tab" aria-selected="true" onclick="switchTab(event, 'cadastro')">
+                        <div class="tab-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-title">Cadastro</div>
+                            <div class="tab-description">Cadastramento de Contratos</div>
+                        </div>
+                    </button>
+                </li>
+
+                <li class="tab" role="presentation">
+                    <button class="tab-button" role="tab" aria-selected="false" onclick="switchTab(event, 'consultar')">
+                        <div class="tab-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-title">Consultar</div>
+                            <div class="tab-description">Consultar Contratos</div>
+                        </div>
+                        <span class="notification-badge">3</span>
+                    </button>
+                </li>
+
+                <li class="tab" role="presentation">
+                    <button class="tab-button" role="tab" aria-selected="false" onclick="switchTab(event, 'pagamentos')">
+                        <div class="tab-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-title">Pagamentos</div>
+                            <div class="tab-description">Gerenciar Pagamentos</div>
+                        </div>
+                    </button>
+                </li>
+
+                <li class="tab" role="presentation">
+                    <button class="tab-button" role="tab" aria-selected="false" onclick="switchTab(event, 'prestacao')">
+                        <div class="tab-icon">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-title">Prestação</div>
+                            <div class="tab-description">Prestação de Contas</div>
+                        </div>
+                    </button>
+                </li>
+
+                <li class="tab" role="presentation">
+                    <button class="tab-button" role="tab" aria-selected="false" onclick="switchTab(event, 'andamento')">
+                        <div class="tab-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-title">Andamento</div>
+                            <div class="tab-description">Andamento dos Contratos</div>
+                        </div>
+                    </button>
+                </li>
+
+                <li class="tab" role="presentation">
+                    <button class="tab-button" role="tab" aria-selected="false" onclick="switchTab(event, 'relatorios')">
+                        <div class="tab-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-title">Relatórios</div>
+                            <div class="tab-description">Relatórios de Contratos</div>
+                        </div>
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Conteúdo das Tabs -->
+            <div id="cadastro" class="tab-content-panel active" role="tabpanel">
+                <div class="demo-content">
+                    <h3>Cadastro de Contratos</h3>
+                    <p>Aqui você pode cadastrar novos contratos no sistema. Preencha todos os campos obrigatórios e anexe os documentos necessários.</p>
+                </div>
             </div>
-            <div class="modal-body">
-                <p>Nenhuma notificação no momento.</p>
+
+            <div id="consultar" class="tab-content-panel" role="tabpanel">
+                <div class="demo-content">
+                    <h3>Consultar Contratos</h3>
+                    <p>Consulte contratos existentes, filtre por status, data ou fornecedor. Visualize detalhes completos e histórico de cada contrato.</p>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+
+            <div id="pagamentos" class="tab-content-panel" role="tabpanel">
+                <div class="demo-content">
+                    <h3>Gerenciar Pagamentos</h3>
+                    <p>Gerencie pagamentos de contratos, visualize parcelas pendentes, registre pagamentos efetuados e gere comprovantes.</p>
+                </div>
+            </div>
+
+            <div id="prestacao" class="tab-content-panel" role="tabpanel">
+                <div class="demo-content">
+                    <h3>Prestação de Contas</h3>
+                    <p>Acompanhe a prestação de contas dos contratos, verifique documentos entregues e valide conformidade.</p>
+                </div>
+            </div>
+
+            <div id="andamento" class="tab-content-panel" role="tabpanel">
+                <div class="demo-content">
+                    <h3>Andamento dos Contratos</h3>
+                    <p>Monitore o andamento de todos os contratos, visualize cronogramas, marcos importantes e status atual.</p>
+                </div>
+            </div>
+
+            <div id="relatorios" class="tab-content-panel" role="tabpanel">
+                <div class="demo-content">
+                    <h3>Relatórios de Contratos</h3>
+                    <p>Gere relatórios detalhados sobre contratos, pagamentos, performance e análises estatísticas do sistema.</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Messages -->
-<div id="messages" aria-live="polite">
-    <div class="msg msg-success">
-        <i class="fas fa-check-circle"></i>
-        Evento adicionado com sucesso!
-    </div>
-</div>
-
-<div class="calendar-and-events">
-  <!-- Formulário Adicionar Evento -->
-  <div class="event-sidebar">
-    <form id="event-form" method="POST">
-      <h3><i class="fas fa-plus-circle"></i> Adicionar Evento</h3>
-      <input type="hidden" name="action" id="form-action" value="add_event">
-      <input type="hidden" name="event_id" id="event-id">
-
-      <!-- Título -->
-      <div class="input-icon">
-        <label for="titulo">Título</label>
-        <input type="text" name="titulo" id="titulo" required aria-required="true" placeholder="Digite o título do evento">
-      </div>
-
-      <!-- Descrição -->
-      <div class="input-icon">
-        <label for="descricao">Descrição</label>
-        <textarea name="descricao" id="descricao" aria-describedby="desc-help" placeholder="Descreva o evento"></textarea>
-      </div>
-
-      <div class="data-tempo">
-        <!-- Data -->
-        <div class="input-icon input-with-icon">
-          <label for="data">Data</label>
-          <input type="date" name="data" id="data" required aria-required="true" value="2024-01-15">
-        </div>
-
-        <!-- Tempo -->
-        <div class="input-icon input-with-icon">
-          <label for="hora">Horário</label>
-          <input type="time" name="hora" id="hora" required aria-required="true">
-        </div>
-
-        <!-- Categoria -->
-        <div class="input-icon">
-          <label for="categoria">Categoria</label>
-          <select name="categoria" id="categoria" required aria-required="true">
-            <option value="reuniao">Reunião</option>
-            <option value="evento">Evento</option>
-            <option value="compromisso">Compromisso</option>
-            <option value="lembrete">Lembrete</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Cor -->
-      <div class="input-icon">
-        <label for="cor">Cor do Evento</label>
-        <div class="color-picker-container">
-          <input type="color" name="cor" id="cor" value="#ff0000" required aria-required="true">
-          <span>Escolha uma cor para identificar o evento</span>
-        </div>
-      </div>
-
-      <!-- Enviar por e-mail -->
-      <div class="input-icon">
-        <label for="enviar-email">
-          <input type="checkbox" name="enviar_email" id="enviar-email"> 
-          Enviar notificação por e-mail
-        </label>
-      </div>
-
-      <!-- E-mail do destinatário -->
-      <div class="input-icon" id="email-field">
-        <label for="email_destinatario">E-mail do Destinatário</label>
-        <select name="email_destinatario" id="email-destinatario">
-          <option value="">Selecione ou digite um e-mail</option>
-          <option value="admin@empresa.com">admin@empresa.com</option>
-          <option value="gestor@empresa.com">gestor@empresa.com</option>
-        </select>
-        <input type="email" name="email_destinatario" id="email-destinatario-input" placeholder="Digite o e-mail" style="margin-top: 0.5rem;">
-      </div>
-
-      <!-- Salvar e-mail para eventos futuros -->
-      <div class="input-icon" id="salvar-email-field">
-        <label>
-          <input type="checkbox" name="salvar_email" id="salvar-email">
-          Salvar este e-mail para eventos futuros
-        </label>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" id="submit-btn">
-          <i class="fas fa-check-circle"></i> Adicionar Evento
-        </button>
-        
-        <button type="button" id="toggle-category-form">
-          <i class="fas fa-tags"></i> Adicionar Nova Categoria
-        </button>
-        
-        <button type="button" class="cancel-btn" id="cancel-btn" style="display: none;">
-          <i class="fas fa-times"></i> Cancelar
-        </button>
-      </div>
-    </form>
-
-    <form id="add-category-form" method="POST">
-      <input type="hidden" name="action" value="add_category">
-      <div class="input-icon">
-        <label for="new_category">Nova Categoria:</label>
-        <input class="input-category" type="text" name="new_category" id="new_category" placeholder="Digite o nome da categoria">
-      </div>
-      <button type="submit">
-        <i class="fas fa-plus"></i> Adicionar Categoria
-      </button>
-    </form>
-  </div>
-
-  <!-- Calendário -->
-  <div class="calendar-container">
-    <div class="calendar-header">
-      <button id="prev-month" data-url="#" aria-label="Mês anterior">
-        <i class="fas fa-chevron-left"></i> Anterior
-      </button>
-      <h2 id="month-year" aria-live="polite">
-        <i class="fas fa-calendar-alt"></i> Janeiro 2024
-      </h2>
-      <button id="next-month" data-url="#" aria-label="Próximo mês">
-        Próximo <i class="fas fa-chevron-right"></i>
-      </button>
-    </div>
-    
-    <div class="calendar-weekdays">
-      <div>Dom</div>
-      <div>Seg</div>
-      <div>Ter</div>
-      <div>Qua</div>
-      <div>Qui</div>
-      <div>Sex</div>
-      <div>Sáb</div>
-    </div>
-    
-    <div class="calendar-day-grid">
-      <!-- Exemplo de dias do calendário -->
-      <div class="day-cell">
-        <div class="day-number">1</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">2</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">3</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">4</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">5</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">6</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">7</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">8</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">9</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">10</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">11</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">12</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">13</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">14</div>
-      </div>
-      <div class="day-cell selected-day">
-        <div class="day-number">15</div>
-        <div class="evento">Reunião Importante</div>
-        <div class="evento" style="background: var(--success-gradient);">Workshop</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">16</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">17</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">18</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">19</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">20</div>
-        <div class="evento" style="background: var(--warning-gradient);">Apresentação</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">21</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">22</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">23</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">24</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">25</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">26</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">27</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">28</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">29</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">30</div>
-      </div>
-      <div class="day-cell">
-        <div class="day-number">31</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Eventos do Dia -->
-  <div class="daily-events-preview">
-    <h3>
-      <i class="fas fa-calendar-day"></i>
-      Eventos do Dia 15/01/2024
-    </h3>
-
-    <div class="daily-event">
-      <div class="event-color-bar" style="background: var(--danger-gradient);"></div>
-      <div class="daily-event-content">
-        <div class="daily-event-info">
-          <div class="event-title">
-            <i class="fas fa-calendar-alt event-icon"></i>
-            <strong>Reunião Importante</strong>
-          </div>
-
-          <div class="event-category">
-            <i class="fas fa-tags event-icon"></i>
-            <small>Reunião</small>
-          </div>
-
-          <div class="event-time">
-            <i class="fas fa-clock event-icon"></i>
-            <small>Agendado para 14:30 HR</small>
-          </div>
-
-          <div class="event-description">
-            <i class="fas fa-info-circle event-icon"></i>
-            <small>Discussão sobre o projeto Q1 2024</small>
-          </div>
-        </div>
-
-        <div class="daily-event-menu">
-          <i class="fas fa-ellipsis-v menu-icon"></i>
-          <div class="dropdown-menu">
-            <a href="#" class="edit-link" data-id="1">
-              <i class="fas fa-edit"></i> Editar
-            </a>
-            <a href="#" class="delete-link" data-id="1">
-              <i class="fas fa-trash"></i> Excluir
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="daily-event">
-      <div class="event-color-bar" style="background: var(--success-gradient);"></div>
-      <div class="daily-event-content">
-        <div class="daily-event-info">
-          <div class="event-title">
-            <i class="fas fa-calendar-alt event-icon"></i>
-            <strong>Workshop de Desenvolvimento</strong>
-          </div>
-
-          <div class="event-category">
-            <i class="fas fa-tags event-icon"></i>
-            <small>Evento</small>
-          </div>
-
-          <div class="event-time">
-            <i class="fas fa-clock event-icon"></i>
-            <small>Agendado para 16:00 HR</small>
-          </div>
-
-          <div class="event-description">
-            <i class="fas fa-info-circle event-icon"></i>
-            <small>Workshop sobre novas tecnologias</small>
-          </div>
-        </div>
-
-        <div class="daily-event-menu">
-          <i class="fas fa-ellipsis-v menu-icon"></i>
-          <div class="dropdown-menu">
-            <a href="#" class="edit-link" data-id="2">
-              <i class="fas fa-edit"></i> Editar
-            </a>
-            <a href="#" class="delete-link" data-id="2">
-              <i class="fas fa-trash"></i> Excluir
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-</div>
-
-<script>
-// JavaScript para funcionalidades básicas
-document.addEventListener('DOMContentLoaded', function() {
-    // Toggle do formulário de categoria
-    const toggleCategoryBtn = document.getElementById('toggle-category-form');
-    const categoryForm = document.getElementById('add-category-form');
-    
-    toggleCategoryBtn.addEventListener('click', function() {
-        if (categoryForm.style.display === 'none' || categoryForm.style.display === '') {
-            categoryForm.style.display = 'block';
-            this.innerHTML = '<i class="fas fa-times"></i> Cancelar';
-        } else {
-            categoryForm.style.display = 'none';
-            this.innerHTML = '<i class="fas fa-tags"></i> Adicionar Nova Categoria';
-        }
-    });
-
-    // Navegação do calendário
-    const prevBtn = document.getElementById('prev-month');
-    const nextBtn = document.getElementById('next-month');
-    
-    prevBtn.addEventListener('click', function() {
-        console.log('Navegando para mês anterior');
-    });
-    
-    nextBtn.addEventListener('click', function() {
-        console.log('Navegando para próximo mês');
-    });
-
-    // Seleção de dias
-    const dayCells = document.querySelectorAll('.day-cell');
-    dayCells.forEach(cell => {
-        cell.addEventListener('click', function() {
-            // Remove seleção anterior
-            document.querySelectorAll('.selected-day').forEach(day => {
-                day.classList.remove('selected-day');
+    <script>
+        function switchTab(event, tabName) {
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                const button = tab.querySelector('.tab-button');
+                button.setAttribute('aria-selected', 'false');
             });
-            // Adiciona seleção atual
-            this.classList.add('selected-day');
-            
-            const dayNumber = this.querySelector('.day-number').textContent;
-            console.log('Dia selecionado:', dayNumber);
-        });
-    });
 
-    // Modal de notificações
-    const modal = document.getElementById('notificationModal');
-    const closeBtn = modal.querySelector('.close');
-    
-    closeBtn.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
+            // Remove active class from all tab content panels
+            const tabContents = document.querySelectorAll('.tab-content-panel');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
 
-    // Fechar modal clicando fora
-    window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
+            // Add loading state to clicked tab
+            const clickedTab = event.currentTarget.closest('.tab');
+            clickedTab.classList.add('loading');
+
+            // Simulate loading time
+            setTimeout(() => {
+                // Remove loading and add active class to clicked tab
+                clickedTab.classList.remove('loading');
+                clickedTab.classList.add('active');
+                event.currentTarget.setAttribute('aria-selected', 'true');
+
+                // Show corresponding content
+                document.getElementById(tabName).classList.add('active');
+            }, 500);
         }
-    });
 
-    // Submissão do formulário
-    const eventForm = document.getElementById('event-form');
-    eventForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        console.log('Evento adicionado!');
-        
-        // Simular sucesso
-        const messagesDiv = document.getElementById('messages');
-        messagesDiv.innerHTML = `
-            <div class="msg msg-success">
-                <i class="fas fa-check-circle"></i>
-                Evento adicionado com sucesso!
-            </div>
-        `;
-        
-        // Limpar formulário
-        this.reset();
-    });
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.target.matches('.tab-button')) {
+                const tabs = Array.from(document.querySelectorAll('.tab-button'));
+                const currentIndex = tabs.indexOf(event.target);
+                let nextIndex;
 
-    // Ações dos eventos
-    document.querySelectorAll('.edit-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const eventId = this.dataset.id;
-            console.log('Editando evento:', eventId);
-        });
-    });
-
-    document.querySelectorAll('.delete-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const eventId = this.dataset.id;
-            if (confirm('Tem certeza que deseja excluir este evento?')) {
-                console.log('Excluindo evento:', eventId);
+                switch (event.key) {
+                    case 'ArrowLeft':
+                        nextIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1;
+                        tabs[nextIndex].focus();
+                        event.preventDefault();
+                        break;
+                    case 'ArrowRight':
+                        nextIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
+                        tabs[nextIndex].focus();
+                        event.preventDefault();
+                        break;
+                    case 'Home':
+                        tabs[0].focus();
+                        event.preventDefault();
+                        break;
+                    case 'End':
+                        tabs[tabs.length - 1].focus();
+                        event.preventDefault();
+                        break;
+                }
             }
         });
-    });
-});
-</script>
-
+    </script>
 </body>
 </html>

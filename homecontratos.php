@@ -231,58 +231,56 @@
 
 <body class="caderno">
    
- <div class="tabs">
-    <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
-        <i class="fas fa-plus-circle"></i>
-        <div class="tab-content">
-            <p class="tab-title">Cadastro</p>
-            <p class="tab-description">Cadastramento de Contratos</p>
+ 
+        <div class="tabs">
+            <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
+                <i class="fas fa-plus-circle"></i>
+                <div class="tab-content">
+                    <p class="tab-title">Cadastro</p>
+                    <p class="tab-description">Cadastramento de Contratos</p>
+                </div>
+            </div>
+
+            <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
+                <i class="fas fa-search"></i>
+                <div class="tab-content">
+                    <p class="tab-title">Consultar</p>
+                    <p class="tab-description">Consultar Contratos</p>
+                </div>
+            </div>
+
+            <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
+                <i class="fas fa-edit"></i>
+                <div class="tab-content">
+                    <p class="tab-title">Pagamentos</p>
+                    <p class="tab-description">Gerenciar Pagamentos</p>
+                </div>
+            </div>
+
+            <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
+                <i class="fas fa-money-check-alt"></i>
+                <div class="tab-content">
+                    <p class="tab-title">Prestação</p>
+                    <p class="tab-description">Prestação de Contas</p>
+                </div>
+            </div>
+
+            <div class="tab" data-tab="andamento" onclick="showTab('andamento')">
+                <i class="fas fa-sync-alt"></i>
+                <div class="tab-content">
+                    <p class="tab-title">Andamento</p>
+                    <p class="tab-description">Andamento dos Contratos</p>
+                </div>
+            </div>
+
+            <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
+                <i class="fas fa-file-alt"></i>
+                <div class="tab-content">
+                    <p class="tab-title">Relatórios</p>
+                    <p class="tab-description">Relatórios de Contratos</p>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div class="tab" data-tab="consultar" onclick="showTab('consultar')">
-        <i class="fas fa-search"></i>
-        <div class="tab-content">
-            <p class="tab-title">Consultar</p>
-            <p class="tab-description">Consultar Contratos</p>
-        </div>
-    </div>
-
-    <div class="tab" data-tab="gerenciar" onclick="showTab('gerenciar')">
-        <i class="fas fa-edit"></i>
-        <div class="tab-content">
-            <p class="tab-title">Pagamentos</p>
-            <p class="tab-description">Gerenciar Pagamentos</p>
-        </div>
-    </div>
-
-    <div class="tab" data-tab="prestacao" onclick="showTab('prestacao')">
-    <i class="fas fa-money-check-alt"></i>
-    <div class="tab-content">
-        <p class="tab-title">Prestação</p>
-        <p class="tab-description">Prestação de Contas</p>
-    </div>
-</div>
-
-      <!-- Tab Andamento -->
-    <div class="tab" data-tab="andamento" onclick="showTab('andamento')">
-        <i class="fas fa-sync-alt"></i> <!-- Ícone de andamento -->
-        <div class="tab-content">
-            <p class="tab-title">Andamento</p>
-            <p class="tab-description">Andamento dos Contratos</p>
-        </div>
-    </div>
-
-
-    <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
-        <i class="fas fa-file-alt"></i>
-        <div class="tab-content">
-            <p class="tab-title">Relatórios</p>
-            <p class="tab-description">Relatórios de Contratos</p>
-        </div>
-    </div>
- </div> <!-- <div class="tab" data-tab="galeria" onclick="showTab('galeria')"><i class="fas fa-image"></i> Galeria</div> -->
-
 
 
 

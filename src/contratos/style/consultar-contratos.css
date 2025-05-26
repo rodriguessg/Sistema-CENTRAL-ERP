@@ -1,655 +1,734 @@
-/* Container da Tabela */
-.table-container-contratos {
-    width: 100%;
-    margin-top: 30px;
-    overflow-x: auto;
-    border-radius: 10px; /* Border-radius no container */
-    background: none; /* Removendo o fundo */
+/* Variáveis CSS para o tema - Mantendo consistência */
+:root {
+  --primary-gradient: linear-gradient(90deg, #192844 67.81%, #472774 100%);
+  --secondary-gradient: linear-gradient(135deg, #472774 0%, #6a4c93 100%);
+  --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+  --primary-color: #192844;
+  --secondary-color: #472774;
+  --accent-color: #667eea;
+  --text-dark: #2d3748;
+  --text-light: #718096;
+  --bg-light: #f7fafc;
+  --bg-white: #ffffff;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+  --shadow-glow: 0 0 30px rgba(71, 39, 116, 0.3);
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.table tr {
-    border-color: inherit !important;
-    border-style: solid !important;
-    border-width: 2px !important;
+/* Utilitário para texto truncado */
+.truncated-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
 }
 
-/* Cabeçalho da Tabela */
-.table th {
-    background: #3f51b5; /* Cor de fundo no cabeçalho */
-    padding: 15px;
-    text-align: left;
-    font-weight: 600;
-    color: white; /* Cor do texto no cabeçalho */
-    border-bottom: 2px solid var(--medium-gray);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    font-size: 1rem;
-    text-align: center; /* Garantir que o texto no cabeçalho esteja centralizado */
-}
-
-/* Cor de fundo no cabeçalho */
-.table thead th {
-    background: linear-gradient(90deg, rgba(25, 40, 68, 0.05) 0%, rgba(71, 39, 116, 0.05) 100%);
-    padding: 15px;
-    text-align: left;
-    font-weight: 600;
-    color: #472774; /* Cor do texto no cabeçalho */
-    border-bottom: 2px solid var(--medium-gray);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    font-size: 1rem;
-    text-align: center; /* Garantir que o texto no cabeçalho esteja centralizado */
-}
-
-/* Tabela */
-.table-container-contratos table {
-    width: 100%;
-    border-collapse: collapse; /* Elimina as bordas internas */
-    background: none; /* Removendo o fundo */
-    border-radius: 0 0 10px 10px; /* Arredondando o fundo da tabela */
-    margin: 0;
-    text-align: center;
-}
-
-/* Estilo para as células */
-.table-container-contratos th,
-.table-container-contratos td {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
-    padding: 10px;
-    text-align: center; /* Alinhamento central para todas as células */
-    border-bottom: 1px solid #ddd; /* Borda horizontal */
-    border-left: none;  /* Remover borda esquerda */
-    border-right: none; /* Remover borda direita */
-    background: none; /* Removendo fundo */
-}
-
-/* Linhas alternadas removidas */
-tr:nth-child(even) {
-    background-color: transparent;
-}
-
-tr:hover {
-    background-color: #f1f1f1;
-    transition: background-color 0.3s ease;
-}
-
-/* Estilo para os ícones nas células de cabeçalho */
-.table-container-contratos th i {
-    margin-right: 8px; /* Espaço entre ícone e texto */
-    font-size: 1.2rem;
-    color: #472774; /* Cor do ícone */
-}
-
-/* Estilo para o status */
-.status.ativo {
-    background-color: #4caf50; /* Verde para ativo */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: inline-flex;
-    align-items: center;
-}
-
-.status.encerrado {
-    background-color: #f44336; /* Vermelho para encerrado */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: inline-flex;
-    align-items: center;
-}
-
-.status.renovado {
-    background-color: #00bcd4; /* Azul para renovado */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: inline-flex;
-    align-items: center;
-}
-
-.status.inativo {
-    background-color: #9e9e9e; /* Cinza para inativo */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: inline-flex;
-    align-items: center;
-}
-
-/* Ícones de Status */
-.status i {
-    margin-right: 5px; /* Espaço entre o ícone e o texto */
-}
-
-/* Botões de Ações */
-.btn-action {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem;
-    margin: 0 5px;
-    transition: color 0.3s ease;
-}
-
-/* Estilo do título com ícone e fundo gradient */
+/* Título da tabela aprimorado */
 .titulo-tabela {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--dark-blue);
-    padding: 15px;
-    position: relative; /* Para garantir que o ícone e o texto fiquem no mesmo nível */
-    background: linear-gradient(90deg, #192844 67.81%, #472774 100%);
-    border-radius: 10px 10px 0 0; /* Arredondar o topo esquerdo e direito */
-    display: flex;
-    align-items: center;
-    margin: 0;
-    color: white;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: white;
+  padding: 1rem 1.25rem;
+  background: var(--primary-gradient);
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
 }
 
-/* Ícone do título */
+.titulo-tabela::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 25px 25px;
+  animation: titleParticles 15s linear infinite;
+}
+
+@keyframes titleParticles {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-25px) rotate(180deg);
+  }
+}
+
 .titulo-tabela i {
-    margin-right: 10px; /* Espaço entre o ícone e o texto */
-    font-size: 1.3rem; /* Tamanho do ícone */
-    color: white; /* Cor do ícone */
+  margin-right: 0.75rem;
+  font-size: 1.25rem;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem;
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  z-index: 2;
+  position: relative;
 }
 
-
-
-
-/* Media Queries para Responsividade */
-@media (max-width: 1024px) {
-    .table-container-contratos th,
-    .table-container-contratos td {
-        font-size: 0.9rem;
-        padding: 8px;
-    }
-
-    /* Ajuste para botões de ação em telas médias */
-    .btn-action {
-        font-size: 1.1rem;
-    }
+/* Container da tabela aprimorado */
+.table-container-contratos {
+  width: 100%;
+  margin-top: 1.5rem;
+  overflow: hidden;
+  border-radius: var(--border-radius);
+  background: var(--bg-white);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  position: relative;
 }
 
-@media (max-width: 768px) {
-    .table-container-contratos th,
-    .table-container-contratos td {
-        font-size: 0.85rem;
-        padding: 6px;
-    }
-
-    /* Ajuste de layout para telas menores */
-    .table-container-contratos {
-        overflow-x: scroll;
-    }
-
-    /* Ajuste para botões de ação em telas pequenas */
-    .btn-action {
-        font-size: 1rem;
-    }
+/* Tabela principal */
+.table-container-contratos table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-white);
+  margin: 0;
+  text-align: center;
+  font-size: 0.875rem;
 }
 
-@media (max-width: 480px) {
-    .table-container-contratos th,
-    .table-container-contratos td {
-        font-size: 0.8rem;
-        padding: 5px;
-    }
-
-    /* Ajusta o layout para telas muito pequenas */
-    .table-container-contratos {
-        overflow-x: scroll;
-    }
+/* Cabeçalho da tabela aprimorado */
+.table thead th {
+  background: var(--glass-gradient);
+  padding: 1rem 0.75rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-size: 0.875rem;
+  backdrop-filter: blur(10px);
+  border-right: 1px solid var(--border-color);
 }
 
+.table thead th:last-child {
+  border-right: none;
+}
 
-.input-group-contratos label, .email-group label {
+.table thead th i {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  color: var(--primary-color);
+}
+
+/* Células da tabela */
+.table-container-contratos td {
+  font-family: "Inter", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.875rem 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  background: var(--bg-white);
+  transition: var(--transition);
+}
+
+.table-container-contratos td:last-child {
+  border-right: none;
+}
+
+/* Efeito hover nas linhas */
+.table-container-contratos tr:hover td {
+  background-color: var(--bg-light);
+  transform: scale(1.01);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Status badges aprimorados */
+.status {
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.status.ativo,
+.Ativo {
+  background: var(--success-gradient);
+  color: white;
+}
+
+.status.encerrado,
+.Encerrado {
+  background: var(--danger-gradient);
+  color: white;
+}
+
+.status.renovado,
+.Renovado {
+  background: var(--accent-gradient);
+  color: white;
+}
+
+.status.inativo,
+.Inativo {
+  background: linear-gradient(135deg, #9e9e9e, #757575);
+  color: white;
+}
+
+.Desconhecido {
+  background: linear-gradient(135deg, #f1f1f1, #e0e0e0);
+  color: var(--text-dark);
+}
+
+.status i {
+  margin-right: 0.375rem;
+  font-size: 0.75rem;
+}
+
+/* Botões de ação aprimorados */
+.btn-action,
+.btn-info,
+.btn-primary,
+.btn-warning {
+  background: var(--glass-gradient);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  font-size: 1rem;
+  margin: 0 0.25rem;
+  transition: var(--transition);
+  border-radius: 50%;
+  padding: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  position: relative;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-info {
+  background: var(--success-gradient);
+  color: white;
+  border-color: transparent;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: white;
+  border-color: transparent;
+}
+
+.btn-warning {
+  background: var(--danger-gradient);
+  color: white;
+  border-color: transparent;
+}
+
+.btn-action:hover,
+.btn-info:hover,
+.btn-primary:hover,
+.btn-warning:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-action i,
+.btn-info i,
+.btn-primary i,
+.btn-warning i {
+  font-size: 0.875rem;
+  color: inherit;
+}
+
+/* Tooltip para botões */
+.btn-action span,
+.btn-info span,
+.btn-primary span,
+.btn-warning span {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-dark);
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  transition: var(--transition);
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-action:hover span,
+.btn-info:hover span,
+.btn-primary:hover span,
+.btn-warning:hover span {
+  opacity: 1;
+  visibility: visible;
+  bottom: -40px;
+}
+
+/* Barra de pesquisa aprimorada */
+.search-bar {
+  margin-bottom: 1.5rem;
+  margin-top: 1.25rem;
+  background: var(--bg-white);
+  border-radius: var(--border-radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.search-bar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent-gradient);
+}
+
+.search-filters {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+#searchInput {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  box-sizing: border-box;
+  width: 100%;
+  height: 40px;
+  transition: var(--transition);
+  background: var(--bg-white);
+}
+
+#searchInput:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(25, 40, 68, 0.1);
+}
+
+#statusSelect {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background: var(--bg-white);
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23192844' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  width: 180px;
+  height: 40px;
+  transition: var(--transition);
+}
+
+#statusSelect:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(25, 40, 68, 0.1);
+}
+
+.btn-filters {
+  padding: 0.75rem 1.25rem;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--transition);
+  height: 40px;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-filters:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Títulos aprimorados */
+h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+h2 .icon-before {
+  margin-right: 0.75rem;
+  color: var(--primary-color);
+  font-size: 1.25rem;
+}
+
+.consultar-subtitulo {
+  font-size: 1rem;
+  color: var(--text-light);
+  margin-top: 0.75rem;
+  position: relative;
+  font-weight: 500;
+}
+
+.consultar-subtitulo::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--accent-gradient);
+  border-radius: 1px;
+}
+
+.icon-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-dark);
+}
+
+.icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  background: var(--primary-gradient);
+  border-radius: 50%;
+  color: white;
+  font-size: 1rem;
+  box-shadow: var(--shadow-md);
+}
+
+/* Grupos de input aprimorados */
+.input-group-contratos,
+.email-group {
+  margin-bottom: 1rem;
+}
+
+.input-group-contratos label,
+.email-group label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  font-size: 0.875rem;
 }
+
 .input-group-contratos select,
 .input-group-contratos input,
 .email-group select,
 .email-group input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  padding: 0.75rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.875rem;
+  transition: var(--transition);
+  background: var(--bg-white);
 }
 
+.input-group-contratos select:focus,
+.input-group-contratos input:focus,
+.email-group select:focus,
+.email-group input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(25, 40, 68, 0.1);
+}
 
 #agendamento-container {
-  margin-top: 20px;
-  border-top: 1px solid #ddd;
-  padding-top: 20px;
+  margin-top: 1.25rem;
+  border-top: 2px solid var(--border-color);
+  padding-top: 1.25rem;
 }
+
 #agendamento-container label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  font-size: 0.875rem;
 }
+
 #agendamento-container select,
 #agendamento-container input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  margin-bottom: 10px;
+  padding: 0.75rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+  transition: var(--transition);
+  background: var(--bg-white);
 }
 
-
-
-
-/* Remover o fundo e borda dos botões */
-button {
-  display: flex;
-  align-items: center; /* Alinha o ícone e o texto */
-  justify-content: center;
-  padding: 8px 16px;
-  font-size: 14px;
-  border-radius: 50%; /* Faz os botões ficarem circulares */
-  transition: all 0.3s ease;
-  cursor: pointer;
-  position: relative;
+#agendamento-container select:focus,
+#agendamento-container input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(25, 40, 68, 0.1);
 }
 
-/* Esconde o texto do botão */
-button span {
-  opacity: 0;
-  visibility: hidden;
-  position: absolute;
-  bottom: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-/* Mostra o texto quando passa o mouse */
-button:hover span {
-  opacity: 1;
-  visibility: visible;
-  bottom: -30px; /* Ajusta a posição do texto ao passar o mouse */
-}
-
-/* Estilo dos ícones */
-button i {
-  font-size: 18px;
-}
-
-/* Efeito de hover para os ícones */
-button:hover i {
-  transform: scale(1.1); /* Leve aumento do ícone ao passar o mouse */
-}
-
-/* Estilo para o botão de Visualizar */
-.btn-info:hover {
-  color: #17a2b8 !important; /* Cor do ícone no hover forçando com !important */
-}
-
-/* Estilo para o botão de Relatório */
-.btn-primary:hover {
-  color: #007bff !important; /* Cor do ícone no hover forçando com !important */
-}
-
-/* Estilo para o botão de Editar processo */
-.btn-success:hover {
-  color: #28a745 !important; /* Cor do ícone no hover forçando com !important */
-}
-
-/* Barra de Pesquisa */
-.search-bar {
-    margin-bottom: 25px;
-    margin-top: 20px;
-    background-color: white;
-    border-radius: 5px;  /* Bordas arredondadas ajustadas */
-    padding: 12px 20px; /* Menos padding */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap; /* Adiciona quebra de linha quando necessário */
-}
-
-/* Filtros */
-.search-filters {
-    display: flex;
-    gap: 10px; /* Menos espaço entre os elementos */
-    align-items: center;
-    width: 100%;
-    flex-wrap: wrap;
-}
-
-/* Estilo para o input com ID searchInput (ajustado) */
-#searchInput {
-    flex: 1;  /* Deixa o input maior em relação ao select */
-    padding: 12px 15px; /* Ajuste de padding para alinhar com select */
-    font-size: 1rem;  /* Tamanho da fonte ajustado */
-    border: 1px solid #ccc;
-    border-radius: 5px;  /* Bordas arredondadas ajustadas */
-    box-sizing: border-box;
-    width: 100%; /* Garante que ocupe a largura disponível */
-    height: 40px; /* Altura ajustada */
-}
-
-/* Estilo para o select com ID (ajustado) */
-#statusSelect {
-    padding: 8px 15px; /* Ajuste de padding para alinhar com input */
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;  /* Bordas arredondadas ajustadas */
-    background-color: white;
-    appearance: none;
-    padding-right: 25px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23343a40' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    width: 200px;  /* Largura fixa para o select */
-    height: 40px;  /* Altura ajustada */
-}
-
-#statusSelect:focus {
-    border-color: #00bcd4;
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 188, 212, 0.2);
-}
-
-/* Botão Filtros Avançados */
-.btn-filters {
-    padding: 12px 20px; /* Ajuste de padding para alinhar */
-    background: linear-gradient(90deg, #192844 67.81%, #472774 100%);
-    color: white;
-    border: none;
-    border-radius: 5px;  /* Bordas arredondadas ajustadas */
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    height: 40px;  /* Altura ajustada */
-}
-
-.btn-filters:hover {
-    background: linear-gradient(135deg, #00bcd4, #ff80c0);  /* Efeito hover */
-}
-
-/* Media Queries para Responsividade */
-@media (max-width: 1024px) {
-    /* Ajuste para tablets e telas de 1024px de largura */
-    .search-bar {
-        padding: 15px; /* Padding maior para telas médias */
-        flex-direction: column; /* Empilha os itens */
-    }
-
-    .search-filters {
-        flex-direction: column; /* Coloca cada elemento em uma linha */
-        gap: 15px;
-    }
-
-    #searchInput, #statusSelect {
-        width: 100%; /* Input e select ocupando toda a largura disponível */
-    }
-
-    .btn-filters {
-        width: 100%; /* O botão ocupa toda a largura */
-        margin-top: 10px;
-    }
-}
-
-@media (max-width: 768px) {
-    /* Ajuste para telas menores, como tablets e smartphones */
-    .search-bar {
-        padding: 10px 15px; /* Menos padding em telas menores */
-        flex-direction: column; /* Empilha os itens */
-    }
-
-    .search-filters {
-        flex-direction: column; /* Coloca cada elemento em uma linha */
-        gap: 10px;
-    }
-
-    #searchInput, #statusSelect {
-        width: 100%; /* Input e select ocupando toda a largura disponível */
-    }
-
-    .btn-filters {
-        width: 100%; /* O botão ocupa toda a largura */
-        margin-top: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    /* Ajuste para telas muito pequenas, como smartphones */
-    #searchInput {
-        padding: 10px 12px; /* Menos padding em telas menores */
-    }
-
-    #statusSelect {
-        padding: 10px 15px; /* Menos padding */
-    }
-
-    .btn-filters {
-        padding: 10px 15px; /* Ajuste no padding */
-    }
-}
-
-/* Título com ícone */
-h2 {
-    font-size: 1.5rem; /* Ajuste do tamanho da fonte */
-    font-weight: bold;
-    color: #333; /* Cor do texto */
-    margin-top: 30px;
-    display: flex; /* Alinha o ícone e o texto na horizontal */
-    align-items: center; /* Alinha verticalmente o ícone com o texto */
-}
-
-/* Ícone antes do título */
-h2 .icon-before {
-    margin-right: 10px; /* Espaço entre o ícone e o texto */
-    color:#273051; /* Cor do ícone */
-}
-
-/* Subtítulo com classe específica */
-.consultar-subtitulo {
-     font-size: 1.2rem;
-    color: #666; /* Cor do texto do subtítulo */
-    margin-top: 10px;
-    position: relative; /* Necessário para o efeito "before" */
-}
-
-
-/* Adiciona uma linha abaixo do subtítulo com a classe específica */
-.consultar-subtitulo::after {
-   content: "";
-    position: absolute;
-    bottom: -15px;
-    left: 0px;
-    width: 100px;
-    height: 2px;
-    background: linear-gradient(135deg, #00bcd4, #ff4081);
-}
-
-
-/* Estilo para o título h2 com ícone e sublinhado */
-.icon-title {
-  font-size: 24px;
-  font-weight: bold;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px; /* Espaçamento entre o ícone e o texto */
-  color: #333; /* Cor do texto */
-}
-
-/* Estilo para o círculo do ícone */
-.icon-circle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px; /* Tamanho do círculo */
-  height: 40px; /* Tamanho do círculo */
-  background-color: black; /* Cor de fundo do círculo */
-  border-radius: 50%; /* Deixa o fundo circular */
-  color: white; /* Cor do ícone dentro do círculo */
-  font-size: 18px; /* Tamanho do ícone */
-}
-
-/* Estilo para o sublinhado (before) */
-.icon-title::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 2px;
-  background-color: rgba(0, 0, 0, 0.1); /* Cor preta clara */
-}
-
-
-/* Estilos para os status */
-.ativo {
-  font-weight: bold;
-  color: green; /* Cor verde para ativo */
-}
-
-.inativo {
-  font-weight: bold;
-  color: red; /* Cor vermelha para inativo */
-}
-
-/* Estilo do ícone */
-.fas.fa-arrow-up, .fas.fa-arrow-down,.fa-ban, .fa-sync-alt {
-  margin-right: 5px; /* Espaçamento entre o ícone e o texto */
-}
-
-
-/* Estilo para a validade */
+/* Estados de validade */
 .valid {
-  font-weight: bold;
-  color: green; /* Verde para data válida */
+  font-weight: 600;
+  color: #22c55e;
 }
 
 .approaching {
-  font-weight: bold;
-  color: orange; /* Laranja para data próxima de expirar */
+  font-weight: 600;
+  color: #f59e0b;
 }
 
 .expired {
-  font-weight: bold;
-  color: red; /* Vermelho para data expirada */
+  font-weight: 600;
+  color: #ef4444;
 }
 
-.fas.fa-check-circle, .fas.fa-exclamation-circle, .fas.fa-times-circle {
-  margin-right: 5px; /* Espaçamento entre o ícone e o texto */
+.ativo {
+  font-weight: 600;
+  color: #22c55e;
 }
 
-
-
-/* Botões de Ação */
-.btn-info,
-.btn-primary,
-.btn-warning {
-    background-color: transparent !important;
-    border: none !important;
-    cursor: pointer !important;
-    font-size: 1.2rem !important;
-    margin: 0 5px !important;
-    transition: background-color 0.3s ease !important;
-    border-radius: 50% !important; /* Garantir bordas arredondadas (botões circulares) */
-    padding: 12px !important; /* Ajuste de padding para garantir círculo perfeito */
-    display: inline-flex !important;
-    align-items: center !important; /* Alinha o ícone e texto */
-    justify-content: center !important; /* Garante que o ícone fique centralizado */
-    width: 40px !important; /* Define uma largura fixa */
-    height: 40px !important; /* Define uma altura fixa para manter o formato circular */
+.inativo {
+  font-weight: 600;
+  color: #ef4444;
 }
 
-/* Estilo do botão "Visualizar" (btn-info) */
-.btn-info {
-    background-color: #00bcd4 !important; /* Azul claro */
-    color: white !important;
+.fas.fa-check-circle,
+.fas.fa-exclamation-circle,
+.fas.fa-times-circle,
+.fas.fa-arrow-up,
+.fas.fa-arrow-down,
+.fa-ban,
+.fa-sync-alt {
+  margin-right: 0.375rem;
 }
 
-.btn-info:hover {
-    background-color:#472774  !important; /* Azul escuro */
+/* Responsividade aprimorada */
+@media (max-width: 1024px) {
+  .table-container-contratos th,
+  .table-container-contratos td {
+    font-size: 0.8rem;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .btn-action,
+  .btn-info,
+  .btn-primary,
+  .btn-warning {
+    width: 28px;
+    height: 28px;
+    font-size: 0.875rem;
+  }
+
+  .search-bar {
+    padding: 1rem;
+  }
+
+  .search-filters {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  #searchInput,
+  #statusSelect {
+    width: 100%;
+  }
+
+  .btn-filters {
+    width: 100%;
+  }
 }
 
-/* Estilo do botão "Relatório" (btn-primary) */
-.btn-primary {
-    background-color: #472774 !important; /* Cor de fundo pink */
-    color: white !important;
+@media (max-width: 768px) {
+  .table-container-contratos {
+    overflow-x: auto;
+  }
+
+  .table-container-contratos th,
+  .table-container-contratos td {
+    font-size: 0.75rem;
+    padding: 0.625rem 0.375rem;
+    min-width: 100px;
+  }
+
+  .titulo-tabela {
+    font-size: 1rem;
+    padding: 0.875rem 1rem;
+  }
+
+  .titulo-tabela i {
+    font-size: 1rem;
+    padding: 0.375rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  .icon-circle {
+    width: 30px;
+    height: 30px;
+    font-size: 0.875rem;
+  }
 }
 
-.btn-primary:hover {
-    background-color: #ff1c56 !important; /* Cor mais forte de pink */
+@media (max-width: 480px) {
+  .table-container-contratos th,
+  .table-container-contratos td {
+    font-size: 0.7rem;
+    padding: 0.5rem 0.25rem;
+    min-width: 80px;
+  }
+
+  .btn-action,
+  .btn-info,
+  .btn-primary,
+  .btn-warning {
+    width: 24px;
+    height: 24px;
+    margin: 0 0.125rem;
+  }
+
+  .btn-action i,
+  .btn-info i,
+  .btn-primary i,
+  .btn-warning i {
+    font-size: 0.75rem;
+  }
+
+  .status {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .search-bar {
+    padding: 0.75rem;
+  }
+
+  .titulo-tabela {
+    font-size: 0.95rem;
+    padding: 0.75rem;
+  }
 }
 
-/* Estilo do botão "Editar" (btn-warning) */
-.btn-warning {
-    background-color: #dc3545 !important; /* Vermelho */
-    color: white !important;
+/* Animações de entrada */
+.table-container-contratos {
+  animation: tableSlideIn 0.6s ease-out;
 }
 
-.btn-warning:hover {
-    background-color: #00bcd4 !important; /* Vermelho mais forte */
+@keyframes tableSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Tamanho do ícone nos botões */
-.btn-info i,
-.btn-primary i,
-.btn-warning i {
-    font-size: 1.3rem !important; /* Tamanho do ícone */
-    color: white !important; /* Cor do ícone */
-    margin-right: 0 !important; /* Removendo o espaço entre ícone e texto */
+.search-bar {
+  animation: searchSlideIn 0.4s ease-out;
 }
 
-
-/* Estilos gerais para a célula de status */
-.status {
-    font-weight: bold;
-    display: inline-flex; /* Faz com que o fundo se ajuste ao tamanho do conteúdo */
-    align-items: center; /* Alinha o texto verticalmente */
-    justify-content: center; /* Centraliza o texto horizontalmente */
-    padding: 5px 10px; /* Ajusta o padding ao redor do texto */
-    border-radius: 15px; /* Aplica as bordas arredondadas */
-    background-clip: padding-box; /* Garante que o fundo se ajuste ao padding */
+@keyframes searchSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Estilos para "Ativo" */
-.Ativo {
-    background-color: #e0f7e0; /* Cor de fundo para "Ativo" */
-    color: green;
+/* Estados de loading */
+.loading {
+  position: relative;
+  pointer-events: none;
 }
 
-/* Estilos para "Renovado" */
-.Renovado {
-    background-color: #f0f4ff; /* Cor de fundo para "Renovado" */
-    color: blue;
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 10;
 }
 
-/* Estilos para "Inativo" */
-.Inativo {
-    background-color: #f8d7da; /* Cor de fundo para "Inativo" */
-    color: red;
+.loading::before {
+  content: "Carregando...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 11;
+  font-weight: 600;
+  color: var(--primary-color);
 }
 
-/* Estilos para "Encerrado" */
-.Encerrado {
-    background-color: #f8d7da; /* Cor de fundo para "Encerrado" */
-    color: darkred;
+/* Melhorias de acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
-/* Estilos para "Desconhecido" */
-.Desconhecido {
-    background-color: #f1f1f1; /* Cor de fundo para "Desconhecido" */
-    color: gray;
+/* Focus states para acessibilidade */
+.btn-action:focus,
+.btn-info:focus,
+.btn-primary:focus,
+.btn-warning:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }

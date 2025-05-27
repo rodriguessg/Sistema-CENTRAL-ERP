@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modal de Perfil - Demo</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="profile-modal-simple-base.css">
-</head>
-
-<style>
-    /* ========== VARIÁVEIS CSS ========== */
+/* ========== VARIÁVEIS CSS OTIMIZADAS ========== */
 :root {
   --primary-gradient: linear-gradient(90deg, #192844 67.81%, #472774 100%);
   --secondary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -31,56 +19,92 @@
   --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
   --border-radius: 16px;
   --border-radius-sm: 8px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Transições suaves e naturais */
+  --transition-fast: all 0.15s ease-out;
+  --transition-normal: all 0.25s ease-out;
+  --transition-slow: all 0.35s ease-out;
+  --easing-natural: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
   --font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* ========== ANIMAÇÕES ========== */
-@keyframes modalSlideIn {
-  from {
+/* ========== ANIMAÇÕES SUAVES E NATURAIS ========== */
+@keyframes modalFadeIn {
+  0% {
     opacity: 0;
-    transform: translateY(-50px) scale(0.9);
+    transform: translateY(-20px) scale(0.95);
   }
-  to {
+  100% {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
+@keyframes backdropFadeIn {
+  0% {
+    opacity: 0;
   }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-@keyframes pulse {
-  0%,
   100% {
     opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
   }
 }
 
-@keyframes fadeInUp {
-  from {
+@keyframes contentSlideIn {
+  0% {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(15px);
   }
-  to {
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes shimmer {
+@keyframes avatarGentleScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes infoFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentleFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes subtlePulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes shimmerGentle {
   0% {
     background-position: -200px 0;
   }
@@ -89,17 +113,18 @@
   }
 }
 
-/* ========== BACKDROP ========== */
-.modal-backdrop {
-  background: linear-gradient(135deg, rgba(25, 40, 68, 0.4), rgba(71, 39, 116, 0.4));
-  backdrop-filter: blur(12px);
+/* ========== BACKDROP SUAVE ========== */
+.modal-backdrop.show {
+  background: linear-gradient(135deg, rgba(25, 40, 68, 0.3), rgba(71, 39, 116, 0.3));
+  animation: backdropFadeIn 0.3s var(--easing-natural);
+  backdrop-filter: blur(8px);
 }
 
-/* ========== MODAL DIALOG ========== */
-#perfilModal .modal-dialog {
-  max-width: 500px;
-  margin: 3rem auto;
-  animation: modalSlideIn 0.4s ease-out;
+/* ========== MODAL DIALOG SUAVE ========== */
+#perfilModal.show .modal-dialog {
+  max-width: 480px;
+  margin: 2rem auto;
+  animation: modalFadeIn 0.4s var(--easing-natural);
 }
 
 /* ========== MODAL CONTENT ========== */
@@ -111,6 +136,7 @@
   overflow: hidden;
   font-family: var(--font-family);
   position: relative;
+  will-change: transform;
 }
 
 #perfilModal .modal-content::before {
@@ -120,67 +146,67 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
   pointer-events: none;
   z-index: 1;
 }
 
-/* ========== MODAL HEADER ========== */
+/* ========== MODAL HEADER SUAVE ========== */
 #perfilModal .modal-header {
   background: var(--primary-gradient);
   color: white;
-  padding: 2rem;
+  padding: 1.25rem 1.5rem;
   border-bottom: none;
   position: relative;
-  overflow: hidden;
   z-index: 2;
+  animation: contentSlideIn 0.3s var(--easing-natural);
+  animation-delay: 0.1s;
+  animation-fill-mode: both;
 }
 
 #perfilModal .modal-header::before {
   content: "";
   position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-  animation: float 6s ease-in-out infinite;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+  animation: gentleFloat 4s ease-in-out infinite;
 }
 
 #perfilModal .modal-header::after {
   content: "👤";
   position: absolute;
-  left: 2rem;
+  left: 1.5rem;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1.5rem;
-  opacity: 0.3;
+  font-size: 1.25rem;
+  opacity: 0.4;
 }
 
 #perfilModal .modal-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.375rem;
+  font-weight: 600;
   margin: 0;
-  padding-left: 3rem;
+  padding-left: 2.5rem;
   position: relative;
   z-index: 3;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 #perfilModal .close {
   background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  width: 45px;
-  height: 45px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.2rem;
-  transition: var(--transition);
-  position: relative;
-  z-index: 3;
+  font-size: 1.1rem;
+  transition: var(--transition-fast);
   margin: 0;
   padding: 0;
   backdrop-filter: blur(10px);
@@ -188,161 +214,169 @@
 
 #perfilModal .close:hover {
   background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: rotate(90deg) scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 #perfilModal .close span {
   line-height: 1;
+  transition: var(--transition-fast);
 }
 
-/* ========== MODAL BODY ========== */
+#perfilModal .close:hover span {
+  transform: rotate(90deg);
+}
+
+/* ========== MODAL BODY SUAVE ========== */
 #perfilModal .modal-body {
-  padding: 2.5rem;
+  padding: 1.5rem;
   background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
   position: relative;
   z-index: 2;
-}
-
-/* ========== AVATAR ========== */
-#perfilModal .modal-body img {
-  width: 120px !important;
-  height: 120px !important;
-  border: 4px solid transparent;
-  background: var(--primary-gradient);
-  padding: 4px;
-  object-fit: cover;
-  transition: var(--transition);
-  position: relative;
-  display: block;
-  margin: 0 auto 2rem auto !important;
-  box-shadow: var(--shadow-lg);
-}
-
-#perfilModal .modal-body img:hover {
-  transform: scale(1.05) rotate(5deg);
-  box-shadow: var(--shadow-xl);
-}
-
-#perfilModal .modal-body img::after {
-  content: "";
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 3px solid white;
-  background: #10b981;
-  animation: pulse 2s infinite;
-}
-
-/* ========== INFORMAÇÕES DO PERFIL ========== */
-#perfilModal .modal-body p {
-  background: var(--bg-white);
-  margin: 0 0 1rem 0;
-  padding: 1.25rem;
-  border-radius: var(--border-radius-sm);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  animation: fadeInUp 0.6s ease-out;
+  animation: contentSlideIn 0.3s var(--easing-natural);
+  animation-delay: 0.2s;
   animation-fill-mode: both;
 }
 
-#perfilModal .modal-body p:nth-child(2) {
-  animation-delay: 0.1s;
-}
-#perfilModal .modal-body p:nth-child(3) {
-  animation-delay: 0.2s;
-}
-#perfilModal .modal-body p:nth-child(4) {
+/* ========== AVATAR SUAVE ========== */
+#perfilModal .modal-body img {
+  width: 100px !important;
+  height: 100px !important;
+  border: 3px solid transparent;
+  background: var(--primary-gradient);
+  padding: 3px;
+  object-fit: cover;
+  transition: var(--transition-normal);
+  position: relative;
+  display: block;
+  margin: 0 auto 1.5rem auto !important;
+  box-shadow: var(--shadow-md);
+  animation: avatarGentleScale 0.4s var(--easing-natural);
   animation-delay: 0.3s;
-}
-#perfilModal .modal-body p:nth-child(5) {
-  animation-delay: 0.4s;
-}
-#perfilModal .modal-body p:nth-child(6) {
-  animation-delay: 0.5s;
+  animation-fill-mode: both;
 }
 
+#perfilModal .modal-body img:hover {
+  transform: scale(1.03);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Badge de status online */
+#perfilModal .modal-body img::after {
+  content: "";
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+  background: #10b981;
+  animation: subtlePulse 3s infinite;
+}
+
+/* ========== INFORMAÇÕES SUAVES ========== */
+#perfilModal .modal-body p {
+  background: var(--bg-white);
+  margin: 0 0 0.75rem 0;
+  padding: 1rem;
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  transition: var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  animation: infoFadeInUp 0.3s var(--easing-natural);
+  animation-fill-mode: both;
+}
+
+/* Delays suaves para cascade */
+#perfilModal .modal-body p:nth-child(2) {
+  animation-delay: 0.4s;
+}
+#perfilModal .modal-body p:nth-child(3) {
+  animation-delay: 0.45s;
+}
+#perfilModal .modal-body p:nth-child(4) {
+  animation-delay: 0.5s;
+}
+#perfilModal .modal-body p:nth-child(5) {
+  animation-delay: 0.55s;
+}
+#perfilModal .modal-body p:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+/* Barra lateral colorida */
 #perfilModal .modal-body p::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
+  width: 3px;
   height: 100%;
-  transition: var(--transition);
+  transition: var(--transition-fast);
 }
 
 #perfilModal .modal-body p:nth-child(2)::before {
   background: var(--success-gradient);
 }
-
 #perfilModal .modal-body p:nth-child(3)::before {
   background: var(--warning-gradient);
 }
-
 #perfilModal .modal-body p:nth-child(4)::before {
   background: var(--secondary-gradient);
 }
-
 #perfilModal .modal-body p:nth-child(5)::before {
   background: var(--danger-gradient);
 }
-
 #perfilModal .modal-body p:nth-child(6)::before {
   background: var(--accent-gradient);
 }
 
 #perfilModal .modal-body p:hover {
-  transform: translateX(8px);
+  transform: translateX(4px);
   box-shadow: var(--shadow-md);
 }
 
 #perfilModal .modal-body p:hover::before {
-  width: 6px;
+  width: 4px;
 }
 
 #perfilModal .modal-body p strong {
   color: var(--text-dark);
   font-weight: 600;
   display: inline-block;
-  min-width: 140px;
+  min-width: 80px;
   position: relative;
 }
 
 #perfilModal .modal-body p strong::after {
-  content: "";
+  content: ":";
   position: absolute;
-  right: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--text-muted);
+  right: -4px;
+  top: 0;
+  color: var(--text-muted);
 }
 
 #perfilModal .modal-body span {
   color: var(--text-light);
   font-weight: 500;
+  margin-left: 0.5rem;
 }
 
-/* ========== ÍCONES NAS INFORMAÇÕES ========== */
+/* ========== ÍCONES SUAVES ========== */
 #perfilModal .modal-body p strong::before {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
-  margin-right: 8px;
-  width: 20px;
+  margin-right: 6px;
+  width: 16px;
   text-align: center;
   opacity: 0.7;
+  font-size: 0.85rem;
 }
 
 #perfilModal .modal-body p:nth-child(2) strong::before {
@@ -370,31 +404,34 @@
   color: #a8edea;
 }
 
-/* ========== MODAL FOOTER ========== */
+/* ========== MODAL FOOTER SUAVE ========== */
 #perfilModal .modal-footer {
   background: var(--bg-light);
   border-top: 1px solid var(--border-color);
-  padding: 1.5rem 2.5rem;
+  padding: 1.25rem 1.5rem;
   position: relative;
   z-index: 2;
+  animation: contentSlideIn 0.3s var(--easing-natural);
+  animation-delay: 0.65s;
+  animation-fill-mode: both;
 }
 
 #perfilModal .modal-footer::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
+  left: 10%;
+  right: 10%;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--border-color), transparent);
 }
 
 #perfilModal .btn {
   border-radius: var(--border-radius-sm);
-  padding: 0.75rem 2rem;
+  padding: 0.75rem 1.5rem;
   font-weight: 600;
   font-size: 0.875rem;
-  transition: var(--transition);
+  transition: var(--transition-normal);
   position: relative;
   overflow: hidden;
 }
@@ -406,8 +443,8 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: left 0.4s var(--easing-natural);
 }
 
 #perfilModal .btn:hover::before {
@@ -418,13 +455,12 @@
   background: var(--primary-gradient);
   border: none;
   color: white;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
 #perfilModal .btn-secondary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-  background: var(--secondary-gradient);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 /* ========== RESPONSIVIDADE ========== */
@@ -437,33 +473,37 @@
   #perfilModal .modal-header,
   #perfilModal .modal-body,
   #perfilModal .modal-footer {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
 
   #perfilModal .modal-title {
     font-size: 1.25rem;
-    padding-left: 2.5rem;
+    padding-left: 2rem;
   }
 
   #perfilModal .modal-header::after {
-    left: 1.5rem;
-    font-size: 1.25rem;
+    left: 1.25rem;
+    font-size: 1.125rem;
   }
 
   #perfilModal .modal-body img {
-    width: 100px !important;
-    height: 100px !important;
+    width: 80px !important;
+    height: 80px !important;
   }
 
   #perfilModal .modal-body p {
-    padding: 1rem;
-    font-size: 0.9rem;
+    padding: 0.875rem;
+    font-size: 0.85rem;
   }
 
   #perfilModal .modal-body p strong {
-    min-width: 120px;
+    min-width: 70px;
     display: block;
     margin-bottom: 0.25rem;
+  }
+
+  #perfilModal .modal-body span {
+    margin-left: 0;
   }
 }
 
@@ -480,24 +520,26 @@
   }
 
   #perfilModal .modal-body img {
-    width: 80px !important;
-    height: 80px !important;
+    width: 70px !important;
+    height: 70px !important;
   }
 
   #perfilModal .modal-body p {
     padding: 0.75rem;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
   #perfilModal .btn {
     width: 100%;
-    padding: 1rem;
+    padding: 0.875rem;
   }
 }
 
 /* ========== ACESSIBILIDADE ========== */
 @media (prefers-reduced-motion: reduce) {
-  #perfilModal * {
+  #perfilModal *,
+  #perfilModal *::before,
+  #perfilModal *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -509,68 +551,28 @@
 #perfilModal .btn:focus {
   outline: 2px solid #667eea;
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
-/* ========== LOADING STATE ========== */
+/* ========== LOADING STATE SUAVE ========== */
 #perfilModal .modal-body span:empty::after {
   content: "";
   display: inline-block;
-  width: 60px;
-  height: 12px;
+  width: 80px;
+  height: 10px;
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200px 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 6px;
+  animation: shimmerGentle 1.8s infinite;
+  border-radius: 5px;
 }
 
-</style>
-<body style="padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh;">
+/* ========== MELHORIAS DE PERFORMANCE ========== */
+#perfilModal .modal-content,
+#perfilModal .modal-body img,
+#perfilModal .modal-body p {
+  will-change: transform;
+}
 
-    <div class="text-center">
-        <button type="button" class="btn btn-light btn-lg" data-toggle="modal" data-target="#perfilModal">
-            <i class="fas fa-user"></i> Abrir Perfil do Usuário
-        </button>
-    </div>
-
-    <!-- Modal Perfil -->
-    <div class="modal fade" id="perfilModal" tabindex="-1" aria-labelledby="perfilModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="perfilModalLabel">Perfil do Usuário</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="Perfil" class="rounded-circle mb-3" style="width: 70px; height: 70px;">
-                    <p><strong>Nome:</strong> João Silva Santos</p>
-                    <p><strong>Email:</strong> <span id="modal-email">joao.silva@empresa.com.br</span></p>
-                    <p><strong>Setor:</strong> <span id="modal-setor">Desenvolvimento</span></p>
-                    <p><strong>Tempo de Registro:</strong> <span id="modal-tempo-registro">2 anos, 3 meses</span></p>
-                    <p><strong>Movimentações Realizadas:</strong> <span id="modal-movimentacoes">1,247 ações</span></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        // Simular carregamento de dados
-        $('#perfilModal').on('show.bs.modal', function () {
-            // Simular loading nos spans vazios
-            setTimeout(() => {
-                $('#modal-email').text('joao.silva@empresa.com.br');
-                $('#modal-setor').text('Desenvolvimento');
-                $('#modal-tempo-registro').text('2 anos, 3 meses');
-                $('#modal-movimentacoes').text('1,247 ações');
-            }, 500);
-        });
-    </script>
-</body>
-</html>
+#perfilModal.show .modal-content {
+  will-change: auto;
+}

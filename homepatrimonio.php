@@ -929,7 +929,7 @@ const itensPorPagina = 3;
 // Função para carregar dados do servidor
 async function carregarDados(pagina) {
     try {
-        const response = await fetch(`.paginasTabela.php?pagina=${pagina}`); // Substitua pelo caminho correto do PHP
+        const response = await fetch(`./paginasTabela.php?pagina=${pagina}`); // Substitua pelo caminho correto do PHP
         const resultado = await response.json();
 
         atualizarTabela(resultado.dados);

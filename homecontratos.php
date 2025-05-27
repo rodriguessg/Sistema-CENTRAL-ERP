@@ -3,8 +3,8 @@
     session_start();
 
     // Configurar logging de erros
-    ini_set('log_errors', 1);
-    ini_set('error_log', __DIR__ . '/logs/error.log');
+    // ini_set('log_errors', 1);
+    // ini_set('error_log', __DIR__ . '/logs/error.log');
 
     // Conectar ao banco de dados
     $host = 'localhost';

@@ -174,6 +174,7 @@ try {
     <title>SISTEMA INTEGRADO CENTRAL</title>
     <link rel="stylesheet" href="src/style/lateral-menu.css">
     <link rel="stylesheet" href="src/style/sino.css">
+    <link rel="stylesheet" href="src/style/modal-perfil.css">
     <!-- Incluindo o Bootstrap 4 CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Incluindo o CSS customizado -->
@@ -343,6 +344,7 @@ try {
     <script src="./src/header/js/ia.js"></script>
     <!-- JS PREENCHIMENTO INFORMAÇÕES PERFIL -->
     <script src="./src/header/js/perfil.js"></script>
+       <script src="./src/header/js/modal-perfil.js"></script>
 
     <script>
         // Sistema de Notificações Aprimorado

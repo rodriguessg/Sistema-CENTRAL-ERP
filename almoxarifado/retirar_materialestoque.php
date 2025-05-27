@@ -1,6 +1,15 @@
 <?php
-include 'banco.php'; // Conexão com o banco de dados
+$host = 'localhost';
+$dbname = 'gm_sicbd';
+$user = 'root';
+$password = '';
 
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("<p style='color: red;'>Erro ao conectar ao banco de dados: " . $e->getMessage() . "</p>");
+}
 // Verifica se a requisição foi enviada via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtém os valores do formulário

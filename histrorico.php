@@ -29,68 +29,8 @@ $con->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Histórico de Movimentações</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-        }
-
-        .header {
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .container {
-            margin: 20px auto;
-            width: 80%;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        thead {
-            background-color: #007bff;
-            color: white;
-        }
-
-        thead th {
-            padding: 10px;
-            text-align: left;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #ddd;
-        }
-
-        tbody td {
-            padding: 10px;
-            text-align: left;
-        }
-
-        tbody tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        .no-data {
-            text-align: center;
-            font-size: 18px;
-            color: #666;
-            margin-top: 20px;
-        }
-    </style>
+     <link rel="stylesheet" href="src/style/log.css">
+   
 </head>
 <body>
     <div class="header">Histórico de Movimentações</div>

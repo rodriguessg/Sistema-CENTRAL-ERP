@@ -1,5 +1,13 @@
 <?php
-include 'banco.php';
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "gm_sicbd";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+    die("Conexão falhou: " . $conn->connect_error);
+}
 
 if (isset($_GET['pesquisa'])) {
     $pesquisa = $_GET['pesquisa'];

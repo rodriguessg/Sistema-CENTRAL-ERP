@@ -42,7 +42,7 @@ $categoriaSelecionada = "";
 <!-- Conteúdo das abas -->
 <div class="form-container" id="cadastrar" >
     <h3>Cadastrar Patrimônio</h3>
-    <form action="./include/patrimonio/cadastrar_patrimonio.php" method="POST" enctype="multipart/form-data">
+    <form action="./patrimonio/cadastrar_patrimonio.php" method="POST" enctype="multipart/form-data">
         <!-- Checkbox para Categoria -->
         <div class="form-group">
         <div class="photo-upload-container">
@@ -130,7 +130,7 @@ $result = $con->query($query);
   <h2>Remessa de Patrimônio</h2>
  
 
- <form action="./include/patrimonio/registrar_remessa.php" method="POST">
+ <form action="./patrimonio/registrar_remessa.php" method="POST">
  <div class="form-group">
 
  <label for="patrimonio_id">ID do Patrimônio:</label>
@@ -516,7 +516,7 @@ $result = $con->query($query);
 
 
 
-<div class="form-container" id="DPRE" style="display: flex; justify-content: space-between; gap: 40px; width: 100%;">
+<div class="form-container" id="DPRE" >
     <div class="form-section" style="width: 50%;">
         <h2>Calcular Depreciação</h2>
         <form method="POST">
@@ -590,7 +590,7 @@ async function imageExists(url) {
 
 async function loadCardData() {
     try {
-        const response = await fetch('./include/ppatrimonio/getPatrimonios.php'); // Endpoint PHP
+        const response = await fetch('./patrimonio/getPatrimonios.php'); // Endpoint PHP
         const data = await response.json();
 
         const cardsContainer = document.getElementById('cards-container');
@@ -857,7 +857,7 @@ document.getElementById('form-atualizar').addEventListener('submit', function (e
     const formData = new FormData(this);
 
     // Envia os dados via fetch para o script de atualização
-    fetch('./include/patrimonio/modalatualizabp.php', {
+    fetch('./patrimonio/modalatualizabp.php', {
         method: 'POST',
         body: formData,
     })
@@ -929,7 +929,7 @@ const itensPorPagina = 3;
 // Função para carregar dados do servidor
 async function carregarDados(pagina) {
     try {
-        const response = await fetch(`./paginasTabela.php?pagina=${pagina}`); // Substitua pelo caminho correto do PHP
+        const response = await fetch(`./patrimonio/paginasTabela.php?pagina=${pagina}`); // Substitua pelo caminho correto do PHP
         const resultado = await response.json();
 
         atualizarTabela(resultado.dados);

@@ -1,6 +1,18 @@
 <?php
-// Incluir o arquivo de conexão com o banco de dados
-include 'bancoo.php';
+$host = 'localhost';
+$dbname = 'gm_sicbd';
+$username = 'root';
+$password = '';
+
+try {
+    // Criação da conexão PDO
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Definir modo de erro para exceção
+} catch (PDOException $e) {
+    // Em caso de erro na conexão, loga o erro e exibe uma mensagem amigável
+    error_log("Erro ao conectar ao banco: " . $e->getMessage());
+    die("Erro ao conectar ao banco de dados. Consulte o administrador.");
+}
 // Definir o cabeçalho como JSON para a resposta
 header('Content-Type: application/json');
 

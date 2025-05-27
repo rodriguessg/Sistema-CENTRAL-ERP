@@ -92,7 +92,7 @@ function downloadSignature() {
     const height = signatureElement.offsetHeight;
 
     // Define a escala baseada nas dimensões desejadas (700x350)
-    const desiredWidth = 700;
+    const desiredWidth = 900;
     const desiredHeight = 350;
 
     const scaleX = desiredWidth / width;

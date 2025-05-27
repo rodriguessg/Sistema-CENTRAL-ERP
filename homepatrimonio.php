@@ -1,9 +1,4 @@
 <?php
-   session_start();
-if (!isset($_SESSION['username'])) {
-    header("Location: index.php");
-    exit();
-}
 // Incluir o arquivo de conexão com o banco de dados
 include 'banco.php';
 
@@ -26,387 +21,21 @@ $categoriaSelecionada = "";
     <title>Cadastrar Patrimônio</title>
     <link rel="stylesheet" href="./src/style/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
+    <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-
-<style>
-          .chart-container {
-            width: 50%;
-            height: 400px;
-        }
-        
-            
-    Estilo do Modal
-    .modal {
-        display: none; /* Inicialmente oculto */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        overflow: hidden; /* Para evitar rolagem da página ao abrir o modal */
-    }
-
-    .modal-content {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        width: 90%;
-        max-width: 500px;
-        max-height: 80%; /* Altura máxima */
-        overflow-y: auto; /* Barra de rolagem vertical */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        position: relative;
-    }
-
-    /* Personalização da barra de rolagem (opcional) */
-    .modal-content::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    img {
-        width: 100%;
-        height: 80px;
-        /* border-radius: 50%; */
-        margin-right: 10px;}
-    .modal-content::-webkit-scrollbar-thumb {
-        background-color: #007BFF;
-        border-radius: 4px;
-    }
-
-    .modal-content::-webkit-scrollbar-thumb:hover {
-        background-color: #0056b3;
-    }
-    .modal-header, .modal-footer {
-        background-color: #6c757d;
-        color: white;
-    }
-
-    /* Botão de fechar o modal */
-    .modal-close {
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        font-size: 20px;
-        color: #333;
-        cursor: pointer;
-        transition: color 0.3s ease;
-    }
-
-    .modal-close:hover {
-        color: #007BFF;
-    }
-
-    /* Estilo do formulário */
-    #form-atualizar {
-        display: flex;
-        flex-direction: column;
-        gap: 0px;
-    }
-
-    #form-atualizar label {
-        font-size: 14px;
-        font-weight: bold;
-        color: #333;
-    }
-
-    #form-atualizar input,
-    #form-atualizar select {
-        width: 100%;
-        padding: 12px 10px;
-        font-size: 14px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-sizing: border-box;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    /* Foco nos inputs e selects */
-    #form-atualizar input:focus,
-    #form-atualizar select:focus {
-        border-color: #007BFF;
-        box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
-        outline: none;
-    }
-
-    /* Botões do formulário */
-    #form-atualizar .button-group {
-        display: flex;
-        margin-top: 10px;
-        justify-content: center;
-        margin-left: 7%;
-        width: 78%;
-        gap: 12px;
-        text-align: center;
-    }
-    .tabs {
-        display: flex
-;
-    cursor: pointer;
-    justify-content: center;
-    margin-bottom: 15px;
-}
-    
+    <link rel="stylesheet" href="src/patrimonio/style/homepatrimonio.css">
 
 
-    #form-atualizar button {
-        flex: 1;
-        padding: 12px 15px;
-        font-size: 14px;
-        font-weight: bold;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        text-align: center;
-    }
-
-    /* Botão Salvar */
-    #form-atualizar button[type="submit"] {
-        background-color: #007BFF;
-    }
-
-    #form-atualizar button[type="submit"]:hover {
-        background-color: #0056b3;
-    }
-
-    /* Botão Cancelar */
-    #form-atualizar button[type="button"] {
-        background-color: #dc3545;
-    }
-
-    #form-atualizar button[type="button"]:hover {
-        background-color: #a71d2a;
-    }
-
-    /* Responsividade */
-    @media (max-width: 600px) {
-        .modal-content {
-            padding: 15px;
-            width: 95%;
-        }
-
-        #form-atualizar button {
-            padding: 10px;
-            font-size: 13px;
-        }
-    }
-    .modal-actions { display: flex; justify-content: center; gap: 10px; }
-    .btn1 { display: inline-block; padding: 5px 10px; cursor: pointer; border: none; border-radius: 4px; background-color: #007bff; color: white;  
-    }
-    .btn2{ display: inline-block; padding: 5px 10px; cursor: pointer; border: none; border-radius: 4px; background-color:  #4CAF50; color: white;  }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
-            th { background-color: #f4f4f4; }
-
-    .form-container {
-        display: none;
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 20px;
-    margin-left: 20%;
-    margin-bottom: 20%;
-    /* max-height: 700px; */
-    box-shadow: 0 4px 10px rgba(0.9, 0.5, 0.5, 0.9);
-    border-radius: 8px;
-    }
-    .chart-container {
-        position: relative;
-        height: 400px; /* Define a altura desejada */
-        width: 100%;
-        font-size: 18px; /* Ajusta o tamanho da fonte geral */
-        color: #333;     /* Define a cor do texto */
-    }
-    .large-chart {
-        display: block;
-        box-sizing: border-box;
-        width: 555px;
-        height: 400px; /* Aumenta a altura */
-    }
-
-    
-    .photo-upload-container {
-            flex: 0.5;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 2px dashed #ccc;
-            width: 54%;
-            padding: 20px;
-            border-radius: 10px;
-          
-        }
-
-        .photo-upload-container img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 20px;
-        }
-
-        .photo-upload-container input[type="file"] {
-            display: none;
-        }
-
-        .photo-upload-container label {
-            display: inline-block;
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .photo-upload-container label:hover {
-            background-color: #0056b3;
-        }
-        .card-container {
-    width: 220px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    }
-    
-
-    .form-container2 {
-
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 20px;
-    display: none;
-    justify-content: space-between;
-    border-radius: 8px;
-    gap: 40px;
-    width: 100%;
-    /* height: 100%; */
-    }
-            /* Personalização da barra de rolagem para navegadores WebKit */
-    .form-container2::-webkit-scrollbar {
-        width: 90px; /* Largura da barra de rolagem vertical */
-        height: 20px; /* Altura da barra de rolagem horizontal */
-    }
-
-    .form-container2::-webkit-scrollbar-track {
-        background: rgba(200, 200, 200, 0.3); /* Cor do fundo da barra de rolagem */
-        border-radius: 8px; /* Cantos arredondados da trilha */
-    }
-
-    .form-container2::-webkit-scrollbar-thumb {
-        background: rgba(100, 100, 100, 0.8); /* Cor da parte que se move */
-        border-radius: 8px; /* Cantos arredondados do "polegar" */
-    }
-
-    /* Para navegadores que suportam scrollbar-width (Firefox) */
-    .form-container2 {
-        scrollbar-width: thin; /* Largura da barra de rolagem */
-        scrollbar-color:#007bff rgba(200, 200, 200, 0.3); /* Cor do polegar e da trilha */
-    }
-    .form-container2.active {
-        display: block;
-    }
-    /* Estilo para o contêiner dos cards */
-    /* Estilo para o contêiner dos cards */
-    #cards-container {
-        display: ruby;
-    flex-wrap: wrap;
-    gap: 16px;
-    /* height: 639px; */
-    justify-content: space-around;
-    max-height: 100%;
-    overflow-y: auto;
-    padding-right: 10px;
-    }
-
-    /* Contêiner do card */
-    .card {
-        width: 200px;
-        height: 300px;
-        perspective: 1000px; /* Adiciona profundidade para o efeito 3D */
-        margin: 20px auto;
-    }
-
-    /* Parte interna do card */
-    .card-inner {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        transform-style: preserve-3d;
-        transition: transform 0.6s; /* Suaviza a rotação */
-    }
-
-    /* Efeito de rotação ao passar o mouse */
-    .card:hover .card-inner {
-        transform: rotateY(180deg);
-    }
-
-    /* Faces do card */
-    .card-front,
-    .card-back {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        backface-visibility: hidden; /* Esconde a face de trás quando está de costas */
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Frente do card */
-    .card-front {
-        background-color: #f0f0f0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-    }
-
-    .card-front img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* Faz a imagem preencher o espaço mantendo a proporção */
-        border-radius: 8px; /* Mantém o mesmo arredondamento do card */
-        display: block; /* Garante que a imagem não tenha comportamento inline */
-    }
-
-
-    /* Verso do card */
-    .card-back {
-        background-color: #ffffff;
-        color: #333;
-        transform: rotateY(180deg); /* Inicia girado para se alinhar com a frente */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-        text-align: center;
-    }
-
-
-
-
-
-</style>
 </head>
-<body>
-
-
+<body class="caderno">
 
 <!-- Menu das abas -->
 <div class="tabs">
-    <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">Cadastrar BP</div>
+    <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">   <i class="fas fa-plus-circle"></i> Cadastrar BP</div>
     <div class="tab" data-tab="retirar" onclick="showTab('retirar')">Movimentação BP</div>
-    <div class="tab" data-tab="levantamento" onclick="showTab('levantamento')">Levantamento de Bens</div>
+    <div class="tab" data-tab="levantamento" onclick="showTab('levantamento')"> <i class="fas fa-search"></i> Levantamento de Bens</div>
     <div class="tab" data-tab="DPRE" onclick="showTab('DPRE')">DPRE</div>
-    <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">Relatorio</div>
+    <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">        <i class="fas fa-file-alt"></i>Relatorio</div>
     <div class="tab" data-tab="galeria" onclick="showTab('galeria')">Galeria</div>
 </div>
 
@@ -587,7 +216,7 @@ $result = $con->query($query);
 
 </div>
 <div class="form-container" id="relatorio">
-    <form action="./include/patrimonio/gerar_relatorio.php" method="GET" target="_blank">
+    <form action="./patrimonio/gerar_relatorio.php" method="GET" target="_blank">
         <h3>Emitir Relatório de Patrimônios</h3>
 
         <!-- Filtro por status -->
@@ -961,7 +590,7 @@ async function imageExists(url) {
 
 async function loadCardData() {
     try {
-        const response = await fetch('./include/patrimonio/getPatrimonios.php'); // Endpoint PHP
+        const response = await fetch('./include/ppatrimonio/getPatrimonios.php'); // Endpoint PHP
         const data = await response.json();
 
         const cardsContainer = document.getElementById('cards-container');
@@ -1055,7 +684,7 @@ document.addEventListener('DOMContentLoaded', loadCardData);
 // Função para gerar o código automaticamente via AJAX
 function gerarCodigo(categoria) {
     if (categoria) {
-        fetch(`./include/patrimonio/gerar_codigo.php?categoria=${categoria}`)
+        fetch(`./patrimonio/gerar_codigo.php?categoria=${categoria}`)
             .then(response => response.text())
             .then(data => {
                 // Preencher o campo de código com o valor retornado
@@ -1228,7 +857,7 @@ document.getElementById('form-atualizar').addEventListener('submit', function (e
     const formData = new FormData(this);
 
     // Envia os dados via fetch para o script de atualização
-    fetch('./include/patrimonio/modal/modalatualizabp.php', {
+    fetch('./include/patrimonio/modalatualizabp.php', {
         method: 'POST',
         body: formData,
     })
@@ -1300,7 +929,7 @@ const itensPorPagina = 3;
 // Função para carregar dados do servidor
 async function carregarDados(pagina) {
     try {
-        const response = await fetch(`./include/patrimonio/paginasTabela.php?pagina=${pagina}`); // Substitua pelo caminho correto do PHP
+        const response = await fetch(`./paginasTabela.php?pagina=${pagina}`); // Substitua pelo caminho correto do PHP
         const resultado = await response.json();
 
         atualizarTabela(resultado.dados);
@@ -1395,6 +1024,6 @@ window.onload = () => {
 </script>
 
 <script src="src/js/script.js"></script>
+<?php include 'footer.php'; ?>
 </body>
 </html>
-<?php include 'footer.php'; ?>

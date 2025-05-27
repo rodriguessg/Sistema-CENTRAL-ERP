@@ -14,7 +14,7 @@ include 'header.php';
       <link rel="stylesheet" href="src/contratos/style/certidoes.css">
           <!-- <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css"> -->
 </head>
-<body >
+<body class="caderno" >
     <div class="form-container">
         <h2 class="mb-4"><i class="fas fa-certificate"></i> Cadastramento de Certidões</h2>
         <form id="certidaoForm" enctype="multipart/form-data">

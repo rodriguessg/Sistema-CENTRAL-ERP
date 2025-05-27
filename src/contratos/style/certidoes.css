@@ -1,53 +1,960 @@
-  body {
-            background-color: #f4f6f9;
-            padding: 20px;
-        }
-        .form-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .certidoes-container {
-            max-width: 800px;
-            margin: 20px auto;
-        }
-        .certidao-card {
-            margin-bottom: 15px;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            transition: transform 0.2s;
-        }
-        .certidao-card:hover {
-            transform: translateY(-2px);
-        }
-        .certidao-card .card-header {
-            background-color: #f8f9fa;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .alert.hidden {
-            display: none;
-        }
-        .form-label {
-            font-weight: 500;
-        }
-        .btn-action {
-            padding: 5px 10px;
-        }
-        .search-container {
-            max-width: 400px;
-            margin-bottom: 15px;
-        }
-        .search-container .input-group-text {
-            background-color: #f8f9fa;
-        }
-        .dias-restantes {
-            margin-bottom: 0;
-        }
-        .contrato-select-container {
-            display: none;
-        }
+/* ========== VARIÁVEIS CSS PARA CERTIDÕES ========== */
+:root {
+  /* Gradientes baseados no padrão do projeto */
+  --primary-gradient: linear-gradient(90deg, #192844 67.81%, #472774 100%);
+  --secondary-gradient: linear-gradient(135deg, #472774 0%, #6a4c93 100%);
+  --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+  /* Cores do sistema */
+  --primary-color: #192844;
+  --secondary-color: #472774;
+  --accent-color: #667eea;
+  --text-dark: #2d3748;
+  --text-light: #718096;
+  --text-muted: #a0aec0;
+  --bg-light: #f7fafc;
+  --bg-white: #ffffff;
+  --border-color: #e2e8f0;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+  --shadow-glow: 0 0 30px rgba(71, 39, 116, 0.3);
+
+  /* Bordas e transições */
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  --font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ========== ANIMAÇÕES ========== */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes gentleFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: var(--shadow-md);
+  }
+  50% {
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+@keyframes cardSlideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cardHoverFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+@keyframes topBarExpand {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  100% {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes cardContentFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+/* ========== CONTAINER PRINCIPAL DO FORMULÁRIO ========== */
+.form-container {
+  background: var(--bg-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  padding: 2rem;
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.form-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--primary-gradient);
+}
+
+.form-container::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(25, 40, 68, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+  animation: gentleFloat 6s ease-in-out infinite;
+}
+
+/* ========== TÍTULO DO FORMULÁRIO ========== */
+.form-container h2 {
+  color: var(--text-dark);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: slideInLeft 0.5s ease-out;
+}
+
+.form-container h2 i {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 1.5rem;
+  animation: gentleFloat 3s ease-in-out infinite;
+}
+
+/* ========== FORMULÁRIO ========== */
+#certidaoForm {
+  position: relative;
+  z-index: 2;
+}
+
+/* ========== LABELS ========== */
+.form-label {
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.form-label .text-danger {
+  color: #e53e3e;
+  font-weight: 700;
+  animation: pulseGlow 2s infinite;
+}
+
+/* ========== INPUTS E SELECTS ========== */
+.form-control,
+.form-select {
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  background: var(--bg-white);
+  transition: var(--transition);
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-family);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 3px rgba(25, 40, 68, 0.1), var(--shadow-md);
+  background: linear-gradient(white, white) padding-box, var(--primary-gradient) border-box;
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ========== GRUPOS DE FORMULÁRIO ========== */
+.mb-3 {
+  margin-bottom: 1.5rem !important;
+  animation: fadeInUp 0.4s ease-out;
+  animation-fill-mode: both;
+}
+
+.mb-3:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.mb-3:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.mb-3:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.mb-3:nth-child(4) {
+  animation-delay: 0.25s;
+}
+.mb-3:nth-child(5) {
+  animation-delay: 0.3s;
+}
+.mb-3:nth-child(6) {
+  animation-delay: 0.35s;
+}
+
+/* ========== BOTÕES ========== */
+.btn {
+  border-radius: var(--border-radius-sm);
+  padding: 0.875rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-family);
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  filter: brightness(1.05);
+}
+
+.btn-secondary {
+  background: var(--secondary-gradient);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  filter: brightness(1.05);
+}
+
+.btn-danger {
+  background: var(--danger-gradient);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  filter: brightness(1.05);
+}
+
+/* ========== CONTAINER DE VINCULAÇÃO ========== */
+.contrato-select-container {
+  background: var(--bg-light);
+  border-radius: var(--border-radius-sm);
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  margin-top: 0.75rem;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  display: none;
+}
+
+.contrato-select-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--accent-gradient);
+}
+
+.contrato-select-container:hover {
+  background: var(--bg-white);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(2px);
+}
+
+/* ========== CONTAINER DE CERTIDÕES ========== */
+.certidoes-container {
+     background: var(--bg-white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    /* margin: 2rem auto; */
+    /* max-width: 1200px; */
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out;
+    animation-delay: 0.2s;
+    animation-fill-mode: both;
+    margin-top: 20px;
+}
+
+.certidoes-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--primary-gradient);
+}
+
+.certidoes-container h3 {
+  color: var(--text-dark);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+  animation: slideInLeft 0.5s ease-out;
+  animation-delay: 0.3s;
+  animation-fill-mode: both;
+}
+
+/* ========== CONTAINER DE BUSCA ========== */
+.search-container {
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.5s ease-out;
+  animation-delay: 0.4s;
+  animation-fill-mode: both;
+}
+
+.input-group {
+  position: relative;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.input-group-text {
+  background: var(--secondary-gradient);
+  color: white;
+  border: none;
+  padding: 0.875rem 1rem;
+  font-weight: 600;
+}
+
+.input-group .form-control {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 2rem 1rem;
+}
+
+.input-group .form-control:focus {
+  box-shadow: 0 0 0 3px rgba(25, 40, 68, 0.1);
+  border-color: transparent;
+}
+
+/* ========== LISTA DE CERTIDÕES ========== */
+#certidoesList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* ========== CARDS DE CERTIDÃO MELHORADOS ========== */
+.certidao-card {
+  background: var(--bg-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: cardSlideInUp 0.6s ease-out;
+  animation-fill-mode: both;
+  backdrop-filter: blur(10px);
+  transform-origin: center bottom;
+}
+
+/* Barra colorida no topo */
+.certidao-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: var(--primary-gradient);
+  animation: topBarExpand 0.8s ease-out;
+  animation-delay: 0.3s;
+  animation-fill-mode: both;
+  z-index: 6;
+}
+
+/* Efeito de brilho sutil */
+.certidao-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.6s ease;
+  z-index: 1;
+}
+
+.certidao-card:hover::after {
+  left: 100%;
+}
+
+/* Estados de hover melhorados */
+.certidao-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+  border-color: rgba(25, 40, 68, 0.1);
+}
+
+.certidao-card:hover::before {
+  height: 6px;
+  background: var(--primary-gradient);
+}
+
+/* Header do card */
+.certidao-card .card-header {
+  background: linear-gradient(135deg, var(--bg-light) 0%, rgba(247, 250, 252, 0.8) 100%);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  position: relative;
+  z-index: 3;
+  animation: cardContentFadeIn 0.5s ease-out;
+  animation-delay: 0.4s;
+  animation-fill-mode: both;
+}
+
+.certidao-card .card-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(25, 40, 68, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.certidao-card .card-header h5 {
+  color: var(--text-dark);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Corpo do card */
+.certidao-card .card-body {
+  position: relative;
+  z-index: 3;
+  animation: cardContentFadeIn 0.5s ease-out;
+  animation-delay: 0.5s;
+  animation-fill-mode: both;
+}
+
+.certidao-card .card-body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 1.75rem;
+  right: 1.75rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+}
+
+.certidao-card .card-body p {
+  margin-bottom: 1rem;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  transition: var(--transition);
+  position: relative;
+  padding-left: 1rem;
+}
+
+/* .certidao-card .card-body p::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  width: 3px;
+  height: 3px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  opacity: 0.6;
+} */
+
+.certidao-card .card-body strong {
+  color: var(--text-dark);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Animações escalonadas para cards */
+.certidao-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.certidao-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.certidao-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.certidao-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.certidao-card:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.certidao-card:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+/* Efeito especial para cards vencidos */
+.certidao-card.vencida::before {
+  background: var(--danger-gradient);
+  animation: pulseGlow 2s infinite;
+}
+
+.certidao-card.vencida {
+  border-color: rgba(229, 62, 62, 0.2);
+}
+
+/* Efeito especial para cards próximos ao vencimento */
+.certidao-card.proximo-vencimento::before {
+  background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+}
+
+.certidao-card.proximo-vencimento {
+  border-color: rgba(255, 154, 86, 0.2);
+}
+
+/* Efeito especial para cards em dia */
+.certidao-card.em-dia::before {
+  background: var(--success-gradient);
+}
+
+.certidao-card.em-dia {
+  border-color: rgba(72, 187, 120, 0.2);
+}
+
+/* ========== BOTÕES DE AÇÃO MELHORADOS ========== */
+.btn-action {
+  padding: 0.6rem;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.btn-action::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  transform: translate(-50%, -50%);
+}
+
+.btn-action:hover::before {
+  width: 100%;
+  height: 100%;
+}
+
+.btn-action:hover {
+  transform: scale(1.15) rotate(5deg);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-action:active {
+  transform: scale(0.95);
+}
+
+/* Container dos botões de ação */
+.card-header > div {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* ========== DIAS RESTANTES ========== */
+.dias-restantes {
+  font-weight: 600;
+  padding: 0.5rem;
+  border-radius: var(--border-radius-sm);
+  margin: 0.75rem 0;
+}
+
+.dias-restantes.text-success {
+  background: rgba(72, 187, 120, 0.1);
+  color: #38a169;
+  border-left: 4px solid #38a169;
+}
+
+.dias-restantes.text-warning {
+  background: rgba(237, 137, 54, 0.1);
+  color: #dd6b20;
+  border-left: 4px solid #dd6b20;
+}
+
+.dias-restantes.text-danger {
+  background: rgba(245, 101, 101, 0.1);
+  color: #e53e3e;
+  border-left: 4px solid #e53e3e;
+  animation: pulseGlow 2s infinite;
+}
+
+/* ========== FEEDBACK ========== */
+.alert {
+  border-radius: var(--border-radius-sm);
+  padding: 1rem 1.25rem;
+  border: none;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.alert-info {
+  background: linear-gradient(135deg, rgba(25, 40, 68, 0.1) 0%, rgba(71, 39, 116, 0.1) 100%);
+  color: var(--text-dark);
+  border-left: 4px solid var(--primary-color);
+}
+
+.alert-success {
+  background: linear-gradient(135deg, rgba(72, 187, 120, 0.1) 0%, rgba(56, 161, 105, 0.1) 100%);
+  color: #38a169;
+  border-left: 4px solid #38a169;
+}
+
+.alert-danger {
+  background: linear-gradient(135deg, rgba(245, 101, 101, 0.1) 0%, rgba(229, 62, 62, 0.1) 100%);
+  color: #e53e3e;
+  border-left: 4px solid #e53e3e;
+}
+
+.alert.hidden {
+  display: none;
+}
+
+/* ========== MODAL ========== */
+.modal-content {
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  font-family: var(--font-family);
+}
+
+.modal-header {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 1.5rem;
+  border-bottom: none;
+  position: relative;
+}
+
+.modal-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  position: relative;
+  z-index: 2;
+}
+
+.btn-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  opacity: 1;
+  transition: var(--transition);
+}
+
+.btn-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.modal-body {
+  padding: 2rem;
+  background: var(--bg-light);
+}
+
+.modal-footer {
+  background: var(--bg-white);
+  border-top: 1px solid var(--border-color);
+  padding: 1.5rem;
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 768px) {
+  .form-container,
+  .certidoes-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .form-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .certidoes-container h3 {
+    font-size: 1.25rem;
+  }
+
+  #certidoesList {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-dialog {
+    margin: 1rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .certidao-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container,
+  .certidoes-container {
+    padding: 1rem;
+    border-radius: var(--border-radius);
+  }
+
+  .form-container h2 {
+    font-size: 1.25rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .form-control,
+  .form-select {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+}
+
+/* ========== ESTADOS DE LOADING ========== */
+.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 25%, rgba(255, 255, 255, 0.5) 50%, transparent 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: inherit;
+}
+
+/* ========== ACESSIBILIDADE ========== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ========== ESTADOS DE FOCO ========== */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+  outline: 2px solid rgba(25, 40, 68, 0.5);
+  outline-offset: 2px;
+}
+
+/* ========== MELHORIAS DE PERFORMANCE ========== */
+.form-container,
+.certidoes-container,
+.certidao-card,
+.btn {
+  will-change: transform;
+}
+
+.form-container:hover,
+.certidoes-container:hover {
+  will-change: auto;
+}
+
+

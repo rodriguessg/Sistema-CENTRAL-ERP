@@ -296,11 +296,11 @@ try {
                     </div>
                     <div class="modal-body">
                         <img src="<?= htmlspecialchars(!empty($foto) ? $foto : '/default.png') ?>" alt="Perfil" class="rounded-circle mb-3" style="width: 70px; height: 70px;">
-                        <p><strong>Nome:</strong> <?= htmlspecialchars($username) ?></p>
-                        <p><strong>Email:</strong> <span id="modal-email"></span></p>
-                        <p><strong>Setor:</strong> <span id="modal-setor"></span></p>
-                        <p><strong>Tempo de Registro:</strong> <span id="modal-tempo-registro"></span></p>
-                        <p><strong>Movimentações Realizadas:</strong> <span id="modal-movimentacoes"></span></p>
+                        <p><strong>Nome</strong> <?= htmlspecialchars($username) ?></p>
+                        <p><strong>Email</strong> <span id="modal-email"></span></p>
+                        <p><strong>Setor</strong> <span id="modal-setor"></span></p>
+                        <p><strong>Tempo de Registro</strong> <span id="modal-tempo-registro"></span></p>
+                        <p><strong>Movimentações Realizadas</strong> <span id="modal-movimentacoes"></span></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>

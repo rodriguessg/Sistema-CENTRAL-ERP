@@ -1,6 +1,16 @@
 <?php
 // Conexão com o banco de dados
-include 'banco.php'; 
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$dbname = 'gm_sicbd';
+
+$conn = new mysqli($host, $user, $password, $dbname);
+
+// Verificar conexão
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 // Verifica se o parâmetro id foi enviado via GET
 if (isset($_GET['id'])) {

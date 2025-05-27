@@ -117,6 +117,7 @@ include 'header.php';
     <title>Cadastrar Usuário</title>
     <link rel="stylesheet" href="src/style/style.css">
     <link rel="stylesheet" href="./src/style/form-user.css">
+       <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
     <style>
         .container40 {
         /* display: flex; */
@@ -126,7 +127,7 @@ include 'header.php';
         justify-content: center;
         padding: 20px 24px 10px 24px;
         margin-top: 15px;
-        width: 50%;
+       /* width: 50%;*/
         background-color: #ffffff;
         border: 2px solid #ccc;
         box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
@@ -180,7 +181,7 @@ include 'header.php';
         }
     </style>
 </head>
-<body>
+<body class="caderno">
     <div class="container40">
         <div class="user-form-container2">
             <h3>Cadastrar Novo Usuário</h3>

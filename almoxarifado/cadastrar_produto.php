@@ -26,46 +26,40 @@ $username = $_SESSION['username'];
 // Verifica se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Captura os dados do formulário
-$produto = $_POST['produto'];  // Produto selecionado no campo select
-$classificacao = $_POST['classificacao'];
-$natureza = $_POST['natureza'];
-$contabil = $_POST['contabil'];
-$descricao = $_POST['descricao']; // Descrição do produto (campo preenchido automaticamente)
-$unidade = $_POST['unidade'];
-$localizacao = $_POST['localizacao'];
-
-// Garantir que o valor de custo seja numérico e com precisão
-$custo = $_POST['custo'];  
-$preco_medio = $_POST['preco_medio'];
-
-// 1. Remover qualquer ponto de milhar e substituir a vírgula por ponto
-$custo = str_replace('.', '', $custo);  // Remove ponto de milhar, se houver
-$custo = str_replace(',', '.', $custo); // Substitui a vírgula por ponto decimal
-
-$preco_medio = str_replace('.', '', $preco_medio); // Remove ponto de milhar, se houver
-$preco_medio = str_replace(',', '.', $preco_medio); // Substitui a vírgula por ponto decimal
-
-// 2. Garantir que o valor seja numérico (tipo float)
-$custo = (float) $custo; // Converte para float
-$preco_medio = (float) $preco_medio; // Converte para float
-
-// Verifique se o valor de custo e preco_medio são numéricos válidos
-if (!is_numeric($custo) || !is_numeric($preco_medio)) {
-    echo "Erro: O valor de custo ou preço médio não é válido!";
-    exit;
-}
-
-// Agora, $custo e $preco_medio são números decimais no formato correto
-// O restante do código continua como está...
-
-    
-    $quantidade = $_POST['quantidade'];
+    $produto = $_POST['produto'];  
+    $classificacao = $_POST['classificacao'];
+    $natureza = $_POST['natureza'];
+    $contabil = $_POST['contabil'];
+    $descricao = $_POST['descricao']; 
+    $unidade = $_POST['unidade'];
+    $localizacao = $_POST['localizacao'];
+    $custo = $_POST['custo'];  
     $preco_medio = $_POST['preco_medio'];
+    $quantidade = $_POST['quantidade']; 
     $nf = $_POST['nf'];
-    
-    // Registro da transação de entrada
-    $data = date('Y-m-d H:i:s');
-    
+
+    // Garantir que o valor de custo e preço médio sejam numéricos e com precisão
+    $custo = str_replace('.', '', $custo);  
+    $custo = str_replace(',', '.', $custo); // Substitui a vírgula por ponto decimal
+    $preco_medio = str_replace('.', '', $preco_medio); 
+    $preco_medio = str_replace(',', '.', $preco_medio); 
+
+    // Garantir que o valor seja numérico (tipo float)
+    $custo = (float) $custo; 
+    $preco_medio = (float) $preco_medio;
+
+    // Garantir que quantidade seja numérica válida
+    $quantidade = (float) $quantidade; 
+
+    // Verifique se o valor de custo e preco_medio são numéricos válidos
+    if (!is_numeric($custo) || !is_numeric($preco_medio) || !is_numeric($quantidade)) {
+        echo "Erro: O valor de custo, preço médio ou quantidade não é válido!";
+        exit;
+    }
+
+    // Calculando o novo total de entrada
+    $novo_total_entrada = $quantidade * $preco_medio;
+
     // Consulta para verificar se o produto já existe
     $sql_verifica = "SELECT id, quantidade FROM produtos WHERE produto = ?";
     $stmt_verifica = $conn->prepare($sql_verifica);
@@ -96,7 +90,7 @@ if (!is_numeric($custo) || !is_numeric($preco_medio)) {
                 // Registrar transação de entrada
                 $query_transacao = "INSERT INTO transicao (material_id, quantidade, data, tipo) VALUES (?, ?, ?, 'entrada')";
                 $transacaoStmt = $conn->prepare($query_transacao);
-                $transacaoStmt->bind_param('iis', $id_existente, $quantidade, $data); // Usando o ID do produto e a quantidade
+                $transacaoStmt->bind_param('iis', $id_existente, $quantidade, date('Y-m-d H:i:s')); // Usando o ID do produto e a quantidade
                 if (!$transacaoStmt->execute()) {
                     echo "Erro ao registrar a transação: " . $transacaoStmt->error;
                     exit;
@@ -123,23 +117,22 @@ if (!is_numeric($custo) || !is_numeric($preco_medio)) {
                 $classificacao,
                 $natureza,
                 $contabil,
-                $descricao,  // Descrição do produto
+                $descricao, 
                 $unidade,
                 $localizacao,
-                $custo,  // Mantém o valor de custo com precisão
+                $custo, 
                 $quantidade,
                 $preco_medio,
                 $nf
             );
 
             if ($stmt_insere->execute()) {
-                // Pega o ID do produto inserido
                 $produto_id = $conn->insert_id;
 
                 // Registrar transação de entrada
                 $query_transacao = "INSERT INTO transicao (material_id, quantidade, data, tipo) VALUES (?, ?, ?, 'entrada')";
                 $transacaoStmt = $conn->prepare($query_transacao);
-                $transacaoStmt->bind_param('iis', $produto_id, $quantidade, $data); // Usando o ID do produto e a quantidade
+                $transacaoStmt->bind_param('iis', $produto_id, $quantidade, date('Y-m-d H:i:s')); 
                 if (!$transacaoStmt->execute()) {
                     echo "Erro ao registrar a transação: " . $transacaoStmt->error;
                     exit;
@@ -155,7 +148,7 @@ if (!is_numeric($custo) || !is_numeric($preco_medio)) {
         }
     }
 
-    // Verifica se a natureza já existe na tabela fechamento
+    // Atualiza o fechamento
     $sql_fe = "SELECT saldo_atual, total_entrada FROM fechamento WHERE natureza = ?";
     $stmt_fe = $conn->prepare($sql_fe);
     $stmt_fe->bind_param("s", $natureza);
@@ -168,8 +161,8 @@ if (!is_numeric($custo) || !is_numeric($preco_medio)) {
         $stmt_fe->fetch();
 
         // Calcula o novo total de entrada e saldo atual
-        $novo_total_entrada = $total_entrada_existente + ($quantidade * $preco_medio);
-        $novo_saldo_atual = $saldo_atual + ($quantidade * $preco_medio);
+        $novo_total_entrada = $total_entrada_existente + $novo_total_entrada;
+        $novo_saldo_atual = $saldo_atual + $novo_total_entrada;
 
         // Atualiza o fechamento
         $sql_update_fe = "UPDATE fechamento SET total_entrada = ?, saldo_atual = ? WHERE natureza = ?";
@@ -183,7 +176,7 @@ if (!is_numeric($custo) || !is_numeric($preco_medio)) {
         $stmt_update_fe->close();
     } else {
         // Não existe um fechamento para essa natureza, insere um novo registro
-        $total_entrada = $quantidade * $preco_medio;
+        $total_entrada = $novo_total_entrada;
         $sql_insert_fe = "INSERT INTO fechamento (natureza, total_entrada, saldo_atual, data_fechamento) VALUES (?, ?, ?, NOW())";
         $stmt_insert_fe = $conn->prepare($sql_insert_fe);
         $stmt_insert_fe->bind_param("sdd", $natureza, $total_entrada, $total_entrada);
@@ -197,8 +190,6 @@ if (!is_numeric($custo) || !is_numeric($preco_medio)) {
         $stmt_insert_fe->close();
     }
 
-    $stmt_fe->close();
-
     // Registro no log_eventos
     $sql_log = "INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (?, ?, NOW())";
     $stmt_log = $conn->prepare($sql_log);
@@ -208,9 +199,11 @@ if (!is_numeric($custo) || !is_numeric($preco_medio)) {
         $stmt_log->bind_param("ss", $username, $tipo_operacao);
 
         if ($stmt_log->execute()) {
-            // Redirecionar para a página de sucesso
-            header('Location: mensagem.php?mensagem=sucesso2&pagina=homeestoque.php');
-            exit();
+            // Redireciona para a página de sucesso
+           // Redirecionamento para a página 'mensagem.php' em views, com os parâmetros necessários
+          header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=sucesso2&pagina=/Sistema-CENTRAL-ERP/homeestoque.php');
+          exit();
+
         } else {
             echo "Erro ao registrar ação no log: " . $stmt_log->error;
         }
@@ -223,5 +216,4 @@ if (!is_numeric($custo) || !is_numeric($preco_medio)) {
 
 // Fecha a conexão com o banco de dados
 $conn->close();
-
 ?>

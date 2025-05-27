@@ -16,7 +16,7 @@ try {
 $periodo = $_POST['periodo'] ?? '';
 $exercicio = $_POST['exercicio'] ?? '';
 $mes = $_POST['mes'] ?? '';
-$usuario = $_POST['usuario'] ?? 'Desconhecido';
+$usuario = $_POST['username'] ?? 'Desconhecido';
 
 // Validação do período
 if (empty($periodo)) {
@@ -25,7 +25,7 @@ if (empty($periodo)) {
 
 // Formata o cabeçalho do relatório
 $relatorioConteudo = "<h3>Relatório " . ucfirst($periodo) . "</h3>";
-$relatorioConteudo .= "<p><strong>Usuário:</strong> " . htmlspecialchars($usuario) . "</p>";
+$relatorioConteudo .= "<p><strong>Usuário:</strong> " . htmlspecialchars($username) . "</p>";
 $relatorioConteudo .= "<p><strong>Data:</strong> " . date('d/m/Y') . "</p>";
 
 // Define a query SQL com base no período selecionado

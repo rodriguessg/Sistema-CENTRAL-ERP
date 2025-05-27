@@ -132,7 +132,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 include 'header.php';
 ?>
+<?php
+// Conexão com o banco de dados
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$dbname = 'gm_sicbd';
 
+$conn = new mysqli($host, $user, $password, $dbname);
+
+// Verificar conexão
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Buscar todos os produtos da tabela materiais
+$sql = "SELECT codigo, descricao, natureza, classificacao, contabil FROM materiais";
+$result = $conn->query($sql);
+
+// Gerar as opções do select com os dados 'data-*'
+$options = '';
+while ($row = $result->fetch_assoc()) {
+    $options .= "<option value='" . $row['codigo'] . "' 
+                    data-descricao='" . $row['descricao'] . "' 
+                    data-natureza='" . $row['natureza'] . "' 
+                    data-classificacao='" . $row['classificacao'] . "' 
+                    data-contabil='" . $row['contabil'] . "'>
+                    " . $row['descricao'] . "
+                </option>";
+}
+
+$conn->close();
+?>
 
 
 <!DOCTYPE html>
@@ -181,7 +212,7 @@ include 'header.php';
 
 <div class="form-container" id="cadastrar" style="display:none;">
     <h3>Lançamento de materiais</h3>
-    <form id="form-cadastrar-produto" action="cadastrar_produto.php" method="POST" enctype="multipart/form-data">
+    <form id="form-cadastrar-produto" action="./almoxarifado/cadastrar_produto.php" method="POST" enctype="multipart/form-data">
         <div class="form-group">
             <div class="input-group">
                 <label for="produto">Produto:</label>
@@ -356,7 +387,7 @@ include 'header.php';
 
     <h3>Retirar Material do Estoque</h3>
     
-    <form id="retirar-form" action="retirar_materialestoque.php" method="POST">
+    <form id="retirar-form" action="./almoxarifado/retirar_materialestoque.php" method="POST">
         <div class="form-group3">
             <!-- Select para o Nome do Material -->
             <div class="input-group">
@@ -554,7 +585,7 @@ $conn->close();
     mensagemDiv.innerText = '';
 
     if (nomeMaterialId) {
-        fetch('buscar_dados_produto.php?id=' + nomeMaterialId)
+        fetch('./almoxarifado/buscar_dados_produto.php?id=' + nomeMaterialId)
             .then(response => response.json())
             .then(data => {
                 console.log("Resposta da API:", data); // Depuração
@@ -604,7 +635,7 @@ $conn->close();
         // Perguntar ao usuário se ele realmente quer excluir
         if (confirm('Tem certeza que deseja excluir este item?')) {
             // Enviar uma requisição AJAX para excluir o produto
-            fetch('excluir_produto.php', {
+            fetch('./almoxarifado/excluir_produto.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -848,7 +879,7 @@ $conn->close();
     // Função para carregar os exercícios (anos) disponíveis
     async function fetchExercicios() {
         try {
-            const response = await fetch('buscar_exercicios.php');
+            const response = await fetch('./almoxarifado/buscar_exercicios.php');
             const exercicios = await response.json();
             const exercicioSelect = document.getElementById('exercicio');
 
@@ -896,7 +927,7 @@ $conn->close();
         }
 
         try {
-            const response = await fetch('gerar_relatorioestoque.php', {
+            const response = await fetch('./almoxarifado/gerar_relatorioestoque.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({

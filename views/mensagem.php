@@ -35,10 +35,8 @@ $message = isset($mensagens[$mensagem]) ? $mensagens[$mensagem] : $mensagens['pa
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mensagem</title>
-       <link rel="stylesheet" href="src/style/mensagem.css">
-    <style>
-       
-    </style>
+     <link rel="stylesheet" href="src/style/mensagem.css">
+   
 </head>
 <body>
     <!-- Modal -->
@@ -63,7 +61,7 @@ $message = isset($mensagens[$mensagem]) ? $mensagens[$mensagem] : $mensagens['pa
         function closeModal() {
             document.getElementById("customModal").style.display = "none";
             // Redireciona para a página capturada pelo PHP
-            window.location.href = "<?php echo $pagina; ?>";
+            window.location.href = "<?php echo $pagina; ?>"; // Redirecionamento para a página capturada pela URL
         }
 
         // Exibe o modal ao carregar a página com a mensagem do PHP

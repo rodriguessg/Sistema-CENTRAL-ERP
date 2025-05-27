@@ -86,13 +86,18 @@ include './header.php';
         </select>
 
 
-        <label for="email">E-mail:</label>
+         <label for="email">E-mail:</label>
         <input type="email" id="email" required />
+
         <label for="tel">Telefone:</label>
-        <input type="numer" id="tel"> 
+        <input type="number" id="tel" required />
+
+        <label for="room">Número da Sala:</label>
+        <input type="text" id="room" required />
 
         <button type="button" onclick="validateForm()">Criar</button>
       </form>
+
 
       <!-- Modal de Erro -->
       <div id="errorModal" class="modal2">
@@ -116,15 +121,17 @@ include './header.php';
               <img class="gvn" src="./RH/src/img/cent.png" alt="logo" />
             </div>
             <div class="content-section">
-              <h2 id="modalName">Nome Sobrenome</h2>
+             <h2 id="modalName">Nome Sobrenome</h2>
               <h3 id="modalSector">Cargo</h3>
               <h3 id="modalSector1">Setor</h3>
               <p id="modalEmail">Email: exemplo@dominio.com</p>
+              <p id="modalPhone">Telefone: (XX) XXXXX-XXXX</p>             
               <p class="strong" style="color: #1d70a3;">Companhia Estadual de Engenharia de Transportes e Logística</p>
-              <p class="strong"> CENTRAL RJ</p>
+              <p class="strong"> CENTRAL RJ</p><p id="modalRoom">Sala: 605</p>
               <p>Av. Nossa Senhora de Copacabana,</p>
-              <p>493 Sala 605 Copacabana Rio de Janeiro-RJ CEP: 22031-000</p>
-              <h2>55 21 2334-3522 | 96809-9019</h2>
+              <p>Copacabana Rio de Janeiro-RJ CEP: 22031-000</p>
+
+       
             </div>
           </div>
           <button onclick="downloadSignature()">Baixar</button>

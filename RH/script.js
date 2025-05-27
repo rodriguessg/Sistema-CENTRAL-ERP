@@ -3,8 +3,10 @@ function validateForm() {
   const name = document.getElementById("name").value.trim();
   const sector = document.getElementById("sector").value.trim();
   const email = document.getElementById("email").value.trim();
+  const tel = document.getElementById("tel").value.trim();
+  const room = document.getElementById("room").value.trim();
 
-  if (!name || !sector || !email) {
+  if (!name || !sector || !email || !tel || !room) {
     showErrorModal(); // Exibe o modal de erro se algum campo estiver vazio
   } else {
     generateSignature(); // Cria a assinatura se todos os campos estiverem preenchidos
@@ -31,13 +33,10 @@ function showErrorModal() {
 
 // Fecha o modal de erro e reseta a barra de progresso
 function closeErrorModal() {
-  // Oculta o modal de erro
   document.getElementById("errorModal").style.display = "none";
-
-  // Array com os IDs dos campos do formulário
-  const fields = ["name", "sector", "email"];
-
+  
   // Verifica cada campo e aplica/remova a classe de erro
+  const fields = ["name", "sector", "email", "tel", "room"];
   fields.forEach((fieldId) => {
     const field = document.getElementById(fieldId);
     if (!field.value.trim()) {
@@ -52,36 +51,22 @@ function closeErrorModal() {
   progressBarFill.style.width = "0"; // Reseta a barra para 0% para reutilização
 }
 
-// Remove a classe de erro ao digitar
-function removeErrorHighlight(event) {
-  const field = event.target;
-  field.classList.remove("input-error"); // Remove a classe de erro do campo que está sendo editado
-}
-
-// Adiciona o evento input a todos os campos
-function addInputListeners() {
-  const fields = ["name", "sector", "email"];
-  fields.forEach((fieldId) => {
-    const field = document.getElementById(fieldId);
-    field.addEventListener("input", removeErrorHighlight); // Adiciona o evento input
-  });
-}
-
-// Chama a função ao carregar a página
-window.onload = addInputListeners;
-
 // Gera a assinatura e exibe no modal
 function generateSignature() {
   const name = document.getElementById("name").value;
   const sector = document.getElementById("sector").value;
   const sector1 = document.getElementById("sector1").value;
   const email = document.getElementById("email").value;
+  const tel = document.getElementById("tel").value;
+  const room = document.getElementById("room").value;
 
-  // Define os valores no layout do modal
+  // Atualiza os valores no layout do modal
   document.getElementById("modalName").textContent = name;
   document.getElementById("modalSector").textContent = sector;
   document.getElementById("modalSector1").textContent = sector1;
   document.getElementById("modalEmail").textContent = "Email: " + email;
+  document.getElementById("modalPhone").textContent = "Telefone: " + tel;
+  document.getElementById("modalRoom").textContent = "Sala: " + room;
 
   // Exibe o modal de assinatura
   document.getElementById("signatureModal").style.display = "block";
@@ -92,6 +77,7 @@ function closeModal() {
   document.getElementById("signatureModal").style.display = "none";
 }
 
+// Baixa a assinatura gerada
 function downloadSignature() {
   showLoadingModal(); // Mostra o modal de carregamento
 

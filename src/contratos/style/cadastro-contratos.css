@@ -61,6 +61,11 @@
   transform: translateY(-2px);
 }
 
+tbody, td, tfoot, th, thead, tr {
+    border-style: solid;
+    border-width: 1px !important;
+}
+
 /* Cabeçalho do formulário aprimorado */
 .cadastrar-contratos {
   display: flex;

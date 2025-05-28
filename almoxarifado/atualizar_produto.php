@@ -1,6 +1,16 @@
 <?php
-// Incluir a conexão com o banco de dados
-include 'banco.php';
+// Conexão com o banco de dados
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$dbname = 'gm_sicbd';
+
+$conn = new mysqli($host, $user, $password, $dbname);
+
+// Verificar conexão
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 // Verificar se os dados foram enviados via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

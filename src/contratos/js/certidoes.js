@@ -90,15 +90,18 @@
                         </button>
                     </div>
                 </div>
-                <div class="card-body">
-                    <p><strong>Documento:</strong> ${certidao.documento}</p>
-                    <p><strong>Data de Vencimento:</strong> ${new Date(certidao.data_vencimento).toLocaleDateString('pt-BR')}</p>
-                    <p class="dias-restantes ${classe}"><strong>Dias Restantes:</strong> ${texto}</p>
-                    <p><strong>Fornecedor:</strong> ${certidao.fornecedor}</p>
-                    <p><strong>Responsável:</strong> ${certidao.responsavel}</p>
-                    <p><strong>Arquivo:</strong> ${arquivoLink}</p>
-                    <p><strong>Contrato Vinculado:</strong> ${contratoInfo}</p>
-                </div>
+              <div class="card-body">
+  <p><i class="fas fa-file-alt"></i><strong> Documento:</strong> ${certidao.documento}</p>
+  <p><i class="fas fa-calendar-alt"></i><strong> Data de Vencimento:</strong> ${new Date(certidao.data_vencimento).toLocaleDateString('pt-BR')}</p>
+  <p class="dias-restantes ${classe}">
+    <i class="fas fa-hourglass-half"></i><strong> Dias Restantes:</strong> ${texto}
+  </p>
+  <p><i class="fas fa-building"></i><strong> Fornecedor:</strong> ${certidao.fornecedor}</p>
+  <p><i class="fas fa-user"></i><strong> Responsável:</strong> ${certidao.responsavel}</p>
+  <p><i class="fas fa-file-upload"></i><strong> Arquivo:</strong> ${arquivoLink}</p>
+  <p><i class="fas fa-link"></i><strong> Contrato Vinculado:</strong> ${contratoInfo}</p>
+</div>
+
             `;
         }
 
@@ -368,3 +371,12 @@
 
         // Inicializar
         document.addEventListener('DOMContentLoaded', loadCertidoes);
+
+
+
+
+
+
+
+
+        

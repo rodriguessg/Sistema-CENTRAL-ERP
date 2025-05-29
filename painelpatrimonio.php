@@ -55,9 +55,10 @@ $con->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Bens</title>
     <link rel="stylesheet" href="src/patrimonio/style/painel-patrimonio.css">
+      <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
 </head>
 <body>
-
+<div class="caderno">
     <!-- Lado esquerdo: Cards -->
 <div class="cards-container">
         <div class="card">
@@ -159,7 +160,7 @@ $con->close();
             </table>
         </div>
     </div>
-
+</div>
 </body>
 </html>
 <?php include 'footer.php'; ?>

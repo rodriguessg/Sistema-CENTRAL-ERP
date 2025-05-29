@@ -137,41 +137,48 @@ include './header.php';
     </main>
   
  </div>
+<!-- Modal de Assinatura -->
+<div id="signatureModal" class="modal">
+  <div class="modal-content">
+    <!-- Removido o botão de fechar (X) -->
 
-    <!-- Modal de Assinatura -->
-      <div id="signatureModal" class="modal">
-        <div class="modal-content">
-          <span class="close" onclick="closeModal()">&times;</span>
-          
-          <div id="signatureLayout">
-            <div class="logo-section">
-                <img class="gvn1" src="./RH/src/img/colo.png" alt="logo" />
-              <img class="gvn" src="./RH/src/img/cent.png" alt="logo" />             
-            </div>
-            <div class="content-section">
-             <h2 id="modalName">Nome Sobrenome</h2>
-              <h3 id="modalSector">Cargo</h3>
-              <h3 id="modalSector1">Setor</h3>
-              <!-- <p id="modalEmail">Email: exemplo@dominio.com</p> -->    
-              <!-- <p class="strong" style="color: #1d70a3;">Companhia Estadual de Engenharia de Transportes e Logística</p> -->
-              <p class="strong"> CENTRAL RJ</p>
-             <div class="address-line">
-  <p>Av. Nossa Senhora de Copacabana,</p>
-  <p id="modalRoom">Sala: </p>
-</div>
-
-              <p>Copacabana Rio de Janeiro-RJ CEP: 22031-000</p>
-               <p id="modalPhone">Telefone: (XX) XXXXX-XXXX</p>  
-
-       
-            </div>
-          </div>
-          <button onclick="downloadSignature()">Baixar</button>
-        </div>
+    <div id="signatureLayout">
+      <div class="logo-section">
+        <img class="gvn1" src="./RH/src/img/colo.png" alt="logo" />
+        <img class="gvn" src="./RH/src/img/cent.png" alt="logo" />
       </div>
+
+      <div class="content-section">
+        <h2 id="modalName">Nome Sobrenome</h2>
+        <h3 id="modalSector">Cargo</h3>
+        <h3 id="modalSector1">Setor</h3>
+        <!-- <p id="modalEmail">Email: exemplo@dominio.com</p> -->    
+        <!-- <p class="strong" style="color: #1d70a3;">Companhia Estadual de Engenharia de Transportes e Logística</p> -->
+        <p class="strong">CENTRAL RJ</p>
+
+        <div class="address-line">
+          <p>Av. Nossa Senhora de Copacabana,</p>
+          <p id="modalRoom">Sala: </p>
+        </div>
+
+        <p>Copacabana Rio de Janeiro-RJ CEP: 22031-000</p>
+        <p id="modalPhone">Telefone: (XX) XXXXX-XXXX</p>  
+      </div>
+    </div>
+
+    <!-- Botões no final -->
+    <div class="modal-buttons">
+      <button onclick="downloadSignature()">Baixar</button>
+      <button onclick="closeModal()">Fechar</button>
+
+    </div>
+  </div>
+</div>
  
   <script src="./RH/script.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  
 <?php
 include 'footer.php'
 ?>

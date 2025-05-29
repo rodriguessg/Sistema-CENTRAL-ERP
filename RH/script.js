@@ -68,12 +68,13 @@ function validateForm() {
       showSignatureModal()
     }, 1000)
   }, 1500)
+
 }
 
 // Função para criar elemento de download otimizado
 function createDownloadElement(name, sector, sector1, tel, room) {
-  const downloadElement = document.createElement("div");
-  downloadElement.className = "signature-download";
+  const downloadElement = document.createElement("div")
+  downloadElement.className = "signature-download"
 
   downloadElement.innerHTML = `
     <div class="logo-section-download">
@@ -105,11 +106,10 @@ function createDownloadElement(name, sector, sector1, tel, room) {
   </div>
 </div>
 
-  `;
+  `
 
-  return downloadElement;
+  return downloadElement
 }
-
 
 // Função para baixar a assinatura como imagem
 function downloadSignature() {
@@ -225,17 +225,8 @@ function closeLoadingModal() {
 // Função para mostrar o modal de assinatura
 function showSignatureModal() {
   const modal = document.getElementById("signatureModal")
-  modal.classList.add("show")
   modal.style.display = "flex"
-}
-
-// Função para fechar o modal de assinatura
-function closeModal() {
-  const modal = document.getElementById("signatureModal")
-  modal.classList.remove("show")
-  setTimeout(() => {
-    modal.style.display = "none"
-  }, 300)
+  modal.classList.add("show")
 }
 
 // Adicionar eventos de tecla para fechar modais com ESC

@@ -34,7 +34,7 @@
   max-width: 200px;
 }
 
-/* Container principal do formulário aprimorado */
+/* Container principal do formulário aprimorado - LINHA REMOVIDA */
 .form-cadastro {
   background: var(--bg-white);
   border: 1px solid var(--border-color);
@@ -46,7 +46,8 @@
   position: relative;
 }
 
-.form-cadastro::before {
+/* ❌ REMOVIDO - linha no topo que causava o problema */
+/* .form-cadastro::before {
   content: "";
   position: absolute;
   top: 0;
@@ -54,16 +55,22 @@
   right: 0;
   height: 4px;
   background: var(--primary-gradient);
-}
+} */
 
+/* ✅ CORRIGIDO - hover sem movimento que causava o balançar */
 .form-cadastro:hover {
   box-shadow: var(--shadow-xl);
-  transform: translateY(-2px);
+  /* ❌ REMOVIDO: transform: translateY(-2px); */
 }
 
-tbody, td, tfoot, th, thead, tr {
-    border-style: solid;
-    border-width: 1px !important;
+tbody,
+td,
+tfoot,
+th,
+thead,
+tr {
+  border-style: solid;
+  border-width: 1px !important;
 }
 
 /* Cabeçalho do formulário aprimorado */
@@ -107,7 +114,7 @@ tbody, td, tfoot, th, thead, tr {
 
 /* Container do novo contrato */
 .novo-contrato-container {
-      padding: 1rem;
+  padding: 1rem;
   background-color: transparent;
   border-radius: var(--border-radius);
   width: 100%;
@@ -139,8 +146,7 @@ tbody, td, tfoot, th, thead, tr {
   padding: 1.5rem;
 }
 
-
-/* Grupos de input aprimorados */
+/* Grupos de input aprimorados - HOVER CORRIGIDO */
 .input-group-contratos {
   width: 100%;
   margin-bottom: 1rem;
@@ -152,10 +158,11 @@ tbody, td, tfoot, th, thead, tr {
   transition: var(--transition);
 }
 
+/* ✅ CORRIGIDO - hover sem movimento que causava o balançar */
 .input-group-contratos:hover {
   border-color: var(--primary-color);
   box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  /* ❌ REMOVIDO: transform: translateY(-1px); */
 }
 
 .input-group-contratos label {
@@ -169,7 +176,7 @@ tbody, td, tfoot, th, thead, tr {
   letter-spacing: 0.5px;
 }
 
-/* Inputs e selects aprimorados */
+/* Inputs e selects aprimorados - FOCUS CORRIGIDO */
 .input-group-contratos input,
 .input-group-contratos select {
   width: 100%;
@@ -185,12 +192,13 @@ tbody, td, tfoot, th, thead, tr {
   font-family: inherit;
 }
 
+/* ✅ CORRIGIDO - focus sem movimento */
 .input-group-contratos input:focus,
 .input-group-contratos select:focus {
   border-color: var(--primary-color);
   outline: none;
   box-shadow: 0 0 0 3px rgba(25, 40, 68, 0.1);
-  transform: translateY(-1px);
+  /* ❌ REMOVIDO: transform: translateY(-1px); */
 }
 
 /* Seções com ícones aprimoradas */
@@ -265,7 +273,7 @@ tbody, td, tfoot, th, thead, tr {
   align-items: center;
 }
 
-/* Containers especiais aprimorados */
+/* Containers especiais aprimorados - HOVER CORRIGIDO */
 #parcelas-container,
 #aditivos-container,
 #outros-container,
@@ -278,12 +286,14 @@ tbody, td, tfoot, th, thead, tr {
   transition: var(--transition);
 }
 
+/* ✅ CORRIGIDO - hover sem movimento */
 #parcelas-container:hover,
 #aditivos-container:hover,
 #outros-container:hover,
 .geral-parcelas:hover {
   border-color: var(--primary-color);
   box-shadow: var(--shadow-md);
+  /* ❌ REMOVIDO qualquer transform que causava movimento */
 }
 
 #num-parcelas {
@@ -348,7 +358,7 @@ input[type="checkbox"]:checked + label {
   font-weight: 500;
 }
 
-/* Ícone de cadastrar aprimorado */
+/* Ícone de cadastrar aprimorado - HOVER SUAVIZADO */
 #icon-cadastrar {
   transition: var(--transition);
   cursor: pointer;
@@ -360,10 +370,11 @@ input[type="checkbox"]:checked + label {
   backdrop-filter: blur(10px);
 }
 
+/* ✅ CORRIGIDO - hover mais suave */
 #icon-cadastrar:hover {
-  transform: scale(1.2) rotate(10deg);
+  transform: scale(1.1); /* Reduzido de 1.2 para 1.1 */
   background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); /* Reduzido o brilho */
 }
 
 /* Responsividade aprimorada */

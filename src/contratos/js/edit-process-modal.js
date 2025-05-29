@@ -301,3 +301,6 @@ function editacontrato(dados) {
         // Carregar contratos ao iniciar
         searchContracts();
       
+
+
+        

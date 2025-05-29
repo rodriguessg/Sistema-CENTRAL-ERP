@@ -492,7 +492,7 @@ input[type="checkbox"] {
 
 .event-color-bar {
   width: 6px; /* Reduzido de 10px */
-  height: 80px; /* Reduzido de 168px */
+height: 122px;
   margin-right: 6px; /* Reduzido de 10px */
   border-radius: 0px 3px 3px 0px;
   background: var(--danger-gradient);
@@ -512,7 +512,7 @@ input[type="checkbox"] {
   color: #333333;
   display: flex;
   flex-direction: column;
-  gap: 4px; /* Reduzido de 10px */
+ gap: 10px;
 }
 
 .event-title,
@@ -569,16 +569,16 @@ input[type="checkbox"] {
 }
 
 .dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: -120px; /* Reduzido de -160px */
-  background-color: #fff;
-  border-radius: 4px; /* Reduzido de 5px */
-  box-shadow: var(--shadow-lg);
-  padding: 6px 10px; /* Reduzido de 10px 15px */
-  width: 120px; /* Reduzido de 150px */
-  z-index: 10;
+ display: none;
+    position: relative;
+    top: 100%;
+    /* left: -91px; */
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: var(--shadow-lg);
+    padding: 6px 10px;
+    width: 120px;
+    z-index: 10;
 }
 
 .daily-event-menu:hover .dropdown-menu {

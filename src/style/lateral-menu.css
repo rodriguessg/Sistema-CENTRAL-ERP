@@ -36,7 +36,10 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+   background-image: url('../img/bk.png'); /* Substitua o caminho da imagem conforme necessário */
+    background-size: cover; /* Faz a imagem cobrir todo o espaço do modal */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat; /* Impede que a imagem se repita */
   overflow-x: hidden;
 }
 

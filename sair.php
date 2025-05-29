@@ -29,7 +29,7 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Pragma: no-cache");
 header("Expires: 0");
 
-// Redireciona para a página de login
-header("Location: index.php?mensagem=Você foi deslogado!");
+  header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=deslogado&pagina=/Sistema-CENTRAL-ERP/index.php");
+
 exit; // Encerra o script após o redirecionamento
 ?>

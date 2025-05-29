@@ -7,7 +7,10 @@ $pagina = isset($_GET['pagina']) ? $_GET['pagina'] : 'home.php'; // Página padr
 $mensagens = [
     'inativo' => 'Usuário inativo. Entre em contato com o administrador.',
     '404' => 'Erro de conexão com o servidor.',
+    'Cadastrado_contratos_sucesso' => 'Contrato cadastrado com suucesso.',
+    'Contrato_atualizado' => 'O Contrato foi atualizado!',
     'acesso_negado' => 'Você não tem acesso a este perfil.',
+    'deslogado' => 'Logout',
     'senha_invalida' => 'Usuário ou senha inválida.',
     'usuario_invalido' => 'Usuário não encontrado.',
     'setor_nao_reconhecido' => 'Setor não reconhecido.',
@@ -35,7 +38,7 @@ $message = isset($mensagens[$mensagem]) ? $mensagens[$mensagem] : $mensagens['pa
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mensagem</title>
-     <link rel="stylesheet" href="src/style/mensagem.css">
+     <link rel="stylesheet" href="../src/style/mensagem.css">
    
 </head>
 <body>

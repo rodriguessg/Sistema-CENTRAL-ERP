@@ -85,7 +85,8 @@ if (isset($_POST['cadastrar'])) {
 
                     if ($stmt_log->execute()) {
                         // Redirecionar para a página de sucesso
-                        header('Location: mensagem.php?mensagem=sucesso2&pagina=cadastro_usuario.php');
+                   
+                          header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=sucesso2&pagina=/Sistema-CENTRAL-ERP/cadastro_usuario.php");
                         exit();
                     } else {
                         echo "Erro ao registrar ação no log: " . $stmt_log->errorInfo()[2];

@@ -20,14 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Verifica se o usuário está ativo
         if (strtolower($usuario['situacao']) !== 'ativo') {
             registrarLogEvento($con, $username, 'Login falhou: Usuário inativo');
-            header("Location: mensagem.php?mensagem=inativo&pagina=index.php");
+            header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=inativo&pagina=/Sistema-CENTRAL-ERP/index.php");
+
+                   
             exit();
         }
 
         // Verifica se o setor informado corresponde ao setor do usuário
         if (strtolower($usuario['setor']) !== $setor) {
             registrarLogEvento($con, $username, 'Login falhou: Setor incorreto');
-            header("Location: mensagem.php?mensagem=setor_nao_reconhecido&pagina=index.php");
+            header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=setor_nao_reconhecido&pagina=/Sistema-CENTRAL-ERP/index.php");
             exit();
         }
 
@@ -50,13 +52,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             // Senha inválida
             registrarLogEvento($con, $username, 'Login falhou: Senha inválida');
-            header("Location: mensagem.php?mensagem=senha_invalida&pagina=index.php");
+            header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=senha_invalida&pagina=/Sistema-CENTRAL-ERP/index.php");
             exit();
         }
     } else {
         // Usuário não encontrado
         registrarLogEvento($con, $username, 'Login falhou: Usuário não encontrado');
-        header("Location: mensagem.php?mensagem=usuario_invalido&pagina=index.php");
+        header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=usuario_invalido&pagina=/Sistema-CENTRAL-ERP/index.php");
         exit();
     }
 }

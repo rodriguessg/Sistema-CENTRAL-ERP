@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Redirecionar para a página de sucesso
-        header('Location: mensagem.php?mensagem=sucesso&pagina=homepatrimonio.php');
+        header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=sucesso&pagina=/Sistema-CENTRAL-ERP/homepatrimonio.php');
         exit();
     } else {
         die("Erro ao cadastrar o patrimônio: " . $stmt->errorInfo()[2]);

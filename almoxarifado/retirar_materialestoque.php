@@ -20,8 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Verifica se todos os campos obrigatórios estão preenchidos
     if (empty($nome) || empty($codigo) || $quantidade <= 0) {
-        header("Location: mensagem.php?mensagem=Campos obrigatórios não preenchidos&pagina=retirar_materialestoque.php");
+        header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Campos obrigatórios não preenchidos&pagina=/Sistema-CENTRAL-ERP/retirar_materialestoque.php");
         exit;
+        
     }
 
     // Consulta para verificar se o produto existe no estoque
@@ -62,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Mensagem informando que a retirada não pode ser feita, pois atingiu o limite mínimo
-            header("Location: mensagem.php?mensagem=Estoque mínimo atingido (5 unidades). Não é possível retirar&pagina=homeestoque.php");
+            header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Estoque mínimo atingido (5 unidades). Não é possível retirar&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
             exit;
         }
 
@@ -140,23 +141,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Redireciona com mensagem de sucesso
-            header("Location: mensagem.php?mensagem=produto_retirado&pagina=homeestoque.php");
+            header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=produto_retirado&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
             exit;
         } else {
             // Estoque insuficiente
-            header("Location: mensagem.php?mensagem=estoque_insuficiente&pagina=homeestoque.php");
+            header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=estoque_insuficiente&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
             exit;
         }
     } else {
         // Produto não encontrado
-        header("Location: mensagem.php?mensagem=produto_nao_encontrado&pagina=homeestoque.php");
+        header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=produto_nao_encontrado&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
         exit;
     }
 
     $stmt->close();
 } else {
     // Caso a requisição não seja POST
-    header("Location: mensagem.php?mensagem=Requisição inválida.&pagina=homeestoque.php");
+    header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Requisição inválida.&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
     exit;
 }
 

@@ -114,7 +114,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
             }
         }
 
-        echo "<script>alert('Contrato cadastrado com sucesso!'); window.location.href='homecontratos.php';</script>";
+        header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Cadastrado_contratos_sucesso&pagina=/Sistema-CENTRAL-ERP/homecontratos.php");
+        exit();
     } catch (PDOException $e) {
         echo "Erro ao cadastrar contrato: " . $e->getMessage();
     }

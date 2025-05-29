@@ -107,7 +107,8 @@ try {
 
         default:
             // Caso o setor não seja reconhecido, redireciona para a página de erro
-            header("Location: mensagem.php?mensagem=setor_nao_reconhecido&pagina=login.php");
+            header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=setor_nao_reconhecido&pagina=/Sistema-CENTRAL-ERP/login.php");
+             
             exit();
     }
 } catch (PDOException $e) {

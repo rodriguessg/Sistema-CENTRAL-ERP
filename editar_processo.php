@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute();
 
     // Retorna uma resposta de sucesso
-    echo "Processo atualizado com sucesso!";
+     header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Contrato_atualizado&pagina=/Sistema-CENTRAL-ERP/homecontratos.php");
+        exit();
 }
 ?>

@@ -120,8 +120,11 @@ include 'header.php'; // Inclui o cabeçalho
     <title>Painel de Bens</title>
     <link rel="stylesheet" type="text/css" href="./src/style/painel.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
 </head>
 <body>
+
+<div class="caderno">
     <!-- Container Principal -->
     <div class="dashboard">
         <!-- Cards Resumo -->
@@ -222,7 +225,7 @@ include 'header.php'; // Inclui o cabeçalho
             </div>
         </div>
     </div>
-
+</div>
     <script>
         // Passando os dados do PHP para o JavaScript
         const statusData = <?php echo json_encode($statusData, JSON_HEX_TAG); ?>;

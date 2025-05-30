@@ -26,9 +26,9 @@ try {
 // Função para validar dados
 function validateData($data) {
     $errors = [];
-    if (empty($data['titulo'])) $errors[] = 'Título é obrigatório.';
+    if (empty($data['titulos'])) $errors[] = 'Título é obrigatório.';
     if (empty($data['descricao'])) $errors[] = 'Descrição é obrigatória.';
-    if (empty($data['validade']) || !strtotime($data['validade'])) $errors[] = 'Validade inválida.';
+    if (empty($data['validades']) || !strtotime($data['validades'])) $errors[] = 'Validade inválida.';
     if (!in_array($data['situacao'], ['Ativo', 'Inativo', 'Encerrado', 'Renovado'])) $errors[] = 'Situação inválida.';
     
     $valores_aditivos = [];
@@ -58,10 +58,22 @@ try {
     }
 
     $id = !empty($data['id_contrato']) ? intval($data['id_contrato']) : null;
+    $titulo = $data['titulo'];
     $valores_aditivos = $validation['valores_aditivos'];
 
+    // Verificar se o título já existe, mas não é o mesmo contrato que está sendo atualizado
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM gestao_contratos WHERE titulo = ? AND id != ?");
+    $stmt->execute([$titulo, $id]);
+    $count = $stmt->fetchColumn();
+
+    if ($count > 0) {
+        ob_end_clean();
+        echo json_encode(['success' => false, 'message' => 'O título já existe para outro contrato.']);
+        exit;
+    }
+
     if ($id) {
-        // Atualizar contrato
+        // Atualizar contrato existente
         $stmt = $pdo->prepare("
             UPDATE gestao_contratos 
             SET titulo = ?, descricao = ?, validade = ?, situacao = ?, 
@@ -70,9 +82,9 @@ try {
             WHERE id = ?
         ");
         $stmt->execute([
-            $data['titulo'],
+            $data['titulos'],
             $data['descricao'],
-            $data['validade'],
+            $data['validades'],
             $data['situacao'],
             $valores_aditivos['valor_aditivo1'],
             $valores_aditivos['valor_aditivo2'],
@@ -81,27 +93,6 @@ try {
             $valores_aditivos['valor_aditivo5'],
             $id
         ]);
-    } else {
-        // Inserir novo contrato
-        $stmt = $pdo->prepare("
-            INSERT INTO gestao_contratos (
-                titulo, descricao, validade, situacao, 
-                valor_aditivo1, valor_aditivo2, valor_aditivo3, 
-                valor_aditivo4, valor_aditivo5
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        $stmt->execute([
-            $data['titulo'],
-            $data['descricao'],
-            $data['validade'],
-            $data['situacao'],
-            $valores_aditivos['valor_aditivo1'],
-            $valores_aditivos['valor_aditivo2'],
-            $valores_aditivos['valor_aditivo3'],
-            $valores_aditivos['valor_aditivo4'],
-            $valores_aditivos['valor_aditivo5']
-        ]);
-        $id = $pdo->lastInsertId();
     }
 
     // Retornar dados atualizados
@@ -123,7 +114,7 @@ try {
     ob_end_clean();
     echo json_encode([
         'success' => true,
-        'message' => 'Contrato salvo com sucesso!',
+        'message' => 'Contrato atualizado com sucesso!',
         'data' => $contrato
     ]);
 } catch (Exception $e) {

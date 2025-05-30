@@ -111,36 +111,36 @@ function getSituacaoStyle(situacao) {
                             const situacaoStyle = getSituacaoStyle(contrato.situacao);
                             const row = document.createElement('tr');
                             row.innerHTML = `
-<td class="truncated-text" title="${contrato.id}">${contrato.id}</td>
-<td class="truncated-text" title="${contrato.titulo}">${contrato.titulo}</td>
-<td class="truncated-text" title="${contrato.descricao}">${contrato.descricao}</td>
-<td class="${validadeStyle.class}" style="color: ${validadeStyle.color}">
-    <i class="fas ${validadeStyle.icon}"></i> ${formatDate(contrato.validade)}
-</td>
-<td class="${situacaoStyle.class}" 
-    style="color: ${situacaoStyle.color}; 
-           background-color: ${situacaoStyle.background}; 
-           border-radius: ${situacaoStyle.borderRadius}; 
-           padding: ${situacaoStyle.padding};
-           display: inline-flex;
-           justify-content: center;
-           align-items: center;
-           margin-top: 7px;
-           font-size: 12px;
-           border: solid 1px ${situacaoStyle.color};">
-    <i class="fas ${situacaoStyle.icon}"></i> ${contrato.situacao}
-</td>
-<td>
-    <button class="btn btn-info btn-sm" onclick='openModal(${JSON.stringify(contrato)}); event.stopPropagation()' title="Visualizar">
-        <i class="fas fa-eye"></i>
-    </button>
-    <button class="btn btn-primary btn-sm" onclick='showResumoProcesso(${JSON.stringify(contrato)}); event.stopPropagation()' title="Relatório">
-        <i class="fas fa-file-alt"></i>
-    </button>
-    <button class="btn btn-warning btn-sm" onclick='editacontrato(${JSON.stringify(contrato)})' title="Editar contrato">
-        <i class="fas fa-pen"></i>
-    </button>
-</td>
+                                <td class="truncated-text" title="${contrato.id}">${contrato.id}</td>
+                                <td class="truncated-text" title="${contrato.titulo}">${contrato.titulo}</td>
+                                <td class="truncated-text" title="${contrato.descricao}">${contrato.descricao}</td>
+                                <td class="${validadeStyle.class}" style="color: ${validadeStyle.color}">
+                                    <i class="fas ${validadeStyle.icon}"></i> ${formatDate(contrato.validade)}
+                                </td>
+                                <td class="${situacaoStyle.class}" 
+                                    style="color: ${situacaoStyle.color}; 
+                                        background-color: ${situacaoStyle.background}; 
+                                        border-radius: ${situacaoStyle.borderRadius}; 
+                                        padding: ${situacaoStyle.padding};
+                                        display: inline-flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        margin-top: 7px;
+                                        font-size: 12px;
+                                        border: solid 1px ${situacaoStyle.color};">
+                                    <i class="fas ${situacaoStyle.icon}"></i> ${contrato.situacao}
+                                </td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" onclick='openModal(${JSON.stringify(contrato)}); event.stopPropagation()' title="Visualizar">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick='showResumoProcesso(${JSON.stringify(contrato)}); event.stopPropagation()' title="Relatório">
+                                        <i class="fas fa-file-alt"></i>
+                                    </button>
+                                    <button class="btn btn-warning btn-sm" onclick='editacontrato(${JSON.stringify(contrato)})' title="Editar contrato">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                </td>
 
 
                             `;
@@ -194,10 +194,11 @@ function editacontrato(dados) {
 
         // Preenche os campos do formulário com os dados do contrato
         document.getElementById('id_contrato').value = dados.id || '';
-        document.getElementById('titulo').value = dados.titulo || '';
-        document.getElementById('validade').value = dados.validade || '';
-        document.getElementById('situacao').value = dados.situacao || 'Ativo';
+        document.getElementById('titulos').value = dados.titulo || '';//descricao nova
         document.getElementById('descricao').value = dados.descricao || '';
+        document.getElementById('validades').value = dados.validade || '';
+        document.getElementById('situacao').value = dados.situacao || '';
+        
 
         // Limpa os campos de aditivo antes de adicionar novos
         const container = document.getElementById('aditivos-container');
@@ -228,7 +229,7 @@ function editacontrato(dados) {
     }
 
     aditivoCount++;
-    const container = document.getElementById('aditivos-container');
+    const container = document.getElementById('aditivos-container3');
     const input = document.createElement('input');
     input.type = 'number';
     input.step = '0.01';

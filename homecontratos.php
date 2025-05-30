@@ -689,20 +689,21 @@ function verificarGestorEFiscal() {
 
                     <!-- Título do contrato -->
                     <div class="mb-3">
-                        <label for="titulo" class="form-label">Título</label>
-                        <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        <label for="titulos" class="form-label">Título</label>
+                        <input type="titulos" class="form-control" id="titulos" name="titulos" required>
                     </div>
 
                     <!-- Descrição do contrato -->
                     <div class="mb-3">
                         <label for="descricao" class="form-label">Descrição</label>
+                        
                         <textarea class="form-control" id="descricao" name="descricao" required></textarea>
                     </div>
 
                     <!-- Validade do contrato -->
                     <div class="mb-3">
-                        <label for="validade" class="form-label">Validade</label>
-                        <input type="date" class="form-control" id="validade" name="validade" required>
+                        <label for="validades" class="form-label">Validade</label>
+                        <input type="date" class="form-control" id="validades" name="validades" required>
                     </div>
 
                     <!-- Situação do contrato -->
@@ -719,7 +720,7 @@ function verificarGestorEFiscal() {
                     <!-- Valores aditivos -->
                     <div class="mb-3">
                         <label class="form-label">Valores Aditivos</label>
-                        <div id="aditivos-container"></div>
+                        <div id="aditivos-container3"></div>
                         <button type="button" class="btn btn-outline-primary mt-2" onclick="addAditivo()">Adicionar Aditivo</button>
                     </div>
 

@@ -165,7 +165,7 @@ async function loadContractsAndPayments(contractData) {
     <span>PARCELAS DO CONTRATO /</span>
     <span style="color: #0056b3;">${titulo}</span> /
     <span>(${seiLink})</span>
-    Conta Bancária /<span class="account-number">${agencia_bancaria}</span>
+    Conta Bancária <span class="account-number">${agencia_bancaria}</span>
   `;
 
   try {

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 19-Maio-2025 às 20:37
--- Versão do servidor: 10.4.32-MariaDB
--- versão do PHP: 8.2.12
+-- Tempo de geração: 04/06/2025 às 20:40
+-- Versão do servidor: 10.4.28-MariaDB
+-- Versão do PHP: 8.0.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `categorias`
+-- Estrutura para tabela `categorias`
 --
 
 CREATE TABLE `categorias` (
@@ -36,7 +36,7 @@ CREATE TABLE `categorias` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `certidoes`
+-- Estrutura para tabela `certidoes`
 --
 
 CREATE TABLE `certidoes` (
@@ -53,16 +53,17 @@ CREATE TABLE `certidoes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Tabela para armazenar informações de certidões';
 
 --
--- Extraindo dados da tabela `certidoes`
+-- Despejando dados para a tabela `certidoes`
 --
 
 INSERT INTO `certidoes` (`id`, `documento`, `data_vencimento`, `nome`, `fornecedor`, `responsavel`, `criado_em`, `atualizado_em`, `arquivo`, `contrato_id`) VALUES
-(1, 'CND', '2025-05-15', 'Certidão Negativa Teste', 'Empresa Teste', 'contratos', '2025-05-12 19:46:03', '2025-05-12 19:46:03', NULL, NULL);
+(1, 'CND', '2025-05-15', 'Certidão Negativa Teste', 'Empresa Teste', 'contratos', '2025-05-12 19:46:03', '2025-05-12 19:46:03', NULL, NULL),
+(2, 'FGTS', '2025-05-27', 'Gabriel de Souza Rodrigues', 'Lenovo', 'Claudia', '2025-05-27 18:56:26', '2025-05-27 18:56:26', '68360ada8a2cc_relatorio_material (1).pdf', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `codigo_atual`
+-- Estrutura para tabela `codigo_atual`
 --
 
 CREATE TABLE `codigo_atual` (
@@ -71,7 +72,7 @@ CREATE TABLE `codigo_atual` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `codigo_atual`
+-- Despejando dados para a tabela `codigo_atual`
 --
 
 INSERT INTO `codigo_atual` (`id`, `codigo`) VALUES
@@ -81,7 +82,7 @@ INSERT INTO `codigo_atual` (`id`, `codigo`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `configuracoes`
+-- Estrutura para tabela `configuracoes`
 --
 
 CREATE TABLE `configuracoes` (
@@ -102,7 +103,7 @@ CREATE TABLE `configuracoes` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `contratos_parcelas`
+-- Estrutura para tabela `contratos_parcelas`
 --
 
 CREATE TABLE `contratos_parcelas` (
@@ -114,7 +115,7 @@ CREATE TABLE `contratos_parcelas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `contratos_parcelas`
+-- Despejando dados para a tabela `contratos_parcelas`
 --
 
 INSERT INTO `contratos_parcelas` (`id`, `contrato_id`, `mes`, `ano`, `valor`) VALUES
@@ -134,7 +135,7 @@ INSERT INTO `contratos_parcelas` (`id`, `contrato_id`, `mes`, `ano`, `valor`) VA
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `controle_transicao`
+-- Estrutura para tabela `controle_transicao`
 --
 
 CREATE TABLE `controle_transicao` (
@@ -143,7 +144,7 @@ CREATE TABLE `controle_transicao` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `controle_transicao`
+-- Despejando dados para a tabela `controle_transicao`
 --
 
 INSERT INTO `controle_transicao` (`id`, `mes`) VALUES
@@ -154,7 +155,7 @@ INSERT INTO `controle_transicao` (`id`, `mes`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `data_criacao`
+-- Estrutura para tabela `data_criacao`
 --
 
 CREATE TABLE `data_criacao` (
@@ -164,7 +165,7 @@ CREATE TABLE `data_criacao` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `data_criacao`
+-- Despejando dados para a tabela `data_criacao`
 --
 
 INSERT INTO `data_criacao` (`id`, `tabela`, `data_criacao`) VALUES
@@ -173,7 +174,7 @@ INSERT INTO `data_criacao` (`id`, `tabela`, `data_criacao`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `emails_salvos`
+-- Estrutura para tabela `emails_salvos`
 --
 
 CREATE TABLE `emails_salvos` (
@@ -184,7 +185,7 @@ CREATE TABLE `emails_salvos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `emails_salvos`
+-- Despejando dados para a tabela `emails_salvos`
 --
 
 INSERT INTO `emails_salvos` (`id`, `email`, `username`, `criado_em`) VALUES
@@ -196,7 +197,7 @@ INSERT INTO `emails_salvos` (`id`, `email`, `username`, `criado_em`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `etapas_contratos`
+-- Estrutura para tabela `etapas_contratos`
 --
 
 CREATE TABLE `etapas_contratos` (
@@ -211,25 +212,24 @@ CREATE TABLE `etapas_contratos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `etapas_contratos`
+-- Despejando dados para a tabela `etapas_contratos`
 --
 
 INSERT INTO `etapas_contratos` (`id`, `contract_id`, `etapa`, `descricao`, `data`, `hora`, `status`, `order`) VALUES
-(1, 12, 'Execução do Contrato', 'Atualização de status', '2025-05-19', '19:35:00', 'Em Andamento', 0),
-(7, 7, 'Pagamentos', 'Atualização de status', '2025-05-19', '19:36:00', 'Completo', 0),
-(11, 14, 'Finalização do Contrato', 'Atualização de status', '2025-05-19', '19:36:00', 'Completo', 0),
-(15, 14, 'Execução do Contrato', 'Atualização de status', '2025-05-19', '19:36:00', 'Completo', 0),
-(20, 2, 'Finalização do Contrato', 'Atualização de status', '2025-05-19', '19:37:00', 'Completo', 0),
-(22, 2, 'Prestação de Contas', 'Atualização de status', '2025-05-19', '19:37:00', 'Completo', 0);
+(53, 20, 'Pagamentos', 'Atualização de status', '2025-05-27', '14:11:00', 'Completo', 0),
+(192, 22, 'Execução do Contrato', 'Atualização de status', '2025-06-04', '19:27:00', 'Em Andamento', 0),
+(193, 22, 'Finalização do Contrato', 'Atualização de status', '2025-06-04', '19:27:00', 'Em Andamento', 0),
+(197, 22, 'Prestação de Contas', 'Atualização de status', '2025-06-04', '19:44:00', 'Em Andamento', 0);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `eventos`
+-- Estrutura para tabela `eventos`
 --
 
 CREATE TABLE `eventos` (
   `id` int(11) NOT NULL,
+  `username` varchar(220) NOT NULL,
   `titulo` varchar(255) NOT NULL,
   `descricao` text DEFAULT NULL,
   `data` date NOT NULL,
@@ -241,76 +241,77 @@ CREATE TABLE `eventos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `eventos`
+-- Despejando dados para a tabela `eventos`
 --
 
-INSERT INTO `eventos` (`id`, `titulo`, `descricao`, `data`, `hora`, `categoria`, `cor`, `criado_em`, `certidao_id`) VALUES
-(2, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a June/2025. Valor: R$ 90.055,00', '2025-06-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(3, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a July/2025. Valor: R$ 90.055,00', '2025-07-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(4, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a August/2025. Valor: R$ 90.055,00', '2025-08-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(5, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a September/2025. Valor: R$ 90.055,00', '2025-09-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(6, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a October/2025. Valor: R$ 90.055,00', '2025-10-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(7, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a November/2025. Valor: R$ 90.055,00', '2025-11-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(8, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a December/2025. Valor: R$ 90.055,00', '2025-12-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(9, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a January/2026. Valor: R$ 90.055,00', '2026-01-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(10, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a February/2026. Valor: R$ 90.055,00', '2026-02-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(11, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a March/2026. Valor: R$ 90.055,00', '2026-03-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(12, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a April/2026. Valor: R$ 90.055,00', '2026-04-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(13, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a May/2026. Valor: R$ 90.055,00', '2026-05-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(14, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a June/2026. Valor: R$ 90.055,00', '2026-06-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(15, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a July/2026. Valor: R$ 90.055,00', '2026-07-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(16, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a August/2026. Valor: R$ 90.055,00', '2026-08-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(17, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a September/2026. Valor: R$ 90.055,00', '2026-09-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(18, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a October/2026. Valor: R$ 90.055,00', '2026-10-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(19, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a November/2026. Valor: R$ 90.055,00', '2026-11-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(20, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a December/2026. Valor: R$ 90.055,00', '2026-12-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(21, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a January/2027. Valor: R$ 90.055,00', '2027-01-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(22, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a February/2027. Valor: R$ 90.055,00', '2027-02-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(23, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a March/2027. Valor: R$ 90.055,00', '2027-03-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(24, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a April/2027. Valor: R$ 90.055,00', '2027-04-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(25, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a May/2027. Valor: R$ 90.055,00', '2027-05-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(26, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a June/2027. Valor: R$ 90.055,00', '2027-06-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(27, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a July/2027. Valor: R$ 90.055,00', '2027-07-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(28, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a August/2027. Valor: R$ 90.055,00', '2027-08-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(29, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a September/2027. Valor: R$ 90.055,00', '2027-09-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(30, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a October/2027. Valor: R$ 90.055,00', '2027-10-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(31, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a November/2027. Valor: R$ 90.055,00', '2027-11-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(32, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a December/2027. Valor: R$ 90.055,00', '2027-12-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(33, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a January/2028. Valor: R$ 90.055,00', '2028-01-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(34, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a February/2028. Valor: R$ 90.055,00', '2028-02-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(35, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a March/2028. Valor: R$ 90.055,00', '2028-03-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(36, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a April/2028. Valor: R$ 90.055,00', '2028-04-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(37, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a May/2028. Valor: R$ 90.055,00', '2028-05-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(38, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a June/2028. Valor: R$ 90.055,00', '2028-06-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(39, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a July/2028. Valor: R$ 90.055,00', '2028-07-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(40, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a August/2028. Valor: R$ 90.055,00', '2028-08-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(41, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a September/2028. Valor: R$ 90.055,00', '2028-09-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(42, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a October/2028. Valor: R$ 90.055,00', '2028-10-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(43, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a November/2028. Valor: R$ 90.055,00', '2028-11-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(44, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a December/2028. Valor: R$ 90.055,00', '2028-12-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(45, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a January/2029. Valor: R$ 90.055,00', '2029-01-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(46, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a February/2029. Valor: R$ 90.055,00', '2029-02-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(47, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a March/2029. Valor: R$ 90.055,00', '2029-03-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(48, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a April/2029. Valor: R$ 90.055,00', '2029-04-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(49, 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a May/2029. Valor: R$ 90.055,00', '2029-05-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
-(50, 'TESTE', 'TESTE', '2025-05-15', '10:34:00', 'Geral', '#7e4e4e', '2025-05-15 18:32:28', 0),
-(51, 'Vencimento de Parcela: andamento 2', 'Parcela referente a July/2025. Valor: R$ 41.666,67', '2025-07-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(52, 'Vencimento de Parcela: andamento 2', 'Parcela referente a August/2025. Valor: R$ 41.666,67', '2025-08-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(53, 'Vencimento de Parcela: andamento 2', 'Parcela referente a September/2025. Valor: R$ 41.666,67', '2025-09-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(54, 'Vencimento de Parcela: andamento 2', 'Parcela referente a October/2025. Valor: R$ 41.666,67', '2025-10-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(55, 'Vencimento de Parcela: andamento 2', 'Parcela referente a November/2025. Valor: R$ 41.666,67', '2025-11-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(56, 'Vencimento de Parcela: andamento 2', 'Parcela referente a December/2025. Valor: R$ 41.666,67', '2025-12-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(57, 'Vencimento de Parcela: andamento 2', 'Parcela referente a January/2026. Valor: R$ 41.666,67', '2026-01-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(58, 'Vencimento de Parcela: andamento 2', 'Parcela referente a February/2026. Valor: R$ 41.666,67', '2026-02-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(59, 'Vencimento de Parcela: andamento 2', 'Parcela referente a March/2026. Valor: R$ 41.666,67', '2026-03-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(60, 'Vencimento de Parcela: andamento 2', 'Parcela referente a April/2026. Valor: R$ 41.666,67', '2026-04-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(61, 'Vencimento de Parcela: andamento 2', 'Parcela referente a May/2026. Valor: R$ 41.666,67', '2026-05-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(62, 'Vencimento de Parcela: andamento 2', 'Parcela referente a June/2026. Valor: R$ 41.666,67', '2026-06-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0);
+INSERT INTO `eventos` (`id`, `username`, `titulo`, `descricao`, `data`, `hora`, `categoria`, `cor`, `criado_em`, `certidao_id`) VALUES
+(2, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a June/2025. Valor: R$ 90.055,00', '2025-06-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(3, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a July/2025. Valor: R$ 90.055,00', '2025-07-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(4, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a August/2025. Valor: R$ 90.055,00', '2025-08-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(5, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a September/2025. Valor: R$ 90.055,00', '2025-09-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(6, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a October/2025. Valor: R$ 90.055,00', '2025-10-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(7, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a November/2025. Valor: R$ 90.055,00', '2025-11-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(8, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a December/2025. Valor: R$ 90.055,00', '2025-12-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(9, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a January/2026. Valor: R$ 90.055,00', '2026-01-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(10, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a February/2026. Valor: R$ 90.055,00', '2026-02-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(11, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a March/2026. Valor: R$ 90.055,00', '2026-03-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(12, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a April/2026. Valor: R$ 90.055,00', '2026-04-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(13, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a May/2026. Valor: R$ 90.055,00', '2026-05-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(14, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a June/2026. Valor: R$ 90.055,00', '2026-06-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(15, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a July/2026. Valor: R$ 90.055,00', '2026-07-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(16, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a August/2026. Valor: R$ 90.055,00', '2026-08-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(17, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a September/2026. Valor: R$ 90.055,00', '2026-09-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(18, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a October/2026. Valor: R$ 90.055,00', '2026-10-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(19, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a November/2026. Valor: R$ 90.055,00', '2026-11-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(20, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a December/2026. Valor: R$ 90.055,00', '2026-12-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(21, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a January/2027. Valor: R$ 90.055,00', '2027-01-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(22, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a February/2027. Valor: R$ 90.055,00', '2027-02-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(23, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a March/2027. Valor: R$ 90.055,00', '2027-03-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(24, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a April/2027. Valor: R$ 90.055,00', '2027-04-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(25, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a May/2027. Valor: R$ 90.055,00', '2027-05-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(26, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a June/2027. Valor: R$ 90.055,00', '2027-06-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(27, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a July/2027. Valor: R$ 90.055,00', '2027-07-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(28, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a August/2027. Valor: R$ 90.055,00', '2027-08-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(29, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a September/2027. Valor: R$ 90.055,00', '2027-09-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(30, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a October/2027. Valor: R$ 90.055,00', '2027-10-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(31, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a November/2027. Valor: R$ 90.055,00', '2027-11-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(32, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a December/2027. Valor: R$ 90.055,00', '2027-12-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(33, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a January/2028. Valor: R$ 90.055,00', '2028-01-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(34, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a February/2028. Valor: R$ 90.055,00', '2028-02-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(35, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a March/2028. Valor: R$ 90.055,00', '2028-03-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(36, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a April/2028. Valor: R$ 90.055,00', '2028-04-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(37, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a May/2028. Valor: R$ 90.055,00', '2028-05-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(38, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a June/2028. Valor: R$ 90.055,00', '2028-06-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(39, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a July/2028. Valor: R$ 90.055,00', '2028-07-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(40, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a August/2028. Valor: R$ 90.055,00', '2028-08-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(41, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a September/2028. Valor: R$ 90.055,00', '2028-09-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(42, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a October/2028. Valor: R$ 90.055,00', '2028-10-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(43, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a November/2028. Valor: R$ 90.055,00', '2028-11-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(44, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a December/2028. Valor: R$ 90.055,00', '2028-12-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(45, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a January/2029. Valor: R$ 90.055,00', '2029-01-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(46, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a February/2029. Valor: R$ 90.055,00', '2029-02-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(47, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a March/2029. Valor: R$ 90.055,00', '2029-03-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(48, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a April/2029. Valor: R$ 90.055,00', '2029-04-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(49, '', 'Vencimento de Parcela: CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', 'Parcela referente a May/2029. Valor: R$ 90.055,00', '2029-05-17', '09:00:00', 'Pagamento', '#FF9900', '2025-05-15 13:25:01', 0),
+(50, '', 'TESTE', 'TESTE', '2025-05-15', '10:34:00', 'Geral', '#7e4e4e', '2025-05-15 18:32:28', 0),
+(51, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a July/2025. Valor: R$ 41.666,67', '2025-07-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(52, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a August/2025. Valor: R$ 41.666,67', '2025-08-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(53, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a September/2025. Valor: R$ 41.666,67', '2025-09-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(54, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a October/2025. Valor: R$ 41.666,67', '2025-10-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(55, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a November/2025. Valor: R$ 41.666,67', '2025-11-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(56, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a December/2025. Valor: R$ 41.666,67', '2025-12-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(57, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a January/2026. Valor: R$ 41.666,67', '2026-01-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(58, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a February/2026. Valor: R$ 41.666,67', '2026-02-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(59, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a March/2026. Valor: R$ 41.666,67', '2026-03-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(60, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a April/2026. Valor: R$ 41.666,67', '2026-04-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(61, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a May/2026. Valor: R$ 41.666,67', '2026-05-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(62, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a June/2026. Valor: R$ 41.666,67', '2026-06-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
+(63, '', 'REUNIÃO FINANCEIRO', 'TESTE MASTER', '2025-06-02', '08:52:00', 'Geral', '#ff0000', '2025-06-02 16:46:28', 0);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `fechamento`
+-- Estrutura para tabela `fechamento`
 --
 
 CREATE TABLE `fechamento` (
@@ -327,7 +328,7 @@ CREATE TABLE `fechamento` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `fechamento`
+-- Despejando dados para a tabela `fechamento`
 --
 
 INSERT INTO `fechamento` (`id`, `data_fechamento`, `natureza`, `classificacao`, `saldo_anterior`, `total_entrada`, `total_saida`, `saldo_atual`, `custo`, `status`) VALUES
@@ -335,10 +336,10 @@ INSERT INTO `fechamento` (`id`, `data_fechamento`, `natureza`, `classificacao`, 
 (2, '2025-04-02', '333903002', 'Artigos para Limpeza, Higiêne e Toalete', 17503.12, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
 (4, '2025-04-02', '333903005', 'Artigos em Geral e Impressos para Expediente, Escritorio', 13899.11, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
 (5, '2025-04-02', '333903008', 'Material Radiológico Fotografico,Cinematográfico, de Gravação e Comunicação', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(6, '2025-04-02', '333903010', 'Material Eletrico,material para conservação e manutenção de Bens', 5837.93, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(7, '2025-04-02', '333903011', 'Material para manutenção e conservação de Bens móveis', 157335.90, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(6, '2025-04-02', '333903010', 'Material Eletrico,material para conservação e manutenção de Bens', 5837.93, 130716.46, 0.00, 293761.72, 0.00, 'Pendente'),
+(7, '2025-04-02', '333903011', 'Material para manutenção e conservação de Bens móveis', 157335.90, 53016.82, 0.00, 105952.82, 0.00, 'Pendente'),
 (8, '2025-04-02', '333903020', 'Produtos Alimentícios e Bebidas', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(9, '2025-04-02', '333903021', 'Matérias Primas', 59061.49, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(9, '2025-04-02', '333903021', 'Matérias Primas', 59061.49, 32760.00, 0.00, 32760.00, 0.00, 'Pendente'),
 (10, '2025-04-02', '333903023', 'Material de Informatica', 847.82, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
 (11, '2025-04-02', '333903030', 'Material para manutenção de Veículo', 795.34, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
 (12, '2025-04-02', '333903033', 'Material para Sinalização Visual e Outros', 680.65, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
@@ -349,12 +350,13 @@ INSERT INTO `fechamento` (`id`, `data_fechamento`, `natureza`, `classificacao`, 
 (17, '2025-04-02', '344905212', 'Utensilios de Copa, Cozinha, Dormitorio e Enfermaria', 320.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
 (18, '2025-04-02', '344905217', 'Equipamento para áudio, Vídeo e Foto', 25443.80, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
 (19, '2025-04-02', '344905220', 'Maquinas, Ferramentas e Utensilios de Oficina', 34.45, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(20, '2025-04-02', '344905238', 'Equipamento e Material Permanente ( Material de T.I.C )', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente');
+(20, '2025-04-02', '344905238', 'Equipamento e Material Permanente ( Material de T.I.C )', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(23, '2025-05-27', '333903003', '', 0.00, -3847.57, 0.00, -3847.57, 0.00, '');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `fechamentos`
+-- Estrutura para tabela `fechamentos`
 --
 
 CREATE TABLE `fechamentos` (
@@ -369,7 +371,7 @@ CREATE TABLE `fechamentos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `fechamentos`
+-- Despejando dados para a tabela `fechamentos`
 --
 
 INSERT INTO `fechamentos` (`id`, `username`, `natureza`, `saldo_anterior`, `total_entrada`, `total_saida`, `saldo_atual`, `data_fechamento`) VALUES
@@ -416,7 +418,7 @@ INSERT INTO `fechamentos` (`id`, `username`, `natureza`, `saldo_anterior`, `tota
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `funcionario`
+-- Estrutura para tabela `funcionario`
 --
 
 CREATE TABLE `funcionario` (
@@ -430,7 +432,7 @@ CREATE TABLE `funcionario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `funcionario`
+-- Despejando dados para a tabela `funcionario`
 --
 
 INSERT INTO `funcionario` (`id`, `nome`, `email`, `cargo`, `data_admissao`, `criado_em`, `atualizado_em`) VALUES
@@ -439,7 +441,7 @@ INSERT INTO `funcionario` (`id`, `nome`, `email`, `cargo`, `data_admissao`, `cri
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `gestao_contratos`
+-- Estrutura para tabela `gestao_contratos`
 --
 
 CREATE TABLE `gestao_contratos` (
@@ -480,29 +482,16 @@ CREATE TABLE `gestao_contratos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `gestao_contratos`
+-- Despejando dados para a tabela `gestao_contratos`
 --
 
 INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `agencia_bancaria`, `fonte`, `publicacao`, `date_service`, `contatos`, `n_despesas`, `outros`, `servicos`, `valor_nf`, `valor_contrato`, `valor_aditivo1`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`, `setor`, `parcelamento`, `valor_aditivo2`, `valor_aditivo3`, `valor_aditivo4`, `valor_aditivo5`, `etapa_atual`, `categoria`, `garantia`, `gestor_portaria`, `fiscal_portaria`) VALUES
-(2, 'Contrato de Consultoria TI', 'SEI-002/2024', 'Consultoria em TI', 'Ana Costa', 'Pedro Souza', 'Mariana Lopes', '2024-08-31', '', '', NULL, NULL, 'consultoria@ti.com', '', 'Não', NULL, 0.00, 12000.00, NULL, 6, 'Consultoria para implementação de sistemas.', 'Inativo', '2024-03-01 03:00:00', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Execução do Contrato', '', 0.00, NULL, NULL),
-(3, 'Contrato de Locação de Equipamentos', 'SEI-003/2023', 'Locação de equipamentos', 'Carlos Mendes', 'Luiza Almeida', 'Rafael Lima', '2025-09-30', '', '', NULL, NULL, 'locacao@equip.com', '', 'Não', NULL, 0.00, 19200.00, 5000.00, 12, 'Locação de equipamentos para eventos.', 'Encerrado', '2025-06-01 03:00:00', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(5, 'teste de atualização', '7890', 'CENTRAL', 'CHEFE', 'GERENTE', 'GABRIEL, MAIK', '2025-05-16', '', '', NULL, NULL, '400289222', '', 'Não', NULL, 0.00, 500000.00, NULL, 1, 'teste', 'Ativo', '2025-04-27 20:50:03', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(7, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '100006/001752/2023', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'N/A', 'Raphaela Batista Saldanha - 99.000.900 - ASSCON / VALDENICE ALVES DA SILVA DE PAULA - GERGEP - 99.000.517 / André Miranda Lobão Tavares Mendonça - 99.000.610 - CHEGAB', '2025-12-19', '2430-6', '', NULL, NULL, 'susiane.kempfer@grupogreencard.com.br', '', 'Não', NULL, 0.00, 432264000.00, 0.00, 1, 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'Ativo', '2025-05-06 17:45:31', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(10, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA', '20231600/889345', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'CARUSO', 'MAIK', 'ALEXANDRE', '2025-05-07', '', '', NULL, NULL, '40028922', '', 'Não', NULL, 0.00, 500.00, 0.00, 12, 'TESTE', 'Ativo', '2025-05-07 18:53:25', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(11, 'Contrato teste de nova atualização', '100006/001752/2023', 'teste', 'MAIK', 'ALEXANDRE', 'CELSO', '2027-06-08', '5542', '100', '2025-04-16', '2025-04-30', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, NULL, 3, 'TESTE', 'Renovado', '2025-05-08 19:35:16', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(12, 'CONTRATO DE MANUTENÇÃO BONDE', '20231600/889345', 'CENTRAL', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'GERENTE', 'CELSO', '2029-05-14', '5542-4', '100', '2026-11-14', '2026-11-19', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 1220000.00, NULL, 12, 'TESTE', 'Ativo', '2025-05-14 12:14:57', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(14, 'Contrato de Consultoria TIdg', 'ert', 'ert', '234', '234', '234', '2025-05-14', '5542', 'sert', '2025-05-15', '2025-05-30', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 500000.00, NULL, 80, 'teste', 'Encerrado', '2025-05-14 12:35:03', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(15, 'Contrato de Consultoria TId', '20231600/889345', 'CENTRAL', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'MAIK', 'CELSO', '2025-05-16', '5542-4', 'qw', '2025-05-14', '2025-05-14', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, NULL, 80, 'teste', 'Ativo', '2025-05-14 12:41:14', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(16, 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40', '20231600/889', 'Prestação de serviço de emissão e entrega de cartões eletrônicos na modalidade alimentação, com carga automática - on-line (doravante designados cartões-alimentação ou simplesmente cartões, conforme o caso), bem como dos respectivos valores de carga ou créditos (doravante designados apenas valores de carga) relativos à concessão de benefício natalino aos empregados da CENTRAL, no valor unitário de R$ 500,00 (quinhentos reais), cada carga, para aquisição de gêneros alimentícios, com a finalidade de fornecer a ceia de Natal', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'GERENTE', 'CELSO', '2025-05-22', '5542', '100', '2025-05-16', '2025-05-16', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, NULL, 48, ']', 'Ativo', '2025-05-15 13:25:01', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(17, 'teste de prestacao', '20231600/889345', 'TESTE', 'GABRIEL', 'MAIK', 'CELSO', '2025-05-14', '5542-4', '100', '2025-05-15', '2025-05-16', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 500000.00, NULL, 12, 'TESTE', 'Encerrado', '2025-05-15 17:07:44', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(18, 'Contrato de Consultoria TIwsd', '20231600/889', '23', 'GABRIEL', 'MAIK', 'CELSO', '2025-05-31', '23341', '100', '2025-05-23', '2025-05-22', '40028922', 'Sem Despesas', 'Não', 'servico1', 0.00, 10000.00, NULL, 0, 'teset', 'Ativo', '2025-05-19 12:59:01', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(19, 'andamento do contrato', '889/2025', 'TESTE', 'GABRIEL', 'MAIK', 'ALTAMIR', '2026-04-14', '038397', '100', '2025-04-14', '2025-04-15', '400289222', 'Sem Despesas', 'Sim', 'servico1', 0.00, 500000.00, NULL, NULL, 'teste', 'Encerrado', '2025-05-19 17:41:03', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL),
-(20, 'andamento 2', '20231600/889', 'TESTE', 'GABRIEL', 'MAIK', 'CELSO', '2025-06-14', '55423', '100', '2025-04-14', '2025-04-15', '400289222', 'Sem Despesas', 'Não', 'servico1', 0.00, 500000.00, NULL, 12, 'teste', 'Ativo', '2025-05-19 17:46:36', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', '', 0.00, NULL, NULL);
+(22, 'PRODERJ', '100006/000680/2024', 'Prestação de serviços de Mensageira Eletrônica (e-mail)', 'JOÃO FREITAS BRAGA CARUSO', 'RAPHAELA BATISTA SALDANHA', 'ALEXANDRE MENDES DA ROCHA // GABRIEL DE SOUZA RODRIGUES // EMILLY MARTINS DOS SANTOS //', '2025-04-29', 'Bradesco- 2', '100', '2024-12-30', '2025-04-29', '33914009', 'Sem Despesas', 'Não', 'servico1', 0.00, 58500.00, NULL, 0, '.', 'Ativo', '2025-06-03 17:39:18', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `log_eventos`
+-- Estrutura para tabela `log_eventos`
 --
 
 CREATE TABLE `log_eventos` (
@@ -513,7 +502,7 @@ CREATE TABLE `log_eventos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `log_eventos`
+-- Despejando dados para a tabela `log_eventos`
 --
 
 INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) VALUES
@@ -820,12 +809,70 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (653, 'CONTRATOS', 'Login bem-sucedido', '2025-05-12 19:50:06'),
 (654, 'CONTRATOS', 'Login bem-sucedido', '2025-05-13 19:17:06'),
 (655, 'CONTRATOS', 'Login bem-sucedido', '2025-05-13 19:18:10'),
-(656, 'CONTRATOS', 'Login bem-sucedido', '2025-05-13 19:19:40');
+(656, 'CONTRATOS', 'Login bem-sucedido', '2025-05-13 19:19:40'),
+(657, 'MASTER', 'Login bem-sucedido', '2025-05-27 12:12:52'),
+(658, 'contratos', 'Login bem-sucedido', '2025-05-27 13:29:54'),
+(659, 'MASTER', 'Cadastro de Patrimônio', '2025-05-27 13:51:52'),
+(660, 'contratos', 'Login bem-sucedido', '2025-05-27 13:59:17'),
+(661, 'CLAUDIA', 'Login falhou: Senha inválida', '2025-05-27 16:58:53'),
+(662, 'CLAUDIA', 'Login bem-sucedido', '2025-05-27 16:59:01'),
+(663, 'MASTER', 'Login bem-sucedido', '2025-05-27 17:15:37'),
+(664, 'MASTER', 'Login bem-sucedido', '2025-05-27 17:31:11'),
+(665, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 17:41:11'),
+(666, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 17:46:41'),
+(667, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 17:49:58'),
+(668, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 17:55:40'),
+(669, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 17:59:17'),
+(670, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 18:00:51'),
+(671, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 18:01:07'),
+(672, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 18:06:07'),
+(673, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 18:08:10'),
+(674, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 18:15:06'),
+(675, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 18:15:21'),
+(676, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 18:15:57'),
+(677, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 18:18:13'),
+(678, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 18:19:37'),
+(679, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-05-27 18:20:17'),
+(680, 'contratos', 'Login bem-sucedido', '2025-05-27 18:53:58'),
+(681, 'MASTER', 'Login bem-sucedido', '2025-05-27 18:59:59'),
+(682, 'contratos', 'Login bem-sucedido', '2025-05-29 12:21:01'),
+(683, 'CLAUDIA', 'Login falhou: Senha inválida', '2025-05-29 13:14:21'),
+(684, 'CLAUDIA', 'Login bem-sucedido', '2025-05-29 13:14:29'),
+(685, 'PATRICIA', 'Login falhou: Senha inválida', '2025-05-29 13:22:38'),
+(686, 'PATRICIA', 'Login bem-sucedido', '2025-05-29 13:22:42'),
+(687, 'MASTER', 'Login bem-sucedido', '2025-05-29 13:26:41'),
+(688, 'contratos', 'Login falhou: Senha inválida', '2025-05-29 13:33:37'),
+(689, 'contratos', 'Login bem-sucedido', '2025-05-29 13:33:44'),
+(690, 'MASTER', 'Login bem-sucedido', '2025-05-29 14:24:57'),
+(691, 'contratos', 'Login bem-sucedido', '2025-05-29 17:49:22'),
+(692, 'MASTER', 'Login falhou: Senha inválida', '2025-05-29 18:26:40'),
+(693, '12', 'Login falhou: Usuário não encontrado', '2025-05-29 18:26:49'),
+(694, 'contratos', 'Login falhou: Setor incorreto', '2025-05-29 18:28:12'),
+(695, 'contratos', 'Login falhou: Setor incorreto', '2025-05-29 18:28:20'),
+(696, 'MASTER', 'Login falhou: Senha inválida', '2025-05-29 18:29:51'),
+(697, 'MASTER', 'Login falhou: Senha inválida', '2025-05-29 18:29:51'),
+(698, 'contratos', 'Login falhou: Setor incorreto', '2025-05-29 18:30:01'),
+(699, 'contratos', 'Login falhou: Setor incorreto', '2025-05-29 18:31:44'),
+(700, 'contratos', 'Login bem-sucedido', '2025-05-29 18:32:27'),
+(701, 'MASTER', 'Login bem-sucedido', '2025-05-29 19:02:11'),
+(702, 'MASTER', 'Login bem-sucedido', '2025-05-29 19:33:42'),
+(703, 'MASTER', 'Login bem-sucedido', '2025-05-29 19:36:21'),
+(704, 'MASTER', 'Login bem-sucedido', '2025-06-02 11:46:50'),
+(705, 'contratos', 'Login bem-sucedido', '2025-06-02 11:47:31'),
+(706, 'contratos', 'Login bem-sucedido', '2025-06-03 15:57:06'),
+(707, 'CONTRATOS', 'Login bem-sucedido', '2025-06-04 12:07:51'),
+(708, 'MASTER', 'Login bem-sucedido', '2025-06-04 12:21:00'),
+(709, 'contratos@central.rj.gov.br', 'Login falhou: Usuário não encontrado', '2025-06-04 13:13:03'),
+(710, 'contratos', 'Login falhou: Senha inválida', '2025-06-04 13:13:18'),
+(711, 'contratos@central.rj.gov.br', 'Login falhou: Usuário não encontrado', '2025-06-04 13:13:31'),
+(712, 'contratos', 'Login bem-sucedido', '2025-06-04 13:14:14'),
+(713, 'MASTER', 'Login bem-sucedido', '2025-06-04 17:22:18'),
+(714, 'contratos', 'Login bem-sucedido', '2025-06-04 17:32:24');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `materiais`
+-- Estrutura para tabela `materiais`
 --
 
 CREATE TABLE `materiais` (
@@ -837,7 +884,7 @@ CREATE TABLE `materiais` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `materiais`
+-- Despejando dados para a tabela `materiais`
 --
 
 INSERT INTO `materiais` (`codigo`, `descricao`, `classificacao`, `natureza`, `contabil`) VALUES
@@ -879,7 +926,7 @@ INSERT INTO `materiais` (`codigo`, `descricao`, `classificacao`, `natureza`, `co
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `notificacoes`
+-- Estrutura para tabela `notificacoes`
 --
 
 CREATE TABLE `notificacoes` (
@@ -893,42 +940,16 @@ CREATE TABLE `notificacoes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `notificacoes`
+-- Despejando dados para a tabela `notificacoes`
 --
 
 INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `data_criacao`, `certidao_id`) VALUES
-(1, 'contratos', 'contratos', 'Certidão \"Certidão Negativa Teste\" (ID: 1) cadastrada com sucesso. Vence em 15/05/2025. Setor: contratos.', 'lida', '2025-05-12 19:46:03', 0),
-(2, 'contratos', 'contratos', 'A certidão \"Certidão Negativa Teste\"  está próxima do vencimento (1 dias restantes, vence em 2). ', 'lida', '2025-05-12 19:46:03', 0),
-(3, 'contratos', 'contratos', 'Evento excluído: Renovar Certidão: Certidão Negativa Teste', 'lida', '2025-05-13 00:47:04', 0),
-(4, 'contratos', 'contratos', 'Contrato \'teste de atualização\' com validade em 2025-05-16 prestes a expirar.', 'lida', '2025-05-13 00:47:13', 0),
-(5, 'contratos', 'contratos', 'Contrato \'Contrato teste de nova atualização\' com validade em 2025-05-31 prestes a expirar.', 'lida', '2025-05-13 00:47:13', 0),
-(6, 'CONTRATOS', 'contratos', 'Contrato \'CONTRATO DE PRESTAÇÃO DE SERVIÇOS EMAIL ZIMBRA40\' com validade em 2025-05-22 prestes a expirar.', 'lida', '2025-05-15 18:25:02', 0),
-(7, 'CONTRATOS', 'contratos', 'Novo evento criado: TESTE', 'lida', '2025-05-15 18:32:28', 0),
-(8, 'CONTRATOS', 'contratos', 'Contrato \'Contrato de Consultoria TId\' com validade em 2025-05-16 prestes a expirar.', 'lida', '2025-05-15 21:12:31', 0),
-(9, 'estoque', 'estoque', '#42400050015 chegou ao seu limite de estoque.', 'nao lida', '2025-05-15 21:21:04', 0),
-(10, 'CONTRATOS', 'contratos', 'Contrato \'teste de prestacao\' com validade em 2025-05-17 prestes a expirar.', 'lida', '2025-05-15 22:07:45', 0),
-(11, 'CONTRATOS', 'contratos', 'Contrato \'teste de prestacao\' com validade em 2025-05-15 prestes a expirar.', 'lida', '2025-05-15 22:25:06', 0),
-(12, 'CONTRATOS', 'contratos', 'Contrato \'teste de prestacao\' com validade em 2025-05-28 prestes a expirar.', 'lida', '2025-05-15 22:27:03', 0),
-(13, 'CONTRATOS', 'contratos', 'Contrato \'teste de prestacao\' com validade em 2025-05-31 prestes a expirar.', 'lida', '2025-05-15 22:31:41', 0),
-(14, 'CONTRATOS', 'contratos', 'Contrato \'Contrato de Consultoria TIwsd\' com validade em 2025-05-31 prestes a expirar.', 'lida', '2025-05-19 17:59:03', 0),
-(15, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/07/2025', '', '2025-05-19 17:46:36', 0),
-(16, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/08/2025', '', '2025-05-19 17:46:36', 0),
-(17, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/09/2025', '', '2025-05-19 17:46:36', 0),
-(18, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/10/2025', '', '2025-05-19 17:46:36', 0),
-(19, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/11/2025', '', '2025-05-19 17:46:36', 0),
-(20, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/12/2025', '', '2025-05-19 17:46:36', 0),
-(21, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/01/2026', '', '2025-05-19 17:46:36', 0),
-(22, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/02/2026', '', '2025-05-19 17:46:36', 0),
-(23, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/03/2026', '', '2025-05-19 17:46:36', 0),
-(24, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/04/2026', '', '2025-05-19 17:46:36', 0),
-(25, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/05/2026', '', '2025-05-19 17:46:36', 0),
-(26, 'CONTRATOS', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"andamento 2\" em 14/06/2026', '', '2025-05-19 17:46:36', 0),
-(27, 'CONTRATOS', 'contratos', 'Contrato \'andamento 2\' com validade em 2025-06-14 prestes a expirar.', 'lida', '2025-05-19 22:46:38', 0);
+(1, 'MASTER', 'administrador', 'Contrato \'	PRODERJ\' com validade em 2025-06-04 prestes a expirar.', 'nao lida', '2025-06-04 23:36:18', 0);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `ordens_compra`
+-- Estrutura para tabela `ordens_compra`
 --
 
 CREATE TABLE `ordens_compra` (
@@ -939,7 +960,7 @@ CREATE TABLE `ordens_compra` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `ordens_compra`
+-- Despejando dados para a tabela `ordens_compra`
 --
 
 INSERT INTO `ordens_compra` (`id`, `produto_id`, `quantidade`, `data_criacao`) VALUES
@@ -1015,7 +1036,7 @@ INSERT INTO `ordens_compra` (`id`, `produto_id`, `quantidade`, `data_criacao`) V
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `pagamentos`
+-- Estrutura para tabela `pagamentos`
 --
 
 CREATE TABLE `pagamentos` (
@@ -1040,25 +1061,10 @@ CREATE TABLE `pagamentos` (
   `fonte` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `pagamentos`
---
-
-INSERT INTO `pagamentos` (`id`, `contrato_titulo`, `data_pagamento`, `valor_contrato`, `mes`, `empenho`, `nota_empenho`, `valor_liquidado`, `ordem_bancaria`, `data_atualizacao`, `envio_pagamento`, `vencimento_fatura`, `agencia_bancaria`, `tipo`, `SEI`, `nota_fiscal`, `creditos_ativos`, `valor_liquidado_ag`, `fonte`) VALUES
-(82, 'GREEN CARD S/A REFEIÇÕES, COMÉRCIO E SERVIÇOS', '2025-05-14', 432264000.00, '05/2025', '3', NULL, 432264000.00, NULL, NULL, NULL, '2025-12-19', NULL, NULL, '100006/001752/2023', NULL, NULL, 0.00, NULL),
-(86, 'Contrato de Locação de Equipamentos', '2025-05-15', 1600.00, '05/2025', 'v', NULL, 0.00, NULL, NULL, NULL, '2025-09-30', NULL, NULL, 'SEI-003/2023', NULL, NULL, 0.00, NULL),
-(87, 'teste de prestacao', '2025-05-15', 500000.00, '05/2025', '234', 'wer', 500000.00, '105s', NULL, '0000-00-00', '2025-05-17', NULL, 'wer', '20231600/889345', 'qwe', '500000,00', 500000.00, '100'),
-(88, 'teste de prestacao', '2025-05-15', 19230.77, '06/2025', '234', NULL, 5640.00, NULL, NULL, NULL, '2027-06-15', NULL, NULL, '20231600/889345', NULL, NULL, 0.00, '100'),
-(89, 'Contrato de Consultoria TIwsd', '2025-05-19', 10000.00, '05/2025', '5', '51', 620.00, '10153050', '2025-05-19', '0000-00-00', '2025-05-31', NULL, '6', '20231600/889', '2', '02', 510.00, '100'),
-(90, 'Contrato teste de nova atualização', '2025-05-19', 1440880.00, '05/2025', '2334', 'te10', 1061.00, '160', '2025-05-19', '0000-00-00', '2025-05-31', NULL, '100', '101', '10e', '10e', 1601.00, '100'),
-(91, 'andamento do contrato', '2025-05-19', 500000.00, '05/2025', 'teste andamento', '500.000,00', 500.00, '15023', '2025-05-19', '0000-00-00', '2026-04-14', NULL, '150', '889/2025', '500.000,00', '500.000,00', 500.00, '100'),
-(92, 'andamento 2', '2025-05-19', 41666.67, '05/2025', '500.000,00', '500.000,00', 50000000.00, '15w50', '2025-05-19', '0000-00-00', '2025-06-14', NULL, '100', '20231600/889', '500.000,00', '150', 50000000.00, '100'),
-(93, 'andamento 2', '2025-05-19', 41666.67, '06/2025', '500.000,00', NULL, 0.00, NULL, NULL, NULL, '2025-06-14', NULL, '23', '20231600/889', NULL, NULL, 0.00, '100');
-
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `painel_config`
+-- Estrutura para tabela `painel_config`
 --
 
 CREATE TABLE `painel_config` (
@@ -1071,7 +1077,7 @@ CREATE TABLE `painel_config` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `patrimonio`
+-- Estrutura para tabela `patrimonio`
 --
 
 CREATE TABLE `patrimonio` (
@@ -1093,7 +1099,7 @@ CREATE TABLE `patrimonio` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `patrimonio`
+-- Despejando dados para a tabela `patrimonio`
 --
 
 INSERT INTO `patrimonio` (`id`, `nome`, `descricao`, `valor`, `data_aquisicao`, `situacao`, `localizacao`, `data_registro`, `codigo`, `categoria`, `cadastrado_por`, `destino`, `responsavel`, `tipo_operacao`, `foto`) VALUES
@@ -1116,12 +1122,13 @@ INSERT INTO `patrimonio` (`id`, `nome`, `descricao`, `valor`, `data_aquisicao`, 
 (17, 'NOTEBOOK ', 'DELL LATITUDE 5440', 5600.00, '2024-11-25', 'em uso', 'SALA - 404', '2024-11-25 14:18:41', '600428000012487', 'equipamentos_informatica', 'GABRIEL', NULL, NULL, '', 'patrimonio-6744874180aee.jpeg'),
 (18, 'GABRIEL DE SOUZA RODRIGUES', 'er', 23.00, '2024-12-10', 'ativo', '102', '2024-12-10 19:20:36', '600428000012488', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', 'default.png'),
 (19, 'MONITOR', 'teste', 10.00, '2024-12-30', 'ativo', 'SALA 501', '2024-12-30 13:51:06', '600428000012489', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', 'patrimonio-6772a54a85261.jpg'),
-(20, 'Monitor', 'Monitor DELL', 1.20, '2025-01-08', 'Em Processo de baixa', 'CENTRAL', '2025-01-08 13:41:03', '600428000012490', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', 'default.png');
+(20, 'Monitor', 'Monitor DELL', 1.20, '2025-01-08', 'Em Processo de baixa', 'CENTRAL', '2025-01-08 13:41:03', '600428000012490', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', 'default.png'),
+(21, 'TESTE', 'yrdyr', 15105.00, '2025-05-27', 'ativo', 'yrdyr', '2025-05-27 13:51:52', '705100000000198', 'bens_achados', 'MASTER', NULL, NULL, '', 'patrimonio-6835c378bc1b1.png');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `permissoes`
+-- Estrutura para tabela `permissoes`
 --
 
 CREATE TABLE `permissoes` (
@@ -1133,7 +1140,7 @@ CREATE TABLE `permissoes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `permissoes`
+-- Despejando dados para a tabela `permissoes`
 --
 
 INSERT INTO `permissoes` (`id`, `usuario_id`, `setor`, `created_at`, `setor_id`) VALUES
@@ -1142,23 +1149,32 @@ INSERT INTO `permissoes` (`id`, `usuario_id`, `setor`, `created_at`, `setor_id`)
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `prestacao_de_contas`
+-- Estrutura para tabela `prestacao_contas`
 --
 
-CREATE TABLE `prestacao_de_contas` (
+CREATE TABLE `prestacao_contas` (
   `id` int(11) NOT NULL,
-  `contrato_titulo` int(220) NOT NULL,
-  `valor_a_prestar` decimal(10,2) NOT NULL,
+  `contrato_id` int(11) NOT NULL,
+  `valor_pago` decimal(10,2) NOT NULL,
+  `descricao` text NOT NULL,
   `data_pagamento` date NOT NULL,
-  `documentos` varchar(255) DEFAULT NULL,
-  `observacoes` text DEFAULT NULL,
-  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp()
+  `status` varchar(20) DEFAULT 'Pendente',
+  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp(),
+  `chamado_glpi` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `prestacao_contas`
+--
+
+INSERT INTO `prestacao_contas` (`id`, `contrato_id`, `valor_pago`, `descricao`, `data_pagamento`, `status`, `data_criacao`, `chamado_glpi`) VALUES
+(1, 14, 500000.00, 'sdaf', '2025-06-28', 'Concluída', '2025-06-04 12:20:46', NULL),
+(2, 17, 500000.00, '2', '2025-06-04', 'Pendente', '2025-06-04 12:32:42', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `produtos`
+-- Estrutura para tabela `produtos`
 --
 
 CREATE TABLE `produtos` (
@@ -1180,18 +1196,23 @@ CREATE TABLE `produtos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `produtos`
+-- Despejando dados para a tabela `produtos`
 --
 
 INSERT INTO `produtos` (`id`, `produto`, `classificacao`, `natureza`, `contabil`, `descricao`, `unidade`, `localizacao`, `custo`, `quantidade`, `nf`, `preco_medio`, `tipo_operacao`, `data_cadastro`, `estoque_minimo`) VALUES
-(1, '42400050002', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', 'RESPIRADOR DESCARTAVEL TIPO CONCHA', '2', 'xm1', 3.32300, 148, '2', 14.45, 'retirado', '2025-04-08 17:04:42', 10),
-(2, '42400050015', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', 'MASCARA RESPIRATORIA TIPO SEMI-FACIAL', 'UM', 'xm1', 4.43400, 5, '1', 192.00, 'retirado', '2025-04-08 17:22:26', 5),
-(3, '47100016581', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'TUBO NAO METALICO AGUA 40mm 3M SIGA 0040041', 'UM', 'xm1', 44.34200, 35, '1', 1.93, 'retirado', '2025-04-08 17:28:39', 5);
+(1, '42400050002', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', 'RESPIRADOR DESCARTAVEL TIPO CONCHA', '2', 'xm1', 3.32300, 197, '2', 14.45, 'retirado', '2025-04-08 17:04:42', 10),
+(2, '42400050015', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', '', 'UM', 'xm1', 4.43400, 5, '1', 192.00, 'retirado', '2025-04-08 17:22:26', 5),
+(3, '47100016581', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'TUBO NAO METALICO AGUA 40mm 3M SIGA 0040041', 'UM', 'xm1', 44.34200, 35, '1', 1.93, 'retirado', '2025-04-08 17:28:39', 5),
+(4, '43400110010', 'Material para manutenção e conservação de Bens móveis', '333903011', '2425.11', 'FILTRO AR COMPRESSOR', 'um', 'xm1', 32798.82000, 273, '3', 266.00, 'cadastrado', '2025-05-27 14:46:41', 0),
+(5, '47100040108', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'TUBO NAO METALICO AGUA 20mm 3M ID 0061400', 'um', 'xm1', 32798.82000, 40, '1', 819.00, 'cadastrado', '2025-05-27 15:15:06', 0),
+(6, '55100040061', 'Matérias Primas', '333903021', '2424.10', 'DORMENTE DE MADEIRA 1,60 M', 'um', 'xm1', 32798.82000, 40, '1', 819.00, 'cadastrado', '2025-05-27 15:15:21', 0),
+(7, '53250090945', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'DISPOSITIVO FIXAÇÃO TIPO GRAMPO 4 MM SIGA 0040017', '123', 'xm1', 32798.82000, 1044, '7', 62.00, 'cadastrado', '2025-05-27 15:15:57', 0),
+(8, '47100040037', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'TUBO ESGOTO 100MM', 'um', 'xm1', 32798.82000, 412, '2', 79.60, 'cadastrado', '2025-05-27 15:19:37', 0);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `relatorios_agendados`
+-- Estrutura para tabela `relatorios_agendados`
 --
 
 CREATE TABLE `relatorios_agendados` (
@@ -1208,7 +1229,7 @@ CREATE TABLE `relatorios_agendados` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `relatorios_agendados`
+-- Despejando dados para a tabela `relatorios_agendados`
 --
 
 INSERT INTO `relatorios_agendados` (`id`, `tipo_relatorio`, `contrato_id`, `relatorio_todos`, `mes`, `ano`, `email_destinatario`, `periodicidade`, `proximo_envio`, `criado_em`) VALUES
@@ -1231,7 +1252,7 @@ INSERT INTO `relatorios_agendados` (`id`, `tipo_relatorio`, `contrato_id`, `rela
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `setores`
+-- Estrutura para tabela `setores`
 --
 
 CREATE TABLE `setores` (
@@ -1240,7 +1261,7 @@ CREATE TABLE `setores` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `setores`
+-- Despejando dados para a tabela `setores`
 --
 
 INSERT INTO `setores` (`id`, `nome_setor`) VALUES
@@ -1253,7 +1274,7 @@ INSERT INTO `setores` (`id`, `nome_setor`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `transferencias`
+-- Estrutura para tabela `transferencias`
 --
 
 CREATE TABLE `transferencias` (
@@ -1269,7 +1290,7 @@ CREATE TABLE `transferencias` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `transferencias`
+-- Despejando dados para a tabela `transferencias`
 --
 
 INSERT INTO `transferencias` (`id`, `patrimonio_id`, `destino`, `data_transferencia`, `observacao`, `criado_em`, `atualizado_em`, `responsavel`, `tipo_operacao`) VALUES
@@ -1281,7 +1302,7 @@ INSERT INTO `transferencias` (`id`, `patrimonio_id`, `destino`, `data_transferen
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `transferencia_historico`
+-- Estrutura para tabela `transferencia_historico`
 --
 
 CREATE TABLE `transferencia_historico` (
@@ -1298,7 +1319,7 @@ CREATE TABLE `transferencia_historico` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `transicao`
+-- Estrutura para tabela `transicao`
 --
 
 CREATE TABLE `transicao` (
@@ -1309,10 +1330,31 @@ CREATE TABLE `transicao` (
   `tipo` enum('Entrada','Saida') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Despejando dados para a tabela `transicao`
+--
+
+INSERT INTO `transicao` (`id`, `material_id`, `quantidade`, `data`, `tipo`) VALUES
+(4, 4, 123, '2025-05-27', 'Entrada'),
+(5, 4, 123, '2025-05-27', 'Entrada'),
+(6, 1, 2, '2025-05-27', 'Entrada'),
+(7, 4, 12, '2025-05-27', 'Entrada'),
+(8, 4, 12, '2025-05-27', 'Entrada'),
+(9, 1, 12, '2025-05-27', 'Entrada'),
+(10, 1, 12, '2025-05-27', 'Entrada'),
+(11, 4, 2, '2025-05-27', 'Entrada'),
+(12, 1, 23, '2025-05-27', 'Entrada'),
+(13, 5, 40, '2025-05-27', 'Entrada'),
+(14, 6, 40, '2025-05-27', 'Entrada'),
+(15, 7, 522, '2025-05-27', 'Entrada'),
+(16, 7, 522, '2025-05-27', 'Entrada'),
+(17, 8, 412, '2025-05-27', 'Entrada'),
+(18, 4, 1, '2025-05-27', 'Entrada');
+
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `usuario`
+-- Estrutura para tabela `usuario`
 --
 
 CREATE TABLE `usuario` (
@@ -1330,7 +1372,7 @@ CREATE TABLE `usuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `usuario`
+-- Despejando dados para a tabela `usuario`
 --
 
 INSERT INTO `usuario` (`id`, `username`, `senha`, `matricula`, `email`, `setor`, `cargo`, `situacao`, `foto`, `primeira_vez`, `tempo_registro`) VALUES
@@ -1347,7 +1389,7 @@ INSERT INTO `usuario` (`id`, `username`, `senha`, `matricula`, `email`, `setor`,
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `vencimentos_futuros`
+-- Estrutura para tabela `vencimentos_futuros`
 --
 
 CREATE TABLE `vencimentos_futuros` (
@@ -1363,13 +1405,13 @@ CREATE TABLE `vencimentos_futuros` (
 --
 
 --
--- Índices para tabela `categorias`
+-- Índices de tabela `categorias`
 --
 ALTER TABLE `categorias`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `certidoes`
+-- Índices de tabela `certidoes`
 --
 ALTER TABLE `certidoes`
   ADD PRIMARY KEY (`id`),
@@ -1378,124 +1420,123 @@ ALTER TABLE `certidoes`
   ADD KEY `fk_contrato` (`contrato_id`);
 
 --
--- Índices para tabela `codigo_atual`
+-- Índices de tabela `codigo_atual`
 --
 ALTER TABLE `codigo_atual`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `configuracoes`
+-- Índices de tabela `configuracoes`
 --
 ALTER TABLE `configuracoes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `contratos_parcelas`
+-- Índices de tabela `contratos_parcelas`
 --
 ALTER TABLE `contratos_parcelas`
   ADD PRIMARY KEY (`id`),
   ADD KEY `contrato_id` (`contrato_id`);
 
 --
--- Índices para tabela `controle_transicao`
+-- Índices de tabela `controle_transicao`
 --
 ALTER TABLE `controle_transicao`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `mes` (`mes`);
 
 --
--- Índices para tabela `data_criacao`
+-- Índices de tabela `data_criacao`
 --
 ALTER TABLE `data_criacao`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `emails_salvos`
+-- Índices de tabela `emails_salvos`
 --
 ALTER TABLE `emails_salvos`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_email_user` (`email`,`username`);
 
 --
--- Índices para tabela `etapas_contratos`
+-- Índices de tabela `etapas_contratos`
 --
 ALTER TABLE `etapas_contratos`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_etapa` (`contract_id`,`etapa`);
 
 --
--- Índices para tabela `eventos`
+-- Índices de tabela `eventos`
 --
 ALTER TABLE `eventos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `fechamento`
+-- Índices de tabela `fechamento`
 --
 ALTER TABLE `fechamento`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `funcionario`
+-- Índices de tabela `funcionario`
 --
 ALTER TABLE `funcionario`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Índices para tabela `gestao_contratos`
+-- Índices de tabela `gestao_contratos`
 --
 ALTER TABLE `gestao_contratos`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `titulo_unique` (`titulo`);
+  ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `log_eventos`
+-- Índices de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `materiais`
+-- Índices de tabela `materiais`
 --
 ALTER TABLE `materiais`
   ADD PRIMARY KEY (`codigo`);
 
 --
--- Índices para tabela `notificacoes`
+-- Índices de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `ordens_compra`
+-- Índices de tabela `ordens_compra`
 --
 ALTER TABLE `ordens_compra`
   ADD PRIMARY KEY (`id`),
   ADD KEY `produto_id` (`produto_id`);
 
 --
--- Índices para tabela `pagamentos`
+-- Índices de tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `contrato_titulo` (`contrato_titulo`);
 
 --
--- Índices para tabela `painel_config`
+-- Índices de tabela `painel_config`
 --
 ALTER TABLE `painel_config`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `patrimonio`
+-- Índices de tabela `patrimonio`
 --
 ALTER TABLE `patrimonio`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `codigo` (`codigo`);
 
 --
--- Índices para tabela `permissoes`
+-- Índices de tabela `permissoes`
 --
 ALTER TABLE `permissoes`
   ADD PRIMARY KEY (`id`),
@@ -1503,20 +1544,19 @@ ALTER TABLE `permissoes`
   ADD KEY `setor_id` (`setor`);
 
 --
--- Índices para tabela `prestacao_de_contas`
+-- Índices de tabela `prestacao_contas`
 --
-ALTER TABLE `prestacao_de_contas`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `contrato_id` (`contrato_titulo`);
+ALTER TABLE `prestacao_contas`
+  ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `produtos`
+-- Índices de tabela `produtos`
 --
 ALTER TABLE `produtos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `relatorios_agendados`
+-- Índices de tabela `relatorios_agendados`
 --
 ALTER TABLE `relatorios_agendados`
   ADD PRIMARY KEY (`id`),
@@ -1524,33 +1564,33 @@ ALTER TABLE `relatorios_agendados`
   ADD KEY `idx_email_destinatario` (`email_destinatario`);
 
 --
--- Índices para tabela `setores`
+-- Índices de tabela `setores`
 --
 ALTER TABLE `setores`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `transferencias`
+-- Índices de tabela `transferencias`
 --
 ALTER TABLE `transferencias`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `transferencia_historico`
+-- Índices de tabela `transferencia_historico`
 --
 ALTER TABLE `transferencia_historico`
   ADD PRIMARY KEY (`id`),
   ADD KEY `patrimonio_id` (`patrimonio_id`);
 
 --
--- Índices para tabela `transicao`
+-- Índices de tabela `transicao`
 --
 ALTER TABLE `transicao`
   ADD PRIMARY KEY (`id`),
   ADD KEY `material_id` (`material_id`);
 
 --
--- Índices para tabela `usuario`
+-- Índices de tabela `usuario`
 --
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`id`),
@@ -1558,14 +1598,14 @@ ALTER TABLE `usuario`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Índices para tabela `vencimentos_futuros`
+-- Índices de tabela `vencimentos_futuros`
 --
 ALTER TABLE `vencimentos_futuros`
   ADD PRIMARY KEY (`id`),
   ADD KEY `contrato_titulo` (`contrato_titulo`);
 
 --
--- AUTO_INCREMENT de tabelas despejadas
+-- AUTO_INCREMENT para tabelas despejadas
 --
 
 --
@@ -1578,7 +1618,7 @@ ALTER TABLE `categorias`
 -- AUTO_INCREMENT de tabela `certidoes`
 --
 ALTER TABLE `certidoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `codigo_atual`
@@ -1620,19 +1660,19 @@ ALTER TABLE `emails_salvos`
 -- AUTO_INCREMENT de tabela `etapas_contratos`
 --
 ALTER TABLE `etapas_contratos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=200;
 
 --
 -- AUTO_INCREMENT de tabela `eventos`
 --
 ALTER TABLE `eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT de tabela `fechamento`
 --
 ALTER TABLE `fechamento`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de tabela `funcionario`
@@ -1644,19 +1684,19 @@ ALTER TABLE `funcionario`
 -- AUTO_INCREMENT de tabela `gestao_contratos`
 --
 ALTER TABLE `gestao_contratos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=657;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=715;
 
 --
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `ordens_compra`
@@ -1668,7 +1708,7 @@ ALTER TABLE `ordens_compra`
 -- AUTO_INCREMENT de tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
 --
 -- AUTO_INCREMENT de tabela `painel_config`
@@ -1680,7 +1720,7 @@ ALTER TABLE `painel_config`
 -- AUTO_INCREMENT de tabela `patrimonio`
 --
 ALTER TABLE `patrimonio`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de tabela `permissoes`
@@ -1689,16 +1729,16 @@ ALTER TABLE `permissoes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT de tabela `prestacao_de_contas`
+-- AUTO_INCREMENT de tabela `prestacao_contas`
 --
-ALTER TABLE `prestacao_de_contas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `prestacao_contas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `produtos`
 --
 ALTER TABLE `produtos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `relatorios_agendados`
@@ -1728,7 +1768,7 @@ ALTER TABLE `transferencia_historico`
 -- AUTO_INCREMENT de tabela `transicao`
 --
 ALTER TABLE `transicao`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de tabela `usuario`
@@ -1743,41 +1783,29 @@ ALTER TABLE `vencimentos_futuros`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Restrições para despejos de tabelas
+-- Restrições para tabelas despejadas
 --
 
 --
--- Limitadores para a tabela `certidoes`
+-- Restrições para tabelas `certidoes`
 --
 ALTER TABLE `certidoes`
   ADD CONSTRAINT `fk_contrato` FOREIGN KEY (`contrato_id`) REFERENCES `gestao_contratos` (`id`) ON DELETE SET NULL;
 
 --
--- Limitadores para a tabela `contratos_parcelas`
+-- Restrições para tabelas `contratos_parcelas`
 --
 ALTER TABLE `contratos_parcelas`
   ADD CONSTRAINT `contratos_parcelas_ibfk_1` FOREIGN KEY (`contrato_id`) REFERENCES `gestao_contratos` (`id`);
 
 --
--- Limitadores para a tabela `etapas_contratos`
+-- Restrições para tabelas `etapas_contratos`
 --
 ALTER TABLE `etapas_contratos`
   ADD CONSTRAINT `etapas_contratos_ibfk_1` FOREIGN KEY (`contract_id`) REFERENCES `gestao_contratos` (`id`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `pagamentos`
---
-ALTER TABLE `pagamentos`
-  ADD CONSTRAINT `pagamentos_ibfk_1` FOREIGN KEY (`contrato_titulo`) REFERENCES `gestao_contratos` (`titulo`) ON DELETE CASCADE;
-
---
--- Limitadores para a tabela `prestacao_de_contas`
---
-ALTER TABLE `prestacao_de_contas`
-  ADD CONSTRAINT `prestacao_de_contas_ibfk_1` FOREIGN KEY (`contrato_titulo`) REFERENCES `gestao_contratos` (`id`) ON DELETE CASCADE;
-
---
--- Limitadores para a tabela `vencimentos_futuros`
+-- Restrições para tabelas `vencimentos_futuros`
 --
 ALTER TABLE `vencimentos_futuros`
   ADD CONSTRAINT `vencimentos_futuros_ibfk_1` FOREIGN KEY (`contrato_titulo`) REFERENCES `gestao_contratos` (`titulo`) ON DELETE CASCADE;

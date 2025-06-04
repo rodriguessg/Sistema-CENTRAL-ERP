@@ -112,10 +112,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["cadastrar_contrato"]))
                 $stmt_notificacao->bindParam(':mensagem', $mensagem);
                 $stmt_notificacao->execute();
             }
+
         }
 
         header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Cadastrado_contratos_sucesso&pagina=/Sistema-CENTRAL-ERP/homecontratos.php");
         exit();
+         // Registro no log_eventos
+    $sql_log = "INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (?, ?, NOW())";
+    $stmt_log = $conn->prepare($sql_log);
+
+    if ($stmt_log) {
+        $tipo_operacao = "cadastrou um contrato na base de dados.";
+        $stmt_log->bind_param("ss", $username, $tipo_operacao);
+
+        if ($stmt_log->execute()) {
+            // Redireciona para a página de sucesso
+           // Redirecionamento para a página 'mensagem.php' em views, com os parâmetros necessários
+          header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=sucesso2&pagina=/Sistema-CENTRAL-ERP/homeestoque.php');
+          exit();
+
+        } else {
+            echo "Erro ao registrar ação no log: " . $stmt_log->error;
+        }
+
+        $stmt_log->close();
+    } else {
+        echo "Erro na preparação da consulta do log: " . $conn->error;
+    }
     } catch (PDOException $e) {
         echo "Erro ao cadastrar contrato: " . $e->getMessage();
     }

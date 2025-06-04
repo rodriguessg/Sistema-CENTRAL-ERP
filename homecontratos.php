@@ -920,7 +920,7 @@ try {
 ?>
 <div class="form-container" id="prestacao">
 
-  <div class="container">
+     <div class="container">
         <h2 class="mb-4">Prestação de Contas</h2>
 
         <!-- Tabela de Contratos -->
@@ -960,7 +960,7 @@ try {
                                         default => 'bg-secondary'
                                     };
                                     ?>
-                                    <span class="badge <?= $badge_class; ?>"><?= htmlspecialchars($status_prestacao); ?></span>
+                                    <span class=" <?= $badge_class; ?>"><?= htmlspecialchars($status_prestacao); ?></span>
                                 </td>
                                 <td>
                                     <button class="btn btn-sm btn-primary select-contrato" 
@@ -1026,14 +1026,19 @@ try {
                         <option value="Concluída">Concluída</option>
                     </select>
                 </div>
-
+<!-- 
+                <div class="mb-3">
+                    <label for="chamado_glpi" class="form-label">Chamado GLPI (Opcional):</label>
+                    <input type="text" class="form-control" id="chamado_glpi" name="chamado_glpi" placeholder="Ex.: 1748">
+                </div> -->
 
                 <button type="submit" class="btn btn-success">Salvar Prestação de Contas</button>
                 <button type="button" class="btn btn-secondary ms-2" id="cancelar-form">Cancelar</button>
             </form>
         </div>
+    </div>
 </div>
-
+   
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -1095,7 +1100,6 @@ try {
             });
         });
     </script>
- 
 
 
   <!-- Formulário para selecionar contrato e tipo de relatório -->

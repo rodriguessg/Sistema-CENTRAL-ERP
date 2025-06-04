@@ -562,7 +562,7 @@
     </form>
 </div>
 
-<script>
+ <script>
 // Função que verifica se o Gestor e Fiscais foram preenchidos
 function verificarGestorEFiscal() {
     const gestor = document.getElementById('gestor').value;
@@ -586,20 +586,19 @@ function verificarGestorEFiscal() {
 }
 
 // // Função que atualiza o valor do contrato considerando a garantia selecionada
-// function atualizarValorContrato() {
-//     const valorContratoInput = document.getElementById('valor-contrato');
-//     const garantiaSelect = document.getElementById('garantia');
-//     const valorContrato = parseFloat(valorContratoInput.value.replace(/[^0-9.-]+/g,"")); // Remove símbolos, se houver
-//     const garantiaPercentual = parseInt(garantiaSelect.value);
+ function atualizarValorContrato() {
+     const valorContratoInput = document.getElementById('valor-contrato');
+     const garantiaSelect = document.getElementById('garantia');
+    const valorContrato = parseFloat(valorContratoInput.value.replace(/[^0-9.-]+/g,"")); // Remove símbolos, se houver/     const garantiaPercentual = parseInt(garantiaSelect.value);
 
-//     if (!isNaN(valorContrato)) {
-//         const valorGarantia = (valorContrato * garantiaPercentual) / 100;
-//         const novoValorContrato = valorContrato - valorGarantia;
+     if (!isNaN(valorContrato)) {
+         const valorGarantia = (valorContrato * garantiaPercentual) / 100;
+         const novoValorContrato = valorContrato - valorGarantia;
 
-//         // Atualiza o campo de valor do contrato com o novo valor após o desconto
-//         valorContratoInput.value = novoValorContrato.toFixed(2);
-//     }
-// }
+         // Atualiza o campo de valor do contrato com o novo valor após o desconto
+         valorContratoInput.value = novoValorContrato.toFixed(2);
+     }
+ }
 </script>
 
 
@@ -614,7 +613,7 @@ function verificarGestorEFiscal() {
 </h2>
 <p class="consultar-subtitulo">Pesquise e visualize os contratos cadastrados no sistema.</p>
 </div>
-        <!-- Pesquisa -->
+    
         <div class="search-bar">
             <div class="search-filters">
                 <input type="text" id="searchInput" class="input-field" placeholder="Digite o título ou descrição do contrato" oninput="searchContracts()">
@@ -628,6 +627,7 @@ function verificarGestorEFiscal() {
                 <button class="btn-filters" onclick="openFilterModal()">Configurar Filtro</button>
             </div>
         </div>
+
         <!-- Lista de Contratos -->
         <div class="table-container-contratos">
             <h2 class="titulo-tabela">

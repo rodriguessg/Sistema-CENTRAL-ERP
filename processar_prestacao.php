@@ -11,7 +11,7 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $contrato_id = filter_input(INPUT_POST, 'contrato_id', FILTER_VALIDATE_INT);
         $valor_pago = filter_input(INPUT_POST, 'valor_pago', FILTER_VALIDATE_FLOAT);
-        $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING);
+        $descricao = filter_input(INPUT_POST, 'descricaoprestacao', FILTER_SANITIZE_STRING);
         $data_pagamento = filter_input(INPUT_POST, 'data_pagamento', FILTER_SANITIZE_STRING);
         $prestacao_status = filter_input(INPUT_POST, 'prestacao_status', FILTER_SANITIZE_STRING);
    

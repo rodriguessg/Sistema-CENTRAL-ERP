@@ -1100,7 +1100,6 @@ try {
             });
         });
     </script>
- 
 
 
   <!-- Formulário para selecionar contrato e tipo de relatório -->

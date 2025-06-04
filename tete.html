@@ -3,647 +3,849 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modal Estilo Contrato</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-            min-height: 100vh;
-            padding: 2rem 0;
-            font-family: 'Georgia', serif;
-        }
-        
-        .demo-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-            text-align: center;
-        }
-        
-        .demo-title {
-            color: #1e293b;
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .demo-subtitle {
-            color: #64748b;
-            font-size: 1.2rem;
-            margin-bottom: 3rem;
-            font-style: italic;
-        }
-        
-        .demo-buttons {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
-        }
-        
-        .demo-btn {
-            padding: 1.2rem 2.5rem;
-            border: 3px solid;
-            border-radius: 0;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .demo-btn.classic {
-            background: #fefefe;
-            color: #1e40af;
-            border-color: #1e40af;
-        }
-        
-        .demo-btn.official {
-            background: #1e40af;
-            color: white;
-            border-color: #f59e0b;
-        }
-        
-        .demo-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        
-        .demo-btn.classic:hover {
-            background: #1e40af;
-            color: white;
-        }
-        
-        .demo-btn.official:hover {
-            background: #f59e0b;
-            border-color: #1e40af;
-            color: #1e293b;
-        }
-        
-        .style-selector {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-        
-        .style-selector h4 {
-            color: #1e293b;
-            margin-bottom: 1rem;
-        }
-        
-        .style-selector select {
-            padding: 0.8rem;
-            border: 2px solid #d1d5db;
-            border-radius: 5px;
-            background: white;
-            font-size: 1rem;
-            width: 100%;
-            max-width: 400px;
-        }
-        
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-        
-        .feature {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            text-align: left;
-        }
-        
-        .feature h5 {
-            color: #1e40af;
-            margin-bottom: 0.5rem;
-        }
-        
-        .feature p {
-            color: #64748b;
-            margin: 0;
-            font-size: 0.9rem;
-        }
+    <title>Prestação de Contas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="prestacao-contas-enhanced.css">
+</head>
+<style>
 
-        /* ========== MODAL DESIGN - DOCUMENTO OFICIAL MODERNO ========== */
-
-/* Variáveis para documento oficial */
+  /* Variáveis CSS para o tema - Seguindo o padrão estabelecido */
 :root {
-  --doc-white: #ffffff;
-  --doc-cream: #fefcf8;
-  --doc-blue: #1e40af;
-  --doc-navy: #1e293b;
-  --doc-gold: #f59e0b;
-  --doc-red: #dc2626;
-  --doc-gray: #6b7280;
-  --doc-light-gray: #f3f4f6;
-  --doc-border: #d1d5db;
-  --doc-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  --primary-gradient: linear-gradient(90deg, #192844 67.81%, #472774 100%);
+  --secondary-gradient: linear-gradient(135deg, #472774 0%, #6a4c93 100%);
+  --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+  --primary-color: #192844;
+  --secondary-color: #472774;
+  --accent-color: #667eea;
+  --success-color: #4facfe;
+  --warning-color: #43e97b;
+  --danger-color: #fa709a;
+  --text-dark: #2d3748;
+  --text-light: #718096;
+  --bg-light: #f7fafc;
+  --bg-white: #ffffff;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Overlay */
-.modal.fade {
-  background: rgba(30, 41, 59, 0.8);
-  backdrop-filter: blur(5px);
+/* Reset e configurações base */
+* {
+  box-sizing: border-box;
 }
 
-/* Container */
-.modal-dialog {
-  max-width: 850px;
-  margin: 1.5rem auto;
-  transform: scale(0.9) rotateY(5deg);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  perspective: 1000px;
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  color: var(--text-dark);
+  line-height: 1.6;
 }
 
-.modal.show .modal-dialog {
-  transform: scale(1) rotateY(0deg);
-}
-
-/* Documento principal */
-.modal-content {
-  background: var(--doc-white);
-  border: none;
-  border-radius: 0;
-  box-shadow: var(--doc-shadow);
+/* Container principal */
+.prestacao-form-container {
+  background: var(--bg-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  padding: 2rem;
+  margin: 0 auto;
+  max-width: 1200px;
+  border: 1px solid var(--border-color);
   position: relative;
   overflow: hidden;
-  font-family: "Georgia", serif;
 }
 
-/* Borda oficial do documento */
-.modal-content::before {
+.prestacao-form-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--primary-gradient);
+}
+
+.prestacao-container {
+  width: 100%;
+}
+
+/* Títulos */
+.prestacao-titulo-principal {
+  color: var(--primary-color);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.prestacao-titulo-principal i {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 0.75rem;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  box-shadow: var(--shadow-md);
+}
+
+.prestacao-subtitulo {
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prestacao-subtitulo i {
+  color: var(--accent-color);
+  font-size: 1rem;
+}
+
+/* Container da tabela */
+.prestacao-table-container {
+  background: var(--bg-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.prestacao-table-wrapper {
+  overflow-x: auto;
+}
+
+/* Tabela */
+.prestacao-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  background: var(--bg-white);
+}
+
+.prestacao-table-header {
+  background: var(--primary-gradient);
+}
+
+.prestacao-table-header th {
+  color: white;
+  padding: 1rem 0.75rem;
+  font-weight: 600;
+  text-align: left;
+  border: none;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.prestacao-table-header th::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.prestacao-table-body {
+  background: var(--bg-white);
+}
+
+.prestacao-table-row {
+  transition: var(--transition);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.prestacao-table-row:hover {
+  background: var(--bg-light);
+  transform: scale(1.002);
+  box-shadow: var(--shadow-sm);
+}
+
+.prestacao-table-row:nth-child(even) {
+  background: rgba(25, 40, 68, 0.02);
+}
+
+.prestacao-table-row:nth-child(even):hover {
+  background: var(--bg-light);
+}
+
+.prestacao-table-cell {
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+  color: var(--text-dark);
+  transition: var(--transition);
+  font-size: 0.875rem;
+}
+
+.prestacao-text-center {
+  text-align: center;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Badges de status */
+.prestacao-badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.prestacao-badge-warning {
+  background: var(--warning-gradient);
+  color: white;
+}
+
+.prestacao-badge-primary {
+  background: var(--accent-gradient);
+  color: white;
+}
+
+.prestacao-badge-success {
+  background: var(--success-gradient);
+  color: white;
+}
+
+.prestacao-badge-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+}
+
+/* Botões */
+.prestacao-btn {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.prestacao-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: var(--transition);
+}
+
+.prestacao-btn:hover::before {
+  left: 100%;
+}
+
+.prestacao-btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+.prestacao-btn-primary {
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.prestacao-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.prestacao-btn-success {
+  background: var(--success-gradient);
+  color: white;
+}
+
+.prestacao-btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.prestacao-btn-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+}
+
+.prestacao-btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Formulário */
+.prestacao-form-wrapper {
+  background: var(--glass-gradient);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  margin-top: 2rem;
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+  display: none;
+}
+
+.prestacao-detalhes-container {
+  background: var(--bg-light);
+  border-radius: var(--border-radius-sm);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.prestacao-detalhe-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.prestacao-detalhe-item strong {
+  color: var(--primary-color);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prestacao-detalhe-item strong i {
+  color: var(--accent-color);
+  font-size: 0.8rem;
+}
+
+.prestacao-detalhe-valor {
+  color: var(--text-dark);
+  font-weight: 500;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.prestacao-form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.prestacao-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.prestacao-form-label {
+  font-weight: 600;
+  color: var(--text-dark);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.prestacao-form-label i {
+  color: var(--primary-color);
+  font-size: 0.8rem;
+}
+
+.prestacao-form-control {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  background: var(--bg-white);
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.prestacao-form-control:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(25, 40, 68, 0.1);
+  transform: translateY(-1px);
+}
+
+.prestacao-form-control:hover {
+  border-color: var(--primary-color);
+}
+
+.prestacao-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.prestacao-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23192844' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+  padding-right: 2.5rem;
+}
+
+.prestacao-error {
+  color: var(--danger-color);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: none;
+}
+
+.prestacao-button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Utilitários */
+.prestacao-mt-4 {
+  margin-top: 2rem;
+}
+
+.prestacao-fade-in {
+  animation: prestacaoFadeIn 0.5s ease-out;
+}
+
+@keyframes prestacaoFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .prestacao-form-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .prestacao-titulo-principal {
+    font-size: 1.75rem;
+  }
+
+  .prestacao-detalhes-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  .prestacao-form-container {
+    padding: 1.25rem;
+    margin: 0.5rem;
+  }
+
+  .prestacao-titulo-principal {
+    font-size: 1.5rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .prestacao-subtitulo {
+    font-size: 1.125rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.25rem;
+  }
+
+  .prestacao-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .prestacao-table {
+    min-width: 600px;
+  }
+
+  .prestacao-table-header th,
+  .prestacao-table-cell {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .prestacao-form-wrapper {
+    padding: 1.5rem;
+  }
+
+  .prestacao-button-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prestacao-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .prestacao-form-container {
+    padding: 1rem;
+    margin: 0.25rem;
+  }
+
+  .prestacao-titulo-principal {
+    font-size: 1.25rem;
+  }
+
+  .prestacao-subtitulo {
+    font-size: 1rem;
+  }
+
+  .prestacao-table-header th,
+  .prestacao-table-cell {
+    padding: 0.625rem 0.375rem;
+    font-size: 0.75rem;
+  }
+
+  .prestacao-form-control {
+    padding: 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .prestacao-form-wrapper {
+    padding: 1rem;
+  }
+
+  .prestacao-detalhes-container {
+    padding: 1rem;
+  }
+
+  .prestacao-btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Estados de loading */
+.prestacao-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.prestacao-loading::after {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  border: 8px solid var(--doc-blue);
-  border-image: linear-gradient(45deg, var(--doc-blue), var(--doc-gold), var(--doc-blue)) 1;
-  pointer-events: none;
-  z-index: 1;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 10;
 }
 
-/* Brasão/Logo de fundo */
-.modal-content::after {
-  content: "🏛️";
+.prestacao-loading::before {
+  content: "Carregando...";
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 15rem;
-  opacity: 0.03;
-  pointer-events: none;
-  z-index: 1;
+  z-index: 11;
+  font-weight: 600;
+  color: var(--primary-color);
 }
 
-/* Cabeçalho oficial */
-.modal-header {
-  background: linear-gradient(135deg, var(--doc-blue) 0%, var(--doc-navy) 100%);
-  color: white;
-  border-bottom: none;
-  padding: 2rem 3rem;
-  position: relative;
-  z-index: 2;
+/* Melhorias de acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
-/* Faixa decorativa superior */
-.modal-header::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--doc-gold) 0px,
-    var(--doc-gold) 30px,
-    var(--doc-red) 30px,
-    var(--doc-red) 60px,
-    var(--doc-blue) 60px,
-    var(--doc-blue) 90px
-  );
+/* Focus states para acessibilidade */
+.prestacao-btn:focus,
+.prestacao-form-control:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
-/* Título oficial */
-.modal-title {
-  color: white;
-  font-size: 1.6rem;
-  font-weight: bold;
-  margin: 0;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  position: relative;
+/* Hover effects adicionais */
+.prestacao-table-row:hover .prestacao-btn {
+  transform: scale(1.05);
 }
 
-.modal-title::before {
-  content: "REPÚBLICA FEDERATIVA DO BRASIL";
-  position: absolute;
-  top: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.7rem;
-  font-weight: normal;
-  letter-spacing: 2px;
-  opacity: 0.9;
+.prestacao-badge:hover {
+  transform: scale(1.05);
 }
 
-.modal-title::after {
-  content: "ESTADO DO RIO DE JANEIRO";
-  position: absolute;
-  bottom: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.8rem;
-  font-weight: normal;
-  letter-spacing: 1px;
-  opacity: 0.9;
+/* Animações de entrada */
+.prestacao-table-row {
+  animation: prestacaoSlideIn 0.3s ease-out;
 }
 
-/* Botão fechar oficial */
-.btn-close {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid white;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  position: relative;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+.prestacao-table-row:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.prestacao-table-row:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.prestacao-table-row:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.prestacao-table-row:nth-child(4) {
+  animation-delay: 0.25s;
+}
+.prestacao-table-row:nth-child(5) {
+  animation-delay: 0.3s;
 }
 
-.btn-close::before {
-  content: "✕";
-  color: white;
-  font-size: 1.3rem;
-  font-weight: bold;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.btn-close:hover {
-  background: var(--doc-red);
-  border-color: var(--doc-red);
-  transform: scale(1.1) rotate(90deg);
-}
-
-/* Corpo do documento */
-.modal-body {
-  padding: 3rem;
-  background: var(--doc-cream);
-  position: relative;
-  z-index: 2;
-  line-height: 1.9;
-}
-
-/* Carimbo de protocolo */
-.modal-body::before {
-  content: "PROTOCOLO: 2024.001.001";
-  position: absolute;
-  top: 1rem;
-  right: 3rem;
-  background: var(--doc-red);
-  color: white;
-  padding: 0.5rem 1rem;
-  font-size: 0.7rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-  transform: rotate(15deg);
-  border: 2px dashed white;
-}
-
-/* Data do documento */
-.modal-body::after {
-  content: "Rio de Janeiro, " attr(data-date);
-  position: absolute;
-  bottom: 1rem;
-  right: 3rem;
-  font-size: 0.9rem;
-  color: var(--doc-gray);
-  font-style: italic;
-}
-
-/* Cláusulas do contrato */
-.modal-body p {
-  margin-bottom: 2rem;
-  padding: 1.5rem 2rem;
-  background: var(--doc-white);
-  border: 1px solid var(--doc-border);
-  border-left: 6px solid var(--doc-blue);
-  position: relative;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-/* Numeração das cláusulas */
-.modal-body p::before {
-  content: "Art. " counter(clause-counter);
-  counter-increment: clause-counter;
-  position: absolute;
-  top: -12px;
-  left: 20px;
-  background: var(--doc-blue);
-  color: white;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.8rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-.modal-body {
-  counter-reset: clause-counter;
-}
-
-.modal-body p:hover {
-  background: var(--doc-light-gray);
-  border-left-color: var(--doc-gold);
-  transform: translateX(10px);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-}
-
-.modal-body p:hover::before {
-  background: var(--doc-gold);
-}
-
-/* Campos do documento */
-.modal-body strong {
-  color: var(--doc-navy);
-  font-weight: bold;
-  display: inline-block;
-  min-width: 180px;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: relative;
-}
-
-.modal-body strong::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: var(--doc-blue);
-}
-
-.modal-body span {
-  color: var(--doc-navy);
-  font-weight: 500;
-  font-size: 1.1rem;
-  background: linear-gradient(to right, transparent 0%, var(--doc-light-gray) 50%, transparent 100%);
-  padding: 0.2rem 0.5rem;
-  border-radius: 3px;
-}
-
-/* Rodapé com assinaturas */
-.modal-footer {
-  background: var(--doc-white);
-  border-top: 3px solid var(--doc-blue);
-  padding: 3rem;
-  position: relative;
-  z-index: 2;
-  text-align: center;
-}
-
-/* Área de assinaturas */
-.modal-footer::before {
-  content: "DOCUMENTO ASSINADO DIGITALMENTE\A CONFORME MP Nº 2.200-2 DE 24/08/2001";
-  white-space: pre;
-  position: absolute;
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.8rem;
-  color: var(--doc-gray);
-  text-align: center;
-  line-height: 1.4;
-}
-
-/* Selo de autenticidade */
-.modal-footer::after {
-  content: "🔒";
-  position: absolute;
-  top: 1rem;
-  right: 3rem;
-  font-size: 2rem;
-  color: var(--doc-blue);
-}
-
-/* Botão oficial */
-.modal-footer .btn {
-  background: linear-gradient(135deg, var(--doc-blue) 0%, var(--doc-navy) 100%);
-  color: white;
-  border: 3px solid var(--doc-gold);
-  padding: 1.2rem 3rem;
-  border-radius: 0;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  position: relative;
-  margin-top: 2rem;
-  transition: all 0.4s ease;
-  font-size: 1rem;
-  box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3);
-}
-
-.modal-footer .btn::before {
-  content: "⚖️";
-  position: absolute;
-  left: -50px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 2rem;
-}
-
-.modal-footer .btn:hover {
-  background: linear-gradient(135deg, var(--doc-gold) 0%, var(--doc-red) 100%);
-  border-color: var(--doc-navy);
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 15px 40px rgba(30, 64, 175, 0.4);
-}
-
-/* Animação de entrada como documento oficial */
-.modal.fade .modal-dialog {
-  animation: documentPresentation 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes documentPresentation {
-  0% {
+@keyframes prestacaoSlideIn {
+  from {
     opacity: 0;
-    transform: scale(0.8) rotateY(45deg) translateZ(-200px);
+    transform: translateX(-20px);
   }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.1) rotateY(-10deg) translateZ(50px);
-  }
-  100% {
+  to {
     opacity: 1;
-    transform: scale(1) rotateY(0deg) translateZ(0px);
+    transform: translateX(0);
   }
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-  .modal-dialog {
-    margin: 0.5rem;
-    max-width: calc(100% - 1rem);
-  }
-
-  .modal-header,
-  .modal-body,
-  .modal-footer {
-    padding: 2rem 1.5rem;
-  }
-
-  .modal-title {
-    font-size: 1.2rem;
-    letter-spacing: 1px;
-  }
-
-  .modal-title::before,
-  .modal-title::after {
-    font-size: 0.6rem;
-  }
-
-  .modal-body strong {
-    min-width: 140px;
-    font-size: 0.9rem;
-  }
-
-  .modal-body span {
-    font-size: 1rem;
-  }
-}
-
-    </style>
-</head>
+</style>
 <body>
-    <div class="demo-container">
-        <h1 class="demo-title">📋 Modal Estilo Contrato</h1>
-        <p class="demo-subtitle">Designs que simulam documentos oficiais reais</p>
-        
-        <div class="style-selector">
-            <h4>Escolha o Estilo do Documento:</h4>
-            <select id="styleSelector" onchange="changeStyle()">
-                <option value="classic">📜 Contrato Clássico - Papel Envelhecido</option>
-                <option value="official">🏛️ Documento Oficial - Governo Moderno</option>
-            </select>
-        </div>
-        
-        <div class="demo-buttons">
-            <button class="demo-btn classic" onclick="openModal()">
-                📋 Visualizar Contrato
-            </button>
-            <button class="demo-btn official" onclick="fillSampleData()">
-                📝 Dados de Exemplo
-            </button>
-        </div>
-        
-        <div class="features">
-            <div class="feature">
-                <h5>🎨 Design Autêntico</h5>
-                <p>Visual que simula documentos reais com texturas de papel, carimbos e elementos oficiais</p>
+    <div class="prestacao-form-container" id="prestacao">
+        <div class="prestacao-container">
+            <h2 class="prestacao-titulo-principal">
+                <i class="fas fa-file-invoice-dollar"></i>
+                Prestação de Contas
+            </h2>
+
+            <!-- Tabela de Contratos -->
+            <div class="prestacao-table-container">
+                <h4 class="prestacao-subtitulo">
+                    <i class="fas fa-list-alt"></i>
+                    Contratos Encerrados
+                </h4>
+                <div class="prestacao-table-wrapper">
+                    <table class="prestacao-table">
+                        <thead class="prestacao-table-header">
+                            <tr>
+                                <th scope="col">Título</th>
+                                <th scope="col">Validade</th>
+                                <th scope="col">Valor (R$)</th>
+                                <th scope="col">Status Prestação</th>
+                                <th scope="col">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody class="prestacao-table-body">
+                            <?php if (!empty($contratos)): ?>
+                                <?php foreach ($contratos as $c): ?>
+                                    <?php
+                                    // Buscar status da prestação para cada contrato
+                                    $sql_status = "SELECT status FROM prestacao_contas WHERE contrato_id = :contrato_id";
+                                    $stmt_status = $pdo->prepare($sql_status);
+                                    $stmt_status->bindParam(':contrato_id', $c['id'], PDO::PARAM_INT);
+                                    $stmt_status->execute();
+                                    $status_prestacao = $stmt_status->fetchColumn() ?: 'Pendente';
+                                    ?>
+                                    <tr class="prestacao-table-row">
+                                        <td class="prestacao-table-cell"><?= htmlspecialchars($c['titulo']); ?></td>
+                                        <td class="prestacao-table-cell"><?= htmlspecialchars($c['validade']); ?></td>
+                                        <td class="prestacao-table-cell">R$ <?= number_format($c['valor_contrato'], 2, ',', '.'); ?></td>
+                                        <td class="prestacao-table-cell">
+                                            <?php
+                                            $badge_class = match ($status_prestacao) {
+                                                'Pendente' => 'prestacao-badge-warning',
+                                                'Em Andamento' => 'prestacao-badge-primary',
+                                                'Concluída' => 'prestacao-badge-success',
+                                                default => 'prestacao-badge-secondary'
+                                            };
+                                            ?>
+                                            <span class="prestacao-badge <?= $badge_class; ?>"><?= htmlspecialchars($status_prestacao); ?></span>
+                                        </td>
+                                        <td class="prestacao-table-cell">
+                                            <button class="prestacao-btn prestacao-btn-primary prestacao-btn-sm select-contrato" 
+                                                    data-id="<?= htmlspecialchars($c['id']); ?>" 
+                                                    data-titulo="<?= htmlspecialchars($c['titulo']); ?>" 
+                                                    data-valor="<?= number_format($c['valor_contrato'], 2, '.', ''); ?>" 
+                                                    data-inicio="<?= htmlspecialchars($c['data_cadastro']); ?>" 
+                                                    data-validade="<?= htmlspecialchars($c['validade']); ?>"
+                                                    data-status="<?= htmlspecialchars($status_prestacao); ?>"
+                                                    aria-label="Selecionar contrato <?= htmlspecialchars($c['titulo']); ?>">
+                                                <i class="fas fa-check"></i>
+                                                Selecionar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr class="prestacao-table-row">
+                                    <td colspan="5" class="prestacao-table-cell prestacao-text-center">
+                                        <i class="fas fa-inbox"></i>
+                                        Nenhum contrato encontrado
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="feature">
-                <h5>📋 Numeração Automática</h5>
-                <p>Artigos e cláusulas numerados automaticamente como em contratos reais</p>
-            </div>
-            <div class="feature">
-                <h5>🔒 Elementos de Segurança</h5>
-                <p>Marcas d'água, selos digitais e bordas oficiais para autenticidade</p>
-            </div>
-            <div class="feature">
-                <h5>📱 Totalmente Responsivo</h5>
-                <p>Mantém a aparência profissional em todos os dispositivos</p>
+
+            <!-- Formulário de Prestação de Contas -->
+            <div class="prestacao-form-wrapper prestacao-fade-in" id="form-prestacao-container">
+                <h4 class="prestacao-subtitulo">
+                    <i class="fas fa-info-circle"></i>
+                    Detalhes do Contrato Selecionado
+                </h4>
+                <div class="prestacao-detalhes-container" id="contrato-detalhes">
+                    <div class="prestacao-detalhe-item">
+                        <strong><i class="fas fa-file-contract"></i> Nome do Contrato:</strong> 
+                        <span id="detalhe-titulo" class="prestacao-detalhe-valor"></span>
+                    </div>
+                    <div class="prestacao-detalhe-item">
+                        <strong><i class="fas fa-dollar-sign"></i> Valor do Contrato:</strong> 
+                        <span id="detalhe-valor" class="prestacao-detalhe-valor">R$ </span>
+                    </div>
+                    <div class="prestacao-detalhe-item">
+                        <strong><i class="fas fa-calendar-plus"></i> Data de Início:</strong> 
+                        <span id="detalhe-inicio" class="prestacao-detalhe-valor"></span>
+                    </div>
+                    <div class="prestacao-detalhe-item">
+                        <strong><i class="fas fa-calendar-times"></i> Data de Encerramento:</strong> 
+                        <span id="detalhe-validade" class="prestacao-detalhe-valor"></span>
+                    </div>
+                </div>
+
+                <h4 class="prestacao-subtitulo prestacao-mt-4">
+                    <i class="fas fa-edit"></i>
+                    Realizar Prestação de Contas
+                </h4>
+                <form class="prestacao-form" id="form-prestacao" method="POST" action="processar_prestacao.php">
+                    <input type="hidden" name="contrato_id" id="contrato_id">
+
+                    <div class="prestacao-input-group">
+                        <label for="valor_pago" class="prestacao-form-label">
+                            <i class="fas fa-money-bill-wave"></i>
+                            Valor Pago:
+                        </label>
+                        <input type="number" class="prestacao-form-control" id="valor_pago" name="valor_pago" step="0.01" required 
+                               aria-describedby="valor_pago_error" placeholder="0,00">
+                        <div class="prestacao-error" id="valor_pago_error"></div>
+                    </div>
+
+                    <div class="prestacao-input-group">
+                        <label for="descricaoprestacao" class="prestacao-form-label">
+                            <i class="fas fa-align-left"></i>
+                            Descrição da Prestação de Contas:
+                        </label>
+                        <textarea class="prestacao-form-control prestacao-textarea" id="descricaoprestacao" name="descricaoprestacao" rows="4" required 
+                                  aria-describedby="descricao_error" placeholder="Descreva os detalhes da prestação de contas..."></textarea>
+                        <div class="prestacao-error" id="descricao_error"></div>
+                    </div>
+
+                    <div class="prestacao-input-group">
+                        <label for="data_pagamento" class="prestacao-form-label">
+                            <i class="fas fa-calendar-check"></i>
+                            Data de Pagamento:
+                        </label>
+                        <input type="date" class="prestacao-form-control" id="data_pagamento" name="data_pagamento" required 
+                               aria-describedby="data_pagamento_error">
+                        <div class="prestacao-error" id="data_pagamento_error"></div>
+                    </div>
+
+                    <div class="prestacao-input-group">
+                        <label for="prestacao_status" class="prestacao-form-label">
+                            <i class="fas fa-tasks"></i>
+                            Status da Prestação:
+                        </label>
+                        <select class="prestacao-form-control prestacao-select" id="prestacao_status" name="prestacao_status" required>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Em Andamento">Em Andamento</option>
+                            <option value="Concluída">Concluída</option>
+                        </select>
+                    </div>
+
+                    <div class="prestacao-button-group">
+                        <button type="submit" class="prestacao-btn prestacao-btn-success">
+                            <i class="fas fa-save"></i>
+                            Salvar Prestação de Contas
+                        </button>
+                        <button type="button" class="prestacao-btn prestacao-btn-secondary" id="cancelar-form">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Visualização -->
-    <div class="modal fade" id="modalContrato" tabindex="-1" aria-labelledby="modalContratoLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalContratoLabel">Detalhes do Contrato</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" data-date="15 de Janeiro de 2024">
-                    <p><strong>Título</strong> <span id="modalTituloContrato">Contrato de Prestação de Serviços de Limpeza e Conservação Predial</span></p>
-                    <p><strong>Descrição</strong> <span id="modalDescricao">Prestação de serviços especializados de limpeza, conservação e manutenção predial para todas as dependências do órgão público, incluindo áreas internas, externas e equipamentos</span></p>
-                    <p><strong>Validade</strong> <span id="modalValidade">31 de Dezembro de 2024</span></p>
-                    <p><strong>Processo SEI</strong> <span id="modalSEI">12345.678901/2024-10</span></p>
-                    <p><strong>Gestor Responsável</strong> <span id="modalGestor">João Silva Santos - Matrícula 123456</span></p>
-                    <p><strong>Fiscais Designados</strong> <span id="modalFiscais">Maria Oliveira Costa, Pedro Henrique Souza</span></p>
-                    <p><strong>Valor Total do Contrato</strong> <span id="modalValorContrato">R$ 150.000,00 (Cento e cinquenta mil reais)</span></p>
-                    <p><strong>Parcelas</strong> <span id="modalNumParcelas">12 (doze) parcelas mensais de R$ 12.500,00</span></p>
-                    <p><strong>Valor de Aditivos</strong> <span id="modalValorAditivo">R$ 25.000,00 (Vinte e cinco mil reais)</span></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar Documento</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CSS Dinâmico -->
-    <link id="modalStyle" rel="stylesheet" href="">
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function changeStyle() {
-            const selector = document.getElementById('styleSelector');
-            const styleLink = document.getElementById('modalStyle');
-            const selectedStyle = selector.value;
-            
-            if (selectedStyle === 'classic') {
-                styleLink.href = 'modal-contract-design-option1.css';
-            } else {
-                styleLink.href = 'modal-contract-design-option2.css';
-            }
-        }
-        
-        function openModal() {
-            const modal = new bootstrap.Modal(document.getElementById('modalContrato'));
-            modal.show();
-        }
-        
-        function fillSampleData() {
-            alert('📋 Dados de exemplo já estão carregados!\n\n✅ Título do contrato\n✅ Descrição detalhada\n✅ Informações de validade\n✅ Dados dos responsáveis\n✅ Valores e parcelas');
-        }
-        
-        // Carregar estilo inicial
-        window.onload = function() {
-            changeStyle();
-        }
-        
-        // Adicionar data atual ao documento
+        // JavaScript para demonstração
         document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toLocaleDateString('pt-BR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+            const selectButtons = document.querySelectorAll('.select-contrato');
+            const formContainer = document.getElementById('form-prestacao-container');
+            const cancelButton = document.getElementById('cancelar-form');
+
+            selectButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Preencher detalhes do contrato
+                    document.getElementById('detalhe-titulo').textContent = this.dataset.titulo;
+                    document.getElementById('detalhe-valor').textContent = this.dataset.valor;
+                    document.getElementById('detalhe-inicio').textContent = this.dataset.inicio;
+                    document.getElementById('detalhe-validade').textContent = this.dataset.validade;
+                    document.getElementById('contrato_id').value = this.dataset.id;
+
+                    // Mostrar formulário
+                    formContainer.style.display = 'block';
+                    formContainer.scrollIntoView({ behavior: 'smooth' });
+                });
             });
-            const modalBody = document.querySelector('.modal-body');
-            if (modalBody) {
-                modalBody.setAttribute('data-date', today);
-            }
+
+            cancelButton.addEventListener('click', function() {
+                formContainer.style.display = 'none';
+            });
         });
     </script>
 </body>

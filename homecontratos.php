@@ -212,6 +212,8 @@
      <link rel="stylesheet" href="src/contratos/style/gerenciar-pagamentos.css">
       <link rel="stylesheet" href="src/contratos/style/relatorio.css">
          <link rel="stylesheet" href="src/contratos/style/modal-contratos.css">
+            <link rel="stylesheet" href="src/contratos/style/prestacao-conta.css">
+         
     <!-- Carregar jQuery (se necessário) -->
     <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -918,126 +920,200 @@ try {
     die("Erro ao conectar ao banco de dados. Por favor, tente novamente mais tarde.");
 }
 ?>
-<div class="form-container" id="prestacao">
+  <div class="form-container" id="prestacao">
+        <div class="prestacao-container">
+            <h2 class="prestacao-titulo-principal">
+                <i class="fas fa-file-invoice-dollar"></i>
+                Prestação de Contas
+            </h2>
 
-     <div class="container">
-        <h2 class="mb-4">Prestação de Contas</h2>
-
-        <!-- Tabela de Contratos -->
-        <div class="table-container">
-            <h4>Contratos Encerrados</h4>
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">Título</th>
-                        <th scope="col">Validade</th>
-                        <th scope="col">Valor (R$)</th>
-                        <th scope="col">Status Prestação</th>
-                        <th scope="col">Ação</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($contratos)): ?>
-                        <?php foreach ($contratos as $c): ?>
-                            <?php
-                            // Buscar status da prestação para cada contrato
-                            $sql_status = "SELECT status FROM prestacao_contas WHERE contrato_id = :contrato_id";
-                            $stmt_status = $pdo->prepare($sql_status);
-                            $stmt_status->bindParam(':contrato_id', $c['id'], PDO::PARAM_INT);
-                            $stmt_status->execute();
-                            $status_prestacao = $stmt_status->fetchColumn() ?: 'Pendente';
-                            ?>
+            <!-- Tabela de Contratos -->
+            <div class="prestacao-table-container">
+                <h4 class="prestacao-subtitulo">
+                    <i class="fas fa-list-alt"></i>
+                    Contratos Encerrados
+                </h4>
+                <div class="prestacao-table-wrapper">
+                    <table class="prestacao-table">
+                        <thead class="prestacao-table-header">
                             <tr>
-                                <td><?= htmlspecialchars($c['titulo']); ?></td>
-                                <td><?= htmlspecialchars($c['validade']); ?></td>
-                                <td>R$ <?= number_format($c['valor_contrato'], 2, ',', '.'); ?></td>
-                                <td>
-                                    <?php
-                                    $badge_class = match ($status_prestacao) {
-                                        'Pendente' => 'bg-warning',
-                                        'Em Andamento' => 'bg-primary',
-                                        'Concluída' => 'bg-success',
-                                        default => 'bg-secondary'
-                                    };
-                                    ?>
-                                    <span class=" <?= $badge_class; ?>"><?= htmlspecialchars($status_prestacao); ?></span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary select-contrato" 
-                                            data-id="<?= htmlspecialchars($c['id']); ?>" 
-                                            data-titulo="<?= htmlspecialchars($c['titulo']); ?>" 
-                                            data-valor="<?= number_format($c['valor_contrato'], 2, '.', ''); ?>" 
-                                            data-inicio="<?= htmlspecialchars($c['data_cadastro']); ?>" 
-                                            data-validade="<?= htmlspecialchars($c['validade']); ?>"
-                                            data-status="<?= htmlspecialchars($status_prestacao); ?>"
-                                            aria-label="Selecionar contrato <?= htmlspecialchars($c['titulo']); ?>">
-                                        Selecionar
-                                    </button>
-                                </td>
+                                <th scope="col">Título</th>
+                                <th scope="col">Validade</th>
+                                <th scope="col">Valor (R$)</th>
+                                <th scope="col">Status Prestação</th>
+                                <th scope="col">Ação</th>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr><td colspan="5" class="text-center">Nenhum contrato encontrado</td></tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Formulário de Prestação de Contas -->
-        <div class="form-container fade-in" id="form-prestacao-container">
-            <h4>Detalhes do Contrato Selecionado</h4>
-            <div id="contrato-detalhes">
-                <p><strong>Nome do Contrato:</strong> <span id="detalhe-titulo"></span></p>
-                <p><strong>Valor do Contrato:</strong> R$ <span id="detalhe-valor"></span></p>
-                <p><strong>Data de Início:</strong> <span id="detalhe-inicio"></span></p>
-                <p><strong>Data de Encerramento:</strong> <span id="detalhe-validade"></span></p>
+                        </thead>
+                        <tbody class="prestacao-table-body">
+                            <?php if (!empty($contratos)): ?>
+                                <?php foreach ($contratos as $c): ?>
+                                    <?php
+                                    // Buscar status da prestação para cada contrato
+                                    $sql_status = "SELECT status FROM prestacao_contas WHERE contrato_id = :contrato_id";
+                                    $stmt_status = $pdo->prepare($sql_status);
+                                    $stmt_status->bindParam(':contrato_id', $c['id'], PDO::PARAM_INT);
+                                    $stmt_status->execute();
+                                    $status_prestacao = $stmt_status->fetchColumn() ?: 'Pendente';
+                                    ?>
+                                    <tr class="prestacao-table-row">
+                                        <td class="prestacao-table-cell"><?= htmlspecialchars($c['titulo']); ?></td>
+                                        <td class="prestacao-table-cell"><?= htmlspecialchars($c['validade']); ?></td>
+                                        <td class="prestacao-table-cell">R$ <?= number_format($c['valor_contrato'], 2, ',', '.'); ?></td>
+                                        <td class="prestacao-table-cell">
+                                            <?php
+                                            $badge_class = match ($status_prestacao) {
+                                                'Pendente' => 'prestacao-badge-warning',
+                                                'Em Andamento' => 'prestacao-badge-primary',
+                                                'Concluída' => 'prestacao-badge-success',
+                                                default => 'prestacao-badge-secondary'
+                                            };
+                                            ?>
+                                            <span class="prestacao-badge <?= $badge_class; ?>"><?= htmlspecialchars($status_prestacao); ?></span>
+                                        </td>
+                                        <td class="prestacao-table-cell">
+                                            <button class="prestacao-btn prestacao-btn-primary prestacao-btn-sm select-contrato" 
+                                                    data-id="<?= htmlspecialchars($c['id']); ?>" 
+                                                    data-titulo="<?= htmlspecialchars($c['titulo']); ?>" 
+                                                    data-valor="<?= number_format($c['valor_contrato'], 2, '.', ''); ?>" 
+                                                    data-inicio="<?= htmlspecialchars($c['data_cadastro']); ?>" 
+                                                    data-validade="<?= htmlspecialchars($c['validade']); ?>"
+                                                    data-status="<?= htmlspecialchars($status_prestacao); ?>"
+                                                    aria-label="Selecionar contrato <?= htmlspecialchars($c['titulo']); ?>">
+                                                <i class="fas fa-check"></i>
+                                                Selecionar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr class="prestacao-table-row">
+                                    <td colspan="5" class="prestacao-table-cell prestacao-text-center">
+                                        <i class="fas fa-inbox"></i>
+                                        Nenhum contrato encontrado
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <h4 class="mt-4">Realizar Prestação de Contas</h4>
-            <form id="form-prestacao" method="POST" action="processar_prestacao.php">
-                <input type="hidden" name="contrato_id" id="contrato_id">
-
-                <div class="mb-3">
-                    <label for="valor_pago" class="form-label">Valor Pago:</label>
-                    <input type="number" class="form-control" id="valor_pago" name="valor_pago" step="0.01" required 
-                           aria-describedby="valor_pago_error">
-                    <div class="error" id="valor_pago_error"></div>
+            <!-- Formulário de Prestação de Contas -->
+            <div class="prestacao-form-wrapper prestacao-fade-in" id="form-prestacao-container">
+                <h4 class="prestacao-subtitulo">
+                    <i class="fas fa-info-circle"></i>
+                    Detalhes do Contrato Selecionado
+                </h4>
+                <div class="prestacao-detalhes-container" id="contrato-detalhes">
+                    <div class="prestacao-detalhe-item">
+                        <strong><i class="fas fa-file-contract"></i> Nome do Contrato:</strong> 
+                        <span id="detalhe-titulo" class="prestacao-detalhe-valor"></span>
+                    </div>
+                    <div class="prestacao-detalhe-item">
+                        <strong><i class="fas fa-dollar-sign"></i> Valor do Contrato:</strong> 
+                        <span id="detalhe-valor" class="prestacao-detalhe-valor">R$ </span>
+                    </div>
+                    <div class="prestacao-detalhe-item">
+                        <strong><i class="fas fa-calendar-plus"></i> Data de Início:</strong> 
+                        <span id="detalhe-inicio" class="prestacao-detalhe-valor"></span>
+                    </div>
+                    <div class="prestacao-detalhe-item">
+                        <strong><i class="fas fa-calendar-times"></i> Data de Encerramento:</strong> 
+                        <span id="detalhe-validade" class="prestacao-detalhe-valor"></span>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="descricaoprestacao" class="form-label">Descrição da Prestação de Contas:</label>
-                    <textarea class="form-control" id="descricaoprestacao" name="descricaoprestacao" rows="4" required 
-                              aria-describedby="descricao_error"></textarea>
-                    <div class="error" id="descricao_error"></div>
-                </div>
+                <h4 class="prestacao-subtitulo prestacao-mt-4">
+                    <i class="fas fa-edit"></i>
+                    Realizar Prestação de Contas
+                </h4>
+                <form class="prestacao-form" id="form-prestacao" method="POST" action="processar_prestacao.php">
+                    <input type="hidden" name="contrato_id" id="contrato_id">
 
-                <div class="mb-3">
-                    <label for="data_pagamento" class="form-label">Data de Pagamento:</label>
-                    <input type="date" class="form-control" id="data_pagamento" name="data_pagamento" required 
-                           aria-describedby="data_pagamento_error">
-                    <div class="error" id="data_pagamento_error"></div>
-                </div>
+                    <div class="prestacao-input-group">
+                        <label for="valor_pago" class="prestacao-form-label">
+                            <i class="fas fa-money-bill-wave"></i>
+                            Valor Pago:
+                        </label>
+                        <input type="number" class="prestacao-form-control" id="valor_pago" name="valor_pago" step="0.01" required 
+                               aria-describedby="valor_pago_error" placeholder="0,00">
+                        <div class="prestacao-error" id="valor_pago_error"></div>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="prestacao_status" class="form-label">Status da Prestação:</label>
-                    <select class="form-control" id="prestacao_status" name="prestacao_status" required>
-                        <option value="Pendente">Pendente</option>
-                        <option value="Em Andamento">Em Andamento</option>
-                        <option value="Concluída">Concluída</option>
-                    </select>
-                </div>
-<!-- 
-                <div class="mb-3">
-                    <label for="chamado_glpi" class="form-label">Chamado GLPI (Opcional):</label>
-                    <input type="text" class="form-control" id="chamado_glpi" name="chamado_glpi" placeholder="Ex.: 1748">
-                </div> -->
+                    <div class="prestacao-input-group">
+                        <label for="descricaoprestacao" class="prestacao-form-label">
+                            <i class="fas fa-align-left"></i>
+                            Descrição da Prestação de Contas:
+                        </label>
+                        <textarea class="prestacao-form-control prestacao-textarea" id="descricaoprestacao" name="descricaoprestacao" rows="4" required 
+                                  aria-describedby="descricao_error" placeholder="Descreva os detalhes da prestação de contas..."></textarea>
+                        <div class="prestacao-error" id="descricao_error"></div>
+                    </div>
 
-                <button type="submit" class="btn btn-success">Salvar Prestação de Contas</button>
-                <button type="button" class="btn btn-secondary ms-2" id="cancelar-form">Cancelar</button>
-            </form>
+                    <div class="prestacao-input-group">
+                        <label for="data_pagamento" class="prestacao-form-label">
+                            <i class="fas fa-calendar-check"></i>
+                            Data de Pagamento:
+                        </label>
+                        <input type="date" class="prestacao-form-control" id="data_pagamento" name="data_pagamento" required 
+                               aria-describedby="data_pagamento_error">
+                        <div class="prestacao-error" id="data_pagamento_error"></div>
+                    </div>
+
+                    <div class="prestacao-input-group">
+                        <label for="prestacao_status" class="prestacao-form-label">
+                            <i class="fas fa-tasks"></i>
+                            Status da Prestação:
+                        </label>
+                        <select class="prestacao-form-control prestacao-select" id="prestacao_status" name="prestacao_status" required>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Em Andamento">Em Andamento</option>
+                            <option value="Concluída">Concluída</option>
+                        </select>
+                    </div>
+
+                    <div class="prestacao-button-group">
+                        <button type="submit" class="prestacao-btn prestacao-btn-success">
+                            <i class="fas fa-save"></i>
+                            Salvar Prestação de Contas
+                        </button>
+                        <button type="button" class="prestacao-btn prestacao-btn-secondary" id="cancelar-form">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+
+    <script>
+        // JavaScript para demonstração
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectButtons = document.querySelectorAll('.select-contrato');
+            const formContainer = document.getElementById('form-prestacao-container');
+            const cancelButton = document.getElementById('cancelar-form');
+
+            selectButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Preencher detalhes do contrato
+                    document.getElementById('detalhe-titulo').textContent = this.dataset.titulo;
+                    document.getElementById('detalhe-valor').textContent = this.dataset.valor;
+                    document.getElementById('detalhe-inicio').textContent = this.dataset.inicio;
+                    document.getElementById('detalhe-validade').textContent = this.dataset.validade;
+                    document.getElementById('contrato_id').value = this.dataset.id;
+
+                    // Mostrar formulário
+                    formContainer.style.display = 'block';
+                    formContainer.scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+            cancelButton.addEventListener('click', function() {
+                formContainer.style.display = 'none';
+            });
+        });
+    </script>
    
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

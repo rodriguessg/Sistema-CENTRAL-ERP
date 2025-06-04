@@ -686,33 +686,8 @@ th, td {
   border-bottom: 2px solid #ddd;
 }
 
-/* Estilo do cabeçalho da tabela */
-th {
-  background-color: #A0A0A0;
-  color: white;
-  text-transform: uppercase;
-  font-weight: bold;
-  text-align: center;
-  font-size: 16px; /* Ajuste para uma melhor legibilidade */
-  padding: 5px;
-}
 
-/* Adiciona os ícones ao lado do texto do cabeçalho */
-th i {
-  margin-right: 8px; /* Espaço entre o ícone e o texto */
-  color: white; /* Cor dos ícones */
-}
 
-/* Estilo dos ícones para as colunas de cabeçalho */
-th:hover {
-  background-color: #4e5b68; /* Cor mais clara ao passar o mouse */
-  cursor: pointer; /* Indicador de interatividade */
-}
-
-/* Efeito de hover para as células da tabela */
-td:hover {
-  background-color: #f1f1f1; /* Cor de fundo suave ao passar o mouse nas células */
-}
 
 /* Responsividade: ajuste dos cabeçalhos em dispositivos menores */
 @media (max-width: 768px) {
@@ -728,10 +703,6 @@ tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-tr:hover {
-  background-color: #f1f1f1;
-  transition: background-color 0.3s ease;
-}
 
 /* Estilos para o botão Detalhes (btn-estoque1) */
 .btn-estoque1 {
@@ -1039,10 +1010,10 @@ tr:hover {
 
 
 /* Estilo de hover em abas não ativas */
-.tab:hover {
+/* .tab:hover {
   background-color: #ddd;
   transform: scale(1.02);
-}
+} */
 
 /* Responsividade para dispositivos móveis */
 @media (max-width: 768px) {
@@ -1274,7 +1245,6 @@ tr:nth-child(even) {
 }
 
 tr:hover {
-  background-color: #f1f1f1;
   transition: background-color 0.3s ease;
 }
 

@@ -1003,6 +1003,7 @@ $conn->close();
 <script src="./src/estoque/js/calc-preco-medio.js"></script>
 <!-- JS DE PAGINA E FILTRO DA TABELA-ESTOQUE -->
 <script src="./src/estoque/js/paginacao-filtro.js"></script>
+<script src="./src/estoque/js/escrevefechamento-linhadotempo.js"></script>
 
 <!-- PREENCHIMENTO AUTOMÁTICO RETIRADA DE PRODUTO -->
  <script src="./src/estoque/js/preencher-produto-retiradacodigoantigo.js"></script>

@@ -1,6 +1,6 @@
 // Função para realizar o fechamento e carregar a linha do tempo
 function realizarFechamento() {
-    fetch('realizar_fechamento.php', { method: 'POST' })
+    fetch('./realizar_fechamento.php', { method: 'POST' })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -18,7 +18,7 @@ function realizarFechamento() {
 
 // Função para carregar a linha do tempo de fechamentos
 function carregarLinhaDoTempo() {
-    fetch('linha_do_tempo.php')  // Requisição para o backend
+    fetch('./linha_do_tempo.php')  // Requisição para o backend
         .then(response => response.json())
         .then(data => {
             const linhaDoTempo = document.getElementById("linhaDoTempo");

@@ -153,6 +153,7 @@ include 'header.php';
     <title>Painel de Gestão</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="src/contratos/style/menu-lateral.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         .card {
@@ -216,7 +217,7 @@ include 'header.php';
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="caderno">
     <div class="container mx-auto p-6">
         <h1 class="text-3xl font-bold mb-6 text-gray-800">Painel de Gestão</h1>
         <div class="mb-6">

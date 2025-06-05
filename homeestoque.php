@@ -476,7 +476,7 @@ $conn->close();
     }
 
     // Defina o número de itens por página
-    $itens_por_pagina = 3;
+    $itens_por_pagina = 25;
 
     // Obtenha a página atual, caso contrário defina como 1
     $pagina_atual = isset($_GET['pagina']) ? $_GET['pagina'] : 1;

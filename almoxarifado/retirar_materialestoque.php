@@ -1,20 +1,21 @@
 <?php
+// Conexão com o banco de dados
 $host = 'localhost';
-$dbname = 'gm_sicbd';
 $user = 'root';
 $password = '';
+$dbname = 'gm_sicbd';
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("<p style='color: red;'>Erro ao conectar ao banco de dados: " . $e->getMessage() . "</p>");
+$conn = new mysqli($host, $user, $password, $dbname);
+
+// Verificar conexão
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 // Verifica se a requisição foi enviada via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtém os valores do formulário
-    $nome = isset($_POST['material-nome']) ? $con->real_escape_string($_POST['material-nome']) : '';
-    $codigo = isset($_POST['material-codigo']) ? $con->real_escape_string($_POST['material-codigo']) : '';
+    $nome = isset($_POST['material-nome']) ? $conn->real_escape_string($_POST['material-nome']) : '';
+    $codigo = isset($_POST['material-codigo']) ? $conn->real_escape_string($_POST['material-codigo']) : '';
     $quantidade = isset($_POST['material-quantidade']) ? (int) $_POST['material-quantidade'] : 0;
     $data = date('Y-m-d'); // Data atual
 
@@ -27,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Consulta para verificar se o produto existe no estoque
     $query = "SELECT id, produto, descricao, quantidade, custo, natureza, preco_medio FROM produtos WHERE descricao = ?";
-    $stmt = $con->prepare($query);
+    $stmt = $conn->prepare($query);
     $stmt->bind_param('s', $codigo);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -72,14 +73,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Atualiza o estoque ou remove o produto se a quantidade for igual à disponível
             if ($quantidadeAtual === $quantidade) {
                 $deleteQuery = "DELETE FROM produtos WHERE descricao = ?";
-                $deleteStmt = $con->prepare($deleteQuery);
+                $deleteStmt = $conn->prepare($deleteQuery);
                 $deleteStmt->bind_param('s', $codigo);
                 $deleteStmt->execute();
                 $deleteStmt->close();
             } else {
                 // Atualiza a quantidade do produto no estoque após a retirada
                 $updateQuery = "UPDATE produtos SET quantidade = quantidade - ?, tipo_operacao = 'retirado' WHERE descricao = ?";
-                $updateStmt = $con->prepare($updateQuery);
+                $updateStmt = $conn->prepare($updateQuery);
                 $updateStmt->bind_param('is', $quantidade, $codigo);
                 $updateStmt->execute();
                 $updateStmt->close();
@@ -88,18 +89,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Registrar a transação de retirada na tabela 'transicao'
             $query_transacao = "INSERT INTO transicao (material_id, quantidade, data, tipo) 
                                 VALUES (?, ?, ?, 'Saida')";
-            $transacaoStmt = $con->prepare($query_transacao);
+            $transacaoStmt = $conn->prepare($query_transacao);
             $transacaoStmt->bind_param('iis', $material_id, $quantidade, $data);
             if ($transacaoStmt->execute()) {
                 $transacaoStmt->close();
             } else {
-                echo "Erro ao registrar a transação: " . $con->error;
+                echo "Erro ao registrar a transação: " . $conn->error;
                 exit;
             }
 
             // Verifica e atualiza a tabela de fechamento com o total de saída e saldo atual
             // Ajuste aqui para usar 'natureza' para identificar o material
-            $stmt_fe = $con->prepare("SELECT saldo_atual, total_saida FROM fechamento WHERE natureza = ?");
+            $stmt_fe = $conn->prepare("SELECT saldo_atual, total_saida FROM fechamento WHERE natureza = ?");
             $stmt_fe->bind_param('s', $natureza);
             $stmt_fe->execute();
             $stmt_fe->store_result();
@@ -117,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Atualiza o fechamento
                 $sql_update_fe = "UPDATE fechamento SET total_saida = ?, saldo_atual = ? WHERE natureza = ?";
-                $stmt_update_fe = $con->prepare($sql_update_fe);
+                $stmt_update_fe = $conn->prepare($sql_update_fe);
                 $stmt_update_fe->bind_param("dds", $novo_total_saida, $novo_saldo_atual, $natureza);
                 if ($stmt_update_fe->execute()) {
                     echo "Fechamento atualizado com sucesso!";
@@ -130,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $total_saida = $quantidade * $preco_medio;  // Valor da saída calculado pela quantidade * preco_medio
                 $sql_insert_fe = "INSERT INTO fechamento (natureza, total_saida, saldo_atual, custo, data_fechamento) 
                                   VALUES (?, ?, ?, ?, NOW())";
-                $stmt_insert_fe = $con->prepare($sql_insert_fe);
+                $stmt_insert_fe = $conn->prepare($sql_insert_fe);
                 $stmt_insert_fe->bind_param("sdds", $natureza, $total_saida, $total_saida, $preco_medio);
                 if ($stmt_insert_fe->execute()) {
                     echo "Novo fechamento inserido com sucesso!";
@@ -161,5 +162,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$con->close();
+$conn->close();
 ?>

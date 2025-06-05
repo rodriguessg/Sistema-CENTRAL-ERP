@@ -585,7 +585,7 @@ $conn->close();
     mensagemDiv.innerText = '';
 
     if (nomeMaterialId) {
-        fetch('./almoxarifado/buscar_dados_produto.php?id=' + nomeMaterialId)
+        fetch('./buscar_dados_produto.php?id=' + nomeMaterialId)
             .then(response => response.json())
             .then(data => {
                 console.log("Resposta da API:", data); // Depuração

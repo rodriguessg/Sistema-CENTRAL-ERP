@@ -18,7 +18,7 @@ if (isset($_GET['id'])) {
 
     // Consulta para obter os dados do produto com o ID
     $query = "SELECT descricao, classificacao, natureza, localizacao, preco_medio FROM produtos WHERE id = ?";
-    $stmt = $con->prepare($query);
+    $stmt = $conn->prepare($query);
     $stmt->bind_param('i', $id);  // 'i' para tipo integer
     $stmt->execute();
     $result = $stmt->get_result();
@@ -39,7 +39,7 @@ if (isset($_GET['id'])) {
     }
 
     $stmt->close();
-    $con->close();
+    $conn->close();
 } else {
     echo json_encode(['success' => false]);
 }

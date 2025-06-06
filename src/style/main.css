@@ -107,18 +107,7 @@ body::before {
   z-index: 2;
 }
 
-/* Círculos decorativos sutis */
-.left-side::before {
-  content: "";
-  position: absolute;
-  top: 20%;
-  right: 15%;
-  width: 80px;
-  height: 80px;
-  background: rgba(30, 42, 74, 0.05);
-  border-radius: 50%;
-  z-index: 1;
-}
+
 
 h2 {
   font-size: 16px;
@@ -226,7 +215,7 @@ h2 {
   align-items: center;
   flex-direction: column;
   position: relative;
-  background: var(--primary-color);
+  background: var(--primary-gradient);
   border-radius: 0 var(--border-radius) var(--border-radius) 0;
 }
 

@@ -1,4 +1,30 @@
-/* Reset para garantir uma consistência no estilo */
+/* Importação de fontes */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+/* Variáveis CSS seguindo nosso design system */
+:root {
+  --primary-gradient: linear-gradient(135deg, #1e2a4a 0%, #472774 100%);
+  --secondary-gradient: linear-gradient(135deg, #472774 0%, #6a4c93 100%);
+  --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+  --primary-color: #1e2a4a;
+  --secondary-color: #472774;
+  --accent-color: #667eea;
+  --success-color: #4facfe;
+  --warning-color: #43e97b;
+  --text-dark: #2d3748;
+  --text-light: #718096;
+  --bg-white: #ffffff;
+  --border-color: #e2e8f0;
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --border-radius: 150px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset */
 * {
   margin: 0;
   padding: 0;
@@ -6,199 +32,230 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f1f1f1;
-  margin: 0; /* Remover a margem padrão do body */
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  width: 100%; /* Garante que o body ocupe 100% da largura */
-  overflow: hidden; /* Garante que nada ultrapasse os limites da tela */
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background-image: url('../img/bk.png'); /* Substitua o caminho da imagem conforme necessário */
+    background-size: cover; /* Faz a imagem cobrir todo o espaço do modal */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat; /* Impede que a imagem se repita */
 }
-/* Garantir que a imagem cubra toda a tela */
-.background-image {
-  position: fixed;
+
+/* Background com efeitos visuais */
+body::before {
+  content: "";
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Garante que a imagem cubra a tela sem distorcer */
-  z-index: -1; /* Garante que a imagem fique atrás do conteúdo */
+  z-index: -2;
 }
+
+
+/* Limiter - container geral */
+.limiter {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* Container principal */
+.container-login100 {
+  display: flex;
+  width: 100%;
+  max-width: 1000px;
+  height: 75%;
+  position: relative;
+  z-index: 1;
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+/* Lado esquerdo */
+.left-side {
+  color: var(--text-dark);
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  border-radius: var(--border-radius) 0 0 var(--border-radius);
+  z-index: 1;
+}
+
+/* Curvas na interface entre os painéis */
+.left-side::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -1px;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-white);
+  z-index: 2;
+}
+
+/* Círculos decorativos sutis */
+.left-side::before {
+  content: "";
+  position: absolute;
+  top: 20%;
+  right: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(30, 42, 74, 0.05);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+h2 {
+  font-size: 16px;
+  margin-top: 15px;
+  text-align: center;
+  color: var(--text-dark);
+  font-weight: 500;
+  position: relative;
+  z-index: 3;
+}
+
 .logo-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  z-index: 3;
+  position: relative;
+  width: 100%;
+}
+
+.logo {
+  position: relative;
+  z-index: 3;
+}
+
+.logo-large {
+  width: 200px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.logo-small {
+  width: 200px;
+  height: auto;
+}
+
+/* Badge ERP com nosso design */
+.erp {
+  background: var(--warning-gradient);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 25px;
+  text-align: center;
+  width: fit-content;
+  margin: 25px auto;
+  box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
+  border-radius: var(--border-radius);
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
 
-/* Classe principal para o logo */
-.logo {
-  width: auto; /* Ajuste a largura de acordo com o conteúdo */
-  height: auto;
+.erp i {
+  font-size: 16px;
 }
 
-/* Classe para a primeira imagem (Maior) */
-.logo-large {
-  width: 200px; /* Tamanho maior da primeira imagem */
-  height: auto;
-}
-
-/* Classe para a segunda imagem (Menor) */
-.logo-small {
-  width: 150px; /* Tamanho menor da segunda imagem */
-  height: auto;
-}
-
-/* Container Principal com os dois lados (logo + formulário de login) */
-.container-login100 {
+/* Ícones da parte esquerda */
+.icon-container {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
   width: 100%;
-  max-width: 1600px; /* Aumentando o tamanho máximo do container */
-  height: 80%;
+  gap: 20px;
+  position: relative;
+  z-index: 3;
 }
 
-/* Lado esquerdo com logo e texto */
-.left-side {
-  color: black;
-  flex: 1;
+.icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
-  padding: 40px; /* Ajustando o padding */
-  border-radius: 30px 0px 0px 30px;
-  background-color: white;
+  padding: 15px;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
 }
 
-h2 {
-  font-size: 14px; /* Ajustando o tamanho do texto */
-  margin-top: 10px;
-  text-align: center;
-  color: #333;
+.icon:hover {
+  background: rgba(25, 40, 68, 0.1);
+  transform: translateY(-2px);
 }
 
-/* Centralizando a logo */
-.logo-central {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 40px;
+.icon-img {
+  width: 60px;
+  height: 80px;
+  object-fit: contain;
 }
 
-.logo-central,
-img {
-  width: 80%;
+.middle-icon {
+  width: 50px;
+  height: 65px;
 }
 
-/* Lado direito com o formulário de login */
+/* Lado direito com gradiente do nosso design */
 .wrap-login100 {
   flex: 1;
-  padding: 40px; /* Ajustando o padding */
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  position: relative; /* Ajuste para o alinhamento */
-  background-color: #273051;
-  border-radius: 0px 30px 30px 0px;
+  position: relative;
+  background: var(--primary-color);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
 }
 
-h3 {
-  text-align: center;
-  font-size: 16px; /* Tamanho ajustado */
-  margin-bottom: 15px;
-  color: #fff; /* Cor de texto mais clara */
-}
-
-label {
-  font-size: 12px; /* Tamanho da fonte ajustado */
-  color: #fff;
-  margin-bottom: 0px;
-}
-
-/* Estilos para os Inputs */
-.wrap-input100 {
+.wrap-login100::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  margin-bottom: 15px; /* Espaçamento entre os campos */
+  height: 100%;
+  background: var(--glass-gradient);
+  z-index: 1;
 }
 
-.input100 {
-  width: 100%; /* Garante que os inputs ocupem toda a largura */
-  padding: 12px; /* Ajustando o padding para um tamanho mais confortável */
-  margin-bottom: 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  font-size: 14px; /* Tamanho da fonte ajustado */
-  background-color: #fff;
-}
-
-.input100:focus {
-  border-color: #45b5a9;
-  outline: none;
-}
-
-/* Ajustes para o campo de senha */
-#senha {
-  margin-bottom: 15px;
-}
-
-/* Ajuste para o seletor de área de acesso */
-.menu-custom {
-  width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 15px;
-    FONT-WEIGHT: bolder;
-    FONT-FAMILY: CURSIVE;
-}
-
-.menu-custom:focus {
-  border-color: #45b5a9;
-  outline: none;
-}
-
-/* Estilos para a checkbox de mostrar senha */
-.password-container {
+/* Logo central no painel direito */
+.logo-central {
+  width: 400px;
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  justify-content: center;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 2;
 }
 
-.password-container input {
-  margin-right: 8px;
-}
-
-/* Estilos de foco no input e do botão */
-.input100:focus,
-.menu-custom:focus {
-  border-color: #45b5a9;
-  outline: none;
-}
-
-/* Estilos do botão */
-.container-login100-form-btn {
-  width: 100%;
-  margin-top: 10px;
-}
-
-.login100-form-btn {
-  background-color: #198754;
-  color: white;
-  padding: 12px;
-  width: 100%; /* Garante que o botão ocupe toda a largura */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.login100-form-btn:hover {
-  background-color: #3b9e8b;
+.logo-central img {
+  width: 80%;
+  max-width: 250px;
+  height: auto;
 }
 
 .login100-form {
@@ -207,115 +264,447 @@ label {
   justify-content: center;
   align-items: center;
   width: 100%;
+  position: relative;
+  z-index: 2;
+  max-width: 400px;
 }
 
-/* Link de "Esqueceu sua Senha" */
-.text-center {
+h3 {
   text-align: center;
-  margin-top: 20px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Labels com ícones */
+.input-label {
+  font-size: 14px;
+  color: white;
+  margin-bottom: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.input-label i {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* Inputs com design moderno */
+.wrap-input100 {
+  width: 100%;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.input100,
+.menu-custom {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 5px;
+  border-radius: var(--border-radius);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  backdrop-filter: blur(10px);
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.input100::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.input100:focus,
+.menu-custom:focus {
+  border-color: rgba(255, 255, 255, 0.5);
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.menu-custom {
+  cursor: pointer;
+  font-weight: 500;
+  color: white;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+  padding-right: 2.5rem;
+}
+
+.menu-custom option {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* Remover focus-input100 padrão */
+.focus-input100 {
+  display: none;
+}
+
+/* Checkbox personalizada */
+.password-container {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.password-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent-color);
+}
+
+.password-container label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  cursor: pointer;
+   margin: 0;
+}
+
+/* Botão com gradiente do nosso design */
+.container-login100-form-btn {
+  width: 100%;
+  margin-top: 15px;
+}
+
+.login100-form-btn {
+  background: var(--success-gradient);
+  color: white;
+  padding: 14px 20px;
+  width: 100%;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.login100-form-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+}
+
+.login100-form-btn i {
+  font-size: 16px;
+}
+
+/* Link de esqueceu senha */
+.text-center,
+.text-cente {
+  text-align: center;
+  margin-top: 25px;
 }
 
 .txt1 {
-  color: white;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
   text-decoration: none;
+  transition: var(--transition);
+  border-bottom: 1px solid transparent;
 }
 
-/* Efeito de hover */
 .txt1:hover {
-  color: red; /* Altera a cor para vermelho */
-  text-decoration: none; /* Remove o sublinhado no hover */
+  color: var(--warning-color);
+  border-bottom-color: var(--warning-color);
 }
 
+/* Estilos do Modal */
+.modal-container {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: var(--bg-white);
+  margin: 5% auto;
+  padding: 30px;
+  border-radius: var(--border-radius);
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+}
+
+.modal-close {
+  color: var(--text-light);
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  color: var(--primary-color);
+}
+
+.modal-title {
+  color: var(--primary-color);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.logo-central-1 {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.img-logo-central-1 {
+  max-width: 150px;
+  height: auto;
+}
+
+.modal-field {
+  margin-bottom: 20px;
+}
+
+.modal-field label {
+  display: block;
+  color: var(--text-dark);
+  font-weight: 500;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  color: var(--text-dark);
+  background: var(--bg-white);
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(25, 40, 68, 0.1);
+}
+
+.modal-button {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.modal-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(25, 40, 68, 0.3);
+}
+
+.modal-button-secondary {
+  background: var(--text-light);
+}
+
+.modal-button-secondary:hover {
+  background: var(--text-dark);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+}
 
 /* Responsividade */
+@media (max-width: 1024px) {
+  .container-login100 {
+    max-width: 900px;
+    height: 90%;
+  }
+
+  .left-side,
+  .wrap-login100 {
+    padding: 30px;
+  }
+}
+
 @media (max-width: 768px) {
+  body {
+    padding: 20px;
+  }
+
   .container-login100 {
     flex-direction: column;
+    height: auto;
+    max-height: 95vh;
+    overflow-y: auto;
   }
 
   .left-side,
   .wrap-login100 {
     width: 100%;
-    padding: 20px;
+    padding: 25px;
+    border-radius: var(--border-radius);
+  }
+
+  .left-side {
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+  }
+
+  .left-side::after {
+    display: none;
+  }
+
+  .wrap-login100 {
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+  }
+
+  .icon-container {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .modal-content {
+    margin: 10% auto;
+    padding: 25px;
   }
 }
-.icon-container {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin: 10px;
-  width: 100%;
-}
 
-.icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+@media (max-width: 480px) {
+  .container-login100 {
+    margin: 10px;
+  }
 
-.icon-img {
-  width: 60px; /* Tamanho dos ícones */
-  height: 80px; /* Tamanho dos ícones */
-  object-fit: contain; /* Ajusta a imagem para se manter proporcional */
-}
+  .left-side,
+  .wrap-login100 {
+    padding: 20px;
+  }
 
-/* Tamanho específico para o ícone do meio */
-.middle-icon {
-  width: 50px; /* Ajuste o tamanho para que fique igual aos outros */
-  height: 65px; /* Tamanho igual para manter a uniformidade */
-}
-
-.erp {
-  background-color: #ffc107;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  padding: 10px 20px;
-  text-align: center;
-  width: fit-content;
-  margin: 20px auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  position: relative;
-}
-
-.text-cente {
-  text-align: center;
-  margin-top: 20px;
-
-}
-
-/* Estilo para o botão de login */
-.login100-form-btn {
-    display: flex;
-    justify-content: CENTER;
-    align-items: center; /* Alinha verticalmente */
-    padding: 12px 20px; /* Ajuste o padding para um bom espaçamento */
-    FLEX-DIRECTION: ROW-REVERSE;
-}
-
-/* Ajustando o ícone */
-.login100-form-btn i {
-    font-size: 15px; /* Tamanho do ícone */
-    margin-left: 5px; /* Espaço entre o texto e o ícone */
-    color: white; /* Cor do ícone */
-}
-
-
-/* Estilo do título com ícone acima do input */
-.input-label {
+  h3 {
     font-size: 14px;
-    color: white; /* Cor do título */
-    margin-bottom: 5px; /* Espaçamento entre o título e o input */
+  }
+
+  .input100,
+  .menu-custom,
+  .login100-form-btn {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
 }
 
-/* Ícone dentro do título */
-.input-label i {
-    font-size: 14px; /* Tamanho do ícone */
-    margin-right: 5px; /* Espaço entre o ícone e o título */
+/* Animações */
+.container-login100 {
+  animation: slideIn 0.8s ease-out;
 }
 
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
+/* Validação de formulário */
+.validate-input.alert-validate .input100 {
+  border-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+}
 
+.validate-input.alert-validate .input100:focus {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
 
+/* Estados de loading */
+.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 10;
+}
+
+.loading::before {
+  content: "Carregando...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 11;
+  font-weight: 600;
+  color: var(--primary-color);
+}

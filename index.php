@@ -36,7 +36,7 @@
 
 <!--===============================================================================================-->
 </head>
-<img src="src/img/bk.png" alt="Background Image" class="background-image">
+<!-- <img src="src/img/bk.png" alt="Background Image" class="background-image"> -->
 <body>
 <div class="limiter">
         <div class="container-login100">

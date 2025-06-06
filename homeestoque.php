@@ -1,168 +1,168 @@
 <?php
-// Inicia a sessão
-session_start();
+    // Inicia a sessão
+    session_start();
 
-// Conexão com o banco de dados
-include 'banco.php';
+    // Conexão com o banco de dados
+    include 'banco.php';
 
-// Função para verificar o login do usuário
-function verificarLogin() {
-    if (!isset($_SESSION['username'])) {
-        header('Location: index.php');
-        exit();
-    }
-}
-
-// Função para inserir um novo produto no banco
-function inserirProduto($custo) {
-    global $con;
-
-    // Formatando o custo para 4 casas decimais
-    $custo = number_format($custo, 4, '.', '');
-
-    // Prepara a consulta SQL com um statement preparado (prevenção contra SQL Injection)
-    $query = "INSERT INTO produtos (custo) VALUES (?)";
-    $stmt = $con->prepare($query);
-    $stmt->bind_param("d", $custo); // 'd' para double, que é o tipo de dado para custo
-    if ($stmt->execute()) {
-        echo "Produto inserido com sucesso!";
-    } else {
-        echo "Erro ao inserir produto: " . $con->error;
-    }
-    $stmt->close();
-}
-
-// Função para verificar o estoque e gerar notificações e ordens de compra
-function verificarEstoque() {
-    global $con;
-
-    $query_produtos = "SELECT id, produto, quantidade, estoque_minimo FROM produtos";
-    $resultado_produtos = $con->query($query_produtos);
-
-    while ($produto = $resultado_produtos->fetch_assoc()) {
-        if ($produto['quantidade'] <= $produto['estoque_minimo']) {
-            $data_criacao = date('Y-m-d H:i:s');
-            
-            // Verifica se já existe uma notificação para o produto
-            $query_notificacao_existente = "SELECT * FROM notificacoes WHERE mensagem LIKE ? AND situacao = 'nao lida'";
-            $stmt = $con->prepare($query_notificacao_existente);
-            $mensagem = "%" . $produto['produto'] . "%";
-            $stmt->bind_param("s", $mensagem);
-            $stmt->execute();
-            $resultado_notificacao = $stmt->get_result();
-            $stmt->close();
-
-            // Se não existir notificação, insere uma nova
-            if ($resultado_notificacao->num_rows == 0) {
-                $username = 'estoque';
-                $setor = 'estoque';
-                $mensagem = "#{$produto['produto']} chegou ao seu limite de estoque.";
-                $situacao = 'nao lida';
-                
-                $query_notificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
-                                      VALUES (?, ?, ?, ?, ?)";
-                $stmt = $con->prepare($query_notificacao);
-                $stmt->bind_param("sssss", $username, $setor, $mensagem, $situacao, $data_criacao);
-                $stmt->execute();
-                $stmt->close();
-            }
-            
-            // Gerar ordem de compra
-            $query_ordem_compra = "INSERT INTO ordens_compra (produto_id, quantidade, data_criacao) 
-                                   VALUES (?, ?, ?)";
-            $stmt = $con->prepare($query_ordem_compra);
-            $stmt->bind_param("iis", $produto['id'], $produto['estoque_minimo'], $data_criacao);
-            $stmt->execute();
-            $stmt->close();
+    // Função para verificar o login do usuário
+    function verificarLogin() {
+        if (!isset($_SESSION['username'])) {
+            header('Location: index.php');
+            exit();
         }
     }
-}
 
-// Função para gerenciar a transição de estoque
-function gerenciarTransicao() {
-    global $con;
+    // Função para inserir um novo produto no banco
+    function inserirProduto($custo) {
+        global $con;
 
-    // Verifica se o mês mudou e limpa a tabela 'transicao'
-    $current_month = date('Y-m');
-    $query_check_month = "SELECT mes FROM controle_transicao ORDER BY id DESC LIMIT 1";
-    $result_check_month = $con->query($query_check_month);
+        // Formatando o custo para 4 casas decimais
+        $custo = number_format($custo, 4, '.', '');
 
-    if ($result_check_month->num_rows > 0) {
-        $last_month = $result_check_month->fetch_assoc()['mes'];
-        if ($last_month !== $current_month) {
-            $con->query("TRUNCATE TABLE transicao");
-            $con->query("INSERT INTO controle_transicao (mes) VALUES ('$current_month')");
-        }
-    } else {
-        $con->query("INSERT INTO controle_transicao (mes) VALUES ('$current_month')");
-    }
-
-    // Se um produto foi retirado, insere na tabela 'transicao' e atualiza a quantidade em 'produtos'
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['material-nome']) && isset($_POST['material-quantidade'])) {
-        $material_id = $_POST['material-nome'];
-        $quantidade = (int) $_POST['material-quantidade'];
-        $data = date('Y-m-d');
-
-        // Atualiza a quantidade no estoque
-        $query_update = "UPDATE produtos SET quantidade = quantidade - ? WHERE id = ? AND quantidade >= ?";
-        $stmt = $con->prepare($query_update);
-        $stmt->bind_param("iii", $quantidade, $material_id, $quantidade);
+        // Prepara a consulta SQL com um statement preparado (prevenção contra SQL Injection)
+        $query = "INSERT INTO produtos (custo) VALUES (?)";
+        $stmt = $con->prepare($query);
+        $stmt->bind_param("d", $custo); // 'd' para double, que é o tipo de dado para custo
         if ($stmt->execute()) {
-            $query_transicao = "INSERT INTO transicao (material_id, quantidade, data, tipo) VALUES (?, ?, ?, 'Saída')";
-            $stmt = $con->prepare($query_transicao);
-            $stmt->bind_param("iis", $material_id, $quantidade, $data);
-            $stmt->execute();
+            echo "Produto inserido com sucesso!";
         } else {
-            echo "<script>alert('Erro: Estoque insuficiente!');</script>";
+            echo "Erro ao inserir produto: " . $con->error;
         }
         $stmt->close();
     }
-}
 
-// Chama a função de verificação de login ao acessar a página
-verificarLogin();
+    // Função para verificar o estoque e gerar notificações e ordens de compra
+    function verificarEstoque() {
+        global $con;
 
-// Exemplo de uso das funções acima
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['custo'])) {
-        inserirProduto($_POST['custo']);
+        $query_produtos = "SELECT id, produto, quantidade, estoque_minimo FROM produtos";
+        $resultado_produtos = $con->query($query_produtos);
+
+        while ($produto = $resultado_produtos->fetch_assoc()) {
+            if ($produto['quantidade'] <= $produto['estoque_minimo']) {
+                $data_criacao = date('Y-m-d H:i:s');
+                
+                // Verifica se já existe uma notificação para o produto
+                $query_notificacao_existente = "SELECT * FROM notificacoes WHERE mensagem LIKE ? AND situacao = 'nao lida'";
+                $stmt = $con->prepare($query_notificacao_existente);
+                $mensagem = "%" . $produto['produto'] . "%";
+                $stmt->bind_param("s", $mensagem);
+                $stmt->execute();
+                $resultado_notificacao = $stmt->get_result();
+                $stmt->close();
+
+                // Se não existir notificação, insere uma nova
+                if ($resultado_notificacao->num_rows == 0) {
+                    $username = 'estoque';
+                    $setor = 'estoque';
+                    $mensagem = "#{$produto['produto']} chegou ao seu limite de estoque.";
+                    $situacao = 'nao lida';
+                    
+                    $query_notificacao = "INSERT INTO notificacoes (username, setor, mensagem, situacao, data_criacao) 
+                                        VALUES (?, ?, ?, ?, ?)";
+                    $stmt = $con->prepare($query_notificacao);
+                    $stmt->bind_param("sssss", $username, $setor, $mensagem, $situacao, $data_criacao);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+                
+                // Gerar ordem de compra
+                $query_ordem_compra = "INSERT INTO ordens_compra (produto_id, quantidade, data_criacao) 
+                                    VALUES (?, ?, ?)";
+                $stmt = $con->prepare($query_ordem_compra);
+                $stmt->bind_param("iis", $produto['id'], $produto['estoque_minimo'], $data_criacao);
+                $stmt->execute();
+                $stmt->close();
+            }
+        }
     }
-    gerenciarTransicao();
-    verificarEstoque();
-}
-include 'header.php';
+
+    // Função para gerenciar a transição de estoque
+    function gerenciarTransicao() {
+        global $con;
+
+        // Verifica se o mês mudou e limpa a tabela 'transicao'
+        $current_month = date('Y-m');
+        $query_check_month = "SELECT mes FROM controle_transicao ORDER BY id DESC LIMIT 1";
+        $result_check_month = $con->query($query_check_month);
+
+        if ($result_check_month->num_rows > 0) {
+            $last_month = $result_check_month->fetch_assoc()['mes'];
+            if ($last_month !== $current_month) {
+                $con->query("TRUNCATE TABLE transicao");
+                $con->query("INSERT INTO controle_transicao (mes) VALUES ('$current_month')");
+            }
+        } else {
+            $con->query("INSERT INTO controle_transicao (mes) VALUES ('$current_month')");
+        }
+
+        // Se um produto foi retirado, insere na tabela 'transicao' e atualiza a quantidade em 'produtos'
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['material-nome']) && isset($_POST['material-quantidade'])) {
+            $material_id = $_POST['material-nome'];
+            $quantidade = (int) $_POST['material-quantidade'];
+            $data = date('Y-m-d');
+
+            // Atualiza a quantidade no estoque
+            $query_update = "UPDATE produtos SET quantidade = quantidade - ? WHERE id = ? AND quantidade >= ?";
+            $stmt = $con->prepare($query_update);
+            $stmt->bind_param("iii", $quantidade, $material_id, $quantidade);
+            if ($stmt->execute()) {
+                $query_transicao = "INSERT INTO transicao (material_id, quantidade, data, tipo) VALUES (?, ?, ?, 'Saída')";
+                $stmt = $con->prepare($query_transicao);
+                $stmt->bind_param("iis", $material_id, $quantidade, $data);
+                $stmt->execute();
+            } else {
+                echo "<script>alert('Erro: Estoque insuficiente!');</script>";
+            }
+            $stmt->close();
+        }
+    }
+
+    // Chama a função de verificação de login ao acessar a página
+    verificarLogin();
+
+    // Exemplo de uso das funções acima
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_POST['custo'])) {
+            inserirProduto($_POST['custo']);
+        }
+        gerenciarTransicao();
+        verificarEstoque();
+    }
+    include 'header.php';
 ?>
 <?php
-// Conexão com o banco de dados
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$dbname = 'gm_sicbd';
+    // Conexão com o banco de dados
+    $host = 'localhost';
+    $user = 'root';
+    $password = '';
+    $dbname = 'gm_sicbd';
 
-$conn = new mysqli($host, $user, $password, $dbname);
+    $conn = new mysqli($host, $user, $password, $dbname);
 
-// Verificar conexão
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    // Verificar conexão
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
-// Buscar todos os produtos da tabela materiais
-$sql = "SELECT codigo, descricao, natureza, classificacao, contabil FROM materiais";
-$result = $conn->query($sql);
+    // Buscar todos os produtos da tabela materiais
+    $sql = "SELECT codigo, descricao, natureza, classificacao, contabil FROM materiais";
+    $result = $conn->query($sql);
 
-// Gerar as opções do select com os dados 'data-*'
-$options = '';
-while ($row = $result->fetch_assoc()) {
-    $options .= "<option value='" . $row['codigo'] . "' 
-                    data-descricao='" . $row['descricao'] . "' 
-                    data-natureza='" . $row['natureza'] . "' 
-                    data-classificacao='" . $row['classificacao'] . "' 
-                    data-contabil='" . $row['contabil'] . "'>
-                    " . $row['descricao'] . "
-                </option>";
-}
+    // Gerar as opções do select com os dados 'data-*'
+    $options = '';
+    while ($row = $result->fetch_assoc()) {
+        $options .= "<option value='" . $row['codigo'] . "' 
+                        data-descricao='" . $row['descricao'] . "' 
+                        data-natureza='" . $row['natureza'] . "' 
+                        data-classificacao='" . $row['classificacao'] . "' 
+                        data-contabil='" . $row['contabil'] . "'>
+                        " . $row['descricao'] . "
+                    </option>";
+    }
 
-$conn->close();
+    $conn->close();
 ?>
 
 
@@ -310,11 +310,6 @@ $conn->close();
         </div>
     </form>
 </div>
-
-
-<!-- SCRIPT FINAL - DEVE FICAR DEPOIS DOS CAMPOS -->
-
-
 
 <div class="form-container" id="consulta">
     <h2>Lista de Produtos</h2>
@@ -817,10 +812,10 @@ $conn->close();
         </div>
 
         <!-- Campo de Usuário Logado -->
-        <div class="relatorio-group">
-            <label for="usuario">Usuário Logado:</label>
-            <input type="text" id="usuario" name="usuario" value="" readonly>
-        </div>
+      <div class="relatorio-group">
+    <label for="usuario">Usuário Logado:</label>
+    <input type="text" id="usuario" name="usuario" value="<?php echo $username; ?>" readonly>
+</div>
 
         <!-- Botão de Submissão -->
         <div class="relatorio-group">
@@ -900,10 +895,12 @@ $conn->close();
     }
     // Preencher o campo de usuário logado dinamicamente
     document.addEventListener("DOMContentLoaded", () => {
-        const usuario = "<?php echo $_SESSION['username'] ?? 'Desconhecido'; ?>";
-        document.getElementById("usuario").value = usuario;
-    });
-
+    const usuarioInput = document.getElementById("usuario");
+    // O valor já está definido no HTML via PHP, mas pode-se garantir que não esteja vazio
+    if (!usuarioInput.value) {
+        usuarioInput.value = "Desconhecido";
+    }
+});
     // Função para gerar o relatório
     async function gerarRelatorio() {
         const periodo = document.getElementById('periodo').value;

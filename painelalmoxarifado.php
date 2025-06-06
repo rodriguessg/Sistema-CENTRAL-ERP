@@ -21,6 +21,8 @@ if (!isset($_SESSION['username'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
+        <link rel="stylesheet" href="src/estoque/style/painelalmoxarifado.css">
+
     <style>
         .cardss, .card-estoque-produtos {
             display: flex;
@@ -123,7 +125,9 @@ if (!isset($_SESSION['username'])) {
 
 <h1>Painel de Estoque</h1>
 <div class="caderno">
-    <!-- Cards -->
+    <div class="dashboard">
+        <!-- Cards -->
+        <div class="cards-container">
     <div class="cardss">
         <div class="card">
             <div>
@@ -339,6 +343,8 @@ if (!isset($_SESSION['username'])) {
             </table>
         </div>
     </div>
+        </div>
+            </div>
 </div>
 
 <script src="./src/estoque/js/analise-estoque.js"></script>

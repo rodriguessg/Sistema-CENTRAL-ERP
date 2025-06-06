@@ -1,4 +1,6 @@
 <?php
+  // Iniciar sessão
+    session_start();
 // Configuração do banco de dados
 $host = 'localhost';
 $dbname = 'gm_sicbd';
@@ -16,7 +18,7 @@ try {
 $periodo = $_POST['periodo'] ?? '';
 $exercicio = $_POST['exercicio'] ?? '';
 $mes = $_POST['mes'] ?? '';
-$usuario = $_POST['usuario'] ?? 'Desconhecido';
+$usuario = $_POST['username'] ?? 'Desconhecido';
 
 // Validação do período
 if (empty($periodo)) {

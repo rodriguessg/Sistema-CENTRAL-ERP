@@ -64,7 +64,9 @@ try {
             $menuItens = [
                 ['link' => 'painelalmoxarifado.php', 'nome' => 'Painel', 'icon' => 'cogs'],
                 ['link' => 'homeestoque.php', 'nome' => 'Home', 'icon' => 'home'],
+                  ['link' => 'conferencia.php', 'nome' => 'conferencia', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
+                ['link' => 'prestacaoestoque.php', 'nome' => 'Prestacção de Contas', 'icon' => 'envelope'],
             ];
             break;
 

@@ -419,7 +419,7 @@ $conn->close();
                 Pesquisar Produto
             </label>
             <div class="search-input-group">
-                <input type="text" id="filtroProduto" placeholder="Digite o nome do produto para filtrar...">
+                <input type="text" id="filtroProduto" placeholder="Digite o codigo do produto para filtrar...">
                 <i class="fas fa-search search-icon"></i>
             </div>
         </div>
@@ -754,7 +754,7 @@ $conn->close();
         ?>
     </div>
 
-    <div id="mensagem" class="message-container"></div>
+    <!-- <div id="mensagem" class="message-container"></div> -->
 </div>
 
 <!-- Seção: Estoque -->

@@ -36,7 +36,7 @@
 
 <!--===============================================================================================-->
 </head>
-<img src="src/img/bk.png" alt="Background Image" class="background-image">
+<!-- <img src="src/img/bk.png" alt="Background Image" class="background-image"> -->
 <body>
 <div class="limiter">
         <div class="container-login100">
@@ -150,50 +150,107 @@
 <!-- Modal para "Esqueci minha senha" -->
 <div id="modal-esqueci-senha" class="modal-container">
     <div class="modal-content">
-    
-        <!-- Título -->
-        <h3 class="modal-title">Recuperar Senha</h3>
+        <!-- Botão de Fechar -->
+        <div class="modal-header">
+            <span class="modal-close" onclick="fecharModal()">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
 
-		
-
-		    <!-- Botão de Fechar -->
-			<div class="modal-header">
-				<span class="modal-close" onclick="fecharModal()">&times;</span>
-			</div>
-
-			<div class="logo-central-1">
-				<img class="img-logo-central-1" src="./src/img/Logo.png" alt="">
-			</div>
+        <!-- Título com ícone -->
+        <div class="modal-title-container">
+            <div class="modal-icon">
+                <i class="fas fa-key"></i>
+            </div>
+            <h3 class="modal-title">Recuperar Senha</h3>
+            <p class="modal-subtitle">Digite suas informações para recuperar o acesso</p>
+        </div>
+<!-- 
+        <div class="logo-central-1">
+            <img class="img-logo-central-1" src="./src/img/colo.png" alt="Logo">
+        </div> -->
 
         <!-- Formulário para Verificação -->
         <form id="form-esqueci-senha" method="POST">
             <div class="modal-field">
-                <label for="username-recover">Nome de Usuário:</label>
-                <input class="modal-input" type="text" id="username-recover" name="username-recover" placeholder="Digite seu usuário" required>
+                <label for="username-recover" class="modal-label">
+                    <i class="fas fa-user"></i>
+                    Nome de Usuário
+                </label>
+                <div class="input-wrapper">
+                    <input class="modal-input" type="text" id="username-recover" name="username-recover" placeholder="Digite seu usuário" required>
+                    <div class="input-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
             </div>
+            
             <div class="modal-field">
-                <label for="email-recover">E-mail:</label>
-                <input class="modal-input" type="email" id="email-recover" name="email-recover" placeholder="Digite seu e-mail" required>
+                <label for="email-recover" class="modal-label">
+                    <i class="fas fa-envelope"></i>
+                    E-mail
+                </label>
+                <div class="input-wrapper">
+                    <input class="modal-input" type="email" id="email-recover" name="email-recover" placeholder="Digite seu e-mail" required>
+                    <div class="input-icon">
+                        <i class="fas fa-at"></i>
+                    </div>
+                </div>
             </div>
 
-	<button class="modal-button" type="button" onclick="verificarUsuario()">
-    <i class="fas fa-check-circle"></i> Verificar
-</button>
-
+            <button class="modal-button modal-button-primary" type="button" onclick="verificarUsuario()">
+                <i class="fas fa-search"></i>
+                <span>Verificar Dados</span>
+                <div class="button-ripple"></div>
+            </button>
         </form>
+
         <!-- Formulário de Nova Senha -->
         <form id="form-nova-senha" style="display: none;" method="POST">
             <div class="modal-field">
-                <label for="nova-senha">Nova Senha:</label>
-                <input class="modal-input" type="password" id="nova-senha" name="nova-senha" placeholder="Digite sua nova senha" required>
+                <label for="nova-senha" class="modal-label">
+                    <i class="fas fa-lock"></i>
+                    Nova Senha
+                </label>
+                <div class="input-wrapper">
+                    <input class="modal-input" type="password" id="nova-senha" name="nova-senha" placeholder="Digite sua nova senha" required>
+                    <div class="input-icon">
+                        <i class="fas fa-eye" onclick="togglePasswordVisibility('nova-senha')"></i>
+                    </div>
+                </div>
+                <div class="password-strength">
+                    <div class="strength-bar">
+                        <div class="strength-fill"></div>
+                    </div>
+                    <span class="strength-text">Força da senha</span>
+                </div>
             </div>
+            
             <div class="modal-actions">
-                <button class="modal-button" type="button" onclick="atualizarSenha()">Atualizar Senha</button>
-                <button class="modal-button modal-button-secondary" type="button" onclick="fecharModal()">Fechar</button>
+                <button class="modal-button modal-button-success" type="button" onclick="atualizarSenha()">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Atualizar Senha</span>
+                </button>
+                <button class="modal-button modal-button-secondary" type="button" onclick="fecharModal()">
+                    <i class="fas fa-times-circle"></i>
+                    <span>Cancelar</span>
+                </button>
             </div>
         </form>
+
+        <!-- Indicador de progresso -->
+        <div class="progress-indicator">
+            <div class="step active" data-step="1">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" data-step="2">
+                <i class="fas fa-key"></i>
+            </div>
+        </div>
     </div>
-    </div>
+</div>
+
 
 	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
 	<script src="vendor/animsition/js/animsition.min.js"></script>

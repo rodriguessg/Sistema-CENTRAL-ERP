@@ -26,6 +26,7 @@ $mensagens = [
     'produto_retirado' => 'Produto retirado com sucesso!',
     'estoque_insuficiente' => 'Estoque insuficiente para retirada.',
     'produto_nao_encontrado' => 'Produto não encontrado no estoque.',
+    'transferencia'=> 'Foi realizado a trnasferência de Patrimônio e realizado as atualizações na base.',
     'padrao' => 'Ocorreu um erro inesperado. Chame o T.i!'
 ];
 

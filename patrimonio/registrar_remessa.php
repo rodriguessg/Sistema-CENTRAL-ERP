@@ -1,6 +1,27 @@
 <?php
-// Inclui o arquivo de conexão com o banco de dados
-include('banco.php');
+// Iniciar a sessão
+session_start();
+
+// Verificar se o usuário está logado
+if (!isset($_SESSION['username'])) {
+    die("Erro: Usuário não autenticado ou sessão expirada!");
+}
+$username = $_SESSION['username'];
+
+$host = 'localhost';
+$dbname = 'gm_sicbd';
+$username_db = 'root';
+$password = '';
+
+try {
+    // Criação da conexão PDO
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username_db, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Definir modo de erro para exceção
+} catch (PDOException $e) {
+    // Em caso de erro na conexão, loga o erro e exibe uma mensagem amigável
+    error_log("Erro ao conectar ao banco: " . $e->getMessage());
+    die("Erro ao conectar ao banco de dados. Consulte o administrador.");
+}
 
 // Captura os dados enviados pelo formulário
 $patrimonio_id = $_POST['patrimonio_id'];
@@ -14,51 +35,69 @@ if (empty($patrimonio_id) || empty($destino) || empty($responsavel)) {
 }
 
 // Verifica se o patrimonio_id existe na tabela patrimonio
-$query_check = "SELECT id FROM patrimonio WHERE id = ?";
-$stmt_check = $con->prepare($query_check);
-$stmt_check->bind_param('i', $patrimonio_id);
+$query_check = "SELECT id FROM patrimonio WHERE id = :patrimonio_id";
+$stmt_check = $pdo->prepare($query_check);
+$stmt_check->bindParam(':patrimonio_id', $patrimonio_id, PDO::PARAM_INT);
 $stmt_check->execute();
-$stmt_check->store_result();
 
-if ($stmt_check->num_rows == 0) {
+if ($stmt_check->rowCount() == 0) {
     die("Erro: O patrimônio com ID $patrimonio_id não existe na tabela patrimonio.");
 }
 
-$stmt_check->close();
-
 // Insere os dados na tabela transferencias com o valor 'Transferido' para tipo_operacao
-$query = "INSERT INTO transferencias (patrimonio_id, destino, responsavel, data_transferencia) VALUES (?,  ?, ?, ?)";
-$stmt = $con->prepare($query);
-if (!$stmt) {
-    die("Erro na preparação da consulta: " . $con->error);
-}
+$query = "INSERT INTO transferencias (patrimonio_id, destino, responsavel, data_transferencia, tipo_operacao) VALUES (:patrimonio_id, :destino, :responsavel, :data_transferencia, :tipo_operacao)";
+$stmt = $pdo->prepare($query);
 
 // Define o valor fixo para tipo_operacao como "Transferido"
 $tipo_operacao = "Transferido";
-$stmt->bind_param('issss', $patrimonio_id, $destino, $responsavel, $data_transferencia, $tipo_operacao);
+
+// Bind dos parâmetros
+$stmt->bindParam(':patrimonio_id', $patrimonio_id, PDO::PARAM_INT);
+$stmt->bindParam(':destino', $destino, PDO::PARAM_STR);
+$stmt->bindParam(':responsavel', $responsavel, PDO::PARAM_STR);
+$stmt->bindParam(':data_transferencia', $data_transferencia, PDO::PARAM_STR);
+$stmt->bindParam(':tipo_operacao', $tipo_operacao, PDO::PARAM_STR);
 
 // Executa a consulta
 if ($stmt->execute()) {
-    echo "Transferência registrada com sucesso na tabela transferencias!";
-    
     // Atualiza a coluna tipo_operacao na tabela patrimonio
-    $query_update = "UPDATE patrimonio SET situacao = ? WHERE id = ?";
-    $stmt_update = $con->prepare($query_update);
-    if ($stmt_update) {
-        $stmt_update->bind_param('si', $tipo_operacao, $patrimonio_id);
-        if ($stmt_update->execute()) {
-            echo "Coluna tipo_operacao atualizada com sucesso na tabela patrimonio!";
+    $query_update = "UPDATE patrimonio SET situacao = :tipo_operacao WHERE id = :patrimonio_id";
+    $stmt_update = $pdo->prepare($query_update);
+
+    // Bind dos parâmetros
+    $stmt_update->bindParam(':tipo_operacao', $tipo_operacao, PDO::PARAM_STR);
+    $stmt_update->bindParam(':patrimonio_id', $patrimonio_id, PDO::PARAM_INT);
+
+    // Executa a consulta de atualização
+    if ($stmt_update->execute()) {
+        // Registrar no log de eventos após a atualização na tabela patrimonio
+        $tipo_operacao_log = 'Transferência de Patrimônio';
+        $query_log = "INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (:matricula, :tipo_operacao, NOW())";
+        $stmt_log = $pdo->prepare($query_log);
+
+        // Bind dos parâmetros para o log
+        $stmt_log->bindParam(':matricula', $username, PDO::PARAM_STR); // Registrar a matrícula do usuário
+        $stmt_log->bindParam(':tipo_operacao', $tipo_operacao_log, PDO::PARAM_STR);
+
+        // Executa o log
+        if ($stmt_log->execute()) {
+            // Redireciona para a página de sucesso
+            header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=transferencia&pagina=/Sistema-CENTRAL-ERP/homepatrimonio.php');
+            exit();
         } else {
-            echo "Erro ao atualizar a coluna tipo_operacao na tabela patrimonio: " . $stmt_update->error;
+            echo "Erro ao registrar no log de eventos: " . $stmt_log->errorInfo()[2];
         }
-        $stmt_update->close();
     } else {
-        echo "Erro na preparação da consulta de atualização: " . $con->error;
+        echo "Erro ao atualizar a coluna tipo_operacao na tabela patrimonio: " . $stmt_update->errorInfo()[2];
     }
 } else {
-    echo "Erro ao registrar a transferência: " . $stmt->error;
+    echo "Erro ao registrar a transferência: " . $stmt->errorInfo()[2];
 }
 
-$stmt->close();
-$con->close();
+// Fechar as conexões
+$stmt_check = null;
+$stmt = null;
+$stmt_update = null;
+$stmt_log = null;
+$pdo = null;
 ?>

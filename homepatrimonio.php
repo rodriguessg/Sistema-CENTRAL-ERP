@@ -12,6 +12,72 @@ $categoriaSelecionada = "";
 // Se necessário, implemente a lógica de geração de código baseada na categoria selecionada
 // Aqui está apenas um exemplo de como gerar um código fictício.
 ?>
+
+<?php
+    // Conexão com o banco de dados
+    $host = 'localhost';
+    $dbname = 'gm_sicbd';
+    $username = 'root';
+    $password = '';
+
+    try {
+        $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            echo 'Erro na conexão: ' . $e->getMessage();
+            exit;
+        }
+
+    // Buscar dados da tabela patrimonio
+    $sql = "SELECT id, codigo, nome, valor, data_registro FROM patrimonio";
+    $stmt = $pdo->query($sql);
+    $patrimonios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Variáveis para armazenar os valores
+    $codigo = $nome = $valor = $data_registro = '';
+    $depreciacao = $vida_util = 0;  // Inicializando a depreciação e vida útil
+    $depreciacoes_por_ano = [];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['patrimonio_id'])) {
+        $id_selecionado = $_POST['patrimonio_id'];
+        $sql = "SELECT codigo, nome, valor, data_registro FROM patrimonio WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$id_selecionado]);
+        $patrimonio = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $codigo = $patrimonio['codigo'];
+        $nome = $patrimonio['nome'];
+        $valor = $patrimonio['valor'];
+        $data_registro = $patrimonio['data_registro'];
+
+        // Definir vida útil (em anos)
+        $vida_util = 5; // Exemplo genérico: vida útil de 5 anos
+
+        // Cálculo de depreciação com base na data de registro
+        $data_registro_obj = new DateTime($data_registro);
+
+        // Depreciação linear
+        $valor_residual = 0; // Supondo valor residual zero
+        $depreciacao_anual = ($valor - $valor_residual) / $vida_util;
+
+        // Cálculo da depreciação acumulada por ano
+        for ($ano = 0; $ano <= $vida_util; $ano++) {
+            $data_anual = clone $data_registro_obj;
+            $data_anual->modify("+$ano years");
+
+            if ($ano === $vida_util || $ano > (new DateTime())->diff($data_registro_obj)->y) {
+                $depreciacao_atual = $valor;
+            } else {
+                $depreciacao_atual = $depreciacao_anual * $ano;
+            }
+
+            $depreciacoes_por_ano[] = [
+                'ano' => $data_anual->format('Y'),
+                'depreciacao' => min($depreciacao_atual, $valor)
+            ];
+        }
+    }
+?>
 <?php include 'header.php'?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -21,7 +87,7 @@ $categoriaSelecionada = "";
     <title>Cadastrar Patrimônio</title>
     <link rel="stylesheet" href="./src/style/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
-    <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
+    <!-- <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="src/patrimonio/style/homepatrimonio.css">
 
@@ -76,6 +142,7 @@ $categoriaSelecionada = "";
             <label for="data_aquisicao">Data de Aquisição:</label>
             <input type="date" id="data_aquisicao" name="data_aquisicao" required>
 
+
             <label for="status">Status:</label>
             <select id="status" name="situacao" required>
                 <option value="ativo">Ativo</option>
@@ -86,6 +153,10 @@ $categoriaSelecionada = "";
 
             <label for="localizacao">Localização:</label>
             <input type="text" id="localizacao" name="localizacao" required>
+            <div class="mb-3" >
+                <label for="descricao" class="form-label">Discrição</label>
+                <textarea id="descricao" name="descricao" class="form-control" rows="3" required></textarea>
+            </div>
 
             <button type="submit">Cadastrar</button>
         </div>
@@ -93,13 +164,10 @@ $categoriaSelecionada = "";
 </div>
 
 
-<div class="form-container2" id="galeria" style="display: none;">
+<div class="form-container" id="galeria" style="display: none;">
 <div id="cards-container" class="carousel-items">
     <!-- Os cards serão adicionados dinamicamente via JavaScript -->
-
 </div>
-
-
 </div>
 
 
@@ -115,11 +183,25 @@ $categoriaSelecionada = "";
                 reader.readAsDataURL(file);
             }
         });
-    </script>
+</script>
+
 
 <?php
-// Conexão com o banco de dados
-include('banco.php');
+$host = 'localhost';
+$dbname = 'gm_sicbd';
+$username = 'root';
+$password = '';
+
+try {
+    // Criação da conexão PDO
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Definir modo de erro para exceção
+} catch (PDOException $e) {
+    // Em caso de erro na conexão, loga o erro e exibe uma mensagem amigável
+    error_log("Erro ao conectar ao banco: " . $e->getMessage());
+    die("Erro ao conectar ao banco de dados. Consulte o administrador.");
+}
+
 
 // Obter os dados reais da tabela 'patrimonio'
 $query = "SELECT id, codigo FROM patrimonio WHERE situacao = 'ativo'";
@@ -128,12 +210,10 @@ $result = $con->query($query);
 <!-- Formulário para retirar materiais -->
 <div class="form-container" id="retirar" style="display: none;">
   <h2>Remessa de Patrimônio</h2>
- 
+    <form action="./patrimonio/registrar_remessa.php" method="POST">
+    <div class="form-group">
 
- <form action="./patrimonio/registrar_remessa.php" method="POST">
- <div class="form-group">
-
- <label for="patrimonio_id">ID do Patrimônio:</label>
+    <label for="patrimonio_id">ID do Patrimônio:</label>
     <select name="patrimonio_id" id="patrimonio_id" required>
     <option value="" disabled selected>Selecione o patrimônio</option>
     <?php
@@ -145,12 +225,12 @@ $result = $con->query($query);
         echo "<option value=''>Nenhum patrimônio disponível</option>";
     }
     ?>
- </select>
+    </select>
 
 
     
     <label for="destino">Destino (Área):</label>
-<select id="destino" name="destino" required>
+    <select id="destino" name="destino" required>
         <option value="" disabled selected>Escolha a Área</option>
         <option value="COMEL">COMEL</option>
         <option value="CONFIS">CONFIS</option>
@@ -203,6 +283,15 @@ $result = $con->query($query);
     <input type="text" name="responsavel" id="responsavel" required>
     </div>
     <div class="form-group">
+    <label for="descricao">Descriação:</label>
+    <input type="text" name="descricao" id="descricao" required>
+    </div>
+    <div class="form-group">
+    <label for="categoria">Categoria:</label>
+    <input type="text" name="categoria" id="categoria" required>
+    </div>
+
+    <div class="form-group">
     <label for="data_transferencia">Data da Transferência:</label>
     <input type="date" name="data_transferencia" id="data_transferencia" required>
     </div>
@@ -212,7 +301,7 @@ $result = $con->query($query);
     </div>
     <button type="submit">Transferir</button>
  </div>
-</form>
+    </form>
 
 </div>
 <div class="form-container" id="relatorio">
@@ -324,7 +413,8 @@ $result = $con->query($query);
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nome</th>
+                    <th>Cógido BP</th>
+                                     <th>NOME</th>
                     <th>Descrição</th>
                     <th>Valor</th>
                     <th>Localização</th>
@@ -332,7 +422,7 @@ $result = $con->query($query);
                      <!-- <th>Operação</th>  -->
                     <th>Cadastrado Por</th>
                     <th>Categoria</th>
-                    <th>Código</th>
+   
                     <th>Ações</th>
                     
                 </tr>
@@ -440,80 +530,9 @@ $result = $con->query($query);
 
 </script>
 
-
-
-
-
     <!-- Paginação -->
 <div class="pagination"></div>
  </div>
-
-<?php
-    // Conexão com o banco de dados
-    $host = 'localhost';
-    $dbname = 'gm_sicbd';
-    $username = 'root';
-    $password = '';
-
-    try {
-        $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            echo 'Erro na conexão: ' . $e->getMessage();
-            exit;
-        }
-
-    // Buscar dados da tabela patrimonio
-    $sql = "SELECT id, codigo, nome, valor, data_registro FROM patrimonio";
-    $stmt = $pdo->query($sql);
-    $patrimonios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Variáveis para armazenar os valores
-    $codigo = $nome = $valor = $data_registro = '';
-    $depreciacao = $vida_util = 0;  // Inicializando a depreciação e vida útil
-    $depreciacoes_por_ano = [];
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['patrimonio_id'])) {
-        $id_selecionado = $_POST['patrimonio_id'];
-        $sql = "SELECT codigo, nome, valor, data_registro FROM patrimonio WHERE id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$id_selecionado]);
-        $patrimonio = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $codigo = $patrimonio['codigo'];
-        $nome = $patrimonio['nome'];
-        $valor = $patrimonio['valor'];
-        $data_registro = $patrimonio['data_registro'];
-
-        // Definir vida útil (em anos)
-        $vida_util = 5; // Exemplo genérico: vida útil de 5 anos
-
-        // Cálculo de depreciação com base na data de registro
-        $data_registro_obj = new DateTime($data_registro);
-
-        // Depreciação linear
-        $valor_residual = 0; // Supondo valor residual zero
-        $depreciacao_anual = ($valor - $valor_residual) / $vida_util;
-
-        // Cálculo da depreciação acumulada por ano
-        for ($ano = 0; $ano <= $vida_util; $ano++) {
-            $data_anual = clone $data_registro_obj;
-            $data_anual->modify("+$ano years");
-
-            if ($ano === $vida_util || $ano > (new DateTime())->diff($data_registro_obj)->y) {
-                $depreciacao_atual = $valor;
-            } else {
-                $depreciacao_atual = $depreciacao_anual * $ano;
-            }
-
-            $depreciacoes_por_ano[] = [
-                'ano' => $data_anual->format('Y'),
-                'depreciacao' => min($depreciacao_atual, $valor)
-            ];
-        }
-    }
-?>
-
 
 
 <div class="form-container" id="DPRE" >
@@ -561,79 +580,76 @@ $result = $con->query($query);
        
 </div>
 
-
-
-
 <script>
-function showTab(tabId) {
-    // Ocultar todo conteúdo de aba
-    const tabsContent = document.querySelectorAll('.tab-content');
-    tabsContent.forEach(content => content.style.display = 'none');
+        function showTab(tabId) {
+        // Ocultar todo conteúdo de aba
+        const tabsContent = document.querySelectorAll('.tab-content');
+        tabsContent.forEach(content => content.style.display = 'none');
 
-    // Exibir a aba correspondente
-    const activeTab = document.getElementById(tabId);
-    if (activeTab) {
-        activeTab.style.display = 'block';
-        loadCardData(); // Carregar os dados do patrimônio
-    }
-}
-// Função para verificar se a imagem existe
-async function imageExists(url) {
-    try {
-        const response = await fetch(url, { method: 'HEAD' });
-        return response.ok; // Retorna true se a imagem existe
-    } catch (error) {
-        console.error(`Erro ao verificar a imagem: ${url}`, error);
-        return false;
-    }
-}
-
-async function loadCardData() {
-    try {
-        const response = await fetch('./patrimonio/getPatrimonios.php'); // Endpoint PHP
-        const data = await response.json();
-
-        const cardsContainer = document.getElementById('cards-container');
-        cardsContainer.innerHTML = ''; // Limpar conteúdo anterior
-
-        for (const item of data) {
-            const card = document.createElement('div');
-            card.className = 'card';
-
-            // URL da imagem informada no item
-            const imageUrl = `uploads/${item.foto}`;
-
-            // Verifica se a imagem existe
-            const validImageUrl = await imageExists(imageUrl) ? imageUrl : 'uploads/default.png';
-
-            card.innerHTML = `
-                <div class="card-inner">
-                    <!-- Frente do card -->
-                    <div class="card-front">
-                        <img src="${validImageUrl}" alt="${item.nome}" class="card-image">
-                    </div>
-                    <!-- Verso do card -->
-                    <div class="card-back">
-                        <h3>${item.nome}</h3>
-                        <p><strong>Código:</strong> ${item.codigo}</p>
-                        <p><strong>Categoria:</strong> ${item.categoria}</p>
-                        <p><strong>Data de Registro:</strong> ${item.data_registro}</p>
-                    </div>
-                </div>
-            `;
-
-            cardsContainer.appendChild(card); // Adicionar o card ao contêiner
+        // Exibir a aba correspondente
+        const activeTab = document.getElementById(tabId);
+        if (activeTab) {
+            activeTab.style.display = 'block';
+            loadCardData(); // Carregar os dados do patrimônio
         }
-    } catch (error) {
-        console.error('Erro ao carregar dados:', error);
     }
-}
+    // Função para verificar se a imagem existe
+    async function imageExists(url) {
+        try {
+            const response = await fetch(url, { method: 'HEAD' });
+            return response.ok; // Retorna true se a imagem existe
+        } catch (error) {
+            console.error(`Erro ao verificar a imagem: ${url}`, error);
+            return false;
+        }
+    }
 
-// Chamar a função para carregar e exibir os dados ao carregar a página
-document.addEventListener('DOMContentLoaded', loadCardData);
+    async function loadCardData() {
+        try {
+            const response = await fetch('./patrimonio/getPatrimonios.php'); // Endpoint PHP
+            const data = await response.json();
+
+            const cardsContainer = document.getElementById('cards-container');
+            cardsContainer.innerHTML = ''; // Limpar conteúdo anterior
+
+            for (const item of data) {
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                // URL da imagem informada no item
+                const imageUrl = `uploads/${item.foto}`;
+
+                // Verifica se a imagem existe
+                const validImageUrl = await imageExists(imageUrl) ? imageUrl : 'uploads/default.png';
+
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <!-- Frente do card -->
+                        <div class="card-front">
+                            <img src="${validImageUrl}" alt="${item.nome}" class="card-image">
+                        </div>
+                        <!-- Verso do card -->
+                        <div class="card-back">
+                            <h3>${item.nome}</h3>
+                            <p><strong>Código:</strong> ${item.codigo}</p>
+                            <p><strong>Categoria:</strong> ${item.categoria}</p>
+                            <p><strong>Data de Registro:</strong> ${item.data_registro}</p>
+                        </div>
+                    </div>
+                `;
+
+                cardsContainer.appendChild(card); // Adicionar o card ao contêiner
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados:', error);
+        }
+    }
+
+    // Chamar a função para carregar e exibir os dados ao carregar a página
+    document.addEventListener('DOMContentLoaded', loadCardData);
 
 
- 
+    
 </script>
 
 <script>
@@ -679,349 +695,8 @@ document.addEventListener('DOMContentLoaded', loadCardData);
         });
     </script>
 
-<!-- Scripts -->
-<script>
-// Função para gerar o código automaticamente via AJAX
-function gerarCodigo(categoria) {
-    if (categoria) {
-        fetch(`./patrimonio/gerar_codigo.php?categoria=${categoria}`)
-            .then(response => response.text())
-            .then(data => {
-                // Preencher o campo de código com o valor retornado
-                document.getElementById("codigo").value = data;
-            })
-            .catch(error => console.error('Erro ao gerar o código:', error));
-    }
-}
-
-// Função para alternar entre as abas
-function showTab(tabName) {
-    // Esconder todas as abas do tipo form-container e form-container2
-    const tabs = document.querySelectorAll('.form-container, .form-container2');
-    tabs.forEach(tab => tab.style.display = 'none');
-
-    // Exibir a aba selecionada (form-container ou form-container2)
-    const selectedTab = document.getElementById(tabName);
-    if (selectedTab) {
-        selectedTab.style.display = 'block';
-    }
-
-    // Atualizar o estilo das abas para mostrar qual está ativa
-    const tabLinks = document.querySelectorAll('.tab');
-    tabLinks.forEach(tab => tab.classList.remove('active'));
-    const activeTabLink = document.querySelector(`[data-tab="${tabName}"]`);
-    if (activeTabLink) {
-        activeTabLink.classList.add('active');
-    }
-}
-
-
-// Mostrar a aba 'cadastrar' como padrão quando a página for carregada
-window.onload = function() {
-    showTab('cadastrar');
-};
-
-
- // Função de filtro da tabela - Exemplo para ilustrar o funcionamento
- function filtrarTabela() {
-    // Obter os valores dos filtros
-    const identificacao = document.getElementById('filtro-identificacao').value.toLowerCase().trim();
-    const situacao = document.getElementById('filtro-situacao').value.toLowerCase().trim();
-    const operacao = document.getElementById('filtro-operacao').value.toLowerCase().trim();
-
-    // Selecionar todas as linhas do corpo da tabela
-    const linhas = document.querySelectorAll('#tabela-levantamento tbody tr');
-
-    linhas.forEach(linha => {
-        // Obter os valores das colunas relevantes
-        const colunaIdentificacao = linha.cells[1]?.textContent.toLowerCase().trim() || '';
-        const colunaSituacao = linha.cells[5]?.textContent.toLowerCase().trim() || '';
-        const colunaOperacao = linha.cells[2]?.textContent.toLowerCase().trim() || '';
-
-        // Comparar os valores das colunas com os filtros
-        const matchIdentificacao = !identificacao || colunaIdentificacao.includes(identificacao);
-        const matchSituacao = !situacao || colunaSituacao.includes(situacao);
-        const matchOperacao = !operacao || colunaOperacao.includes(operacao);
-
-        // Exibir ou ocultar a linha com base nos critérios
-        linha.style.display = matchIdentificacao && matchSituacao && matchOperacao ? '' : 'none';
-    });
-}
-
-
-     // Função para abrir o modal e carregar conteúdo de modaldetalhes.php
-     document.querySelectorAll('.detalhes-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const patrimonioId = this.getAttribute('data-id');
-            abrirModal(patrimonioId);
-        });
-    });
-
-  // Função para abrir o modal e carregar os detalhes
-function abrirModalDetalhes(id) {
-    // Encontrar a linha da tabela que corresponde ao id do patrimônio
-    const linhas = document.querySelectorAll('tbody tr');
-    let patrimonio = {};
-
-    linhas.forEach(linha => {
-        const tdId = linha.querySelector('td:first-child').textContent; // ID da linha
-        if (tdId == id) {
-            patrimonio = {
-                id: tdId,
-                nome: linha.cells[1].textContent, // Nome
-                descricao: linha.cells[2].textContent, // Descrição
-                valor: linha.cells[3].textContent, // Valor
-                localizacao: linha.cells[4].textContent, // Localização
-                situacao: linha.cells[5].textContent, // Situação
-                cadastrado_por: linha.cells[6].textContent, // Cadastrado Por
-                categoria: linha.cells[7].textContent, // Categoria
-                codigo: linha.cells[8].textContent // Código
-            };
-        }
-    });
-
-    // Preencher as informações no modal com os dados do patrimônio
-    const modalConteudo = document.getElementById('modal-informacoes');
-    modalConteudo.innerHTML = `
-        <h3>Detalhes do Patrimônio</h3>
-        <p><strong>ID:</strong> ${patrimonio.id}</p>
-        <p><strong>Nome:</strong> ${patrimonio.nome}</p>
-        <p><strong>Descrição:</strong> ${patrimonio.descricao}</p>
-        <p><strong>Valor:</strong> ${patrimonio.valor}</p>
-        <p><strong>Localização:</strong> ${patrimonio.localizacao}</p>
-        <p><strong>Situação:</strong> ${patrimonio.situacao}</p>
-        <p><strong>Cadastrado Por:</strong> ${patrimonio.cadastrado_por}</p>
-        <p><strong>Categoria:</strong> ${patrimonio.categoria}</p>
-        <p><strong>Código:</strong> ${patrimonio.codigo}</p>
-    `;
-
-    // Exibir o modal
-    const modal = document.getElementById('modal-detalhes');
-    modal.style.display = 'block';
-}
-
-// Função para fechar o modal
-function fecharModal() {
-    const modal = document.getElementById('modal-detalhes');
-    modal.style.display = 'none';
-}
-
-
-// Função para abrir o modal de atualização
-function abrirModalAtualizar(id) {
-    // Encontrar a linha correspondente ao ID
-    const linhas = document.querySelectorAll('tbody tr');
-    let patrimonio = {};
-
-    linhas.forEach(linha => {
-        const tdId = linha.querySelector('td:first-child').textContent; // ID da linha
-        if (tdId == id) {
-            patrimonio = {
-                id: tdId,
-                nome: linha.cells[1].textContent, // Nome
-                descricao: linha.cells[2].textContent, // Descrição
-                valor: linha.cells[3].textContent.replace(/[^\d,.-]/g, ''), // Remover símbolos de moeda
-                localizacao: linha.cells[4].textContent, // Localização
-                situacao: linha.cells[5].textContent, // Situação
-                cadastrado_por: linha.cells[6].textContent, // Cadastrado Por
-                categoria: linha.cells[7].textContent, // Categoria
-                codigo: linha.cells[8].textContent // Código
-            };
-        }
-    });
-
-    // Preencher os campos do formulário com os dados do patrimônio
-    document.getElementById('atualizar-id').value = patrimonio.id;
-    document.getElementById('atualizar-nome').value = patrimonio.nome;
-    document.getElementById('atualizar-descricao').value = patrimonio.descricao;
-    document.getElementById('atualizar-valor').value = patrimonio.valor;
-    document.getElementById('atualizar-localizacao').value = patrimonio.localizacao;
-    document.getElementById('atualizar-situacao').value = patrimonio.situacao.toLowerCase();
-    document.getElementById('atualizar-cadastrado-por').value = patrimonio.cadastrado_por;
-    document.getElementById('atualizar-categoria').value = patrimonio.categoria;
-    document.getElementById('atualizar-codigo').value = patrimonio.codigo;
-
-    // Exibir o modal de atualização
-    document.getElementById('modal-atualizar').style.display = 'block';
-}
-
-// Função para fechar o modal de atualização
-function fecharModalAtualizar() {
-    document.getElementById('modal-atualizar').style.display = 'none';
-}
-
-document.getElementById('form-atualizar').addEventListener('submit', function (event) {
-    event.preventDefault(); // Evita o comportamento padrão de envio do formulário
-
-    // Coleta os dados do formulário
-    const formData = new FormData(this);
-
-    // Envia os dados via fetch para o script de atualização
-    fetch('./patrimonio/modalatualizabp.php', {
-        method: 'POST',
-        body: formData,
-    })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`Erro HTTP: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then((data) => {
-            if (data.success) {
-                alert('Dados atualizados com sucesso!');
-                fecharModalAtualizar(); // Fecha o modal
-                location.reload(); // Atualiza a tabela ou página
-            } else {
-                alert('Erro ao atualizar os dados: ' + data.message);
-            }
-        })
-        .catch((error) => {
-            console.error('Erro ao enviar os dados:', error);
-            alert('Erro ao atualizar os dados. Tente novamente.');
-        });
-});
-
-
-// Função para imprimir os detalhes do patrimônio
-function imprimirDetalhes() {
-    const conteudo = document.getElementById('modal-informacoes').innerHTML;
-    const logoURL = './src/img/Logo CENTRAL (colorida).png'; // Substitua pelo caminho do logotipo
-    const janelaImpressao = window.open('', '_blank');
-
-    janelaImpressao.document.open();
-    janelaImpressao.document.write(`
-        <html>
-            <head>
-                
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        line-height: 1.6;
-                        margin: 20px;
-                    }
-                    .header2 {
-                        text-align: center;
-                        margin-bottom: 20px;
-                    }
-                    .header2 img {
-                        max-height: 80px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="header2">
-                    <img src="${logoURL}" alt="Logotipo da Empresa">
-                </div>
-                <div>${conteudo}</div>
-            </body>
-        </html>
-    `);
-
-    janelaImpressao.document.close();
-    janelaImpressao.print();
-}
-
-
-let paginaAtual = 1; // Página inicial
-const itensPorPagina = 3;
-
-// Função para carregar dados do servidor
-async function carregarDados(pagina) {
-    try {
-        const response = await fetch(`./patrimonio/paginasTabela.php?pagina=${pagina}`); // Substitua pelo caminho correto do PHP
-        const resultado = await response.json();
-
-        atualizarTabela(resultado.dados);
-        atualizarBotoes(resultado.total_paginas);
-    } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-    }
-}
-
-// Atualizar a tabela com os dados recebidos
-function atualizarTabela(dados) {
-    const tbody = document.querySelector('tbody');
-    tbody.innerHTML = ''; // Limpar a tabela
-
-    dados.forEach(dado => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-                <td>${dado.id}</td>
-                <td>${dado.nome}</td>
-                <td>${dado.descricao}</td>
-                <td>${parseFloat(dado.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                <td>${dado.localizacao}</td>
-                <td>${dado.situacao}</td>
-                <td>${dado.cadastrado_por}</td>
-                <td>${dado.categoria}</td>
-                <td>${dado.codigo}</td>
-                <td class="actions">
-                    <button class="btn1" onclick="abrirModalDetalhes('${dado.id}')">+ Detalhes</button>
-                    <button class="btn2" onclick="abrirModalAtualizar('${dado.id}')">Atualizar</button>
-                </td>
-            `;
-
-        tbody.appendChild(row);
-    });
-}
-
-// Atualizar os botões de paginação
-function atualizarBotoes(totalPaginas) {
-    const paginacao = document.querySelector('.pagination');
-    paginacao.innerHTML = ''; // Limpar os botões
-
-    const maxBotoes = 5; // Número máximo de botões a exibir de uma vez
-    let inicio = Math.max(1, paginaAtual - Math.floor(maxBotoes / 2));
-    let fim = Math.min(totalPaginas, inicio + maxBotoes - 1);
-
-    // Ajusta a exibição de botões se houver menos de 5
-    if (fim - inicio + 1 < maxBotoes) {
-        inicio = Math.max(1, fim - maxBotoes + 1);
-    }
-
-    // Criar o botão de "<<"
-    if (inicio > 1) {
-        const primeiro = document.createElement('button');
-        primeiro.textContent = '<<';
-        primeiro.onclick = () => {
-            paginaAtual = 1;
-            carregarDados(paginaAtual);
-        };
-        paginacao.appendChild(primeiro);
-    }
-
-    // Criar os botões de páginas
-    for (let i = inicio; i <= fim; i++) {
-        const button = document.createElement('button');
-        button.textContent = i;
-        button.classList.toggle('active', i === paginaAtual);
-        button.onclick = () => {
-            paginaAtual = i;
-            carregarDados(paginaAtual);
-        };
-        paginacao.appendChild(button);
-    }
-
-    // Criar o botão de ">>"
-    if (fim < totalPaginas) {
-        const ultimo = document.createElement('button');
-        ultimo.textContent = '>>';
-        ultimo.onclick = () => {
-            paginaAtual = fim + 1;
-            carregarDados(paginaAtual);
-        };
-        paginacao.appendChild(ultimo);
-    }
-}
-
-// Inicializar a página
-window.onload = () => {
-    carregarDados(paginaAtual);
-};
-
-
-</script>
+    <!-- Scripts -->
+<script src="./src/patrimonio/js/gerar-codigo-filtros-outros.js"></script>
 
 <script src="src/js/script.js"></script>
 <?php include 'footer.php'; ?>

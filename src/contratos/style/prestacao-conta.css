@@ -210,6 +210,7 @@ body {
   border: none !important;
   border-radius: 12px !important;
   overflow: hidden !important;
+  width: 100%;
 }
 
 /* Adicionar box-shadow elegante ao wrapper da tabela */

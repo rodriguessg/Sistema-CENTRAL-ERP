@@ -3,850 +3,444 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prestação de Contas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="prestacao-contas-enhanced.css">
+    <title>Tabela de Produtos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="sistema-estoque-final.css">
+    <link rel="stylesheet" href="tabela-produtos-estilizada.css">
 </head>
+
 <style>
-
-  /* Variáveis CSS para o tema - Seguindo o padrão estabelecido */
-:root {
-  --primary-gradient: linear-gradient(90deg, #192844 67.81%, #472774 100%);
-  --secondary-gradient: linear-gradient(135deg, #472774 0%, #6a4c93 100%);
-  --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-  --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-
-  --primary-color: #192844;
-  --secondary-color: #472774;
-  --accent-color: #667eea;
-  --success-color: #4facfe;
-  --warning-color: #43e97b;
-  --danger-color: #fa709a;
-  --text-dark: #2d3748;
-  --text-light: #718096;
-  --bg-light: #f7fafc;
-  --bg-white: #ffffff;
-  --border-color: #e2e8f0;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
-  --border-radius: 12px;
-  --border-radius-sm: 8px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Reset e configurações base */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  margin: 0;
-  padding: 20px;
-  min-height: 100vh;
-  color: var(--text-dark);
-  line-height: 1.6;
-}
-
-/* Container principal */
-.prestacao-form-container {
-  background: var(--bg-white);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-lg);
-  padding: 2rem;
-  margin: 0 auto;
-  max-width: 1200px;
+  /* ===== TABELA DE PRODUTOS ESTILIZADA ===== */
+.table-section {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
-  position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  margin: 1.5rem 0;
 }
 
-.prestacao-form-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--primary-gradient);
+.table-header {
+  background: var(--glass-gradient);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.prestacao-container {
-  width: 100%;
-}
-
-/* Títulos */
-.prestacao-titulo-principal {
-  color: var(--primary-color);
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
+.table-header h3 {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  position: relative;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--border-color);
-}
-
-.prestacao-titulo-principal i {
-  background: var(--primary-gradient);
-  color: white;
-  padding: 0.75rem;
-  border-radius: 50%;
-  font-size: 1.25rem;
-  box-shadow: var(--shadow-md);
-}
-
-.prestacao-subtitulo {
-  color: var(--primary-color);
-  font-size: 1.25rem;
+  margin: 0;
+  font-size: 1.125rem;
   font-weight: 600;
-  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.table-header h3 i {
+  color: var(--accent-color);
+}
+
+.table-info {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.prestacao-subtitulo i {
-  color: var(--accent-color);
-  font-size: 1rem;
-}
-
-/* Container da tabela */
-.prestacao-table-container {
-  background: var(--bg-white);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
-  margin-bottom: 2rem;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-}
-
-.prestacao-table-wrapper {
-  overflow-x: auto;
-}
-
-/* Tabela */
-.prestacao-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-  background: var(--bg-white);
-}
-
-.prestacao-table-header {
-  background: var(--primary-gradient);
-}
-
-.prestacao-table-header th {
-  color: white;
-  padding: 1rem 0.75rem;
-  font-weight: 600;
-  text-align: left;
-  border: none;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: relative;
-}
-
-.prestacao-table-header th::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.prestacao-table-body {
-  background: var(--bg-white);
-}
-
-.prestacao-table-row {
-  transition: var(--transition);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.prestacao-table-row:hover {
-  background: var(--bg-light);
-  transform: scale(1.002);
-  box-shadow: var(--shadow-sm);
-}
-
-.prestacao-table-row:nth-child(even) {
-  background: rgba(25, 40, 68, 0.02);
-}
-
-.prestacao-table-row:nth-child(even):hover {
-  background: var(--bg-light);
-}
-
-.prestacao-table-cell {
-  padding: 1rem 0.75rem;
-  vertical-align: middle;
-  color: var(--text-dark);
-  transition: var(--transition);
-  font-size: 0.875rem;
-}
-
-.prestacao-text-center {
-  text-align: center;
-  color: var(--text-light);
-  font-style: italic;
-}
-
-/* Badges de status */
-.prestacao-badge {
-  padding: 0.375rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: inline-flex;
+.record-count {
+  display: flex;
   align-items: center;
-  gap: 0.25rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.prestacao-badge-warning {
-  background: var(--warning-gradient);
-  color: white;
-}
-
-.prestacao-badge-primary {
-  background: var(--accent-gradient);
-  color: white;
-}
-
-.prestacao-badge-success {
-  background: var(--success-gradient);
-  color: white;
-}
-
-.prestacao-badge-secondary {
-  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-  color: white;
-}
-
-/* Botões */
-.prestacao-btn {
-  padding: 0.625rem 1.25rem;
-  border: none;
-  border-radius: var(--border-radius-sm);
-  font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: var(--transition);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-}
-
-.prestacao-btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: var(--transition);
-}
-
-.prestacao-btn:hover::before {
-  left: 100%;
-}
-
-.prestacao-btn-sm {
   padding: 0.5rem 1rem;
-  font-size: 0.8rem;
-}
-
-.prestacao-btn-primary {
-  background: var(--primary-gradient);
-  color: white;
-}
-
-.prestacao-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.prestacao-btn-success {
-  background: var(--success-gradient);
-  color: white;
-}
-
-.prestacao-btn-success:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.prestacao-btn-secondary {
-  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-  color: white;
-}
-
-.prestacao-btn-secondary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-/* Formulário */
-.prestacao-form-wrapper {
-  background: var(--glass-gradient);
-  border-radius: var(--border-radius);
-  padding: 2rem;
-  margin-top: 2rem;
-  border: 1px solid var(--border-color);
-  backdrop-filter: blur(10px);
-  display: none;
-}
-
-.prestacao-detalhes-container {
-  background: var(--bg-light);
-  border-radius: var(--border-radius-sm);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  border: 1px solid var(--border-color);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-.prestacao-detalhe-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.prestacao-detalhe-item strong {
-  color: var(--primary-color);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
 }
 
-.prestacao-detalhe-item strong i {
-  color: var(--accent-color);
-  font-size: 0.8rem;
+.record-count i {
+  color: var(--info-color);
 }
 
-.prestacao-detalhe-valor {
-  color: var(--text-dark);
-  font-weight: 500;
-  padding: 0.25rem 0;
-  border-bottom: 1px solid var(--border-color);
+.table-container {
+  overflow-x: auto;
+  max-height: 600px;
+  overflow-y: auto;
 }
 
-.prestacao-form {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.prestacao-input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.prestacao-form-label {
-  font-weight: 600;
-  color: var(--text-dark);
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.prestacao-form-label i {
-  color: var(--primary-color);
-  font-size: 0.8rem;
-}
-
-.prestacao-form-control {
+/* Estilo específico para a tabela de produtos */
+.data-table {
   width: 100%;
-  padding: 0.875rem 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--bg-primary);
   font-size: 0.875rem;
-  color: var(--text-dark);
-  background: var(--bg-white);
-  transition: var(--transition);
-  font-family: inherit;
 }
 
-.prestacao-form-control:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(25, 40, 68, 0.1);
-  transform: translateY(-1px);
-}
-
-.prestacao-form-control:hover {
-  border-color: var(--primary-color);
-}
-
-.prestacao-textarea {
-  resize: vertical;
-  min-height: 120px;
-}
-
-.prestacao-select {
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23192844' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.75rem center;
-  background-repeat: no-repeat;
-  background-size: 1.25em 1.25em;
-  padding-right: 2.5rem;
-}
-
-.prestacao-error {
-  color: var(--danger-color);
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
-  display: none;
-}
-
-.prestacao-button-group {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color);
-}
-
-/* Utilitários */
-.prestacao-mt-4 {
-  margin-top: 2rem;
-}
-
-.prestacao-fade-in {
-  animation: prestacaoFadeIn 0.5s ease-out;
-}
-
-@keyframes prestacaoFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsividade */
-@media (max-width: 1024px) {
-  .prestacao-form-container {
-    padding: 1.5rem;
-    margin: 1rem;
-  }
-
-  .prestacao-titulo-principal {
-    font-size: 1.75rem;
-  }
-
-  .prestacao-detalhes-container {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  body {
-    padding: 10px;
-  }
-
-  .prestacao-form-container {
-    padding: 1.25rem;
-    margin: 0.5rem;
-  }
-
-  .prestacao-titulo-principal {
-    font-size: 1.5rem;
-    flex-direction: column;
-    text-align: center;
-    gap: 0.5rem;
-  }
-
-  .prestacao-subtitulo {
-    font-size: 1.125rem;
-    flex-direction: column;
-    text-align: center;
-    gap: 0.25rem;
-  }
-
-  .prestacao-table-wrapper {
-    overflow-x: auto;
-  }
-
-  .prestacao-table {
-    min-width: 600px;
-  }
-
-  .prestacao-table-header th,
-  .prestacao-table-cell {
-    padding: 0.75rem 0.5rem;
-    font-size: 0.8rem;
-  }
-
-  .prestacao-form-wrapper {
-    padding: 1.5rem;
-  }
-
-  .prestacao-button-group {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .prestacao-btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .prestacao-form-container {
-    padding: 1rem;
-    margin: 0.25rem;
-  }
-
-  .prestacao-titulo-principal {
-    font-size: 1.25rem;
-  }
-
-  .prestacao-subtitulo {
-    font-size: 1rem;
-  }
-
-  .prestacao-table-header th,
-  .prestacao-table-cell {
-    padding: 0.625rem 0.375rem;
-    font-size: 0.75rem;
-  }
-
-  .prestacao-form-control {
-    padding: 0.75rem;
-    font-size: 0.8rem;
-  }
-
-  .prestacao-form-wrapper {
-    padding: 1rem;
-  }
-
-  .prestacao-detalhes-container {
-    padding: 1rem;
-  }
-
-  .prestacao-btn {
-    padding: 0.75rem 1rem;
-    font-size: 0.8rem;
-  }
-}
-
-/* Estados de loading */
-.prestacao-loading {
-  position: relative;
-  pointer-events: none;
-}
-
-.prestacao-loading::after {
-  content: "";
-  position: absolute;
+.data-table thead {
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(5px);
   z-index: 10;
 }
 
-.prestacao-loading::before {
-  content: "Carregando...";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 11;
+.data-table th {
+  background: #1e2a4a; /* Cor específica do cabeçalho da tabela na imagem */
+  background: linear-gradient(to right, #1e2a4a, #472774);
+  color: white;
+  padding: 0.75rem 1rem;
+  text-align: left;
   font-weight: 600;
-  color: var(--primary-color);
+  font-size: 0.875rem;
+  border: none;
+  white-space: nowrap;
 }
 
-/* Melhorias de acessibilidade */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+.data-table th:first-child {
+  border-radius: var(--radius-sm) 0 0 0;
+  padding-left: 1.5rem;
 }
 
-/* Focus states para acessibilidade */
-.prestacao-btn:focus,
-.prestacao-form-control:focus {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
+.data-table th:last-child {
+  border-radius: 0 var(--radius-sm) 0 0;
+  padding-right: 1.5rem;
 }
 
-/* Hover effects adicionais */
-.prestacao-table-row:hover .prestacao-btn {
-  transform: scale(1.05);
+.data-table th i {
+  margin-right: 0.5rem;
+  opacity: 0.9;
 }
 
-.prestacao-badge:hover {
-  transform: scale(1.05);
+.data-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+  vertical-align: middle;
 }
 
-/* Animações de entrada */
-.prestacao-table-row {
-  animation: prestacaoSlideIn 0.3s ease-out;
+.data-table td:first-child {
+  padding-left: 1.5rem;
 }
 
-.prestacao-table-row:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.prestacao-table-row:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.prestacao-table-row:nth-child(3) {
-  animation-delay: 0.2s;
-}
-.prestacao-table-row:nth-child(4) {
-  animation-delay: 0.25s;
-}
-.prestacao-table-row:nth-child(5) {
-  animation-delay: 0.3s;
+.data-table td:last-child {
+  padding-right: 1.5rem;
 }
 
-@keyframes prestacaoSlideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.data-table tr:hover {
+  background: rgba(102, 126, 234, 0.05);
+  transition: var(--transition-fast);
+}
+
+.data-table tr:nth-child(even) {
+  background: rgba(248, 250, 252, 0.5);
+}
+
+.data-table tr:nth-child(even):hover {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+/* Estilo para os badges de ID na tabela */
+.id-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 0.5rem;
+  background: #5a67d8; /* Cor do badge na imagem */
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Estilo para as tags de classificação */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--accent-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+/* Estilo para as tags de localização */
+.location-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* Estilo para os valores de quantidade */
+.quantity {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Estilo para os valores monetários */
+.currency {
+  font-weight: 600;
+  color: var(--success-color);
+}
+
+/* Estilo para os códigos */
+code {
+  background: var(--bg-tertiary);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-family: "Courier New", monospace;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+}
+
+/* Estilo para os botões de ação */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  border: none;
+  font-size: 0.875rem;
+  color: white;
+}
+
+.btn-details {
+  background: var(--secondary-gradient);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-details:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-edit {
+  background: var(--success-gradient);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-edit:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Estilo para a paginação */
+.pagination-wrapper {
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border-color);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination button,
+.pagination a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 0.75rem;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.pagination button:hover,
+.pagination a:hover {
+  background: var(--primary-gradient);
+  color: white;
+  border-color: transparent;
+}
+
+.pagination button.active {
+  background: var(--primary-gradient);
+  color: white;
+  border-color: transparent;
 }
 
 </style>
 <body>
-    <div class="prestacao-form-container" id="prestacao">
-        <div class="prestacao-container">
-            <h2 class="prestacao-titulo-principal">
-                <i class="fas fa-file-invoice-dollar"></i>
-                Prestação de Contas
-            </h2>
-
-            <!-- Tabela de Contratos -->
-            <div class="prestacao-table-container">
-                <h4 class="prestacao-subtitulo">
-                    <i class="fas fa-list-alt"></i>
-                    Contratos Encerrados
-                </h4>
-                <div class="prestacao-table-wrapper">
-                    <table class="prestacao-table">
-                        <thead class="prestacao-table-header">
-                            <tr>
-                                <th scope="col">Título</th>
-                                <th scope="col">Validade</th>
-                                <th scope="col">Valor (R$)</th>
-                                <th scope="col">Status Prestação</th>
-                                <th scope="col">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody class="prestacao-table-body">
-                            <?php if (!empty($contratos)): ?>
-                                <?php foreach ($contratos as $c): ?>
-                                    <?php
-                                    // Buscar status da prestação para cada contrato
-                                    $sql_status = "SELECT status FROM prestacao_contas WHERE contrato_id = :contrato_id";
-                                    $stmt_status = $pdo->prepare($sql_status);
-                                    $stmt_status->bindParam(':contrato_id', $c['id'], PDO::PARAM_INT);
-                                    $stmt_status->execute();
-                                    $status_prestacao = $stmt_status->fetchColumn() ?: 'Pendente';
-                                    ?>
-                                    <tr class="prestacao-table-row">
-                                        <td class="prestacao-table-cell"><?= htmlspecialchars($c['titulo']); ?></td>
-                                        <td class="prestacao-table-cell"><?= htmlspecialchars($c['validade']); ?></td>
-                                        <td class="prestacao-table-cell">R$ <?= number_format($c['valor_contrato'], 2, ',', '.'); ?></td>
-                                        <td class="prestacao-table-cell">
-                                            <?php
-                                            $badge_class = match ($status_prestacao) {
-                                                'Pendente' => 'prestacao-badge-warning',
-                                                'Em Andamento' => 'prestacao-badge-primary',
-                                                'Concluída' => 'prestacao-badge-success',
-                                                default => 'prestacao-badge-secondary'
-                                            };
-                                            ?>
-                                            <span class="prestacao-badge <?= $badge_class; ?>"><?= htmlspecialchars($status_prestacao); ?></span>
-                                        </td>
-                                        <td class="prestacao-table-cell">
-                                            <button class="prestacao-btn prestacao-btn-primary prestacao-btn-sm select-contrato" 
-                                                    data-id="<?= htmlspecialchars($c['id']); ?>" 
-                                                    data-titulo="<?= htmlspecialchars($c['titulo']); ?>" 
-                                                    data-valor="<?= number_format($c['valor_contrato'], 2, '.', ''); ?>" 
-                                                    data-inicio="<?= htmlspecialchars($c['data_cadastro']); ?>" 
-                                                    data-validade="<?= htmlspecialchars($c['validade']); ?>"
-                                                    data-status="<?= htmlspecialchars($status_prestacao); ?>"
-                                                    aria-label="Selecionar contrato <?= htmlspecialchars($c['titulo']); ?>">
-                                                <i class="fas fa-check"></i>
-                                                Selecionar
-                                            </button>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr class="prestacao-table-row">
-                                    <td colspan="5" class="prestacao-table-cell prestacao-text-center">
-                                        <i class="fas fa-inbox"></i>
-                                        Nenhum contrato encontrado
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+    <div class="main-content">
+        <div class="table-section">
+            <div class="table-header">
+                <h3>
+                    <i class="fas fa-table"></i>
+                    Produtos Cadastrados
+                </h3>
+                <div class="table-info">
+                    <span class="record-count">
+                        <i class="fas fa-info-circle"></i>
+                        Total de registros encontrados: 8
+                    </span>
                 </div>
             </div>
-
-            <!-- Formulário de Prestação de Contas -->
-            <div class="prestacao-form-wrapper prestacao-fade-in" id="form-prestacao-container">
-                <h4 class="prestacao-subtitulo">
-                    <i class="fas fa-info-circle"></i>
-                    Detalhes do Contrato Selecionado
-                </h4>
-                <div class="prestacao-detalhes-container" id="contrato-detalhes">
-                    <div class="prestacao-detalhe-item">
-                        <strong><i class="fas fa-file-contract"></i> Nome do Contrato:</strong> 
-                        <span id="detalhe-titulo" class="prestacao-detalhe-valor"></span>
-                    </div>
-                    <div class="prestacao-detalhe-item">
-                        <strong><i class="fas fa-dollar-sign"></i> Valor do Contrato:</strong> 
-                        <span id="detalhe-valor" class="prestacao-detalhe-valor">R$ </span>
-                    </div>
-                    <div class="prestacao-detalhe-item">
-                        <strong><i class="fas fa-calendar-plus"></i> Data de Início:</strong> 
-                        <span id="detalhe-inicio" class="prestacao-detalhe-valor"></span>
-                    </div>
-                    <div class="prestacao-detalhe-item">
-                        <strong><i class="fas fa-calendar-times"></i> Data de Encerramento:</strong> 
-                        <span id="detalhe-validade" class="prestacao-detalhe-valor"></span>
-                    </div>
+            
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> ID</th>
+                            <th><i class="fas fa-barcode"></i> Código</th>
+                            <th><i class="fas fa-tags"></i> Classificação</th>
+                            <th><i class="fas fa-map-marker-alt"></i> Local</th>
+                            <th><i class="fas fa-file-invoice-dollar"></i> C. Contábil</th>
+                            <th><i class="fas fa-sort-numeric-up"></i> Quantidade</th>
+                            <th><i class="fas fa-dollar-sign"></i> Custo</th>
+                            <th><i class="fas fa-chart-line"></i> Preço Médio</th>
+                            <th><i class="fas fa-cogs"></i> Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="id-badge">1</span></td>
+                            <td><code>42490050002</code></td>
+                            <td><span class="tag">Uniformes Tecidos e Aviamentos</span></td>
+                            <td><span class="location-badge">xm1</span></td>
+                            <td>2423.03</td>
+                            <td><span class="quantity">247</span></td>
+                            <td><span class="currency">R$ 3.323,00</span></td>
+                            <td><span class="currency">R$ 14,45</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-details" title="Ver detalhes">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-action btn-edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="id-badge">2</span></td>
+                            <td><code>42490050015</code></td>
+                            <td><span class="tag">Uniformes Tecidos e Aviamentos</span></td>
+                            <td><span class="location-badge">xm1</span></td>
+                            <td>2423.03</td>
+                            <td><span class="quantity">5</span></td>
+                            <td><span class="currency">R$ 4.434,00</span></td>
+                            <td><span class="currency">R$ 192,00</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-details" title="Ver detalhes">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-action btn-edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="id-badge">4</span></td>
+                            <td><code>43400110010</code></td>
+                            <td><span class="tag">Material para manutenção e conservação de Bens móveis</span></td>
+                            <td><span class="location-badge">xm1</span></td>
+                            <td>2425.11</td>
+                            <td><span class="quantity">272</span></td>
+                            <td><span class="currency">R$ 32.798,82</span></td>
+                            <td><span class="currency">R$ 266,00</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-details" title="Ver detalhes">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-action btn-edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="id-badge">3</span></td>
+                            <td><code>47100016581</code></td>
+                            <td><span class="tag">Material Elétrico,material para conservação e manutenção de Bens</span></td>
+                            <td><span class="location-badge">xm1</span></td>
+                            <td>2424.10</td>
+                            <td><span class="quantity">55</span></td>
+                            <td><span class="currency">R$ 44,34</span></td>
+                            <td><span class="currency">R$ 1,93</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-details" title="Ver detalhes">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-action btn-edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="id-badge">8</span></td>
+                            <td><code>47100040037</code></td>
+                            <td><span class="tag">Material Elétrico,material para conservação e manutenção de Bens</span></td>
+                            <td><span class="location-badge">xm1</span></td>
+                            <td>2424.10</td>
+                            <td><span class="quantity">412</span></td>
+                            <td><span class="currency">R$ 32.798,82</span></td>
+                            <td><span class="currency">R$ 79,60</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-details" title="Ver detalhes">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-action btn-edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination-wrapper">
+                <div class="pagination">
+                    <button disabled><i class="fas fa-chevron-left"></i></button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button><i class="fas fa-chevron-right"></i></button>
                 </div>
-
-                <h4 class="prestacao-subtitulo prestacao-mt-4">
-                    <i class="fas fa-edit"></i>
-                    Realizar Prestação de Contas
-                </h4>
-                <form class="prestacao-form" id="form-prestacao" method="POST" action="processar_prestacao.php">
-                    <input type="hidden" name="contrato_id" id="contrato_id">
-
-                    <div class="prestacao-input-group">
-                        <label for="valor_pago" class="prestacao-form-label">
-                            <i class="fas fa-money-bill-wave"></i>
-                            Valor Pago:
-                        </label>
-                        <input type="number" class="prestacao-form-control" id="valor_pago" name="valor_pago" step="0.01" required 
-                               aria-describedby="valor_pago_error" placeholder="0,00">
-                        <div class="prestacao-error" id="valor_pago_error"></div>
-                    </div>
-
-                    <div class="prestacao-input-group">
-                        <label for="descricaoprestacao" class="prestacao-form-label">
-                            <i class="fas fa-align-left"></i>
-                            Descrição da Prestação de Contas:
-                        </label>
-                        <textarea class="prestacao-form-control prestacao-textarea" id="descricaoprestacao" name="descricaoprestacao" rows="4" required 
-                                  aria-describedby="descricao_error" placeholder="Descreva os detalhes da prestação de contas..."></textarea>
-                        <div class="prestacao-error" id="descricao_error"></div>
-                    </div>
-
-                    <div class="prestacao-input-group">
-                        <label for="data_pagamento" class="prestacao-form-label">
-                            <i class="fas fa-calendar-check"></i>
-                            Data de Pagamento:
-                        </label>
-                        <input type="date" class="prestacao-form-control" id="data_pagamento" name="data_pagamento" required 
-                               aria-describedby="data_pagamento_error">
-                        <div class="prestacao-error" id="data_pagamento_error"></div>
-                    </div>
-
-                    <div class="prestacao-input-group">
-                        <label for="prestacao_status" class="prestacao-form-label">
-                            <i class="fas fa-tasks"></i>
-                            Status da Prestação:
-                        </label>
-                        <select class="prestacao-form-control prestacao-select" id="prestacao_status" name="prestacao_status" required>
-                            <option value="Pendente">Pendente</option>
-                            <option value="Em Andamento">Em Andamento</option>
-                            <option value="Concluída">Concluída</option>
-                        </select>
-                    </div>
-
-                    <div class="prestacao-button-group">
-                        <button type="submit" class="prestacao-btn prestacao-btn-success">
-                            <i class="fas fa-save"></i>
-                            Salvar Prestação de Contas
-                        </button>
-                        <button type="button" class="prestacao-btn prestacao-btn-secondary" id="cancelar-form">
-                            <i class="fas fa-times"></i>
-                            Cancelar
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
-
-    <script>
-        // JavaScript para demonstração
-        document.addEventListener('DOMContentLoaded', function() {
-            const selectButtons = document.querySelectorAll('.select-contrato');
-            const formContainer = document.getElementById('form-prestacao-container');
-            const cancelButton = document.getElementById('cancelar-form');
-
-            selectButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Preencher detalhes do contrato
-                    document.getElementById('detalhe-titulo').textContent = this.dataset.titulo;
-                    document.getElementById('detalhe-valor').textContent = this.dataset.valor;
-                    document.getElementById('detalhe-inicio').textContent = this.dataset.inicio;
-                    document.getElementById('detalhe-validade').textContent = this.dataset.validade;
-                    document.getElementById('contrato_id').value = this.dataset.id;
-
-                    // Mostrar formulário
-                    formContainer.style.display = 'block';
-                    formContainer.scrollIntoView({ behavior: 'smooth' });
-                });
-            });
-
-            cancelButton.addEventListener('click', function() {
-                formContainer.style.display = 'none';
-            });
-        });
-    </script>
 </body>
 </html>

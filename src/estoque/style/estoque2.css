@@ -781,6 +781,8 @@ code {
   border: 1px solid var(--border-color);
   overflow: hidden;
   box-shadow: var(--shadow-lg);
+  padding: 20px;
+
 }
 
 .report-actions {

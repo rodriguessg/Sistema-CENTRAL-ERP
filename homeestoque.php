@@ -606,12 +606,12 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="material-natureza">
+                    <label for="material-natureza1">
                         <i class="fas fa-leaf"></i>
                         Natureza
                     </label>
                     <div class="input-wrapper">
-                        <input type="text" id="material-natureza" name="material-natureza" placeholder="Preenchido automaticamente" readonly>
+                        <input type="text" id="material-natureza1" name="material-natureza1" placeholder="Preenchido automaticamente" readonly>
                         <i class="fas fa-lock input-status"></i>
                     </div>
                 </div>
@@ -1103,7 +1103,7 @@
     // Verifica se os elementos existem antes de tentar acessá-los
     const descricaoInput = document.getElementById('material-codigo');
     const classificacaoInput = document.getElementById('material-classificacao');
-    const naturezaInput = document.getElementById('material-natureza');
+    const naturezaInput = document.getElementById('material-natureza1');
     const localizacaoInput = document.getElementById('material-localizacao');
     const precoMedioInput = document.getElementById('material-preco-medio');
     const mensagemDiv = document.getElementById('mensagem');

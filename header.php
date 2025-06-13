@@ -60,15 +60,16 @@ try {
             ];
             break;
 
-        case 'estoque':
+        case 'ccoOperacao':
             $menuItens = [
-                ['link' => 'painelalmoxarifado.php', 'nome' => 'Painel', 'icon' => 'cogs'],
-                ['link' => 'homeestoque.php', 'nome' => 'Home', 'icon' => 'home'],
+                ['link' => 'paineloperacaobonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
+                ['link' => 'homebonde.php', 'nome' => 'Home', 'icon' => 'home'],
                   ['link' => 'conferencia.php', 'nome' => 'Conferencia', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
                 ['link' => 'prestacaoestoque.php', 'nome' => 'Prestação de Contas', 'icon' => 'envelope'],
             ];
             break;
+
 
         case 'contratos':
             $menuItens = [

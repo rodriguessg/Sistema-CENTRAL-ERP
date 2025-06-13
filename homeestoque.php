@@ -1000,7 +1000,7 @@
                     <i class="fas fa-chevron-down select-arrow"></i>
                 </div>
             </div>
-
+<!--  editar para que apareça o nome do usuário logado -->
             <div class="input-group">
                 <label for="usuario">
                     <i class="fas fa-user"></i>

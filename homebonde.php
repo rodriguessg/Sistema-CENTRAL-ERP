@@ -9,7 +9,6 @@ try {
     die("Erro: " . $e->getMessage());
 }
 
-// Generate a unique trip ID
 function generateTripId() {
     return 'V-' . strtoupper(uniqid());
 }
@@ -17,10 +16,14 @@ function generateTripId() {
 $new_trip_id = generateTripId();
 
 // Fetch existing trips
-$stmt = $pdo->query("SELECT v.id, v.bonde_id, v.origem, v.destino, v.passageiros_ida, v.passageiros_volta, v.data_ida, v.data_volta, b.modelo 
+$stmt_trips = $pdo->query("SELECT v.id, v.bonde_id, v.origem, v.destino, v.passageiros_ida, v.passageiros_volta, v.data_ida, v.data_volta, b.modelo 
                     FROM viagens v 
                     LEFT JOIN bondes b ON v.bonde_id = b.id");
-$existing_trips = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$existing_trips = $stmt_trips->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch bondes for dropdowns and layout section
+$stmt_bondes = $pdo->query("SELECT id, modelo, descricao, capacidade FROM bondes");
+$bondes = $stmt_bondes->fetchAll(PDO::FETCH_ASSOC);
 
 // Calculate average travel time
 function calculateAverageTravelTime($trips) {
@@ -45,12 +48,14 @@ function calculateAverageTravelTime($trips) {
 }
 $average_time = calculateAverageTravelTime($existing_trips);
 
-// Simulate get_trips action (replace with real endpoint)
+// Search functionality for Layout tab
+$search_query = isset($_GET['search']) ? strtolower($_GET['search']) : '';
+$filtered_bondes = $search_query ? array_filter($bondes, fn($bonde) => strpos(strtolower($bonde['modelo']), $search_query) !== false) : $bondes;
+
 if (isset($_GET['action']) && $_GET['action'] === 'get_trips') {
     echo json_encode($existing_trips);
     exit();
 }
-include 'header.php';
 ?>
 
 <!DOCTYPE html>
@@ -81,21 +86,18 @@ include 'header.php';
         table, th, td { border: 1px solid #ccc; }
         th, td { padding: 10px; text-align: left; }
         th { background: #007bff; color: #fff; }
-        .tram-layout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 20px; }
-        .tram-layout-editor { margin-top: 20px; border: 1px solid #ccc; padding: 10px; background: #f9f9f9; border-radius: 4px; }
-        .tram-layout-editor .seat-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
-        .seat { width: 40px; height: 40px; background: #007bff; color: #fff; border: 1px solid #ccc; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .seat.occupied { background: #dc3545; }
-        .seat.selected { background: #ffc107; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center; }
         .modal-content { background: #fff; padding: 20px; border-radius: 5px; width: 300px; text-align: center; }
-        .modal-content input { margin-bottom: 10px; }
+        .modal-content input, .modal-content select, .modal-content textarea { margin-bottom: 10px; width: 100%; padding: 8px; }
+        .photo-upload { width: 300px; padding: 20px; border: 1px dashed #ccc; text-align: center; margin-left: 20px; vertical-align: top; display: inline-block; }
+        .photo-upload img { max-width: 100%; height: auto; margin-top: 10px; }
+        textarea { resize: vertical; min-height: 60px; }
     </style>
 </head>
 <body>
     <div class="caderno">
         <div class="tabs">
-            <div class="tab active" data-tab="cadastrar" onclick="showTab('cadastrar')">
+            <div class="tab" data-tab="cadastrar" onclick="showTab('cadastrar')">
                 <i class="fas fa-plus-circle"></i> Cadastrar Bonde
             </div>
             <div class="tab" data-tab="passageiros" onclick="showTab('passageiros')">
@@ -107,7 +109,7 @@ include 'header.php';
             <div class="tab" data-tab="manutencao" onclick="showTab('manutencao')">
                 <i class="fas fa-tools"></i> Manutenção
             </div>
-            <div class="tab" data-tab="layout" onclick="showTab('layout')">
+            <div class="tab active" data-tab="layout" onclick="showTab('layout')">
                 <i class="fas fa-th"></i> Layout do Bonde
             </div>
             <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
@@ -116,13 +118,9 @@ include 'header.php';
         </div>
 
         <!-- Cadastrar Bonde -->
-        <div class="form-container active" id="cadastrar">
+        <div class="form-container" id="cadastrar">
             <h2>Cadastrar Bonde</h2>
             <form action="process_bonde.php" method="POST">
-                <div class="form-group">
-                    <label for="bonde_id">ID do Bonde</label>
-                    <input type="text" id="bonde_id" name="bonde_id" required>
-                </div>
                 <div class="form-group">
                     <label for="modelo">Modelo</label>
                     <input type="text" id="modelo" name="modelo" required>
@@ -134,6 +132,10 @@ include 'header.php';
                 <div class="form-group">
                     <label for="ano_fabricacao">Ano de Fabricação</label>
                     <input type="number" id="ano_fabricacao" name="ano_fabricacao" required>
+                </div>
+                <div class="form-group">
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" required></textarea>
                 </div>
                 <div class="form-group">
                     <button type="submit">Cadastrar</button>
@@ -149,12 +151,9 @@ include 'header.php';
                     <label for="bonde_id_pass">Selecione o Bonde</label>
                     <select id="bonde_id_pass" name="bonde_id_pass" required>
                         <option value="">Selecione</option>
-                        <?php
-                        $stmt = $pdo->query("SELECT id, modelo FROM bondes");
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            echo "<option value='{$row['id']}'>{$row['id']} - {$row['modelo']}</option>";
-                        }
-                        ?>
+                        <?php foreach ($bondes as $bonde): ?>
+                            <option value="<?php echo $bonde['id']; ?>">B<?php echo $bonde['id']; ?> - <?php echo htmlspecialchars($bonde['modelo']); ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
@@ -218,21 +217,20 @@ include 'header.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    foreach ($existing_trips as $viagem) {
-                        $volta = isset($viagem['passageiros_volta']) ? $viagem['passageiros_volta'] : 'N/A';
-                        $status = isset($viagem['passageiros_volta']) ? 'Concluída' : 'Pendente';
-                        echo "<tr onclick='showModal(\"{$viagem['id']}\")'>
-                            <td>{$viagem['id']}</td>
-                            <td>{$viagem['bonde_id']} - {$viagem['modelo']}</td>
-                            <td>{$viagem['origem']}</td>
-                            <td>{$viagem['destino']}</td>
-                            <td>{$viagem['passageiros_ida']}</td>
-                            <td>$volta</td>
-                            <td>$status</td>
-                        </tr>";
-                    }
-                    ?>
+                    <?php foreach ($existing_trips as $viagem): ?>
+                        <?php $bonde_id = 'B' . $viagem['bonde_id']; ?>
+                        <?php $volta = isset($viagem['passageiros_volta']) ? $viagem['passageiros_volta'] : 'N/A'; ?>
+                        <?php $status = isset($viagem['passageiros_volta']) ? 'Concluída' : 'Pendente'; ?>
+                        <tr onclick="showModal('<?php echo $viagem['id']; ?>')">
+                            <td><?php echo $viagem['id']; ?></td>
+                            <td><?php echo $bonde_id . ' - ' . $viagem['modelo']; ?></td>
+                            <td><?php echo $viagem['origem']; ?></td>
+                            <td><?php echo $viagem['destino']; ?></td>
+                            <td><?php echo $viagem['passageiros_ida']; ?></td>
+                            <td><?php echo $volta; ?></td>
+                            <td><?php echo $status; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -245,12 +243,9 @@ include 'header.php';
                     <label for="bonde_id_manut">Selecione o Bonde</label>
                     <select id="bonde_id_manut" name="bonde_id_manut" required>
                         <option value="">Selecione</option>
-                        <?php
-                        $stmt = $pdo->query("SELECT id, modelo FROM bondes");
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            echo "<option value='{$row['id']}'>{$row['id']} - {$row['modelo']}</option>";
-                        }
-                        ?>
+                        <?php foreach ($bondes as $bonde): ?>
+                            <option value="<?php echo $bonde['id']; ?>">B<?php echo $bonde['id']; ?> - <?php echo htmlspecialchars($bonde['modelo']); ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
@@ -268,48 +263,66 @@ include 'header.php';
         </div>
 
         <!-- Layout do Bonde -->
-        <div class="form-container" id="layout">
+        <div class="form-container active" id="layout">
             <h2>Layout do Bonde</h2>
             <div class="form-group">
-                <label for="bonde_id_layout">Selecione o Bonde</label>
-                <select id="bonde_id_layout" name="bonde_id_layout" onchange="loadLayout()">
-                    <option value="">Selecione</option>
-                    <?php
-                    $stmt = $pdo->query("SELECT id, modelo FROM bondes");
-                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='{$row['id']}'>{$row['id']} - {$row['modelo']}</option>";
-                    }
-                    ?>
-                </select>
+                <input type="text" id="searchBonde" placeholder="Pesquisar por modelo..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" onkeyup="searchBondes()">
             </div>
-            <form action="process_layout.php" method="POST" id="layoutForm">
-                <div class="form-group">
-                    <label for="layout_name">Nome</label>
-                    <input type="text" id="layout_name" name="layout_name" value="LAYOUT 46 EXECUTIVO" readonly>
+            <table id="bondesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Modelo</th>
+                        <th>Descrição</th>
+                        <th>Capacidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($filtered_bondes as $bonde): ?>
+                        <tr onclick="editBonde(<?php echo $bonde['id']; ?>, '<?php echo addslashes($bonde['modelo']); ?>', '<?php echo addslashes($bonde['descricao'] ?? ''); ?>', <?php echo $bonde['capacidade']; ?>)">
+                            <td>B<?php echo $bonde['id']; ?></td>
+                            <td><?php echo htmlspecialchars($bonde['modelo']); ?></td>
+                            <td><?php echo htmlspecialchars($bonde['descricao'] ?? 'Sem descrição'); ?></td>
+                            <td><?php echo $bonde['capacidade']; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <p>Total de registros encontrados: <?php echo count($filtered_bondes); ?></p>
+
+            <!-- Modal for Editing Bonde -->
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <h3>Editar Bonde</h3>
+                    <input type="hidden" id="editBondeId">
+                    <div class="form-group">
+                        <label for="editModelo">Modelo</label>
+                        <input type="text" id="editModelo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescricao">Descrição</label>
+                        <textarea id="editDescricao" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCapacidade">Capacidade</label>
+                        <select id="editCapacidade" required>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="32">32</option>
+                            <option value="36">36</option>
+                        </select>
+                    </div>
+                    <button onclick="saveBonde()">Salvar</button>
+                    <button onclick="closeModal()">Cancelar</button>
                 </div>
-                <div class="form-group">
-                    <label for="layout_type">Layout do Assento</label>
-                    <select id="layout_type" name="layout_type">
-                        <option value="EXECUTIVO">EXECUTIVO</option>
-                        <option value="PADRAO">PADRÃO</option>
-                    </select>
-                    <input type="number" id="seat_count" name="seat_count" value="46" readonly style="width: 50px; display: inline-block; margin-left: 10px;">
-                </div>
-                <div class="form-group">
-                    <label for="group">Grupo</label>
-                    <input type="text" id="group" name="group" value="-----">
-                </div>
-                <div class="form-group">
-                    <label for="cost_center">Centro de Custo</label>
-                    <input type="text" id="cost_center" name="cost_center" value="-----">
-                </div>
-                <div class="form-group">
-                    <button type="button" onclick="editLayout()">Editar Layout</button>
-                    <button type="submit">Salvar</button>
-                </div>
-            </form>
-            <div class="tram-layout" id="tram-layout">
-                <!-- Layout dinâmico gerado por JS -->
+            </div>
+
+            <!-- Photo Upload Section -->
+            <div class="photo-upload">
+                <h3>Foto do Layout</h3>
+                <input type="file" id="layoutPhoto" accept="image/*">
+                <img id="previewPhoto" src="" alt="Pré-visualização da foto">
             </div>
         </div>
 
@@ -354,95 +367,71 @@ include 'header.php';
             }
         }
 
-        function loadLayout() {
-            const bondeId = document.getElementById('bonde_id_layout').value;
-            const layoutDiv = document.getElementById('tram-layout');
-            layoutDiv.innerHTML = '';
-            if (bondeId) {
-                for (let i = 1; i <= 46; i++) {
-                    const seat = document.createElement('div');
-                    seat.className = 'seat';
-                    seat.textContent = i;
-                    seat.onclick = () => toggleSeat(seat);
-                    layoutDiv.appendChild(seat);
-                }
-            }
+        function searchBondes() {
+            const query = $('#searchBonde').val();
+            window.location.href = `homebonde.php?tab=layout&search=${encodeURIComponent(query)}`;
         }
 
-        function toggleSeat(seat) {
-            seat.classList.toggle('occupied');
-        }
+        function editBonde(id, modelo, descricao, capacidade) {
+            $('#editBondeId').val(id);
+            $('#editModelo').val(modelo);
+            $('#editDescricao').val(descricao);
+            $('#editCapacidade').val(capacidade);
+            $('#editModal').css('display', 'flex');
 
-        function editLayout() {
-            const layoutForm = document.getElementById('layoutForm');
-            const inputs = layoutForm.querySelectorAll('input[readonly], select');
-            inputs.forEach(input => input.removeAttribute('readonly'));
-            document.getElementById('seat_count').style.display = 'none';
-            const layoutDiv = document.getElementById('tram-layout');
-            layoutDiv.classList.add('tram-layout-editor');
-            layoutDiv.innerHTML = '<p>Inclua ajustes de layout na vertical para uma melhor visualização.</p><div class="seat-layout"></div>';
-            for (let i = 1; i <= 46; i++) {
-                const seat = document.createElement('div');
-                seat.className = 'seat' + (i === 1 ? ' selected' : '');
-                seat.textContent = i;
-                seat.onclick = () => selectSeat(seat);
-                layoutDiv.querySelector('.seat-layout').appendChild(seat);
-            }
-        }
-
-        function selectSeat(seat) {
-            document.querySelectorAll('.seat').forEach(s => s.classList.remove('selected'));
-            seat.classList.add('selected');
-        }
-
-        function gerarRelatorio() {
-            const tipo = document.getElementById('tipo_relatorio').value;
-            const resultadoDiv = document.getElementById('relatorio-resultado');
-            if (tipo === 'passageiros') {
-                resultadoDiv.innerHTML = '<h3>Relatório de Passageiros</h3><p>Total de passageiros (ida): 55<br>Total de passageiros (volta): 48</p>';
+            // Load or clear photo preview
+            const photoInput = $('#layoutPhoto')[0];
+            if (photoInput.files && photoInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#previewPhoto').attr('src', e.target.result);
+                };
+                reader.readAsDataURL(photoInput.files[0]);
             } else {
-                resultadoDiv.innerHTML = '<h3>Relatório de Manutenção</h3><p>Manutenções realizadas: 3<br>Última manutenção: 2025-06-10</p>';
+                $('#previewPhoto').attr('src', ''); // Clear if no file
             }
         }
 
-        function validateIdaForm(event) {
-            event.preventDefault();
-            const bonde = document.getElementById('bonde_id_pass').value;
-            const origin = document.getElementById('origin').value;
-            const destination = document.getElementById('destination').value;
-            const motorman = document.getElementById('motorman').value.trim();
-            const auxiliary = document.getElementById('auxiliary').value.trim();
-            const validator = document.getElementById('validator').value.trim();
-            const ida = document.getElementById('passageiros_ida').value;
+        function saveBonde() {
+            const id = $('#editBondeId').val();
+            const modelo = $('#editModelo').val();
+            const descricao = $('#editDescricao').val();
+            const capacidade = $('#editCapacidade').val();
 
-            if (!bonde || !origin || !destination || !motorman || !auxiliary || !validator || !ida) {
-                alert('Todos os campos são obrigatórios.');
-                return false;
-            }
-            if (ida < 0) {
-                alert('O número de passageiros não pode ser negativo.');
-                return false;
-            }
-            const form = event.target;
-            form.submit();
-            return true;
-        }
-
-        function showModal(tripId) {
-            const modal = document.getElementById('voltaModal');
-            modal.style.display = 'flex';
-            modal.dataset.tripId = tripId;
+            $.post('update_bonde.php', { id: id, modelo: modelo, descricao: descricao, capacidade: capacidade }, function(response) {
+                if (response.success) {
+                    location.reload(); // Reload to reflect changes
+                } else {
+                    alert('Erro ao atualizar bonde.');
+                }
+            }, 'json').fail(function() {
+                alert('Erro na conexão com o servidor.');
+            });
         }
 
         function closeModal() {
-            const modal = document.getElementById('voltaModal');
-            modal.style.display = 'none';
-            document.getElementById('volta_passengers').value = '';
+            $('#editModal, #voltaModal').css('display', 'none');
+            $('#editModelo').val('');
+            $('#editDescricao').val('');
+            $('#editCapacidade').val('');
+            $('#editBondeId').val('');
+            $('#volta_passengers').val('');
         }
 
+        $('#layoutPhoto').on('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#previewPhoto').attr('src', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         function registerVolta() {
-            const tripId = document.getElementById('voltaModal').dataset.tripId;
-            const volta = document.getElementById('volta_passengers').value;
+            const tripId = $('#voltaModal').data('tripId');
+            const volta = $('#volta_passengers').val();
             if (volta && volta >= 0) {
                 $.post('process_volta.php', { trip_id: tripId, volta: volta }, function(response) {
                     if (response.success) {
@@ -464,11 +453,12 @@ include 'header.php';
                 const tbody = $('#tripsTable tbody');
                 tbody.empty();
                 data.forEach(trip => {
+                    const bonde_id = 'B' + trip.bonde_id;
                     const volta = trip.passageiros_volta !== null ? trip.passageiros_volta : 'N/A';
                     const status = trip.passageiros_volta !== null ? 'Concluída' : 'Pendente';
-                    tbody.append(`<tr onclick='showModal("${trip.id}")'>
+                    tbody.append(`<tr onclick="showModal('${trip.id}')">
                         <td>${trip.id}</td>
-                        <td>${trip.bonde_id} - ${trip.modelo}</td>
+                        <td>${bonde_id} - ${trip.modelo}</td>
                         <td>${trip.origem}</td>
                         <td>${trip.destino}</td>
                         <td>${trip.passageiros_ida}</td>
@@ -479,10 +469,48 @@ include 'header.php';
             }, 'json');
         }
 
+        function showModal(tripId) {
+            $('#voltaModal').data('tripId', tripId).css('display', 'flex');
+        }
+
+        function gerarRelatorio() {
+            const tipo = $('#tipo_relatorio').val();
+            const resultadoDiv = $('#relatorio-resultado');
+            if (tipo === 'passageiros') {
+                resultadoDiv.html('<h3>Relatório de Passageiros</h3><p>Total de passageiros (ida): 55<br>Total de passageiros (volta): 48<br>Data: 13/06/2025 18:22</p>');
+            } else {
+                resultadoDiv.html('<h3>Relatório de Manutenção</h3><p>Manutenções realizadas: 3<br>Última manutenção: 10/06/2025<br>Data: 13/06/2025 18:22</p>');
+            }
+        }
+
+        function validateIdaForm(event) {
+            event.preventDefault();
+            const bonde = $('#bonde_id_pass').val();
+            const origin = $('#origin').val();
+            const destination = $('#destination').val();
+            const motorman = $('#motorman').val().trim();
+            const auxiliary = $('#auxiliary').val().trim();
+            const validator = $('#validator').val().trim();
+            const ida = $('#passageiros_ida').val();
+
+            if (!bonde || !origin || !destination || !motorman || !auxiliary || !validator || !ida) {
+                alert('Todos os campos são obrigatórios.');
+                return false;
+            }
+            if (ida < 0) {
+                alert('O número de passageiros não pode ser negativo.');
+                return false;
+            }
+            $(event.target).submit();
+            return true;
+        }
+
         $(document).ready(function() {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('tab')) {
                 showTab(urlParams.get('tab'));
+            } else {
+                showTab('layout');
             }
             if ($('#controle').hasClass('active')) {
                 loadTrips();

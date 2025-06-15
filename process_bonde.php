@@ -1,16 +1,13 @@
 <?php
-    // Conexão com o banco de dados
-    $host = 'localhost';
-    $user = 'root';
-    $password = '';
-    $dbname = 'gm_sicbd';
-
-    $conn = new mysqli($host, $user, $password, $dbname);
-
-    // Verificar conexão
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+// Include database configuration with error handling
+try {
+    include 'bancoo.php';
+    if (!isset($pdo) || !$pdo) {
+        throw new Exception("Falha na conexão com o banco de dados.");
     }
+} catch (Exception $e) {
+    die("Erro: " . $e->getMessage());
+}
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

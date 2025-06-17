@@ -56,6 +56,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_trips') {
     echo json_encode($existing_trips);
     exit();
 }
+include 'header.php';
 ?>
 
 <!DOCTYPE html>

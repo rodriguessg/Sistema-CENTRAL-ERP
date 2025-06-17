@@ -83,7 +83,7 @@ function getRedirectionPage($setor) {
             return "RH.php";
         case 'contratos':
             return "painelcontratos.php";
-        case 'ccoOperacao':
+        case 'ccooperacao':
             return 'homebonde.php';
         case 'helpdesk':
             return "hometech.php";

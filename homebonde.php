@@ -110,9 +110,7 @@ include 'header.php';
             <div class="tab" data-tab="manutencao" onclick="showTab('manutencao')">
                 <i class="fas fa-tools"></i> Manutenção
             </div>
-            <div class="tab active" data-tab="layout" onclick="showTab('layout')">
-                <i class="fas fa-th"></i> Layout do Bonde
-            </div>
+        
             <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
                 <i class="fas fa-file-alt"></i> Relatórios
             </div>
@@ -264,68 +262,7 @@ include 'header.php';
         </div>
 
         <!-- Layout do Bonde -->
-        <div class="form-container active" id="layout">
-            <h2>Layout do Bonde</h2>
-            <div class="form-group">
-                <input type="text" id="searchBonde" placeholder="Pesquisar por modelo..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" onkeyup="searchBondes()">
-            </div>
-            <table id="bondesTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Modelo</th>
-                        <th>Descrição</th>
-                        <th>Capacidade</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($filtered_bondes as $bonde): ?>
-                        <tr onclick="editBonde(<?php echo $bonde['id']; ?>, '<?php echo addslashes($bonde['modelo']); ?>', '<?php echo addslashes($bonde['descricao'] ?? ''); ?>', <?php echo $bonde['capacidade']; ?>)">
-                            <td>B<?php echo $bonde['id']; ?></td>
-                            <td><?php echo htmlspecialchars($bonde['modelo']); ?></td>
-                            <td><?php echo htmlspecialchars($bonde['descricao'] ?? 'Sem descrição'); ?></td>
-                            <td><?php echo $bonde['capacidade']; ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            <p>Total de registros encontrados: <?php echo count($filtered_bondes); ?></p>
-
-            <!-- Modal for Editing Bonde -->
-            <div id="editModal" class="modal">
-                <div class="modal-content">
-                    <h3>Editar Bonde</h3>
-                    <input type="hidden" id="editBondeId">
-                    <div class="form-group">
-                        <label for="editModelo">Modelo</label>
-                        <input type="text" id="editModelo" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editDescricao">Descrição</label>
-                        <textarea id="editDescricao" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="editCapacidade">Capacidade</label>
-                        <select id="editCapacidade" required>
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="32">32</option>
-                            <option value="36">36</option>
-                        </select>
-                    </div>
-                    <button onclick="saveBonde()">Salvar</button>
-                    <button onclick="closeModal()">Cancelar</button>
-                </div>
-            </div>
-
-            <!-- Photo Upload Section -->
-            <div class="photo-upload">
-                <h3>Foto do Layout</h3>
-                <input type="file" id="layoutPhoto" accept="image/*">
-                <img id="previewPhoto" src="" alt="Pré-visualização da foto">
-            </div>
-        </div>
+      
 
         <!-- Relatórios -->
         <div class="form-container" id="relatorio">

@@ -1101,7 +1101,7 @@
     const nomeMaterialId = this.value; // Obtém o ID do material selecionado
 
     // Verifica se os elementos existem antes de tentar acessá-los
-    const descricaoInput = document.getElementById('material-codigo');
+    const descricaoInput = document.getElementById('material-descricao');
     const classificacaoInput = document.getElementById('material-classificacao');
     const naturezaInput = document.getElementById('material-natureza');
     const localizacaoInput = document.getElementById('material-localizacao');
@@ -1122,7 +1122,7 @@
     mensagemDiv.innerText = '';
 
     if (nomeMaterialId) {
-        fetch('./buscar_dados_produto.php?id=' + nomeMaterialId)
+        fetch('./buscar_produtos.php?id=' + nomeMaterialId)
             .then(response => response.json())
             .then(data => {
                 console.log("Resposta da API:", data); // Depuração

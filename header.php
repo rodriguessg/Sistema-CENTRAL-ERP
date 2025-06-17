@@ -102,8 +102,8 @@ try {
              case 'cco':
             $menuItens = [
                 ['link' => 'paineloperacaobonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
-                ['link' => 'homebonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],               
-                ['link' => 'operacao.php', 'nome' => 'Home', 'icon' => 'home'],
+                ['link' => 'homebonde.php', 'nome' => 'Home', 'icon' => 'cogs'],               
+                ['link' => 'operacao.php', 'nome' => 'Operacao', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
   
             ];

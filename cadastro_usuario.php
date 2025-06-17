@@ -217,12 +217,16 @@ include 'header.php';
                     <select name="setor" id="setor">
                         <option value="">Selecione o setor</option>
                         <option value="administrativo">Administrador</option>
-                        <option value="Estoque">Estoque</option>
+                        <option value="Estoque">Almoxarifado</option>
                         <option value="Patrimonio">Patrimonio</option>
                         <option value="Financeiro">Financeiro</option>
-                       <option value="recursos_humanos">Recursos Humanos</option>
+                       <!-- <option value="recursos_humanos">Recursos Humanos</option> -->
+                        <option value="compras"></option>
+                        <option value="planejamento"></option>
+                        <option value="sismed"> Sismed</option>
                        <option value="contratos">Contratos</option>
-                       <option value="ccoOperacao">bonde</option>
+                       <option value="ccooperacao">Bonde Bilheteria</option>
+                       <option value="cco">Sisbonde</option>
                     </select>
                 </div>
                 <button type="submit" name="cadastrar">Cadastrar</button>

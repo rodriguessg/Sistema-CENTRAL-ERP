@@ -47,11 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Garantir que o valor seja numérico (tipo float)
     $custo = (float) $custo; 
     $preco_medio = (float) $preco_medio;
-
-    // Garantir que quantidade seja numérica válida
     $quantidade = (float) $quantidade; 
 
-    // Verifique se o valor de custo e preco_medio são numéricos válidos
+    // Verifique se o valor de custo, preco_medio e quantidade são numéricos válidos
     if (!is_numeric($custo) || !is_numeric($preco_medio) || !is_numeric($quantidade)) {
         echo "Erro: O valor de custo, preço médio ou quantidade não é válido!";
         exit;
@@ -61,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $novo_total_entrada = $quantidade * $preco_medio;
 
     // Consulta para verificar se o produto já existe
-    $sql_verifica = "SELECT id, quantidade FROM produtos WHERE produto = ?";
+    $sql_verifica = "SELECT id, quantidade, custo, preco_medio FROM produtos WHERE produto = ?";
     $stmt_verifica = $conn->prepare($sql_verifica);
     if (!$stmt_verifica) {
         echo "Erro na preparação da consulta: " . $conn->error;
@@ -73,24 +71,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt_verifica->store_result();
 
     if ($stmt_verifica->num_rows > 0) {
-        // Produto já existe, atualiza a quantidade
-        $stmt_verifica->bind_result($id_existente, $quantidade_existente);
+        // Produto já existe, atualiza a quantidade, custo e preço médio
+        $stmt_verifica->bind_result($id_existente, $quantidade_existente, $custo_existente, $preco_medio_existente);
         $stmt_verifica->fetch();
 
+        // Calcula o novo preço médio ponderado
+        $total_valor_existente = $quantidade_existente * $preco_medio_existente;
+        $total_valor_novo = $quantidade * $preco_medio;
         $nova_quantidade = $quantidade_existente + $quantidade;
-        $sql_atualiza = "UPDATE produtos SET quantidade = ?, descricao = ? WHERE id = ?";
+        $novo_preco_medio = ($total_valor_existente + $total_valor_novo) / $nova_quantidade;
+
+        // Atualiza a tabela produtos
+        $sql_atualiza = "UPDATE produtos SET quantidade = ?, custo = ?, preco_medio = ?, descricao = ? WHERE id = ?";
         $stmt_atualiza = $conn->prepare($sql_atualiza);
 
         if ($stmt_atualiza) {
-            $stmt_atualiza->bind_param("dsi", $nova_quantidade, $descricao, $id_existente);
+           $stmt_atualiza->bind_param("dddsi", $nova_quantidade, $custo, $novo_preco_medio, $descricao, $id_existente);
+
 
             if ($stmt_atualiza->execute()) {
-                echo "Produto já existe. Quantidade e descrição atualizadas.";
+                echo "Produto já existe. Quantidade, custo, preço médio e descrição atualizados.";
 
                 // Registrar transação de entrada
                 $query_transacao = "INSERT INTO transicao (material_id, quantidade, data, tipo) VALUES (?, ?, ?, 'entrada')";
                 $transacaoStmt = $conn->prepare($query_transacao);
-                $transacaoStmt->bind_param('iis', $id_existente, $quantidade, date('Y-m-d H:i:s')); // Usando o ID do produto e a quantidade
+                $transacaoStmt->bind_param('iis', $id_existente, $quantidade, date('Y-m-d H:i:s'));
                 if (!$transacaoStmt->execute()) {
                     echo "Erro ao registrar a transação: " . $transacaoStmt->error;
                     exit;
@@ -199,11 +204,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt_log->bind_param("ss", $username, $tipo_operacao);
 
         if ($stmt_log->execute()) {
-            // Redireciona para a página de sucesso
-           // Redirecionamento para a página 'mensagem.php' em views, com os parâmetros necessários
-          header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=sucesso2&pagina=/Sistema-CENTRAL-ERP/homeestoque.php');
-          exit();
-
+            // Redireciona para a página 'mensagem.php' em views, com os parâmetros necessários
+            header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=sucesso2&pagina=/Sistema-CENTRAL-ERP/homeestoque.php');
+            exit();
         } else {
             echo "Erro ao registrar ação no log: " . $stmt_log->error;
         }

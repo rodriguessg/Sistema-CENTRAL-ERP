@@ -222,6 +222,7 @@ include 'header.php';
                         <option value="Financeiro">Financeiro</option>
                        <option value="recursos_humanos">Recursos Humanos</option>
                        <option value="contratos">Contratos</option>
+                       <option value="ccoOperacao">OPERACAO BONDE</option>
                     </select>
                 </div>
                 <button type="submit" name="cadastrar">Cadastrar</button>

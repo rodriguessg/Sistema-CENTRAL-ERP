@@ -73,7 +73,7 @@ include 'header.php';
         .caderno { max-width: 1200px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
         .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 20px; }
         .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; background: #e0e0e0; transition: background 0.3s; }
-       
+        .tab:hover, .tab.active { background: #007bff; color: #fff; }
         .form-container { display: none; padding: 20px; }
         .form-container.active { display: block; }
         .form-container h2 { margin-top: 0; }
@@ -81,8 +81,8 @@ include 'header.php';
         .form-group label { display: block; margin-bottom: 5px; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
         .form-group input[readonly] { background: #e9ecef; }
-       
-       
+        .form-group button { padding: 10px 20px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        .form-group button:hover { background: #0056b3; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         table, th, td { border: 1px solid #ccc; }
         th, td { padding: 10px; text-align: left; }
@@ -98,20 +98,51 @@ include 'header.php';
 <body>
     <div class="caderno">
         <div class="tabs">
-            
+            <div class="tab" data-tab="cadastrar" onclick="showTab('cadastrar')">
+                <i class="fas fa-plus-circle"></i> Cadastrar Bonde
+            </div>
             <div class="tab" data-tab="passageiros" onclick="showTab('passageiros')">
                 <i class="fas fa-users"></i> Gerenciar Passageiros (Ida)
             </div>
             <div class="tab" data-tab="controle" onclick="showTab('controle')">
                 <i class="fas fa-route"></i> Controle de Viagens
             </div>
-    
+            <div class="tab" data-tab="manutencao" onclick="showTab('manutencao')">
+                <i class="fas fa-tools"></i> Manutenção
+            </div>
+            <div class="tab active" data-tab="layout" onclick="showTab('layout')">
+                <i class="fas fa-th"></i> Layout do Bonde
+            </div>
             <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
                 <i class="fas fa-file-alt"></i> Relatórios
             </div>
         </div>
 
-      
+        <!-- Cadastrar Bonde -->
+        <div class="form-container" id="cadastrar">
+            <h2>Cadastrar Bonde</h2>
+            <form action="process_bonde.php" method="POST">
+                <div class="form-group">
+                    <label for="modelo">Modelo</label>
+                    <input type="text" id="modelo" name="modelo" required>
+                </div>
+                <div class="form-group">
+                    <label for="capacidade">Capacidade (passageiros)</label>
+                    <input type="number" id="capacidade" name="capacidade" required>
+                </div>
+                <div class="form-group">
+                    <label for="ano_fabricacao">Ano de Fabricação</label>
+                    <input type="number" id="ano_fabricacao" name="ano_fabricacao" required>
+                </div>
+                <div class="form-group">
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" required></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Cadastrar</button>
+                </div>
+            </form>
+        </div>
 
         <!-- Gerenciar Passageiros (Ida) -->
         <div class="form-container" id="passageiros">
@@ -205,7 +236,96 @@ include 'header.php';
             </table>
         </div>
 
-     
+        <!-- Manutenção -->
+        <div class="form-container" id="manutencao">
+            <h2>Gerenciar Manutenção</h2>
+            <form action="process_manutencao.php" method="POST">
+                <div class="form-group">
+                    <label for="bonde_id_manut">Selecione o Bonde</label>
+                    <select id="bonde_id_manut" name="bonde_id_manut" required>
+                        <option value="">Selecione</option>
+                        <?php foreach ($bondes as $bonde): ?>
+                            <option value="<?php echo $bonde['id']; ?>">B<?php echo $bonde['id']; ?> - <?php echo htmlspecialchars($bonde['modelo']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="data_manutencao">Data da Manutenção</label>
+                    <input type="date" id="data_manutencao" name="data_manutencao" required>
+                </div>
+                <div class="form-group">
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" required></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Registrar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Layout do Bonde -->
+        <div class="form-container active" id="layout">
+            <h2>Layout do Bonde</h2>
+            <div class="form-group">
+                <input type="text" id="searchBonde" placeholder="Pesquisar por modelo..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" onkeyup="searchBondes()">
+            </div>
+            <table id="bondesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Modelo</th>
+                        <th>Descrição</th>
+                        <th>Capacidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($filtered_bondes as $bonde): ?>
+                        <tr onclick="editBonde(<?php echo $bonde['id']; ?>, '<?php echo addslashes($bonde['modelo']); ?>', '<?php echo addslashes($bonde['descricao'] ?? ''); ?>', <?php echo $bonde['capacidade']; ?>)">
+                            <td>B<?php echo $bonde['id']; ?></td>
+                            <td><?php echo htmlspecialchars($bonde['modelo']); ?></td>
+                            <td><?php echo htmlspecialchars($bonde['descricao'] ?? 'Sem descrição'); ?></td>
+                            <td><?php echo $bonde['capacidade']; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <p>Total de registros encontrados: <?php echo count($filtered_bondes); ?></p>
+
+            <!-- Modal for Editing Bonde -->
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <h3>Editar Bonde</h3>
+                    <input type="hidden" id="editBondeId">
+                    <div class="form-group">
+                        <label for="editModelo">Modelo</label>
+                        <input type="text" id="editModelo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescricao">Descrição</label>
+                        <textarea id="editDescricao" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCapacidade">Capacidade</label>
+                        <select id="editCapacidade" required>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="32">32</option>
+                            <option value="36">36</option>
+                        </select>
+                    </div>
+                    <button onclick="saveBonde()">Salvar</button>
+                    <button onclick="closeModal()">Cancelar</button>
+                </div>
+            </div>
+
+            <!-- Photo Upload Section -->
+            <div class="photo-upload">
+                <h3>Foto do Layout</h3>
+                <input type="file" id="layoutPhoto" accept="image/*">
+                <img id="previewPhoto" src="" alt="Pré-visualização da foto">
+            </div>
+        </div>
 
         <!-- Relatórios -->
         <div class="form-container" id="relatorio">
@@ -214,7 +334,7 @@ include 'header.php';
                 <label for="tipo_relatorio">Tipo de Relatório</label>
                 <select id="tipo_relatorio" name="tipo_relatorio">
                     <option value="passageiros">Passageiros por Viagem</option>
-
+                    <option value="manutencao">Histórico de Manutenção</option>
                 </select>
             </div>
             <div class="form-group">

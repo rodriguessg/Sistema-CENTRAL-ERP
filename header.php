@@ -59,15 +59,8 @@ try {
                 ['link' => 'configuracao.php', 'nome' => 'Configurações', 'icon' => 'cogs'],
             ];
             break;
-
-        case 'ccoOperacao':
-            $menuItens = [
-                ['link' => 'paineloperacaobonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
-                ['link' => 'homebonde.php', 'nome' => 'Home', 'icon' => 'home'],
-                ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
-  
-            ];
-            break;
+            
+            
 
 
         case 'contratos':
@@ -104,6 +97,24 @@ try {
                 ['link' => 'homeRh.php', 'nome' => 'Home', 'icon' => 'home'],
                 ['link' => 'cracha.php', 'nome' => 'Gerador Cracha', 'icon' => 'id-card'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
+            ];
+            break;
+             case 'cco':
+            $menuItens = [
+                ['link' => 'paineloperacaobonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
+                ['link' => 'homebonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],               
+                ['link' => 'operacao.php', 'nome' => 'Home', 'icon' => 'home'],
+                ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
+  
+            ];
+            break;
+
+        case 'ccooperacao':
+            $menuItens = [
+                ['link' => 'paineloperacaobonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
+                ['link' => 'operacao.php', 'nome' => 'Home', 'icon' => 'home'],
+                ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
+  
             ];
             break;
 

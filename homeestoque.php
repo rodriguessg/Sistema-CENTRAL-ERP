@@ -401,7 +401,7 @@
     </form>
 </div>
 
-<!-- Seção: Consulta de Produtos -->
+<<!-- Seção: Consulta de Produtos -->
 <div class="form-container" id="consulta">
     <div class="section-header">
         <div class="header-icon">
@@ -437,7 +437,7 @@
         </div>
     </div>
 
-    <div class="table-section">
+    <div class="table-section" data-total-registros="<?php echo $result->num_rows; ?>">
         <div class="table-header">
             <h3>
                 <i class="fas fa-table"></i>
@@ -446,7 +446,7 @@
             <div class="table-info">
                 <span class="record-count">
                     <i class="fas fa-info-circle"></i>
-                    Total de registros encontrados
+                    <span id="totalRegistros"><?php echo $result->num_rows; ?> registros encontrados</span>
                 </span>
             </div>
         </div>
@@ -469,6 +469,14 @@
                 </thead>
                 <tbody id="tabelaProdutos">
                 <?php
+                    // Função para determinar a classe do badge de quantidade
+                    function getStockClass($quantidade) {
+                        $qtd = (int)$quantidade;
+                        if ($qtd > 50) return 'good-stock';
+                        if ($qtd > 10) return 'medium-stock';
+                        return 'low-stock';
+                    }
+
                     // Conexão com o banco de dados
                     $conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
 
@@ -483,14 +491,15 @@
 
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
+                            $quantidadeClass = getStockClass($row['quantidade']);
                             echo "<tr>
                                     <td><span class='id-badge'>{$row['id']}</span></td>
-                                    <td><code>{$row['produto']}</code></td>
-                                    <td><span class='tag'>{$row['classificacao']}</span></td>
-                                    <td>{$row['descricao']}</td>
-                                    <td><span class='nature-badge'>{$row['natureza']}</span></td>
-                                    <td><span class='quantity'>{$row['quantidade']}</span></td>
-                                    <td><span class='location-badge'>{$row['localizacao']}</span></td>
+                                    <td><code>" . htmlspecialchars($row['produto']) . "</code></td>
+                                    <td><span class='tag'>" . htmlspecialchars($row['classificacao']) . "</span></td>
+                                    <td>" . ($row['descricao'] ? htmlspecialchars($row['descricao']) : 'Descrição não encontrada') . "</td>
+                                    <td><span class='nature-badge'>" . htmlspecialchars($row['natureza']) . "</span></td>
+                                    <td><span class='quantity-badge $quantidadeClass'>{$row['quantidade']}</span></td>
+                                    <td><span class='location-badge'>" . htmlspecialchars($row['localizacao']) . "</span></td>
                                     <td><span class='currency'>R$ {$row['custo']}</span></td>
                                     <td><span class='currency'>R$ {$row['preco_medio']}</span></td>
                                     <td>
@@ -506,10 +515,12 @@
                                   </tr>";
                         }
                     } else {
-                        echo "<tr><td colspan='10' class='no-data'>
-                                <i class='fas fa-inbox'></i>
-                                <span>Nenhum produto cadastrado</span>
-                              </td></tr>";
+                        echo "<tr class='no-data'>
+                                <td colspan='10' class='text-center'>
+                                    <i class='fas fa-inbox'></i>
+                                    <span>Nenhum produto cadastrado</span>
+                                </td>
+                              </tr>";
                     }
 
                     $conn->close();

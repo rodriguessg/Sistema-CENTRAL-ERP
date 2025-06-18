@@ -401,7 +401,7 @@
     </form>
 </div>
 
-<<!-- Seção: Consulta de Produtos -->
+<!-- Seção: Consulta de Produtos -->
 <div class="form-container" id="consulta">
     <div class="section-header">
         <div class="header-icon">
@@ -667,104 +667,106 @@
         </div>
     </form>
 
-    <!-- Histórico de Transações -->
-    <div class="transaction-history">
-        <div class="section-header">
-            <div class="header-icon">
-                <i class="fas fa-history"></i>
-            </div>
-            <div class="header-content">
-                <h3>Histórico de Movimentações</h3>
-                <p>Últimas transações de entrada e saída</p>
-            </div>
+   <!-- Histórico de Transações -->
+<div class="transaction-history">
+    <div class="section-header">
+        <div class="header-icon">
+            <i class="fas fa-history"></i>
         </div>
-
-        <?php
-            // Conectar ao banco de dados
-            $conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
-
-            // Verifique a conexão
-            if ($conn->connect_error) {
-                die("Falha na conexão: " . $conn->connect_error);
-            }
-
-            // Defina o número de itens por página
-            $itens_por_pagina = 25;
-
-            // Obtenha a página atual, caso contrário defina como 1
-            $pagina_atual = isset($_GET['pagina']) ? $_GET['pagina'] : 1;
-
-            // Calcule o índice inicial para a consulta
-            $inicio = ($pagina_atual - 1) * $itens_por_pagina;
-
-            // Consulta para obter os dados de transição com informações do produto (usando JOIN)
-            $query = "
-                SELECT t.id, t.material_id, t.quantidade, t.data, t.tipo, 
-                    p.produto, p.classificacao, p.natureza, p.contabil, p.descricao, p.unidade, 
-                    p.localizacao, p.custo, p.quantidade AS produto_quantidade, p.nf, p.preco_medio, p.tipo_operacao
-                FROM transicao t
-                LEFT JOIN produtos p ON t.material_id = p.id
-                ORDER BY t.data DESC
-                LIMIT $inicio, $itens_por_pagina
-            ";
-            $resultado_transicao = $conn->query($query);
-
-            // Obtenha o total de registros para calcular o número de páginas
-            $total_registros = $conn->query("SELECT COUNT(*) FROM transicao")->fetch_row()[0];
-            $total_paginas = ceil($total_registros / $itens_por_pagina);
-        ?>
-
-        <div class="table-container" style="max-height: 500px; overflow-y: auto;">
-            <table class="data-table transaction-table">
-                <thead>
-                    <tr>
-                        <th><i class="fas fa-hashtag"></i> ID</th>
-                        <th><i class="fas fa-cube"></i> Material</th>
-                        <th><i class="fas fa-tags"></i> Classificação</th>
-                        <th><i class="fas fa-map-marker-alt"></i> Local</th>
-                        <th><i class="fas fa-align-left"></i> Descrição</th>
-                        <th><i class="fas fa-leaf"></i> Natureza</th>
-                        <th><i class="fas fa-sort-numeric-up"></i> Quantidade</th>
-                        <th><i class="fas fa-dollar-sign"></i> Custo</th>
-                        <th><i class="fas fa-calendar"></i> Data</th>
-                        <th><i class="fas fa-exchange-alt"></i> Tipo</th>
-                        <th><i class="fas fa-cogs"></i> Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = $resultado_transicao->fetch_assoc()) { ?>
-                        <tr id="row_<?= $row['id'] ?>">
-                            <td><span class="id-badge"><?= $row['id'] ?></span></td>
-                            <td><code><?= $row['produto'] ?></code></td>
-                            <td><span class="tag"><?= $row['classificacao'] ?></span></td>
-                            <td><span class="location-badge"><?= $row['localizacao'] ?></span></td>
-                            <td><?= $row['descricao'] ?></td>
-                            <td><span class="nature-badge"><?= $row['natureza'] ?></span></td>
-                            <td><span class="quantity"><?= $row['quantidade'] ?></span></td>
-                            <td><span class="currency">R$ <?= number_format($row['preco_medio'], 2, ',', '.') ?></span></td>
-                            <td><span class="date"><?= date('d/m/Y', strtotime($row['data'])) ?></span></td>
-                            <td>
-                                <span class="transaction-type <?= strtolower($row['tipo']) ?>">
-                                    <i class="fas fa-<?= $row['tipo'] == 'Entrada' ? 'arrow-up' : 'arrow-down' ?>"></i>
-                                    <?= $row['tipo'] ?>
-                                </span>
-                            </td>
-                            <td>
-                                <button class="btn-action btn-delete" data-id="<?= $row['id'] ?>" title="Excluir transação">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
+        <div class="header-content">
+            <h3>Histórico de Movimentações</h3>
+            <p>Últimas transações de entrada e saída</p>
         </div>
-
-        <?php
-        // Fechar a conexão com o banco de dados
-        $conn->close();
-        ?>
     </div>
+
+    <?php
+        // Conectar ao banco de dados
+        $conn = new mysqli('localhost', 'root', '', 'gm_sicbd');
+
+        if ($conn->connect_error) {
+            die("Falha na conexão: " . $conn->connect_error);
+        }
+
+        $itens_por_pagina = 25;
+        $pagina_atual = isset($_GET['pagina']) ? (int) $_GET['pagina'] : 1;
+        if ($pagina_atual < 1) $pagina_atual = 1;
+
+        $inicio = ($pagina_atual - 1) * $itens_por_pagina;
+
+        // ⚠ Consulta com valores diretamente no SQL (sem prepared statement)
+        $query = "
+            SELECT t.id, t.material_id, t.quantidade, t.data, t.tipo, t.valor_custo_total,
+                   p.produto, p.classificacao, p.natureza, p.contabil, p.descricao, p.unidade,
+                   p.localizacao, p.quantidade AS produto_quantidade, p.nf, p.preco_medio, p.tipo_operacao
+            FROM transicao t
+            LEFT JOIN produtos p ON t.material_id = p.id
+            ORDER BY t.data DESC
+            LIMIT $inicio, $itens_por_pagina
+        ";
+
+        $resultado_transicao = $conn->query($query);
+
+        if (!$resultado_transicao) {
+            die("Erro na consulta SQL: " . $conn->error);
+        }
+
+        // Total de páginas
+        $total_result = $conn->query("SELECT COUNT(*) as total FROM transicao");
+        $total_registros = $total_result->fetch_assoc()['total'];
+        $total_paginas = ceil($total_registros / $itens_por_pagina);
+    ?>
+
+    <div class="table-container" style="max-height: 500px; overflow-y: auto;">
+        <table class="data-table transaction-table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-hashtag"></i> ID</th>
+                    <th><i class="fas fa-cube"></i> Material</th>
+                    <th><i class="fas fa-tags"></i> Classificação</th>
+                    <th><i class="fas fa-map-marker-alt"></i> Local</th>
+                    <th><i class="fas fa-align-left"></i> Descrição</th>
+                    <th><i class="fas fa-leaf"></i> Natureza</th>
+                    <th><i class="fas fa-sort-numeric-up"></i> Quantidade</th>
+                    <th><i class="fas fa-dollar-sign"></i> Custo Total</th>
+                    <th><i class="fas fa-calendar"></i> Data</th>
+                    <th><i class="fas fa-exchange-alt"></i> Tipo</th>
+                    <th><i class="fas fa-cogs"></i> Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($row = $resultado_transicao->fetch_assoc()) { ?>
+                    <tr id="row_<?= $row['id'] ?>">
+                        <td><span class="id-badge"><?= $row['id'] ?></span></td>
+                        <td><code><?= $row['produto'] ?></code></td>
+                        <td><span class="tag"><?= $row['classificacao'] ?></span></td>
+                        <td><span class="location-badge"><?= $row['localizacao'] ?></span></td>
+                        <td><?= $row['descricao'] ?></td>
+                        <td><span class="nature-badge"><?= $row['natureza'] ?></span></td>
+                        <td><span class="quantity"><?= $row['quantidade'] ?></span></td>
+                        <td><span class="currency">R$ <?= number_format($row['valor_custo_total'], 2, ',', '.') ?></span></td>
+                        <td><span class="date"><?= date('d/m/Y', strtotime($row['data'])) ?></span></td>
+                        <td>
+                            <span class="transaction-type <?= strtolower($row['tipo']) ?>">
+                                <i class="fas fa-<?= $row['tipo'] == 'Entrada' ? 'arrow-up' : 'arrow-down' ?>"></i>
+                                <?= $row['tipo'] ?>
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-action btn-delete" data-id="<?= $row['id'] ?>" title="Excluir transação">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
+
+    <?php
+    $conn->close();
+    ?>
+</div>
+
 
     <div id="mensagem" class="message-container"></div>
 </div>
@@ -1101,7 +1103,7 @@
     const nomeMaterialId = this.value; // Obtém o ID do material selecionado
 
     // Verifica se os elementos existem antes de tentar acessá-los
-    const descricaoInput = document.getElementById('material-descricao');
+    const descricaoInput = document.getElementById('material-codigo');
     const classificacaoInput = document.getElementById('material-classificacao');
     const naturezaInput = document.getElementById('material-natureza');
     const localizacaoInput = document.getElementById('material-localizacao');
@@ -1122,7 +1124,7 @@
     mensagemDiv.innerText = '';
 
     if (nomeMaterialId) {
-        fetch('./buscar_produtos.php?id=' + nomeMaterialId)
+        fetch('./buscar_dados_produto.php?id=' + nomeMaterialId)
             .then(response => response.json())
             .then(data => {
                 console.log("Resposta da API:", data); // Depuração

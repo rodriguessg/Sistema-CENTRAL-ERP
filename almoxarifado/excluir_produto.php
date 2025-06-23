@@ -47,7 +47,7 @@ if (isset($_POST['id'])) {
             // 3. Calcular valor total = quantidade * preco_medio
             $valor_total = $quantidade_transacao * $preco_medio;
 
-            // 4. Atualizar fechamento com base no tipo
+            // 4. Atualizar fechamento e produto com base no tipo
             if ($tipo == 'Saida') {
                 $updateFechamento = "UPDATE fechamento SET total_saida = total_saida - ?, saldo_atual = saldo_atual + ? WHERE natureza = ?";
                 $updateProduto = "UPDATE produtos SET quantidade = quantidade + ? WHERE id = ?";
@@ -71,6 +71,7 @@ if (isset($_POST['id'])) {
                 echo json_encode(['success' => false, 'message' => 'Erro ao atualizar quantidade do produto']);
                 exit;
             }
+            $stmtUpdateProduto->close();
 
             // Atualiza o fechamento
             $stmtUpdate = $conn->prepare($updateFechamento);
@@ -83,6 +84,27 @@ if (isset($_POST['id'])) {
             if (!$stmtUpdate->execute()) {
                 echo json_encode(['success' => false, 'message' => 'Erro ao atualizar fechamento']);
                 exit;
+            }
+            $stmtUpdate->close();
+
+            // Se for 'Saida', atualizar custo e valor_custo_total
+            if ($tipo == 'Saida') {
+                $updateCusto = "UPDATE produtos SET 
+                    custo = custo + ?, 
+                    valor_custo_total = valor_custo_total - ? 
+                    WHERE id = ?";
+                $stmtCusto = $conn->prepare($updateCusto);
+                if (!$stmtCusto) {
+                    echo json_encode(['success' => false, 'message' => 'Erro ao preparar update do custo']);
+                    exit;
+                }
+
+                $stmtCusto->bind_param("ddi", $valor_total, $valor_total, $material_id);
+                if (!$stmtCusto->execute()) {
+                    echo json_encode(['success' => false, 'message' => 'Erro ao atualizar custo/valor_custo_total']);
+                    exit;
+                }
+                $stmtCusto->close();
             }
 
             // 5. Excluir transição
@@ -100,10 +122,7 @@ if (isset($_POST['id'])) {
                 echo json_encode(['success' => false, 'message' => 'Erro ao excluir transição']);
             }
 
-            // Fechando as declarações
             $stmtDelete->close();
-            $stmtUpdate->close();
-            $stmtUpdateProduto->close();
         } else {
             echo json_encode(['success' => false, 'message' => 'Produto não encontrado']);
         }

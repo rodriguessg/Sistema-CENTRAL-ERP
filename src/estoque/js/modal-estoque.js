@@ -1,3 +1,6 @@
+
+
+
 // Função para abrir o modal e carregar os detalhes
 function abrirModalDetalhes(id) {
   const linha = [...document.querySelectorAll("#tabelaProdutos tr")].find(
@@ -19,12 +22,12 @@ function abrirModalDetalhes(id) {
   modalConteudo.innerHTML = `
   <h2><i class="fas fa-box-open"></i> Detalhes do Produto</h2>
   <p><strong><i class="fas fa-hashtag"></i> ID:</strong> ${dados.id}</p>
-  <p><strong><i class="fas fa-tag"></i> Produto:</strong> ${dados.produto}</p>
+  <p><strong><i class="fas fa-barcode"></i> Código:</strong> ${dados.produto}</p>
   <p><strong><i class="fas fa-layer-group"></i> Classificação:</strong> ${dados.classificacao}</p>
-  <p><strong><i class="fas fa-map-marker-alt"></i> Localização:</strong> ${dados.localizacao}</p>
-  <p><strong><i class="fas fa-barcode"></i> Código:</strong> ${dados.codigo}</p>
-  <p><strong><i class="fas fa-cube"></i> Natureza:</strong> ${dados.natureza}</p>
-  <p><strong><i class="fas fa-sort-numeric-up"></i> Quantidade:</strong> ${dados.quantidade}</p>
+  <p><strong><i class="fas fa-map-marker-alt"></i> Localização:</strong> ${dados.quantidade}</p>
+ 
+  <p><strong><i class="fas fa-cube"></i> Natureza:</strong> ${dados.codigo}</p>
+  <p><strong><i class="fas fa-sort-numeric-up"></i> Quantidade:</strong> ${dados.natureza}</p>
 `;
 
   document.getElementById("modal-detalhes").style.display = "block";
@@ -53,8 +56,7 @@ function abrirModalAtualizar(id) {
             <form id="formAtualizar">
                 <input type="hidden" name="id" value="${dados.id}">
     
-                <label><i class="fas fa-tag"></i> Produto:</label>
-                <input type="text" name="produto" value="${dados.produto}" readonly>
+
     
                 <label><i class="fas fa-layer-group"></i> Classificação:</label>
                 <input type="text" name="classificacao" value="${dados.classificacao}" readonly>
@@ -63,13 +65,13 @@ function abrirModalAtualizar(id) {
                 <input type="text" name="localizacao" value="${dados.localizacao}" readonly>
     
                 <label><i class="fas fa-barcode"></i> Código:</label>
-                <input type="text" name="codigo" value="${dados.codigo}" readonly>
+                <input type="text" name="codigo" value="${dados.produto}" readonly>
     
                 <label><i class="fas fa-cube"></i> Natureza:</label>
-                <input type="text" name="natureza" value="${dados.natureza}" readonly>
+                <input type="text" name="natureza" value="${dados.codigo}" readonly>
     
                 <label><i class="fas fa-sort-numeric-up"></i> Quantidade:</label>
-                <input type="number" name="quantidade" value="${dados.quantidade}">
+                <input type="number" name="quantidade" value="${dados.natureza}">
     
                 <button type="button" class="btn-salvar" onclick="salvarAlteracoes()">
                     <i class="fas fa-check-circle"></i> Salvar Alterações
@@ -86,7 +88,7 @@ function salvarAlteracoes() {
   const dadosAtualizados = new FormData(form);
 
   // Enviar os dados para o backend via fetch ou outra requisição AJAX
-  fetch("atualizar_produto.php", {
+  fetch("./atualeizar_produto.php", {
     method: "POST",
     body: dadosAtualizados,
   })

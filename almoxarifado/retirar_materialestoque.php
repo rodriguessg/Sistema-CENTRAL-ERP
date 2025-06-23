@@ -21,9 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Verifica se todos os campos obrigatórios estão preenchidos
     if (empty($nome) || empty($codigo) || $quantidade <= 0) {
-        header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Campos obrigatórios não preenchidos&pagina=/Sistema-CENTRAL-ERP/retirar_materialestoque.php");
+        header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Campos obrigatórios não preenchidos&pagina=/Sistema-CENTRAL-ERP/retirar_materialestoque.php");
         exit;
-        
     }
 
     // Consulta para verificar se o produto existe no estoque
@@ -52,24 +51,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mensagem = "O produto '$nome' atingiu o limite mínimo de 5 unidades. Precisa comprar mais.";
 
             // Inserir a notificação no banco de dados
-            $notificacaoQuery = "INSERT INTO notificacoes (username, setor, mensagem, situacao) 
-                                 VALUES (?, ?, ?, 'nao lida')";
-            $notificacaoStmt = $con->prepare($notificacaoQuery);
+            $notificacaoQuery = "INSERT INTO notificacoes (username, setor, mensagem, situacao) VALUES (?, ?, ?, 'nao lida')";
+            $notificacaoStmt = $conn->prepare($notificacaoQuery);
             $notificacaoStmt->bind_param('sss', $username, $setor, $mensagem);
             if ($notificacaoStmt->execute()) {
                 $notificacaoStmt->close();
             } else {
-                echo "Erro ao inserir notificação: " . $con->error;
+                echo "Erro ao inserir notificação: " . $conn->error;
                 exit;
             }
 
             // Mensagem informando que a retirada não pode ser feita, pois atingiu o limite mínimo
-            header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Estoque mínimo atingido (5 unidades). Não é possível retirar&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
+            header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Estoque mínimo atingido (5 unidades). Não é possível retirar&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
             exit;
         }
 
         // Verifica se o estoque é suficiente para a quantidade a ser retirada
         if ($quantidadeAtual >= $quantidade) {
+            // Calcula o valor_custo_total da retirada
+            $valor_custo_total = $quantidade * $preco_medio;
+            $novo_custo = $custo - $valor_custo_total; // Subtrai o valor retirado do custo atual
+
             // Atualiza o estoque ou remove o produto se a quantidade for igual à disponível
             if ($quantidadeAtual === $quantidade) {
                 $deleteQuery = "DELETE FROM produtos WHERE descricao = ?";
@@ -78,19 +80,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $deleteStmt->execute();
                 $deleteStmt->close();
             } else {
-                // Atualiza a quantidade do produto no estoque após a retirada
-                $updateQuery = "UPDATE produtos SET quantidade = quantidade - ?, tipo_operacao = 'retirado' WHERE descricao = ?";
+                // Atualiza a quantidade, custo e valor_custo_total do produto no estoque após a retirada
+                $updateQuery = "UPDATE produtos SET quantidade = quantidade - ?, custo = ?, valor_custo_total = ?, tipo_operacao = 'retirado' WHERE descricao = ?";
                 $updateStmt = $conn->prepare($updateQuery);
-                $updateStmt->bind_param('is', $quantidade, $codigo);
+                $updateStmt->bind_param('idds', $quantidade, $novo_custo, $valor_custo_total, $codigo);
                 $updateStmt->execute();
                 $updateStmt->close();
             }
 
-            // Registrar a transação de retirada na tabela 'transicao'
-            $query_transacao = "INSERT INTO transicao (material_id, quantidade, data, tipo) 
-                                VALUES (?, ?, ?, 'Saida')";
+            // Registrar a transação de retirada na tabela 'transicao' com valor_custo_total
+            $query_transacao = "INSERT INTO transicao (material_id, quantidade, data, tipo, valor_custo_total) VALUES (?, ?, ?, 'Saida', ?)";
             $transacaoStmt = $conn->prepare($query_transacao);
-            $transacaoStmt->bind_param('iis', $material_id, $quantidade, $data);
+            $transacaoStmt->bind_param('iisd', $material_id, $quantidade, $data, $valor_custo_total);
             if ($transacaoStmt->execute()) {
                 $transacaoStmt->close();
             } else {
@@ -99,7 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Verifica e atualiza a tabela de fechamento com o total de saída e saldo atual
-            // Ajuste aqui para usar 'natureza' para identificar o material
             $stmt_fe = $conn->prepare("SELECT saldo_atual, total_saida FROM fechamento WHERE natureza = ?");
             $stmt_fe->bind_param('s', $natureza);
             $stmt_fe->execute();
@@ -111,10 +111,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt_fe->fetch();
 
                 // Calcula o novo total de saída (adiciona a saída do produto)
-                $novo_total_saida = $total_saida_existente + ($quantidade * $preco_medio);
+                $novo_total_saida = $total_saida_existente + $valor_custo_total;
 
                 // Calcula o novo saldo atual (diminui o valor da saída)
-                $novo_saldo_atual = $saldo_atual - ($quantidade * $preco_medio);  // Decrease saldo atual
+                $novo_saldo_atual = $saldo_atual - $valor_custo_total;
 
                 // Atualiza o fechamento
                 $sql_update_fe = "UPDATE fechamento SET total_saida = ?, saldo_atual = ? WHERE natureza = ?";
@@ -128,9 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt_update_fe->close();
             } else {
                 // Não existe um fechamento para essa natureza, insere um novo registro
-                $total_saida = $quantidade * $preco_medio;  // Valor da saída calculado pela quantidade * preco_medio
-                $sql_insert_fe = "INSERT INTO fechamento (natureza, total_saida, saldo_atual, custo, data_fechamento) 
-                                  VALUES (?, ?, ?, ?, NOW())";
+                $total_saida = $valor_custo_total;
+                $sql_insert_fe = "INSERT INTO fechamento (natureza, total_saida, saldo_atual, custo, data_fechamento) VALUES (?, ?, ?, ?, NOW())";
                 $stmt_insert_fe = $conn->prepare($sql_insert_fe);
                 $stmt_insert_fe->bind_param("sdds", $natureza, $total_saida, $total_saida, $preco_medio);
                 if ($stmt_insert_fe->execute()) {
@@ -142,23 +141,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Redireciona com mensagem de sucesso
-            header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=produto_retirado&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
+            header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=produto_retirado&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
             exit;
         } else {
             // Estoque insuficiente
-            header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=estoque_insuficiente&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
+            header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=estoque_insuficiente&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
             exit;
         }
     } else {
         // Produto não encontrado
-        header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=produto_nao_encontrado&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
+        header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=produto_nao_encontrado&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
         exit;
     }
 
     $stmt->close();
 } else {
     // Caso a requisição não seja POST
-    header("Location:  /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Requisição inválida.&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
+    header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=Requisição inválida.&pagina=/Sistema-CENTRAL-ERP/homeestoque.php");
     exit;
 }
 

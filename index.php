@@ -95,6 +95,9 @@
                             <option value="estoque">Estoque</option>
                             <option value="recursos_humanos">Recursos Humanos</option>
                             <option value="contratos">Contratos</option>
+                            <option value="ccooperacao">Bonde Operação</option>
+                            <option value="sisbonde">Bonde Controle</option>
+                      
                         </select>
                     </div>
 

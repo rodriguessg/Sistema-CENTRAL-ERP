@@ -51,7 +51,7 @@ try {
                  ['link' => 'certidoes.php', 'nome' => 'Certidões', 'icon' => 'envelope'],
                 ['link' => 'homefinanceiro.php', 'nome' => 'Financeiro', 'icon' => 'money-bill'],
                 ['link' => 'homepatrimonio.php', 'nome' => 'Patrimônio', 'icon' => 'building'],
-                   ['link' => 'calendar.php', 'nome' => 'Calendário / Tarefas', 'icon' => 'calendar-alt'],
+                ['link' => 'calendar.php', 'nome' => 'Calendário / Tarefas', 'icon' => 'calendar-alt'],
                 ['link' => 'cadastro_usuario.php', 'nome' => 'Cadastrar Usuário', 'icon' => 'user-plus'],
                 ['link' => 'gerenciarpermissao.php', 'nome' => 'Usuários', 'icon' => 'key'],
                 ['link' => 'homeRh.php', 'nome' => 'Recursos H', 'icon' => 'users'],
@@ -99,11 +99,14 @@ try {
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
             ];
             break;
-             case 'cco':
+             case 'sisbonde':
             $menuItens = [
                 ['link' => 'paineloperacaobonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
                 ['link' => 'homebonde.php', 'nome' => 'Home', 'icon' => 'cogs'],               
-                ['link' => 'operacao.php', 'nome' => 'Operacao', 'icon' => 'home'],
+                 ['link' => 'sisbonde.php', 'nome' => 'Sisbonde', 'icon' => 'home'],
+                ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios de Acidentes', 'icon' => 'home'],
+                ['link' => 'reportacidentes.php', 'nome' => 'Registrar Acidentes', 'icon' => 'home'],
+                  ['link' => 'manutencaobonde.php', 'nome' => 'Registrar Acidentes', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
   
             ];

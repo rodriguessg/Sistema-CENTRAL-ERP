@@ -73,7 +73,7 @@ include 'header.php';
         .caderno { max-width: 1200px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
         .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 20px; }
         .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; background: #e0e0e0; transition: background 0.3s; }
-        .tab:hover, .tab.active { background: #007bff; color: #fff; }
+        
         .form-container { display: none; padding: 20px; }
         .form-container.active { display: block; }
         .form-container h2 { margin-top: 0; }
@@ -86,13 +86,8 @@ include 'header.php';
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         table, th, td { border: 1px solid #ccc; }
         th, td { padding: 10px; text-align: left; }
-        th { background: #007bff; color: #fff; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center; }
-        .modal-content { background: #fff; padding: 20px; border-radius: 5px; width: 300px; text-align: center; }
-        .modal-content input, .modal-content select, .modal-content textarea { margin-bottom: 10px; width: 100%; padding: 8px; }
-        .photo-upload { width: 300px; padding: 20px; border: 1px dashed #ccc; text-align: center; margin-left: 20px; vertical-align: top; display: inline-block; }
-        .photo-upload img { max-width: 100%; height: auto; margin-top: 10px; }
-        textarea { resize: vertical; min-height: 60px; }
+   
+ 
     </style>
 </head>
 <body>

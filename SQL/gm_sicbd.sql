@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 04/06/2025 às 20:40
+-- Tempo de geração: 23/06/2025 às 14:16
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.0.28
 
@@ -20,6 +20,27 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `gm_sicbd`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `bondes`
+--
+
+CREATE TABLE `bondes` (
+  `id` varchar(10) NOT NULL,
+  `modelo` varchar(50) NOT NULL,
+  `capacidade` int(11) NOT NULL,
+  `ano_fabricacao` int(11) NOT NULL,
+  `descricao` varchar(255) DEFAULT 'Sem descrição'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `bondes`
+--
+
+INSERT INTO `bondes` (`id`, `modelo`, `capacidade`, `ano_fabricacao`, `descricao`) VALUES
+('teste', 'BO2', 36, 2025, 'Sem descrição');
 
 -- --------------------------------------------------------
 
@@ -82,6 +103,33 @@ INSERT INTO `codigo_atual` (`id`, `codigo`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estrutura para tabela `conferencias`
+--
+
+CREATE TABLE `conferencias` (
+  `id` int(11) NOT NULL,
+  `produto_id` int(11) NOT NULL,
+  `mes_conferencia` date NOT NULL,
+  `conferido` tinyint(1) NOT NULL,
+  `quantidade_fisica` int(11) DEFAULT NULL,
+  `data_conferencia` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `conferencias`
+--
+
+INSERT INTO `conferencias` (`id`, `produto_id`, `mes_conferencia`, `conferido`, `quantidade_fisica`, `data_conferencia`) VALUES
+(1, 1, '2025-06-01', 1, 165, '2025-06-05 16:14:59'),
+(3, 1, '2025-07-01', 1, 0, '2025-06-06 09:28:54'),
+(13, 9, '2025-06-01', 1, 27, '2025-06-05 16:16:04'),
+(28, 2, '2025-06-01', 0, 17, '2025-06-05 16:15:24'),
+(32, 8, '2025-06-01', 1, 416, '2025-06-05 16:16:29'),
+(34, 2, '2025-09-01', 1, 0, '2025-06-06 09:28:51');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura para tabela `configuracoes`
 --
 
@@ -130,7 +178,54 @@ INSERT INTO `contratos_parcelas` (`id`, `contrato_id`, `mes`, `ano`, `valor`) VA
 (263, 20, 3, 2026, 41666.67),
 (264, 20, 4, 2026, 41666.67),
 (265, 20, 5, 2026, 41666.67),
-(266, 20, 6, 2026, 41666.67);
+(266, 20, 6, 2026, 41666.67),
+(267, 38, 2, 2025, 28029.04),
+(268, 38, 3, 2025, 28029.04),
+(269, 38, 4, 2025, 28029.04),
+(270, 38, 5, 2025, 28029.04),
+(271, 38, 6, 2025, 28029.04),
+(272, 38, 7, 2025, 28029.04),
+(273, 38, 8, 2025, 28029.04),
+(274, 38, 9, 2025, 28029.04),
+(275, 38, 10, 2025, 28029.04),
+(276, 38, 11, 2025, 28029.04),
+(277, 38, 12, 2025, 28029.04),
+(278, 38, 1, 2026, 28029.04),
+(279, 39, 4, 2025, 10365.32),
+(280, 39, 5, 2025, 10365.32),
+(281, 39, 6, 2025, 10365.32),
+(282, 39, 7, 2025, 10365.32),
+(283, 39, 8, 2025, 10365.32),
+(284, 39, 9, 2025, 10365.32),
+(285, 39, 10, 2025, 10365.32),
+(286, 39, 11, 2025, 10365.32),
+(287, 39, 12, 2025, 10365.32),
+(288, 39, 1, 2026, 10365.32),
+(289, 39, 2, 2026, 10365.32),
+(290, 39, 3, 2026, 10365.32),
+(291, 39, 4, 2026, 10365.32),
+(292, 39, 5, 2026, 10365.32),
+(293, 39, 6, 2026, 10365.32),
+(294, 39, 7, 2026, 10365.32),
+(295, 39, 8, 2026, 10365.32),
+(296, 39, 9, 2026, 10365.32),
+(297, 39, 10, 2026, 10365.32),
+(298, 39, 11, 2026, 10365.32),
+(299, 39, 12, 2026, 10365.32),
+(300, 39, 1, 2027, 10365.32),
+(301, 39, 2, 2027, 10365.32),
+(302, 40, 4, 2025, 36072.42),
+(303, 40, 5, 2025, 36072.42),
+(304, 40, 6, 2025, 36072.42),
+(305, 40, 7, 2025, 36072.42),
+(306, 40, 8, 2025, 36072.42),
+(307, 40, 9, 2025, 36072.42),
+(308, 40, 10, 2025, 36072.42),
+(309, 40, 11, 2025, 36072.42),
+(310, 40, 12, 2025, 36072.42),
+(311, 40, 1, 2026, 36072.42),
+(312, 40, 2, 2026, 36072.42),
+(313, 40, 3, 2026, 36072.42);
 
 -- --------------------------------------------------------
 
@@ -306,7 +401,54 @@ INSERT INTO `eventos` (`id`, `username`, `titulo`, `descricao`, `data`, `hora`, 
 (60, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a April/2026. Valor: R$ 41.666,67', '2026-04-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
 (61, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a May/2026. Valor: R$ 41.666,67', '2026-05-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
 (62, '', 'Vencimento de Parcela: andamento 2', 'Parcela referente a June/2026. Valor: R$ 41.666,67', '2026-06-09', '09:00:00', 'Pagamento', '#FF9900', '2025-05-19 17:46:36', 0),
-(63, '', 'REUNIÃO FINANCEIRO', 'TESTE MASTER', '2025-06-02', '08:52:00', 'Geral', '#ff0000', '2025-06-02 16:46:28', 0);
+(63, '', 'REUNIÃO FINANCEIRO', 'TESTE MASTER', '2025-06-02', '08:52:00', 'Geral', '#ff0000', '2025-06-02 16:46:28', 0),
+(64, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a February/2025. Valor: R$ 28.029,04', '2025-02-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(65, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a March/2025. Valor: R$ 28.029,04', '2025-03-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(66, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a April/2025. Valor: R$ 28.029,04', '2025-04-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(67, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a May/2025. Valor: R$ 28.029,04', '2025-05-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(68, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a June/2025. Valor: R$ 28.029,04', '2025-06-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(69, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a July/2025. Valor: R$ 28.029,04', '2025-07-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(70, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a August/2025. Valor: R$ 28.029,04', '2025-08-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(71, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a September/2025. Valor: R$ 28.029,04', '2025-09-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(72, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a October/2025. Valor: R$ 28.029,04', '2025-10-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(73, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a November/2025. Valor: R$ 28.029,04', '2025-11-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(74, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a December/2025. Valor: R$ 28.029,04', '2025-12-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(75, '', 'Vencimento de Parcela: PRODERJ VPS', 'Parcela referente a January/2026. Valor: R$ 28.029,04', '2026-01-16', '09:00:00', 'Pagamento', '#FF9900', '2025-06-05 18:04:11', 0),
+(76, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a April/2025. Valor: R$ 10.365,32', '2025-03-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(77, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a May/2025. Valor: R$ 10.365,32', '2025-04-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(78, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a June/2025. Valor: R$ 10.365,32', '2025-05-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(79, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a July/2025. Valor: R$ 10.365,32', '2025-06-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(80, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a August/2025. Valor: R$ 10.365,32', '2025-07-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(81, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a September/2025. Valor: R$ 10.365,32', '2025-08-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(82, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a October/2025. Valor: R$ 10.365,32', '2025-09-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(83, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a November/2025. Valor: R$ 10.365,32', '2025-10-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(84, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a December/2025. Valor: R$ 10.365,32', '2025-11-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(85, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a January/2026. Valor: R$ 10.365,32', '2025-12-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(86, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a February/2026. Valor: R$ 10.365,32', '2026-01-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(87, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a March/2026. Valor: R$ 10.365,32', '2026-02-26', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(88, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a April/2026. Valor: R$ 10.365,32', '2026-03-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(89, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a May/2026. Valor: R$ 10.365,32', '2026-04-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(90, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a June/2026. Valor: R$ 10.365,32', '2026-05-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(91, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a July/2026. Valor: R$ 10.365,32', '2026-06-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(92, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a August/2026. Valor: R$ 10.365,32', '2026-07-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(93, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a September/2026. Valor: R$ 10.365,32', '2026-08-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(94, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a October/2026. Valor: R$ 10.365,32', '2026-09-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(95, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a November/2026. Valor: R$ 10.365,32', '2026-10-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(96, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a December/2026. Valor: R$ 10.365,32', '2026-11-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(97, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a January/2027. Valor: R$ 10.365,32', '2026-12-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(98, '', 'Vencimento de Parcela: CLARO', 'Parcela referente a February/2027. Valor: R$ 10.365,32', '2027-01-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:07:42', 0),
+(99, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a April/2025. Valor: R$ 36.072,42', '2025-03-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(100, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a May/2025. Valor: R$ 36.072,42', '2025-04-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(101, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a June/2025. Valor: R$ 36.072,42', '2025-05-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(102, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a July/2025. Valor: R$ 36.072,42', '2025-06-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(103, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a August/2025. Valor: R$ 36.072,42', '2025-07-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(104, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a September/2025. Valor: R$ 36.072,42', '2025-08-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(105, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a October/2025. Valor: R$ 36.072,42', '2025-09-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(106, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a November/2025. Valor: R$ 36.072,42', '2025-10-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(107, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a December/2025. Valor: R$ 36.072,42', '2025-11-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(108, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a January/2026. Valor: R$ 36.072,42', '2025-12-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(109, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a February/2026. Valor: R$ 36.072,42', '2026-01-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(110, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a March/2026. Valor: R$ 36.072,42', '2026-02-26', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0);
 
 -- --------------------------------------------------------
 
@@ -332,26 +474,26 @@ CREATE TABLE `fechamento` (
 --
 
 INSERT INTO `fechamento` (`id`, `data_fechamento`, `natureza`, `classificacao`, `saldo_anterior`, `total_entrada`, `total_saida`, `saldo_atual`, `custo`, `status`) VALUES
-(1, '2025-04-02', '333903001', 'Material cama mesa Banho/Copa e Cozinha', 5439.46, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(2, '2025-04-02', '333903002', 'Artigos para Limpeza, Higiêne e Toalete', 17503.12, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(4, '2025-04-02', '333903005', 'Artigos em Geral e Impressos para Expediente, Escritorio', 13899.11, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(1, '2025-04-02', '333903001', 'Material cama mesa Banho/Copa e Cozinha', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(2, '2025-04-02', '333903002', 'Artigos para Limpeza, Higiêne e Toalete', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(4, '2025-04-02', '333903005', 'Artigos em Geral e Impressos para Expediente, Escritorio', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
 (5, '2025-04-02', '333903008', 'Material Radiológico Fotografico,Cinematográfico, de Gravação e Comunicação', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(6, '2025-04-02', '333903010', 'Material Eletrico,material para conservação e manutenção de Bens', 5837.93, 130716.46, 0.00, 293761.72, 0.00, 'Pendente'),
-(7, '2025-04-02', '333903011', 'Material para manutenção e conservação de Bens móveis', 157335.90, 53016.82, 0.00, 105952.82, 0.00, 'Pendente'),
+(6, '2025-04-02', '333903010', 'Material Eletrico,material para conservação e manutenção de Bens', 283929.86, 52728946.02, 5124.80, 99967201.19, 0.00, 'Pendente'),
+(7, '2025-04-02', '333903011', 'Material para manutenção e conservação de Bens móveis', 105952.82, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
 (8, '2025-04-02', '333903020', 'Produtos Alimentícios e Bebidas', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(9, '2025-04-02', '333903021', 'Matérias Primas', 59061.49, 32760.00, 0.00, 32760.00, 0.00, 'Pendente'),
-(10, '2025-04-02', '333903023', 'Material de Informatica', 847.82, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(11, '2025-04-02', '333903030', 'Material para manutenção de Veículo', 795.34, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(12, '2025-04-02', '333903033', 'Material para Sinalização Visual e Outros', 680.65, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(13, '2025-04-02', '333903042', 'Material Eletrico e Eletrônico', 113069.61, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(14, '2025-04-02', '344903010', 'Mat. Eletr. Mat. P/ Conserv. e Manut. de Bens Imoveis; Sinaliz. e Demarc', 6554.64, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(15, '2025-04-02', '344903011', 'Material para manutenção e conservação de Bens móveis', 7836.20, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(16, '2025-04-02', '344905206', 'Outros Equipamentos', 147.80, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(17, '2025-04-02', '344905212', 'Utensilios de Copa, Cozinha, Dormitorio e Enfermaria', 320.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(18, '2025-04-02', '344905217', 'Equipamento para áudio, Vídeo e Foto', 25443.80, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(19, '2025-04-02', '344905220', 'Maquinas, Ferramentas e Utensilios de Oficina', 34.45, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(9, '2025-04-02', '333903021', 'Matérias Primas', 32760.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(10, '2025-04-02', '333903023', 'Material de Informatica', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(11, '2025-04-02', '333903030', 'Material para manutenção de Veículo', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(12, '2025-04-02', '333903033', 'Material para Sinalização Visual e Outros', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(13, '2025-04-02', '333903042', 'Material Eletrico e Eletrônico', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(14, '2025-04-02', '344903010', 'Mat. Eletr. Mat. P/ Conserv. e Manut. de Bens Imoveis; Sinaliz. e Demarc', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(15, '2025-04-02', '344903011', 'Material para manutenção e conservação de Bens móveis', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(16, '2025-04-02', '344905206', 'Outros Equipamentos', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(17, '2025-04-02', '344905212', 'Utensilios de Copa, Cozinha, Dormitorio e Enfermaria', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(18, '2025-04-02', '344905217', 'Equipamento para áudio, Vídeo e Foto', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
+(19, '2025-04-02', '344905220', 'Maquinas, Ferramentas e Utensilios de Oficina', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
 (20, '2025-04-02', '344905238', 'Equipamento e Material Permanente ( Material de T.I.C )', 0.00, 0.00, 0.00, 0.00, 0.00, 'Pendente'),
-(23, '2025-05-27', '333903003', '', 0.00, -3847.57, 0.00, -3847.57, 0.00, '');
+(23, '2025-05-27', '333903003', '', -7693.22, -99783187.58, -40274558.26, -99922256.24, 0.00, '');
 
 -- --------------------------------------------------------
 
@@ -413,7 +555,27 @@ INSERT INTO `fechamentos` (`id`, `username`, `natureza`, `saldo_anterior`, `tota
 (0, 'PAULO', '344905212', 320.00, 0.00, 0.00, 320.00, '2025-05-06 13:16:55'),
 (0, 'PAULO', '344905217', 25444.00, 0.00, 0.00, 25443.80, '2025-05-06 13:16:55'),
 (0, 'PAULO', '344905220', 34.00, 0.00, 0.00, 34.45, '2025-05-06 13:16:55'),
-(0, 'PAULO', '344905238', 0.00, 0.00, 0.00, 0.00, '2025-05-06 13:16:55');
+(0, 'PAULO', '344905238', 0.00, 0.00, 0.00, 0.00, '2025-05-06 13:16:55'),
+(0, 'MASTER', '333903001', 5439.46, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903002', 17503.12, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903005', 13899.11, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903008', 0.00, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903010', 5837.93, 130716.46, 9831.86, 283929.86, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903011', 157335.90, 53016.82, 0.00, 105952.82, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903020', 0.00, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903021', 59061.49, 32760.00, 0.00, 32760.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903023', 847.82, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903030', 795.34, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903033', 680.65, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903042', 113069.61, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '344903010', 6554.64, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '344903011', 7836.20, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '344905206', 147.80, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '344905212', 320.00, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '344905217', 25443.80, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '344905220', 34.45, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '344905238', 0.00, 0.00, 0.00, 0.00, '2025-06-05 10:48:28'),
+(0, 'MASTER', '333903003', 0.00, -3845.65, 0.00, -7693.22, '2025-06-05 10:48:28');
 
 -- --------------------------------------------------------
 
@@ -486,7 +648,20 @@ CREATE TABLE `gestao_contratos` (
 --
 
 INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gestorsb`, `fiscais`, `validade`, `agencia_bancaria`, `fonte`, `publicacao`, `date_service`, `contatos`, `n_despesas`, `outros`, `servicos`, `valor_nf`, `valor_contrato`, `valor_aditivo1`, `num_parcelas`, `descricao`, `situacao`, `data_cadastro`, `setor`, `parcelamento`, `valor_aditivo2`, `valor_aditivo3`, `valor_aditivo4`, `valor_aditivo5`, `etapa_atual`, `categoria`, `garantia`, `gestor_portaria`, `fiscal_portaria`) VALUES
-(22, 'PRODERJ', '100006/000680/2024', 'Prestação de serviços de Mensageira Eletrônica (e-mail)', 'JOÃO FREITAS BRAGA CARUSO', 'RAPHAELA BATISTA SALDANHA', 'ALEXANDRE MENDES DA ROCHA // GABRIEL DE SOUZA RODRIGUES // EMILLY MARTINS DOS SANTOS //', '2025-04-29', 'Bradesco- 2', '100', '2024-12-30', '2025-04-29', '33914009', 'Sem Despesas', 'Não', 'servico1', 0.00, 58500.00, NULL, 0, '.', 'Ativo', '2025-06-03 17:39:18', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL);
+(22, 'PRODERJ', '100006/000680/2024', 'Prestação de serviços de Mensageira Eletrônica (e-mail)', 'JOÃO FREITAS BRAGA CARUSO', 'RAPHAELA BATISTA SALDANHA', 'ALEXANDRE MENDES DA ROCHA // GABRIEL DE SOUZA RODRIGUES // EMILLY MARTINS DOS SANTOS //', '2026-01-18', 'Bradesco- 2', '100', '2024-12-30', '2025-04-29', '33914009', 'Sem Despesas', 'Não', 'servico1', 0.00, 58500.00, NULL, 0, '.', 'Ativo', '2025-06-03 17:39:18', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(38, 'PRODERJ VPS', 'SEI-100006/000203/2021	', 'Hospedagem de Serviços virtuais privados (VPS)', ' JOÃO FREITAS BRAGA CARUSO', 'SEM GESTOR ', 'ALEXANDRE MENDES DA ROCHA // RENATO MACHADO DA SILVA', '2025-01-21', 'Bradesco- 2', '100', '2025-01-21', '2025-01-21', '33914009', 'Sem Despesas', 'Não', 'servico1', 0.00, 336348.48, NULL, 12, '..', 'Ativo', '2025-06-05 18:04:11', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(39, 'CLARO', 'SEI-100006/000595/2021		', 'Prestação de serviços de comunicação de dados de longa distância (WAN), conexão internet para rede governo e serviços complementares de tecnologia da informação e comunicação 		Prestação de serviços de comunicação de dados de longa distância (WAN), conexão internet para rede governo e serviços complementares de tecnologia da informação e comunicação 																						', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'SEM GESTOR ', 'EMILLY MARTINS DOS SANTOS,', '2025-03-03', '\"BRADESCO A', '100', '2025-03-06', '2025-03-03', '33904012', 'Sem Despesas', 'Não', 'servico1', 0.00, 238402.42, NULL, 23, '.', 'Ativo', '2025-06-12 15:07:42', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(40, 'OI S/A', 'SEI-100006/001705/2022		', 'Prestação de serviço telefônico fixo comutado - STFC (fixo-fixo e fixo-móvel), nas modalidades Local, Longa Distância Nacional (LDN) e Longa Distância Internacional (LDI), a ser executado de forma contínua, com fornecimento de aparelhos novos ou seminovos por comodato												', 'DAVI VIANNA DE MACEDO OLIVEIRA ', 'SEM GESTOR ', 'PATRÍCIA MATOS DA SILVA -- PAULO VITOR LIMA GOMES', '2025-03-03', '\"BRADESCO C', '100', '2025-03-07', '2025-03-03', '33903906', 'Sem Despesas', 'Não', 'servico1', 0.00, 432868.98, NULL, 12, 'R$ 432.868,98 (Contrato + 1 TA) Termo Aditivo o valor de R$ 232.209,80 \r\n', 'Ativo', '2025-06-12 15:52:11', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(41, 'RAAC', 'SEI-100006/000184/2020		', 'Contratação de pessoa jurídica especializada na prestação de serviços técnicos de Auditoria Independente													', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'SEM GESTOR ', 'DANILLO CUNHA PAULA--JOÃO LUIZ FREITAS BRAGA CARUSO--GRAZIELA SPÓSITO', '2021-01-08', '\"BRADESCO C', '100', '2021-01-13', '2021-01-13', '33903501', 'Sem Despesas', 'Não', 'servico1', 0.00, 298953.09, NULL, 0, 'R$ 298.953,09 (Contrato + 1, 2 e 3 TA)	\r\n', 'Ativo', '2025-06-12 17:01:13', 'contratos', 'Sim', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(42, 'SANTA CABRINI', 'SEI-100006/000928/2024		', 'Prestação de serviços de gerenciamento de mão de obra de 08 (oito) gerenciados em cumprimento de pena sob os regimes semiaberto, aberto, em prisão albergue domiciliar – PAD e livramento condicional													', 'RAPHAELA BATISTA SALDANHA', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'BRUNO ALMEIDA DOS SANTOS//LUCIMAR STRAUB//RITA DE CÁSSIA CUSTODIO DA SILVA//EMILLY MARTINS DOS SANTOS//HUMBERTO HAUILA JUNIOR', '2024-11-22', '\"BRADESCO C', '100', '2024-11-25', '2024-11-22', '33.91.39.29', 'Sem Despesas', 'Não', 'servico1', 0.00, 246783.60, NULL, NULL, '.', 'Ativo', '2025-06-12 17:43:27', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(43, 'CIEE', 'SEI-100006/000066/2024		', 'Contratação de estagiários												', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'RAPHAELA BATISTA SALDANHA', 'ISABELLA DE SOUZA CHRYSOSTOMO//EMILLY MARTINS DOS SANTOS//ESTHEFANI RODRIGUES SANTOS', '2025-01-29', '\"BRADESCO A', '100', '2025-01-28', '2025-01-29', '33.90.34.01', 'Sem Despesas', 'Não', 'servico1', 0.00, 996570.00, NULL, NULL, '.', 'Ativo', '2025-06-12 18:54:52', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(44, 'RAAC', 'SEI-100006/000184/2020		', 'Contratação de pessoa jurídica especializada na prestação de serviços técnicos de Auditoria Independente													', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'SEM GESTOR ', 'DANILLO CUNHA PAULA// JOÃO LUIZ FREITAS BRAGA CARUSO// GRAZIELA SPÓSITO', '2021-01-08', '\"BRADESCO C', '100', '2021-01-13', '2021-01-08', '33903501', 'Sem Despesas', 'Não', 'servico1', 0.00, 298953.09, NULL, NULL, 'R$ 298.953,09 (Contrato + 1, 2 e 3 TA)	', 'Ativo', '2025-06-16 16:03:01', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(45, 'AGUAS DO RIO', 'SEI-100006/001986/2021		', 'Fornecimento de agua e manutenção de esgoto												', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'RAPHAELA BATISTA SALDANHA', 'Fiscais Técnicos  FÁBIO CORRÊA BARBOSA// Fiscais Técnicos  THIAGO NETO DE OLIVEIRA', '0001-01-01', '\"BRADESCO C', '100', '0001-01-01', '0001-01-01', '33903950', 'Sem Despesas', 'Não', 'servico1', 0.00, 0.00, NULL, NULL, 'EMILLY MARTINS DOS SANTOS FISCAL ADM. PORTARIA 71587147\r\n\r\n. Valor não foi estipulado no termo, sendo o faturamento a medida das faturas emitidas mensalmente. Vigência do termo é de 35 anos.', 'Ativo', '2025-06-16 17:29:25', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(46, 'DADY ILHA ', 'SEI-100006/000561/2022', 'Prestação de serviços de solução continuada de impressão, cópia e digitalização corporativa - Estações Digitais de Serviço (EDS) Departamentais, integrada a sistemas corporativos e à rede de dados, compreendendo a cessão de direito de uso de equipamentos, incluindo a prestação de serviços de manutenção preventiva e corretiva, fornecimento de peças e consumíveis necessários (exceto papel), assim como serviços de gestão, controle e operacionalização da solução e treinamento.', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'RAPHAELA BATISTA SALDANHA', 'JOÃO FREITAS BRAGA CARUSO // GABRIEL DE SOUZA RODRIGUES', '2024-08-29', '\"BRADESCO C', '100', '2024-08-27', '2024-08-29', '33904006', 'Sem Despesas', 'Não', 'servico1', 0.00, 140026.23, NULL, NULL, '.', 'Ativo', '2025-06-16 17:48:25', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'obra', 0.00, NULL, NULL),
+(47, 'WEBTRIP', 'SEI-100006/000422/2024		', 'Prestação de serviços de agência de viagens, consistindo em: reserva, cancelamento, marcação, remarcação, emissão e entrega de bilhetes de passagens aéreas no âmbito nacional e internacional; emissão de seguro de assistência em viagem internacional', '	 RAPHAELA BATISTA SALDANHA', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'EMILLY MARTINS DOS SANTOS // ANDRE MIRANDA LOBÃO TAVARES MENDONÇA // ISABELLA DE SOUZA CHRYSOSTOMO', '2024-07-25', '\"BRADESCO A', '100', '2024-07-25', '2024-07-25', '3390.33.01', 'Sem Despesas', 'Não', 'servico1', 0.00, 100000.00, NULL, NULL, '.', 'Ativo', '2025-06-16 18:31:55', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(48, 'MOBILESAT', ' 	SEI-100006/001573/2021		', 'Serviços de licença de uso de software monitoramento via satélite com tecnologia GPS/GSM/GPRS, contemplando hardware e software																							', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'RAPHAELA BATISTA SALDANHA', 'FISCAIS TECNICICOS - FÁBIO CORRÊA BARBOSA / THIAGO NETO DE OLIVIERA-  FISCAL ADM- ISABELLA DE SOUZA CHRYSOSTOMO', '2024-11-08', '\"BRADESCO  ', '100', '2024-11-07', '2024-11-08', '33903039', 'Sem Despesas', 'Não', 'servico1', 0.00, 7680.00, NULL, NULL, '.', 'Ativo', '2025-06-16 19:04:11', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'obra', 0.00, NULL, NULL),
+(49, 'PRIME ', 'SEI-100006/000479/2023		', ' Contratação de empresa especializada para prestação de serviços de gerenciamento de abastecimento da frota de veículos oficiais do CENTRAL, com implantação, intermediação e administração de um sistema informatizado e integrado, com utilização de tag/etiqueta com tecnologia RFID ou similar de gerenciamento de frota em estabelecimentos credenciados, compreendendo a distribuição de etanol,  gasolina (comum/aditivada) e diesel(comum s/10).												', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'SEM GESTOR ', 'EMILLY MARTINS DOS SANTOS, //  ISABELLA DE SOUZA CHRYSOSTOMO', '2025-05-08', '\"BRADESCO C', '100', '2025-05-12', '2025-05-08', '33903039', 'Sem Despesas', 'Não', 'servico1', 0.00, 188403.29, NULL, NULL, '188.403,29 (Contrato + 1 TA + 2 TA + 3 TA)\r\n', 'Ativo', '2025-06-18 18:40:07', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(50, 'LIBEX', 'SEI-100006/000346/2023		', 'Prestação de serviços de LOCAÇÃO DE 5 VEÍCULOS ESPECIAIS', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'RAPHAELA BATISTA SALDANHA', 'EMILLY MARTINS DOS SANTOS, //  ISABELLA DE SOUZA CHRYSOSTOMO', '2023-05-19', '\"BRADESCO C', '100', '2023-05-19', '2023-05-19', '33903913', 'Sem Despesas', 'Não', 'servico1', 0.00, 433279.35, NULL, NULL, '.', 'Ativo', '2025-06-18 20:02:16', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -867,7 +1042,130 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (711, 'contratos@central.rj.gov.br', 'Login falhou: Usuário não encontrado', '2025-06-04 13:13:31'),
 (712, 'contratos', 'Login bem-sucedido', '2025-06-04 13:14:14'),
 (713, 'MASTER', 'Login bem-sucedido', '2025-06-04 17:22:18'),
-(714, 'contratos', 'Login bem-sucedido', '2025-06-04 17:32:24');
+(714, 'contratos', 'Login bem-sucedido', '2025-06-04 17:32:24'),
+(715, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-04 18:43:49'),
+(716, 'camilafirmino@central.rj.gov.br', 'Login falhou: Usuário não encontrado', '2025-06-05 17:19:21'),
+(717, 'contratos@central.rj.gov.br', 'Login falhou: Usuário não encontrado', '2025-06-05 17:19:40'),
+(718, 'contratos', 'Login bem-sucedido', '2025-06-05 17:20:19'),
+(719, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-05 17:48:44'),
+(720, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-05 19:06:47'),
+(721, 'contratos', 'Login bem-sucedido', '2025-06-05 19:41:03'),
+(722, 'PAULO', 'Login bem-sucedido', '2025-06-05 19:42:54'),
+(723, 'contratos', 'Login bem-sucedido', '2025-06-06 15:08:20'),
+(724, 'MASTER', 'Login bem-sucedido', '2025-06-06 17:54:42'),
+(725, 'CLAUDIA', 'Login falhou: Senha inválida', '2025-06-06 17:55:14'),
+(726, 'CLAUDIA', 'Login bem-sucedido', '2025-06-06 17:55:24'),
+(727, 'contratos', 'Login bem-sucedido', '2025-06-06 17:55:40'),
+(728, 'CLAUDIA', 'Login bem-sucedido', '2025-06-06 17:56:24'),
+(729, 'paulo', 'Login bem-sucedido', '2025-06-06 17:58:00'),
+(730, 'CLAUDIA', 'Login bem-sucedido', '2025-06-06 18:05:05'),
+(731, 'MASTER', 'Login bem-sucedido', '2025-06-09 11:55:29'),
+(732, 'contratos', 'Login falhou: Senha inválida', '2025-06-09 13:13:17'),
+(733, 'contratos', 'Login bem-sucedido', '2025-06-09 13:13:34'),
+(734, 'MASTER', 'Transferência de Patrimônio', '2025-06-09 17:00:27'),
+(735, 'matricula_usuario_aqui', 'Patrimônio teste12 atualizado', '2025-06-09 17:05:45'),
+(736, 'CLAUDIA', 'Login falhou: Senha inválida', '2025-06-09 17:19:08'),
+(737, 'CLAUDIA', 'Login bem-sucedido', '2025-06-09 17:19:25'),
+(738, 'CLAUDIA', 'Login bem-sucedido', '2025-06-09 17:42:42'),
+(739, 'CLAUDIA', 'Patrimônio teste12 atualizado', '2025-06-09 18:26:09'),
+(740, 'CLAUDIA', 'Patrimônio teste atualizado', '2025-06-09 18:39:24'),
+(741, 'MASTER', 'Login bem-sucedido', '2025-06-09 19:08:18'),
+(742, 'MASTER', 'Patrimônio 600428000012477 atualizado', '2025-06-09 19:39:54'),
+(743, 'MASTER', 'Patrimônio 600428000012478 atualizado', '2025-06-09 19:41:05'),
+(744, 'CLAUDIA', 'Login bem-sucedido', '2025-06-09 19:41:34'),
+(745, 'CLAUDIA', 'Patrimônio 600428000012479 atualizado', '2025-06-09 19:41:54'),
+(746, 'contratos', 'Login bem-sucedido', '2025-06-10 14:46:40'),
+(747, 'MASTER', 'Login bem-sucedido', '2025-06-11 17:34:26'),
+(748, 'MASTER', 'Login bem-sucedido', '2025-06-11 18:07:13'),
+(749, 'MASTER', 'Cadastro de Patrimônio', '2025-06-11 19:00:42'),
+(750, 'MASTER', 'Cadastro de Patrimônio', '2025-06-11 19:03:28'),
+(751, 'CLAUDIA', 'Login falhou: Senha inválida', '2025-06-12 12:13:32'),
+(752, 'CLAUDIA', 'Login bem-sucedido', '2025-06-12 12:13:45'),
+(753, 'GABRIEL', 'Login falhou: Senha inválida', '2025-06-12 12:29:43'),
+(754, 'GABRIEL', 'Login falhou: Senha inválida', '2025-06-12 12:29:57'),
+(755, 'MASTER', 'Login bem-sucedido', '2025-06-12 12:30:05'),
+(756, 'GABRIEL', 'Login bem-sucedido', '2025-06-12 12:31:04'),
+(757, 'GABRIEL', 'Cadastro de Patrimônio', '2025-06-12 13:15:01'),
+(758, 'GABRIEL', 'Cadastro de Patrimônio', '2025-06-12 13:15:41'),
+(759, 'CLAUDIA', 'Login bem-sucedido', '2025-06-12 13:17:56'),
+(760, 'CLAUDIA', 'Cadastro de Patrimônio', '2025-06-12 13:20:36'),
+(761, 'camilafirmino@central.rj.gov.br', 'Login falhou: Usuário não encontrado', '2025-06-12 14:31:45'),
+(762, 'contratos', 'Login bem-sucedido', '2025-06-12 14:32:00'),
+(763, 'contratos', 'Login bem-sucedido', '2025-06-12 14:34:14'),
+(764, 'contratos', 'Login bem-sucedido', '2025-06-12 14:34:38'),
+(765, 'contratos', 'Login bem-sucedido', '2025-06-16 15:39:25'),
+(766, 'contratos', 'Login bem-sucedido', '2025-06-16 15:39:50'),
+(767, 'MASTER', 'Login bem-sucedido', '2025-06-17 12:46:11'),
+(768, '990078', 'foi cadastrado no sistema', '2025-06-17 12:46:59'),
+(769, 'bonde', 'Login falhou: Setor incorreto', '2025-06-17 12:47:11'),
+(770, 'bonde', 'Login falhou: Setor incorreto', '2025-06-17 12:47:21'),
+(771, 'bonde', 'Login bem-sucedido', '2025-06-17 12:49:45'),
+(772, 'bonde', 'Login bem-sucedido', '2025-06-17 12:50:11'),
+(773, 'bonde', 'Login bem-sucedido', '2025-06-17 13:00:46'),
+(774, 'bonde', 'Login bem-sucedido', '2025-06-17 13:02:29'),
+(775, 'bonde', 'Login bem-sucedido', '2025-06-17 14:40:31'),
+(776, 'BONDE', 'Login bem-sucedido', '2025-06-17 14:41:33'),
+(777, 'BONDE', 'Login bem-sucedido', '2025-06-17 14:42:03'),
+(778, 'bonde', 'Login bem-sucedido', '2025-06-17 15:00:50'),
+(779, 'BONDE', 'Login bem-sucedido', '2025-06-17 15:03:01'),
+(780, 'bonde', 'Login bem-sucedido', '2025-06-17 15:05:49'),
+(781, 'bonde', 'Login bem-sucedido', '2025-06-17 15:05:56'),
+(782, 'bonde', 'Login bem-sucedido', '2025-06-17 15:07:57'),
+(783, 'BONDE', 'Login bem-sucedido', '2025-06-17 15:08:37'),
+(784, 'bonde', 'Login falhou: Setor incorreto', '2025-06-17 15:09:05'),
+(785, 'bonde', 'Login falhou: Setor incorreto', '2025-06-17 15:09:47'),
+(786, 'bonde', 'Login falhou: Setor incorreto', '2025-06-17 15:10:03'),
+(787, 'bonde', 'Login falhou: Setor incorreto', '2025-06-17 15:10:52'),
+(788, 'MASTER', 'Login bem-sucedido', '2025-06-17 15:11:02'),
+(789, 'MASTER', 'Login bem-sucedido', '2025-06-17 15:11:22'),
+(790, 'bonde', 'Login falhou: Setor incorreto', '2025-06-17 15:11:37'),
+(791, 'BONDE', 'Login falhou: Setor incorreto', '2025-06-17 15:11:45'),
+(792, 'bonde', 'Login bem-sucedido', '2025-06-17 15:12:46'),
+(793, 'bonde', 'Login bem-sucedido', '2025-06-17 15:16:17'),
+(794, 'bonde', 'Login bem-sucedido', '2025-06-17 16:58:53'),
+(795, 'bonde', 'Login bem-sucedido', '2025-06-17 17:06:27'),
+(796, 'MASTER', 'Login bem-sucedido', '2025-06-17 17:17:33'),
+(797, 'contr50', 'foi cadastrado no sistema', '2025-06-17 17:21:14'),
+(798, 'controle', 'Login bem-sucedido', '2025-06-17 17:21:45'),
+(799, 'MASTER', 'Login bem-sucedido', '2025-06-17 18:19:37'),
+(800, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-17 18:26:07'),
+(801, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-17 18:37:09'),
+(802, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-17 18:40:57'),
+(803, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-17 18:46:30'),
+(804, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-17 18:49:34'),
+(805, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-17 19:00:49'),
+(806, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-17 19:07:30'),
+(807, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-17 19:13:24'),
+(808, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-17 19:14:19'),
+(809, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-17 19:17:13'),
+(810, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-17 19:18:16'),
+(811, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:02:46'),
+(812, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:03:37'),
+(813, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:05:40'),
+(814, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:06:13'),
+(815, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:07:16'),
+(816, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:08:09'),
+(817, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:08:09'),
+(818, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:09:08'),
+(819, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:17:48'),
+(820, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:18:22'),
+(821, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:19:46'),
+(822, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:54:52'),
+(823, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:55:44'),
+(824, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 12:56:31'),
+(825, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 13:42:49'),
+(826, 'contratos', 'Login bem-sucedido', '2025-06-18 14:32:10'),
+(827, 'contratos', 'Login bem-sucedido', '2025-06-18 14:53:43'),
+(828, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 15:01:46'),
+(829, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 15:01:50'),
+(830, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 15:01:57'),
+(831, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 15:02:01'),
+(832, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 15:09:13'),
+(833, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 15:13:54'),
+(834, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 17:11:25'),
+(835, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 17:12:42'),
+(836, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 18:25:09'),
+(837, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 18:37:41');
 
 -- --------------------------------------------------------
 
@@ -944,7 +1242,55 @@ CREATE TABLE `notificacoes` (
 --
 
 INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `data_criacao`, `certidao_id`) VALUES
-(1, 'MASTER', 'administrador', 'Contrato \'	PRODERJ\' com validade em 2025-06-04 prestes a expirar.', 'nao lida', '2025-06-04 23:36:18', 0);
+(1, 'MASTER', 'administrador', 'Contrato \'	PRODERJ\' com validade em 2025-06-04 prestes a expirar.', 'lida', '2025-06-04 23:36:18', 0),
+(2, 'MASTER', 'administrador', 'Contrato \'CONTRATO DE PRESTAÇÃO DE  SERVIDORES\' com validade em 2025-06-04 prestes a expirar.', 'lida', '2025-06-05 00:17:54', 0),
+(3, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/02/2025', '', '2025-06-05 18:04:11', 0),
+(4, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/03/2025', '', '2025-06-05 18:04:11', 0),
+(5, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/04/2025', '', '2025-06-05 18:04:11', 0),
+(6, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/05/2025', '', '2025-06-05 18:04:11', 0),
+(7, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/06/2025', '', '2025-06-05 18:04:11', 0),
+(8, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/07/2025', '', '2025-06-05 18:04:11', 0),
+(9, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/08/2025', '', '2025-06-05 18:04:11', 0),
+(10, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/09/2025', '', '2025-06-05 18:04:11', 0),
+(11, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/10/2025', '', '2025-06-05 18:04:11', 0),
+(12, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/11/2025', '', '2025-06-05 18:04:11', 0),
+(13, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/12/2025', '', '2025-06-05 18:04:11', 0),
+(14, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/01/2026', '', '2025-06-05 18:04:11', 0),
+(15, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/04/2025', '', '2025-06-12 15:07:42', 0),
+(16, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/05/2025', '', '2025-06-12 15:07:42', 0),
+(17, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/06/2025', '', '2025-06-12 15:07:42', 0),
+(18, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/07/2025', '', '2025-06-12 15:07:42', 0),
+(19, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/08/2025', '', '2025-06-12 15:07:42', 0),
+(20, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/09/2025', '', '2025-06-12 15:07:42', 0),
+(21, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/10/2025', '', '2025-06-12 15:07:42', 0),
+(22, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/11/2025', '', '2025-06-12 15:07:42', 0),
+(23, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/12/2025', '', '2025-06-12 15:07:42', 0),
+(24, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/01/2026', '', '2025-06-12 15:07:42', 0),
+(25, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/02/2026', '', '2025-06-12 15:07:42', 0),
+(26, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/03/2026', '', '2025-06-12 15:07:42', 0),
+(27, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/04/2026', '', '2025-06-12 15:07:42', 0),
+(28, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/05/2026', '', '2025-06-12 15:07:42', 0),
+(29, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/06/2026', '', '2025-06-12 15:07:42', 0),
+(30, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/07/2026', '', '2025-06-12 15:07:42', 0),
+(31, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/08/2026', '', '2025-06-12 15:07:42', 0),
+(32, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/09/2026', '', '2025-06-12 15:07:42', 0),
+(33, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/10/2026', '', '2025-06-12 15:07:42', 0),
+(34, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/11/2026', '', '2025-06-12 15:07:42', 0),
+(35, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/12/2026', '', '2025-06-12 15:07:42', 0),
+(36, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/01/2027', '', '2025-06-12 15:07:42', 0),
+(37, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/02/2027', '', '2025-06-12 15:07:42', 0),
+(38, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/04/2025', '', '2025-06-12 15:52:11', 0),
+(39, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/05/2025', '', '2025-06-12 15:52:11', 0),
+(40, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/06/2025', '', '2025-06-12 15:52:11', 0),
+(41, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/07/2025', '', '2025-06-12 15:52:11', 0),
+(42, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/08/2025', '', '2025-06-12 15:52:11', 0),
+(43, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/09/2025', '', '2025-06-12 15:52:11', 0),
+(44, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/10/2025', '', '2025-06-12 15:52:11', 0),
+(45, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/11/2025', '', '2025-06-12 15:52:11', 0),
+(46, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/12/2025', '', '2025-06-12 15:52:11', 0),
+(47, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/01/2026', '', '2025-06-12 15:52:11', 0),
+(48, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/02/2026', '', '2025-06-12 15:52:11', 0),
+(49, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/03/2026', '', '2025-06-12 15:52:11', 0);
 
 -- --------------------------------------------------------
 
@@ -1103,14 +1449,14 @@ CREATE TABLE `patrimonio` (
 --
 
 INSERT INTO `patrimonio` (`id`, `nome`, `descricao`, `valor`, `data_aquisicao`, `situacao`, `localizacao`, `data_registro`, `codigo`, `categoria`, `cadastrado_por`, `destino`, `responsavel`, `tipo_operacao`, `foto`) VALUES
-(1, 'teste12', 'teste', 120.00, '2024-11-21', 'inativo', 'sala 703', '2024-11-21 05:08:43', '600428000012477', 'equipamentos_informatica', 'CLAUDIA', NULL, NULL, 'Transferido', NULL),
-(2, 'NOTEBOOK ', 'teste', 2.00, '2024-11-23', 'inativo', 'SALA - 404', '2024-11-24 00:18:39', '600428000012478', 'equipamentos_informatica', NULL, NULL, NULL, '', NULL),
-(3, 'NOTEBOOK ', 'teste', 235.00, '2024-11-23', 'Em Processo de baixa', 'SALA - 404', '2024-11-24 00:20:17', '600428000012479', 'equipamentos_informatica', NULL, NULL, NULL, '', 'GABRIEL'),
-(4, 'teste', 'teste', 12.00, '2024-11-23', 'ativo', '202', '2024-11-24 00:21:54', '705100000000196', 'bens_achados', 'GABRIEL', NULL, NULL, '', NULL),
+(1, '600428000012477', 'teste12', 0.00, '2024-11-21', 'Em Processo de baixa', 'sala 703', '2024-11-21 05:08:43', '600428000012477', 'CLAUDIA', 'CLAUDIA', NULL, NULL, 'Transferido', NULL),
+(2, '600428000012478', 'NOTEBOOK ', 0.00, '2024-11-23', 'Em Processo de baixa', 'SALA - 404', '2024-11-24 00:18:39', '600428000012478', 'null', NULL, NULL, NULL, '', NULL),
+(3, '600428000012479', 'NOTEBOOK ', 0.00, '2024-11-23', 'Em Processo de baixa', 'SALA - 404', '2024-11-24 00:20:17', '600428000012479', 'null', NULL, NULL, NULL, '', 'GABRIEL'),
+(4, 'teste', 'teste', 12.00, '2024-11-23', NULL, '202', '2024-11-24 00:21:54', '705100000000196', 'bens_achados', 'GABRIEL', NULL, NULL, '', NULL),
 (5, 'teste', 'teste', 780.00, '2024-11-23', 'ativo', 'sala 703', '2024-11-24 00:26:27', '450518000002335', 'moveis_utensilios', 'GABRIEL', NULL, NULL, '', NULL),
 (6, 'NOTEBOOK ', 'teste', 90.00, '2024-11-23', 'ativo', 'sala 703', '2024-11-24 00:30:13', '460000000000000', 'reserva_bens_moveis', 'GABRIEL', NULL, NULL, '', NULL),
 (7, 'teste120', 'teste', 6.00, '2024-11-23', 'ativo', 'sala 703', '2024-11-24 00:35:53', '1', 'bens_com_baixo_valor', 'GABRIEL', NULL, NULL, '', NULL),
-(8, 'NOTEBOOK ', 'teste', 123.00, '2024-11-24', 'ativo', '202', '2024-11-24 10:47:44', '600428000012480', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', NULL),
+(8, 'NOTEBOOK ', 'teste', 123.00, '2024-11-24', 'Transferido', '202', '2024-11-24 10:47:44', '600428000012480', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', NULL),
 (9, 'NOTEBOOK ', 't', 3.00, '2024-11-24', 'ativo', 'sala 703', '2024-11-24 10:51:59', '600428000012481', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', 'default.png'),
 (10, 'Computador Dell', 'teste', 500.00, '2024-11-24', 'ativo', '202', '2024-11-24 10:54:00', '600428000012482', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', 'default.png'),
 (11, 'Computador Dell', 'teste', 1450.00, '2024-11-24', 'ativo', 'SALA - 404', '2024-11-24 10:56:09', '600428000012483', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', NULL),
@@ -1123,7 +1469,12 @@ INSERT INTO `patrimonio` (`id`, `nome`, `descricao`, `valor`, `data_aquisicao`, 
 (18, 'GABRIEL DE SOUZA RODRIGUES', 'er', 23.00, '2024-12-10', 'ativo', '102', '2024-12-10 19:20:36', '600428000012488', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', 'default.png'),
 (19, 'MONITOR', 'teste', 10.00, '2024-12-30', 'ativo', 'SALA 501', '2024-12-30 13:51:06', '600428000012489', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', 'patrimonio-6772a54a85261.jpg'),
 (20, 'Monitor', 'Monitor DELL', 1.20, '2025-01-08', 'Em Processo de baixa', 'CENTRAL', '2025-01-08 13:41:03', '600428000012490', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', 'default.png'),
-(21, 'TESTE', 'yrdyr', 15105.00, '2025-05-27', 'ativo', 'yrdyr', '2025-05-27 13:51:52', '705100000000198', 'bens_achados', 'MASTER', NULL, NULL, '', 'patrimonio-6835c378bc1b1.png');
+(21, 'TESTE', 'yrdyr', 15.00, '2025-05-27', 'ativo', 'yrdyr', '2025-05-27 13:51:52', '705100000000198', 'bens_achados', 'MASTER', NULL, NULL, '', 'patrimonio-6835c378bc1b1.png'),
+(22, 'MONITOR', 'teste', 120950.00, '2025-06-19', 'ativo', 'SALA 501', '2025-06-11 19:00:42', '600428000012491', 'equipamentos_informatica', 'MASTER', NULL, NULL, '', 'default.png'),
+(23, 'MONITOR', 'w4re', 150.00, '2025-06-28', 'inativo', 'SALA 501', '2025-06-11 19:03:28', '450518000002337', 'moveis_utensilios', 'MASTER', NULL, NULL, '', 'default.png'),
+(24, 'SOLICITAR NOVA GUIA ', '23', 2323.00, '2025-06-12', 'em uso', 'SALA 501', '2025-06-12 13:15:01', '2', 'bens_com_baixo_valor', 'GABRIEL', NULL, NULL, '', 'default.png'),
+(25, 'NOTEBOOK ', 'teste', 5340.00, '2025-06-17', 'ativo', 'sala 703', '2025-06-12 13:15:41', '450518000002338', 'moveis_utensilios', 'GABRIEL', NULL, NULL, '', 'default.png'),
+(26, 'MONITOR', 'lg', 500.00, '2025-06-12', 'ativo', '202', '2025-06-12 13:20:36', '705100000000199', 'bens_achados', 'CLAUDIA', NULL, NULL, '', 'default.png');
 
 -- --------------------------------------------------------
 
@@ -1169,7 +1520,8 @@ CREATE TABLE `prestacao_contas` (
 
 INSERT INTO `prestacao_contas` (`id`, `contrato_id`, `valor_pago`, `descricao`, `data_pagamento`, `status`, `data_criacao`, `chamado_glpi`) VALUES
 (1, 14, 500000.00, 'sdaf', '2025-06-28', 'Concluída', '2025-06-04 12:20:46', NULL),
-(2, 17, 500000.00, '2', '2025-06-04', 'Pendente', '2025-06-04 12:32:42', NULL);
+(2, 17, 500000.00, '2', '2025-06-04', 'Pendente', '2025-06-04 12:32:42', NULL),
+(3, 22, 58500.00, 'SADF', '2025-06-04', 'Concluída', '2025-06-04 19:57:45', NULL);
 
 -- --------------------------------------------------------
 
@@ -1187,27 +1539,15 @@ CREATE TABLE `produtos` (
   `unidade` varchar(50) DEFAULT NULL,
   `localizacao` varchar(100) DEFAULT NULL,
   `custo` decimal(10,5) DEFAULT NULL,
+  `valor_custo_total` decimal(10,5) NOT NULL,
   `quantidade` int(11) DEFAULT NULL,
   `nf` varchar(50) DEFAULT NULL,
   `preco_medio` decimal(10,2) DEFAULT NULL,
   `tipo_operacao` varchar(50) DEFAULT 'entrada',
   `data_cadastro` datetime DEFAULT NULL,
-  `estoque_minimo` int(11) DEFAULT 0
+  `estoque_minimo` int(11) DEFAULT 0,
+  `categoria` varchar(220) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Despejando dados para a tabela `produtos`
---
-
-INSERT INTO `produtos` (`id`, `produto`, `classificacao`, `natureza`, `contabil`, `descricao`, `unidade`, `localizacao`, `custo`, `quantidade`, `nf`, `preco_medio`, `tipo_operacao`, `data_cadastro`, `estoque_minimo`) VALUES
-(1, '42400050002', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', 'RESPIRADOR DESCARTAVEL TIPO CONCHA', '2', 'xm1', 3.32300, 197, '2', 14.45, 'retirado', '2025-04-08 17:04:42', 10),
-(2, '42400050015', 'Uniformes Tecidos e Aviamentos', '333903003', '2423.03', '', 'UM', 'xm1', 4.43400, 5, '1', 192.00, 'retirado', '2025-04-08 17:22:26', 5),
-(3, '47100016581', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'TUBO NAO METALICO AGUA 40mm 3M SIGA 0040041', 'UM', 'xm1', 44.34200, 35, '1', 1.93, 'retirado', '2025-04-08 17:28:39', 5),
-(4, '43400110010', 'Material para manutenção e conservação de Bens móveis', '333903011', '2425.11', 'FILTRO AR COMPRESSOR', 'um', 'xm1', 32798.82000, 273, '3', 266.00, 'cadastrado', '2025-05-27 14:46:41', 0),
-(5, '47100040108', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'TUBO NAO METALICO AGUA 20mm 3M ID 0061400', 'um', 'xm1', 32798.82000, 40, '1', 819.00, 'cadastrado', '2025-05-27 15:15:06', 0),
-(6, '55100040061', 'Matérias Primas', '333903021', '2424.10', 'DORMENTE DE MADEIRA 1,60 M', 'um', 'xm1', 32798.82000, 40, '1', 819.00, 'cadastrado', '2025-05-27 15:15:21', 0),
-(7, '53250090945', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'DISPOSITIVO FIXAÇÃO TIPO GRAMPO 4 MM SIGA 0040017', '123', 'xm1', 32798.82000, 1044, '7', 62.00, 'cadastrado', '2025-05-27 15:15:57', 0),
-(8, '47100040037', 'Material Eletrico,material para conservação e manutenção de Bens', '333903010', '2424.10', 'TUBO ESGOTO 100MM', 'um', 'xm1', 32798.82000, 412, '2', 79.60, 'cadastrado', '2025-05-27 15:19:37', 0);
 
 -- --------------------------------------------------------
 
@@ -1269,7 +1609,9 @@ INSERT INTO `setores` (`id`, `nome_setor`) VALUES
 (2, 'Patrimonio'),
 (3, 'estoque'),
 (4, 'administrador'),
-(5, 'contratos');
+(5, 'contratos'),
+(6, 'ccooperacao'),
+(7, 'cco');
 
 -- --------------------------------------------------------
 
@@ -1297,7 +1639,10 @@ INSERT INTO `transferencias` (`id`, `patrimonio_id`, `destino`, `data_transferen
 (1, 1, 'DIRAF', '2024-11-21', NULL, '2024-11-21 07:07:51', '2024-11-21 07:07:51', 'Claudia', ''),
 (4, 1, 'GERCOM', '2024-11-24', NULL, '2024-11-23 23:43:46', '2024-11-23 23:43:46', 'Claudia', ''),
 (5, 1, 'ASSPRIN', '2024-11-24', NULL, '2024-11-23 23:51:43', '2024-11-23 23:51:43', 'Claudia', 'Transferido'),
-(6, 1, 'SUPLAN', '2024-11-24', NULL, '2024-11-23 23:57:44', '2024-11-23 23:57:44', 'Claudia', 'Transferido');
+(6, 1, 'SUPLAN', '2024-11-24', NULL, '2024-11-23 23:57:44', '2024-11-23 23:57:44', 'Claudia', 'Transferido'),
+(7, 1, 'CONFIS', '2025-06-09', NULL, '2025-06-09 16:54:41', '2025-06-09 16:54:41', 'Claudia', 'Transferido'),
+(8, 1, 'CONFIS', '2025-06-09', NULL, '2025-06-09 16:57:46', '2025-06-09 16:57:46', 'Claudia', 'Transferido'),
+(9, 8, 'COMAUD', '2025-06-09', NULL, '2025-06-09 17:00:27', '2025-06-09 17:00:27', 'maik', 'Transferido');
 
 -- --------------------------------------------------------
 
@@ -1326,30 +1671,10 @@ CREATE TABLE `transicao` (
   `id` int(11) NOT NULL,
   `material_id` int(11) NOT NULL,
   `quantidade` int(11) NOT NULL,
+  `valor_custo_total` decimal(10,2) NOT NULL,
   `data` date NOT NULL,
   `tipo` enum('Entrada','Saida') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Despejando dados para a tabela `transicao`
---
-
-INSERT INTO `transicao` (`id`, `material_id`, `quantidade`, `data`, `tipo`) VALUES
-(4, 4, 123, '2025-05-27', 'Entrada'),
-(5, 4, 123, '2025-05-27', 'Entrada'),
-(6, 1, 2, '2025-05-27', 'Entrada'),
-(7, 4, 12, '2025-05-27', 'Entrada'),
-(8, 4, 12, '2025-05-27', 'Entrada'),
-(9, 1, 12, '2025-05-27', 'Entrada'),
-(10, 1, 12, '2025-05-27', 'Entrada'),
-(11, 4, 2, '2025-05-27', 'Entrada'),
-(12, 1, 23, '2025-05-27', 'Entrada'),
-(13, 5, 40, '2025-05-27', 'Entrada'),
-(14, 6, 40, '2025-05-27', 'Entrada'),
-(15, 7, 522, '2025-05-27', 'Entrada'),
-(16, 7, 522, '2025-05-27', 'Entrada'),
-(17, 8, 412, '2025-05-27', 'Entrada'),
-(18, 4, 1, '2025-05-27', 'Entrada');
 
 -- --------------------------------------------------------
 
@@ -1363,7 +1688,7 @@ CREATE TABLE `usuario` (
   `senha` varchar(255) NOT NULL,
   `matricula` varchar(20) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `setor` enum('administrador','estoque','patrimonio','financeiro','contratos') NOT NULL,
+  `setor` enum('administrador','estoque','patrimonio','financeiro','contratos','ccooperacao','cco') NOT NULL,
   `cargo` varchar(50) NOT NULL,
   `situacao` enum('ativo','inativo') DEFAULT 'ativo',
   `foto` varchar(255) DEFAULT 'default.png',
@@ -1381,10 +1706,12 @@ INSERT INTO `usuario` (`id`, `username`, `senha`, `matricula`, `email`, `setor`,
 (3, 'PAULO', '$2y$10$VpFjjjRo.J8QX6JFXBMa5.VsNlIkcZdxXxDGy2KjQgmcJIhvRFto6', '3', 'paulo@gmail.com', 'estoque', 'ASSESSOR', 'ativo', 'default.png', 1, '2024-11-21 02:54:34'),
 (4, 'PATRICIA', '$2y$10$J/b3Kn6/nP0XgmjxDmxKueOztTlZ0jNeeRrgywzZJwNxjKMvrsn.m', '4', 'patricia@gmail.com', 'estoque', 'GERENTE', 'ativo', 'default.png', 1, '2024-11-21 02:54:34'),
 (5, 'PAULO.S', '$2y$10$Qlj.UVDk7vNLhcn1ySlqxetP6wGr6EgJO3kWyBptVflKZiuXeplYq', '5', 'paulos@gmail.com', 'financeiro', 'SUPERINTENDENTE', 'ativo', 'default.png', 1, '2024-11-21 02:54:34'),
-(6, 'GABRIEL', '$2y$10$DEFqa14RkeKQvCzPfLOsQuHtbpD3TOFXJV/sEFJOaM2qhMhZaNoO2', '99000889', 'grodrigues@central.rj.gov.br', 'administrador', 'Analista de Suporte de Sistemas', 'ativo', 'perfil-user-673f82c52395e.jpg', 1, NULL),
+(6, 'GABRIEL', '$2y$10$a1.2umOUZWvquE1BzU7gg.zrAQhUAcXQ3Xrc6brRzmobxY2P3zRTC', '99000889', 'grodrigues@central.rj.gov.br', 'administrador', 'Analista de Suporte de Sistemas', 'ativo', 'perfil-user-673f82c52395e.jpg', 1, NULL),
 (9, 'Rita', '$2y$10$b1rZmXkpaeueSD.fC1jtt.aRWzP9zSiwKcA8mrblToKKmcWkZGuyS', '990002025', 'rita@central.rj.gov.br', 'contratos', 'ASSESSORA', 'ativo', 'default.png', 1, NULL),
 (10, 'CONTRATOS', '$2y$10$QG5qwt6JfD48s1.YqqS.M.7SUz/p5hBt4SiKnABpKiMN1cGLctEiW', '00', 'asscon@central.rj.gov.br', 'contratos', 'contratos', 'ativo', 'default.png', 1, '2025-03-25 11:43:45'),
-(11, 'MARCO', '$2y$10$V/PS4I1wx9viy9zkpuUMKO7B4AUC/PIRBI.ZZI6LYSvbSBDlQhAIi', '919', 'GERGEP@CENTRAL.RJ.GOV.BR', 'financeiro', 'SUPERINTENDENTE', 'ativo', 'default.png', 1, NULL);
+(11, 'MARCO', '$2y$10$V/PS4I1wx9viy9zkpuUMKO7B4AUC/PIRBI.ZZI6LYSvbSBDlQhAIi', '919', 'GERGEP@CENTRAL.RJ.GOV.BR', 'financeiro', 'SUPERINTENDENTE', 'ativo', 'default.png', 1, NULL),
+(12, 'BONDE', '$2y$10$RZ0H8zlSb3mp0rNckKM8fe0WHn2Hma19l33MElYEG5KZzQAIksOwK', '990078', 'bonde@central.rj.gov.br', 'ccooperacao', 'ASSESSOR', 'ativo', 'default.png', 1, NULL),
+(13, 'controle', '$2y$10$KzXaFQUFoZ3ilRZ.gPlI0OqNvfN5xh.Y4UtIdvsQp2httZrq0Od5u', 'contr50', 'controle@central.rj.gov.br', 'cco', 'ASSESSOR', 'ativo', 'default.png', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -1400,9 +1727,42 @@ CREATE TABLE `vencimentos_futuros` (
   `descricao` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `viagens`
+--
+
+CREATE TABLE `viagens` (
+  `id` varchar(20) NOT NULL,
+  `bonde_id` varchar(10) NOT NULL,
+  `origem` varchar(50) NOT NULL,
+  `destino` varchar(50) NOT NULL,
+  `motorneiro` varchar(100) NOT NULL,
+  `auxiliar` varchar(100) NOT NULL,
+  `validador` varchar(100) NOT NULL,
+  `passageiros_ida` int(11) NOT NULL,
+  `passageiros_volta` int(11) DEFAULT NULL,
+  `data_ida` datetime NOT NULL,
+  `data_volta` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `viagens`
+--
+
+INSERT INTO `viagens` (`id`, `bonde_id`, `origem`, `destino`, `motorneiro`, `auxiliar`, `validador`, `passageiros_ida`, `passageiros_volta`, `data_ida`, `data_volta`) VALUES
+('V-684C8B30CB8D9', 'teste', 'Santa Teresa', 'Lapa', 'elias', 'daniel', 'fabio', 22, 50, '2025-06-13 22:34:22', '2025-06-17 19:03:59');
+
 --
 -- Índices para tabelas despejadas
 --
+
+--
+-- Índices de tabela `bondes`
+--
+ALTER TABLE `bondes`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices de tabela `categorias`
@@ -1424,6 +1784,13 @@ ALTER TABLE `certidoes`
 --
 ALTER TABLE `codigo_atual`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `conferencias`
+--
+ALTER TABLE `conferencias`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_conferencia` (`produto_id`,`mes_conferencia`);
 
 --
 -- Índices de tabela `configuracoes`
@@ -1605,6 +1972,13 @@ ALTER TABLE `vencimentos_futuros`
   ADD KEY `contrato_titulo` (`contrato_titulo`);
 
 --
+-- Índices de tabela `viagens`
+--
+ALTER TABLE `viagens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bonde_id` (`bonde_id`);
+
+--
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
@@ -1627,6 +2001,12 @@ ALTER TABLE `codigo_atual`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT de tabela `conferencias`
+--
+ALTER TABLE `conferencias`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+
+--
 -- AUTO_INCREMENT de tabela `configuracoes`
 --
 ALTER TABLE `configuracoes`
@@ -1636,7 +2016,7 @@ ALTER TABLE `configuracoes`
 -- AUTO_INCREMENT de tabela `contratos_parcelas`
 --
 ALTER TABLE `contratos_parcelas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=267;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=314;
 
 --
 -- AUTO_INCREMENT de tabela `controle_transicao`
@@ -1666,7 +2046,7 @@ ALTER TABLE `etapas_contratos`
 -- AUTO_INCREMENT de tabela `eventos`
 --
 ALTER TABLE `eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
 
 --
 -- AUTO_INCREMENT de tabela `fechamento`
@@ -1684,19 +2064,19 @@ ALTER TABLE `funcionario`
 -- AUTO_INCREMENT de tabela `gestao_contratos`
 --
 ALTER TABLE `gestao_contratos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=715;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=838;
 
 --
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT de tabela `ordens_compra`
@@ -1720,7 +2100,7 @@ ALTER TABLE `painel_config`
 -- AUTO_INCREMENT de tabela `patrimonio`
 --
 ALTER TABLE `patrimonio`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT de tabela `permissoes`
@@ -1732,13 +2112,13 @@ ALTER TABLE `permissoes`
 -- AUTO_INCREMENT de tabela `prestacao_contas`
 --
 ALTER TABLE `prestacao_contas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `produtos`
 --
 ALTER TABLE `produtos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `relatorios_agendados`
@@ -1750,13 +2130,13 @@ ALTER TABLE `relatorios_agendados`
 -- AUTO_INCREMENT de tabela `setores`
 --
 ALTER TABLE `setores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de tabela `transferencias`
 --
 ALTER TABLE `transferencias`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de tabela `transferencia_historico`
@@ -1768,13 +2148,13 @@ ALTER TABLE `transferencia_historico`
 -- AUTO_INCREMENT de tabela `transicao`
 --
 ALTER TABLE `transicao`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de tabela `vencimentos_futuros`
@@ -1791,6 +2171,12 @@ ALTER TABLE `vencimentos_futuros`
 --
 ALTER TABLE `certidoes`
   ADD CONSTRAINT `fk_contrato` FOREIGN KEY (`contrato_id`) REFERENCES `gestao_contratos` (`id`) ON DELETE SET NULL;
+
+--
+-- Restrições para tabelas `conferencias`
+--
+ALTER TABLE `conferencias`
+  ADD CONSTRAINT `conferencias_ibfk_1` FOREIGN KEY (`produto_id`) REFERENCES `produtos` (`id`);
 
 --
 -- Restrições para tabelas `contratos_parcelas`

@@ -101,12 +101,12 @@ try {
             break;
              case 'sisbonde':
             $menuItens = [
-                ['link' => 'paineloperacaobonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
-                ['link' => 'homebonde.php', 'nome' => 'Home', 'icon' => 'cogs'],               
-                 ['link' => 'sisbonde.php', 'nome' => 'Sisbonde', 'icon' => 'home'],
+                ['link' => 'painelbonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
+                ['link' => 'homebonde.php', 'nome' => 'Operacao', 'icon' => 'home'],               
+           
                 ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios de Acidentes', 'icon' => 'home'],
                 ['link' => 'reportacidentes.php', 'nome' => 'Registrar Acidentes', 'icon' => 'home'],
-                  ['link' => 'manutencaobonde.php', 'nome' => 'Registrar Acidentes', 'icon' => 'home'],
+                  ['link' => 'manutencaobonde.php', 'nome' => 'Registro de manutenção', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
   
             ];
@@ -114,7 +114,7 @@ try {
 
         case 'ccooperacao':
             $menuItens = [
-                ['link' => 'paineloperacaobonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
+                ['link' => 'painelbonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
                 ['link' => 'operacao.php', 'nome' => 'Home', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
   

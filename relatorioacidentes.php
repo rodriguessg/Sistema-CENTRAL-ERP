@@ -1,40 +1,54 @@
 <?php
 session_start();
 
+// Conexão com o banco
 $host = 'localhost';
 $user = 'root';
 $password = '';
 $dbname = 'gm_sicbd';
 
 $conn = new mysqli($host, $user, $password, $dbname);
+include 'header.php';
 
+// Verifica conexão
 if ($conn->connect_error) {
     die("Erro na conexão com o banco de dados: " . $conn->connect_error);
 }
 
+// Verifica sessão
 if (!isset($_SESSION['username'])) {
     die("Erro: Usuário não autenticado ou sessão expirada!");
 }
 $username = $_SESSION['username'];
 
-// Consulta para exibir relatórios de acidentes
-$sql_select = "SELECT data, descricao, produto_afetado, quantidade_afetada, localizacao, usuario, data_registro FROM acidentes ORDER BY data_registro DESC";
-$result = $conn->query($sql_select);
+// Ativa erros PHP
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-include 'header.php';
+// Consulta acidentes
+$sql = "SELECT data, descricao, localizacao, severidade, categoria, usuario, data_registro FROM acidentes ORDER BY data_registro DESC";
+$result = $conn->query($sql);
+
+// Verifica se a consulta foi executada corretamente
+if (!$result) {
+    die("Erro na consulta SQL: " . $conn->error);
+}
+
+// Verifica se há dados
+$temDados = ($result instanceof mysqli_result && $result->num_rows > 0);
+
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatório de Acidentes</title>
     <link rel="stylesheet" href="src/estoque/style/estoque2.css">
     <link rel="stylesheet" href="src/estoque/style/linhadotempo.css">
-     <link rel="stylesheet" href="src/style/tabs.css">
+    <link rel="stylesheet" href="src/style/tabs.css">
     <style>
-     
+        /* [estilos iguais ao seu código original omitidos para brevidade] */
         .container {
             max-width: 1200px;
             margin: 20px auto;
@@ -79,8 +93,7 @@ include 'header.php';
             background-color: #3498db;
             color: white;
         }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        tr:hover { background-color: #f1f1f1; }
+       
         .attention-zones {
             background-color: white;
             border-radius: 8px;
@@ -100,47 +113,55 @@ include 'header.php';
             margin-bottom: 10px;
             color: #333;
         }
+        .no-data {
+            padding: 10px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>Relatório de Acidentes</h1>
     </div>
+
     <div class="container">
         <div>
             <div class="button-container">
                 <button onclick="window.location.href='reportacidentes.php'">Registrar Novo Acidente</button>
             </div>
+
             <div class="accidents-table">
                 <h2>Histórico de Acidentes</h2>
-                <?php if ($result->num_rows > 0): ?>
+
+                <?php if ($temDados): ?>
                     <table>
                         <tr>
                             <th>Data</th>
                             <th>Descrição</th>
-                            <th>Produto Afetado</th>
-                            <th>Quantidade Afetada</th>
                             <th>Localização</th>
+                            <th>Severidade</th>
+                            <th>Categoria</th>
                             <th>Usuário</th>
                             <th>Data de Registro</th>
                         </tr>
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
-                                <td><?php echo $row['data']; ?></td>
-                                <td><?php echo $row['descricao']; ?></td>
-                                <td><?php echo $row['produto_afetado']; ?></td>
-                                <td><?php echo $row['quantidade_afetada']; ?></td>
-                                <td><?php echo $row['localizacao'] ?: 'N/A'; ?></td>
-                                <td><?php echo $row['usuario']; ?></td>
-                                <td><?php echo $row['data_registro']; ?></td>
+                                <td><?= htmlspecialchars($row['data']) ?></td>
+                                <td><?= htmlspecialchars($row['descricao']) ?></td>
+                                <td><?= htmlspecialchars($row['localizacao']) ?></td>
+                                <td><?= htmlspecialchars($row['severidade']) ?></td>
+                                <td><?= htmlspecialchars($row['categoria']) ?></td>
+                                <td><?= htmlspecialchars($row['usuario']) ?></td>
+                                <td><?= htmlspecialchars($row['data_registro']) ?></td>
                             </tr>
                         <?php endwhile; ?>
                     </table>
                 <?php else: ?>
-                    <p>Nenhum acidente registrado.</p>
+                    <div class="no-data">Nenhum acidente registrado.</div>
                 <?php endif; ?>
             </div>
         </div>
+
         <div class="attention-zones">
             <h3>Zonas de Atenção</h3>
             <ul>

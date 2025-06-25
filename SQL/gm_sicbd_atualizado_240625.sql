@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 23/06/2025 às 14:16
+-- Tempo de geração: 24/06/2025 às 19:45
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.0.28
 
@@ -20,6 +20,31 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `gm_sicbd`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `acidentes`
+--
+
+CREATE TABLE `acidentes` (
+  `id` int(11) NOT NULL,
+  `data` date NOT NULL,
+  `descricao` text NOT NULL,
+  `localizacao` varchar(255) DEFAULT NULL,
+  `usuario` varchar(100) NOT NULL,
+  `severidade` varchar(50) NOT NULL,
+  `categoria` varchar(100) NOT NULL,
+  `data_registro` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `acidentes`
+--
+
+INSERT INTO `acidentes` (`id`, `data`, `descricao`, `localizacao`, `usuario`, `severidade`, `categoria`, `data_registro`) VALUES
+(1, '2025-06-23', 'teste', 'SALA 501', 'controle', 'Leve', 'Outros', '2025-06-23 12:29:39'),
+(2, '2025-06-23', 'teste 2 ', 'sala 703', 'controle', 'Moderado', 'Descarrilamento', '2025-06-23 13:50:39');
 
 -- --------------------------------------------------------
 
@@ -237,15 +262,6 @@ CREATE TABLE `controle_transicao` (
   `id` int(11) NOT NULL,
   `mes` varchar(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Despejando dados para a tabela `controle_transicao`
---
-
-INSERT INTO `controle_transicao` (`id`, `mes`) VALUES
-(1, '2025-03'),
-(2, '2025-04'),
-(3, '2025-05');
 
 -- --------------------------------------------------------
 
@@ -661,7 +677,16 @@ INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gest
 (47, 'WEBTRIP', 'SEI-100006/000422/2024		', 'Prestação de serviços de agência de viagens, consistindo em: reserva, cancelamento, marcação, remarcação, emissão e entrega de bilhetes de passagens aéreas no âmbito nacional e internacional; emissão de seguro de assistência em viagem internacional', '	 RAPHAELA BATISTA SALDANHA', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'EMILLY MARTINS DOS SANTOS // ANDRE MIRANDA LOBÃO TAVARES MENDONÇA // ISABELLA DE SOUZA CHRYSOSTOMO', '2024-07-25', '\"BRADESCO A', '100', '2024-07-25', '2024-07-25', '3390.33.01', 'Sem Despesas', 'Não', 'servico1', 0.00, 100000.00, NULL, NULL, '.', 'Ativo', '2025-06-16 18:31:55', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
 (48, 'MOBILESAT', ' 	SEI-100006/001573/2021		', 'Serviços de licença de uso de software monitoramento via satélite com tecnologia GPS/GSM/GPRS, contemplando hardware e software																							', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'RAPHAELA BATISTA SALDANHA', 'FISCAIS TECNICICOS - FÁBIO CORRÊA BARBOSA / THIAGO NETO DE OLIVIERA-  FISCAL ADM- ISABELLA DE SOUZA CHRYSOSTOMO', '2024-11-08', '\"BRADESCO  ', '100', '2024-11-07', '2024-11-08', '33903039', 'Sem Despesas', 'Não', 'servico1', 0.00, 7680.00, NULL, NULL, '.', 'Ativo', '2025-06-16 19:04:11', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'obra', 0.00, NULL, NULL),
 (49, 'PRIME ', 'SEI-100006/000479/2023		', ' Contratação de empresa especializada para prestação de serviços de gerenciamento de abastecimento da frota de veículos oficiais do CENTRAL, com implantação, intermediação e administração de um sistema informatizado e integrado, com utilização de tag/etiqueta com tecnologia RFID ou similar de gerenciamento de frota em estabelecimentos credenciados, compreendendo a distribuição de etanol,  gasolina (comum/aditivada) e diesel(comum s/10).												', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'SEM GESTOR ', 'EMILLY MARTINS DOS SANTOS, //  ISABELLA DE SOUZA CHRYSOSTOMO', '2025-05-08', '\"BRADESCO C', '100', '2025-05-12', '2025-05-08', '33903039', 'Sem Despesas', 'Não', 'servico1', 0.00, 188403.29, NULL, NULL, '188.403,29 (Contrato + 1 TA + 2 TA + 3 TA)\r\n', 'Ativo', '2025-06-18 18:40:07', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
-(50, 'LIBEX', 'SEI-100006/000346/2023		', 'Prestação de serviços de LOCAÇÃO DE 5 VEÍCULOS ESPECIAIS', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'RAPHAELA BATISTA SALDANHA', 'EMILLY MARTINS DOS SANTOS, //  ISABELLA DE SOUZA CHRYSOSTOMO', '2023-05-19', '\"BRADESCO C', '100', '2023-05-19', '2023-05-19', '33903913', 'Sem Despesas', 'Não', 'servico1', 0.00, 433279.35, NULL, NULL, '.', 'Ativo', '2025-06-18 20:02:16', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL);
+(50, 'LIBEX', 'SEI-100006/000346/2023		', 'Prestação de serviços de LOCAÇÃO DE 5 VEÍCULOS ESPECIAIS', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'RAPHAELA BATISTA SALDANHA', 'EMILLY MARTINS DOS SANTOS, //  ISABELLA DE SOUZA CHRYSOSTOMO', '2023-05-19', '\"BRADESCO C', '100', '2023-05-19', '2023-05-19', '33903913', 'Sem Despesas', 'Não', 'servico1', 0.00, 433279.35, NULL, NULL, '.', 'Ativo', '2025-06-18 20:02:16', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(51, 'MRS', ' E-10/300.102/2010.		', 'Regulamentação do direito de passagem												', 'MARCIO RODRIGUES', 'SEM GESTOR ', 'DAVI VIANNA DE MACEDO OLIVEIRA-RAPHAELA BATISTA SALDANHA-RODRIGO PAES OSÓRIO TOSTA-DANILLO CUNHA PAULA', '0001-01-01', '0000', '0000', '0001-01-01', '0001-01-01', '00000', 'Sem Despesas', 'Não', 'servico1', 0.00, 0.00, NULL, NULL, '..', 'Ativo', '2025-06-23 13:41:24', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(52, 'LIGTH', 'SEI-100006/000244/2020		', 'Fornecimento de energia - Carlos Brandt - Código de instalação: 0400046264												', '	 DAVI VIANNA DE MACEDO OLIVEIRA ', 'SEM GESTOR ', 'EMILLY MARTINS DOS SANTOS', '0001-01-01', '\"BRADESCO  ', '100', '0001-01-01', '0001-01-01', '33903911', 'Sem Despesas', 'Não', 'servico1', 0.00, 260000.00, NULL, NULL, 'Contrato renovado automaticamente. ', 'Ativo', '2025-06-23 16:53:59', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(53, 'FIEL', 'SEI-100006/001021/2023		', 'Contratação de prestação de serviços de bondes elétricos de transporte de passageiros no Sistema de Bondes de Santa Teresa/RJ, por meio de disponibilização de mão de obra qualificada												', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'RAPHAELA BATISTA SALDANHA', 'EMILLY MARTINS DOS SANTOS', '2023-10-20', '\"BRADESCO  ', '100', '2023-10-16', '2023-10-20', '3390.39.38', 'Sem Despesas', 'Não', 'servico1', 0.00, 4742540.77, NULL, NULL, '.', 'Ativo', '2025-06-23 17:35:42', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'obra', 0.00, NULL, NULL),
+(54, 'DELTA FLORENSE ', 'SEI-100006/000973/2023		', 'Contratação de pessoa jurídica para prestação de serviço de monitoramento (compreendendo-se captação, leitura e envio via e-mail) de publicações das decisões judiciais nos Diários Oficiais, a fim de auxiliar a defesa das Companhias em juízo, quais sejam: Companhia Fluminense de Trens Urbanos – Flumitrens; e Companhia Estadual de Engenharia de Transportes e Logística – Central												', 'RAPHAELA BATISTA SALDANHA', 'SEM GESTOR ', 'DAVI VIANNA DE MACEDO - EMILLY MARTINS DOS SANTOS', '2023-11-01', '\"BRADESCO  ', '100', '2023-11-01', '2023-11-01', '3390.39.82', 'Sem Despesas', 'Não', 'servico1', 0.00, 0.00, NULL, NULL, '.', 'Ativo', '2025-06-23 18:01:28', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'obra', 0.00, NULL, NULL),
+(55, 'MPE ENGENHARIA', 'SEI-100006/001175/2023		', 'Projeto Executivo e execução de serviços complementares de recuperação da Via Permanente e da Rede Aérea no Sistema de Bondes de Santa Teresa da Cidade do Rio de Janeiro - \"Ramal Dois Irmãos - Silvestre\" e \"Ramal Largo do Guimarães - Largo das Neves													', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'SEM GESTOR ', 'RENATO FELIX NEVES// RAPHAELA BATISTA SALDANHA//JORGE CHAVES JUNIOR', '2023-09-22', '\"BRADESCO  ', '151 (FECAM)', '2023-09-22', '2023-09-22', '4490.51.07', 'Sem Despesas', 'Não', 'servico1', 0.00, 69800000.00, NULL, NULL, '.', 'Ativo', '2025-06-23 18:53:05', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'obra', 0.00, NULL, NULL),
+(56, 'GALATAS', 'SEI-100006/000254/2024		', 'Locação de 18 (dezoito) transceptores portáteis para o Sistema de Bondes de Santa Teresa												', '	 RAPHAELA BATISTA SALDANHA', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'EMILLY MARTINS DOS SANTOS//FÁBIO CORRÊA BARBOSA//BRUNO ALMEIDA DOS SANTOS', '2024-06-09', '\"BRADESCO  ', '100', '2024-06-12', '2024-06-12', '33.90.39.14', 'Sem Despesas', 'Não', 'servico1', 0.00, 47088.00, NULL, NULL, '.\r\n', 'Ativo', '2025-06-23 19:04:44', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(57, 'GREEN CARD', 'SEI-100006/000589/2023		', 'Prestação de serviço de administração e emissão de CARTÕES magnéticos com chip, conforme tecnologia disponível, para concessão dos benefícios AUXÍLIO-ALIMENTAÇÃO, em REFEIÇÕES e/ou GÊNEROS ALIMENTÍCIOS (ALIMENTAÇÃO)												', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'RAPHAELA BATISTA SALDANHA', '	EMILLY MARTINS DOS SANTOS//VALDENICE ALVES DA SILVA DE PAULA', '2022-09-19', '\"BRADESCO  ', '100', '2025-01-01', '2025-01-01', '33.903.941', 'Sem Despesas', 'Não', 'servico1', 0.00, 4322640.00, NULL, NULL, '.', 'Ativo', '2025-06-23 19:26:47', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
+(58, 'MPE ENGENHARIA ', 'SEI-100006/001175/2023		', 'Projeto Executivo e execução de serviços complementares de recuperação da Via Permanente e da Rede Aérea no Sistema de Bondes de Santa Teresa da Cidade do Rio de Janeiro - \"Ramal Dois Irmãos - Silvestre\" e \"Ramal Largo do Guimarães - Largo das Neves													', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'SEM GESTOR ', 'RENATO FELIX NEVES // JOSE CARLOS DE ALMEIDA// FABRÍCIO ANTONIO RIBEIRO LOBO//	 JORGE CHAVES JUNIOR//  FISCAL ADM 	 RAPHAELA BATISTA SALDANHA', '2023-11-22', '\"BRADESCO  ', '151 (FECAM)', '2023-11-22', '2023-11-22', '4490.51.07', 'Sem Despesas', 'Não', 'servico1', 0.00, 69800000.00, NULL, NULL, '.', 'Ativo', '2025-06-24 14:08:02', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'obra', 0.00, NULL, NULL),
+(59, 'ALT & RAILTECO', 'SEI-100006/000030/2024		', 'Reperfilamento de 20 (vinte) Aros de Rodas												', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'RAPHAELA BATISTA SALDANHA', '	 THIAGO NETO DE OLIVEIRA//BRUNO ALMEIDA DOS SANTOS//	 EMILLY MARTINS DOS SANTOS', '2024-12-13', '\"BRADESCO  ', '100', '2024-12-13', '2024-12-13', '33.90.39.17', 'Sem Despesas', 'Não', 'servico1', 0.00, 75900.00, NULL, NULL, '.', 'Ativo', '2025-06-24 14:32:32', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1165,7 +1190,38 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (834, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 17:11:25'),
 (835, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 17:12:42'),
 (836, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 18:25:09'),
-(837, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 18:37:41');
+(837, 'MASTER', 'cadastrou ou atualizou o produto no estoque', '2025-06-18 18:37:41'),
+(838, 'BONDE', 'Login falhou: Setor incorreto', '2025-06-23 13:22:37'),
+(839, 'contratos', 'Login falhou: Senha inválida', '2025-06-23 13:23:07'),
+(840, 'contratos', 'Login bem-sucedido', '2025-06-23 13:23:22'),
+(841, 'controle', 'Login bem-sucedido', '2025-06-23 13:24:45'),
+(842, 'bonde', 'Login bem-sucedido', '2025-06-23 19:05:08'),
+(843, 'contratos', 'Login bem-sucedido', '2025-06-24 13:03:29');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `manutencoes`
+--
+
+CREATE TABLE `manutencoes` (
+  `id` int(11) NOT NULL,
+  `data` date NOT NULL,
+  `tipo` varchar(50) NOT NULL CHECK (`tipo` in ('Preventiva','Realizada')),
+  `descricao` text NOT NULL,
+  `bonde_afetado` varchar(100) NOT NULL,
+  `localidade` varchar(255) DEFAULT NULL,
+  `status` varchar(50) NOT NULL CHECK (`status` in ('Pendente','Em Andamento','Concluída')),
+  `usuario` varchar(255) NOT NULL,
+  `data_registro` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `manutencoes`
+--
+
+INSERT INTO `manutencoes` (`id`, `data`, `tipo`, `descricao`, `bonde_afetado`, `localidade`, `status`, `usuario`, `data_registro`) VALUES
+(1, '2025-06-23', 'Preventiva', 'teste', 'BO2', 'oficina', 'Pendente', 'controle', '2025-06-23 14:59:27');
 
 -- --------------------------------------------------------
 
@@ -1611,7 +1667,7 @@ INSERT INTO `setores` (`id`, `nome_setor`) VALUES
 (4, 'administrador'),
 (5, 'contratos'),
 (6, 'ccooperacao'),
-(7, 'cco');
+(7, 'sisbonde');
 
 -- --------------------------------------------------------
 
@@ -1688,7 +1744,7 @@ CREATE TABLE `usuario` (
   `senha` varchar(255) NOT NULL,
   `matricula` varchar(20) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `setor` enum('administrador','estoque','patrimonio','financeiro','contratos','ccooperacao','cco') NOT NULL,
+  `setor` enum('administrador','estoque','patrimonio','financeiro','contratos','ccooperacao','sisbonde') NOT NULL,
   `cargo` varchar(50) NOT NULL,
   `situacao` enum('ativo','inativo') DEFAULT 'ativo',
   `foto` varchar(255) DEFAULT 'default.png',
@@ -1711,7 +1767,7 @@ INSERT INTO `usuario` (`id`, `username`, `senha`, `matricula`, `email`, `setor`,
 (10, 'CONTRATOS', '$2y$10$QG5qwt6JfD48s1.YqqS.M.7SUz/p5hBt4SiKnABpKiMN1cGLctEiW', '00', 'asscon@central.rj.gov.br', 'contratos', 'contratos', 'ativo', 'default.png', 1, '2025-03-25 11:43:45'),
 (11, 'MARCO', '$2y$10$V/PS4I1wx9viy9zkpuUMKO7B4AUC/PIRBI.ZZI6LYSvbSBDlQhAIi', '919', 'GERGEP@CENTRAL.RJ.GOV.BR', 'financeiro', 'SUPERINTENDENTE', 'ativo', 'default.png', 1, NULL),
 (12, 'BONDE', '$2y$10$RZ0H8zlSb3mp0rNckKM8fe0WHn2Hma19l33MElYEG5KZzQAIksOwK', '990078', 'bonde@central.rj.gov.br', 'ccooperacao', 'ASSESSOR', 'ativo', 'default.png', 1, NULL),
-(13, 'controle', '$2y$10$KzXaFQUFoZ3ilRZ.gPlI0OqNvfN5xh.Y4UtIdvsQp2httZrq0Od5u', 'contr50', 'controle@central.rj.gov.br', 'cco', 'ASSESSOR', 'ativo', 'default.png', 1, NULL);
+(13, 'controle', '$2y$10$KzXaFQUFoZ3ilRZ.gPlI0OqNvfN5xh.Y4UtIdvsQp2httZrq0Od5u', 'contr50', 'controle@central.rj.gov.br', 'sisbonde', 'ASSESSOR', 'ativo', 'default.png', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -1752,11 +1808,18 @@ CREATE TABLE `viagens` (
 --
 
 INSERT INTO `viagens` (`id`, `bonde_id`, `origem`, `destino`, `motorneiro`, `auxiliar`, `validador`, `passageiros_ida`, `passageiros_volta`, `data_ida`, `data_volta`) VALUES
-('V-684C8B30CB8D9', 'teste', 'Santa Teresa', 'Lapa', 'elias', 'daniel', 'fabio', 22, 50, '2025-06-13 22:34:22', '2025-06-17 19:03:59');
+('V-684C8B30CB8D9', 'teste', 'Santa Teresa', 'Lapa', 'elias', 'daniel', 'fabio', 22, 50, '2025-06-13 22:34:22', '2025-06-23 21:04:52'),
+('V-68599B85AEC43', 'teste', 'Centro', 'Gloria', 'maik', 'celso', 'alexandre', 20, 12, '2025-06-23 20:23:28', '2025-06-23 21:05:38');
 
 --
 -- Índices para tabelas despejadas
 --
+
+--
+-- Índices de tabela `acidentes`
+--
+ALTER TABLE `acidentes`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices de tabela `bondes`
@@ -1861,6 +1924,12 @@ ALTER TABLE `gestao_contratos`
 -- Índices de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `manutencoes`
+--
+ALTER TABLE `manutencoes`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1983,6 +2052,12 @@ ALTER TABLE `viagens`
 --
 
 --
+-- AUTO_INCREMENT de tabela `acidentes`
+--
+ALTER TABLE `acidentes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de tabela `categorias`
 --
 ALTER TABLE `categorias`
@@ -2022,7 +2097,7 @@ ALTER TABLE `contratos_parcelas`
 -- AUTO_INCREMENT de tabela `controle_transicao`
 --
 ALTER TABLE `controle_transicao`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `data_criacao`
@@ -2064,13 +2139,19 @@ ALTER TABLE `funcionario`
 -- AUTO_INCREMENT de tabela `gestao_contratos`
 --
 ALTER TABLE `gestao_contratos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=838;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=844;
+
+--
+-- AUTO_INCREMENT de tabela `manutencoes`
+--
+ALTER TABLE `manutencoes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `notificacoes`

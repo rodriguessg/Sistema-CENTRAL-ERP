@@ -13,6 +13,8 @@ function generateTripId() {
     return 'V-' . strtoupper(uniqid());
 }
 
+$setor = $_SESSION['setor'] ?? '';
+
 $new_trip_id = generateTripId();
 
 // Fetch existing trips

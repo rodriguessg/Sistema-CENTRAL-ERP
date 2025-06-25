@@ -6,6 +6,12 @@ try {
         throw new Exception("Falha na conexão com o banco de dados.");
     }
 } catch (Exception $e) {
+    // Se for uma requisição AJAX, retornar erro como JSON
+    if (isset($_GET['action']) && $_GET['action'] === 'get_trips') {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        exit();
+    }
     die("Erro: " . $e->getMessage());
 }
 
@@ -15,27 +21,55 @@ function generateTripId() {
 
 $new_trip_id = generateTripId();
 
-// Fetch existing trips
+// Handle AJAX request for trips
+if (isset($_GET['action']) && $_GET['action'] === 'get_trips') {
+    header('Content-Type: application/json');
+    $stmt_trips = $pdo->query("SELECT v.id, v.bonde_id, v.origem, v.destino, v.passageiros_ida, v.passageiros_volta, v.data_ida, v.data_volta, b.modelo 
+                        FROM viagens v 
+                        LEFT JOIN bondes b ON v.bonde_id = b.id");
+    if ($stmt_trips === false) {
+        error_log("Erro na consulta de viagens: " . print_r($pdo->errorInfo(), true));
+        echo json_encode(['success' => false, 'message' => 'Erro ao carregar viagens.']);
+    } else {
+        $existing_trips = $stmt_trips->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode(['success' => true, 'data' => $existing_trips]);
+    }
+    exit();
+}
+
+// Fetch existing trips for initial render
 $stmt_trips = $pdo->query("SELECT v.id, v.bonde_id, v.origem, v.destino, v.passageiros_ida, v.passageiros_volta, v.data_ida, v.data_volta, b.modelo 
                     FROM viagens v 
                     LEFT JOIN bondes b ON v.bonde_id = b.id");
-$existing_trips = $stmt_trips->fetchAll(PDO::FETCH_ASSOC);
+if ($stmt_trips === false) {
+    error_log("Erro na consulta inicial de viagens: " . print_r($pdo->errorInfo(), true));
+    $existing_trips = [];
+} else {
+    $existing_trips = $stmt_trips->fetchAll(PDO::FETCH_ASSOC);
+}
 
 // Fetch bondes for dropdowns and layout section
 $stmt_bondes = $pdo->query("SELECT id, modelo, descricao, capacidade FROM bondes");
-$bondes = $stmt_bondes->fetchAll(PDO::FETCH_ASSOC);
+if ($stmt_bondes === false) {
+    error_log("Erro na consulta de bondes: " . print_r($pdo->errorInfo(), true));
+    $bondes = [];
+} else {
+    $bondes = $stmt_bondes->fetchAll(PDO::FETCH_ASSOC);
+}
 
 // Calculate average travel time
 function calculateAverageTravelTime($trips) {
     $total_duration = 0;
     $count = 0;
     foreach ($trips as $trip) {
-        if (isset($trip['data_ida']) && isset($trip['data_volta'])) {
+        if (isset($trip['data_ida']) && $trip['data_ida'] && isset($trip['data_volta']) && $trip['data_volta']) {
             $start = new DateTime($trip['data_ida']);
             $end = new DateTime($trip['data_volta']);
             $duration = $end->getTimestamp() - $start->getTimestamp();
-            $total_duration += $duration;
-            $count++;
+            if ($duration > 0) {
+                $total_duration += $duration;
+                $count++;
+            }
         }
     }
     if ($count > 0) {
@@ -48,67 +82,27 @@ function calculateAverageTravelTime($trips) {
 }
 $average_time = calculateAverageTravelTime($existing_trips);
 
-// Search functionality for Layout tab
-$search_query = isset($_GET['search']) ? strtolower($_GET['search']) : '';
-$filtered_bondes = $search_query ? array_filter($bondes, fn($bonde) => strpos(strtolower($bonde['modelo']), $search_query) !== false) : $bondes;
-
-if (isset($_GET['action']) && $_GET['action'] === 'get_trips') {
-    echo json_encode($existing_trips);
-    exit();
-}
 include 'header.php';
 ?>
 
 <!DOCTYPE html>
-<html lang="Pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Bondes - Santa Teresa</title>
     <link rel="stylesheet" href="src/bonde/style/bonde.css">
     <link rel="stylesheet" href="src/style/tabs.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
-        .caderno { max-width: 1200px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
-        .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 20px; }
-        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; background: #e0e0e0; transition: background 0.3s; }
-        
-        .form-container { display: none; padding: 20px; }
-        .form-container.active { display: block; }
-        .form-container h2 { margin-top: 0; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        .form-group input[readonly] { background: #e9ecef; }
-        .form-group button { padding: 10px 20px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-        .form-group button:hover { background: #0056b3; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        table, th, td { border: 1px solid #ccc; }
-        th, td { padding: 10px; text-align: left; }
-   
  
-    </style>
 </head>
 <body>
     <div class="caderno">
         <div class="tabs">
-            <div class="tab" data-tab="cadastrar" onclick="showTab('cadastrar')">
-                <i class="fas fa-plus-circle"></i> Cadastrar Bonde
-            </div>
-            <div class="tab" data-tab="passageiros" onclick="showTab('passageiros')">
-                <i class="fas fa-users"></i> Gerenciar Passageiros (Ida)
-            </div>
-            <div class="tab" data-tab="controle" onclick="showTab('controle')">
-                <i class="fas fa-route"></i> Controle de Viagens
-            </div>
-            <div class="tab" data-tab="manutencao" onclick="showTab('manutencao')">
-                <i class="fas fa-tools"></i> Manutenção
-            </div>
-        
-            <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
-                <i class="fas fa-file-alt"></i> Relatórios
-            </div>
+            <div class="tab" data-tab="cadastrar" onclick="showTab('cadastrar')">Cadastrar Bonde</div>
+            <div class="tab" data-tab="passageiros" onclick="showTab('passageiros')">Gerenciar Passageiros (Ida)</div>
+            <div class="tab" data-tab="controle" onclick="showTab('controle')">Controle de Viagens</div>
+            <div class="tab" data-tab="manutencao" onclick="showTab('manutencao')">Manutenção</div>
+            <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">Relatórios</div>
         </div>
 
         <!-- Cadastrar Bonde -->
@@ -121,15 +115,15 @@ include 'header.php';
                 </div>
                 <div class="form-group">
                     <label for="capacidade">Capacidade (passageiros)</label>
-                    <input type="number" id="capacidade" name="capacidade" required>
+                    <input type="number" id="capacidade" name="capacidade" required min="1">
                 </div>
                 <div class="form-group">
                     <label for="ano_fabricacao">Ano de Fabricação</label>
-                    <input type="number" id="ano_fabricacao" name="ano_fabricacao" required>
+                    <input type="number" id="ano_fabricacao" name="ano_fabricacao" required min="1900" max="<?php echo date('Y'); ?>">
                 </div>
                 <div class="form-group">
-                    <label for="descricao">Descrição</label>
-                    <textarea id="descricao" name="descricao" required></textarea>
+                    <label for="descricao-cadastro-bonde">Descrição</label>
+                    <textarea id="descricao-cadastro-bonde" name="descricao-cadastro-bonde" required></textarea>
                 </div>
                 <div class="form-group">
                     <button type="submit">Cadastrar</button>
@@ -197,7 +191,7 @@ include 'header.php';
         <!-- Controle de Viagens -->
         <div class="form-container" id="controle">
             <h2>Controle de Viagens</h2>
-            <p>Tempo médio das viagens: <?php echo $average_time; ?></p>
+            <p>Tempo médio das viagens: <?php echo htmlspecialchars($average_time); ?></p>
             <table id="tripsTable">
                 <thead>
                     <tr>
@@ -211,20 +205,27 @@ include 'header.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($existing_trips as $viagem): ?>
-                        <?php $bonde_id = 'B' . $viagem['bonde_id']; ?>
-                        <?php $volta = isset($viagem['passageiros_volta']) ? $viagem['passageiros_volta'] : 'N/A'; ?>
-                        <?php $status = isset($viagem['passageiros_volta']) ? 'Concluída' : 'Pendente'; ?>
-                        <tr onclick="showModal('<?php echo $viagem['id']; ?>')">
-                            <td><?php echo $viagem['id']; ?></td>
-                            <td><?php echo $bonde_id . ' - ' . $viagem['modelo']; ?></td>
-                            <td><?php echo $viagem['origem']; ?></td>
-                            <td><?php echo $viagem['destino']; ?></td>
-                            <td><?php echo $viagem['passageiros_ida']; ?></td>
-                            <td><?php echo $volta; ?></td>
-                            <td><?php echo $status; ?></td>
-                        </tr>
-                    <?php endforeach; ?>
+                    <?php
+                    if (empty($existing_trips)) {
+                        echo "<tr><td colspan='7'>Nenhuma viagem registrada. Verifique se há dados na tabela 'viagens'.</td></tr>";
+                    } else {
+                        error_log("Renderizando " . count($existing_trips) . " viagens."); // Depuração
+                        foreach ($existing_trips as $viagem) {
+                            $bonde_id = 'B' . ($viagem['bonde_id'] ?? 'N/A');
+                            $volta = $viagem['passageiros_volta'] !== null ? $viagem['passageiros_volta'] : 'N/A';
+                            $status = $viagem['passageiros_volta'] !== null ? 'Concluída' : 'Pendente';
+                            echo "<tr onclick=\"showModal('" . htmlspecialchars($viagem['id']) . "')\">";
+                            echo "<td>" . htmlspecialchars($viagem['id'] ?? 'N/A') . "</td>";
+                            echo "<td>" . $bonde_id . ' - ' . htmlspecialchars($viagem['modelo'] ?? 'Desconhecido') . "</td>";
+                            echo "<td>" . htmlspecialchars($viagem['origem'] ?? 'N/A') . "</td>";
+                            echo "<td>" . htmlspecialchars($viagem['destino'] ?? 'N/A') . "</td>";
+                            echo "<td>" . htmlspecialchars($viagem['passageiros_ida'] ?? '0') . "</td>";
+                            echo "<td>" . $volta . "</td>";
+                            echo "<td>" . $status . "</td>";
+                            echo "</tr>";
+                        }
+                    }
+                    ?>
                 </tbody>
             </table>
         </div>
@@ -256,9 +257,6 @@ include 'header.php';
             </form>
         </div>
 
-        <!-- Layout do Bonde -->
-      
-
         <!-- Relatórios -->
         <div class="form-container" id="relatorio">
             <h2>Relatórios</h2>
@@ -272,9 +270,7 @@ include 'header.php';
             <div class="form-group">
                 <button onclick="gerarRelatorio()">Gerar Relatório</button>
             </div>
-            <div id="relatorio-resultado">
-                <!-- Resultado do relatório será inserido aqui -->
-            </div>
+            <div id="relatorio-resultado"></div>
         </div>
 
         <!-- Modal for Volta Registration -->
@@ -291,90 +287,34 @@ include 'header.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function showTab(tabId) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.form-container').forEach(container => container.classList.remove('active'));
-            document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-            if (tabId === 'controle' && window.location.search.includes('tab=controle')) {
+            const tab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+            const container = document.getElementById(tabId);
+            if (!tab || !container) {
+                console.error(`Tab or container with ID ${tabId} not found`);
+                return;
+            }
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.form-container').forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            container.classList.add('active');
+            if (tabId === 'controle') {
                 loadTrips();
             }
         }
 
-        function searchBondes() {
-            const query = $('#searchBonde').val();
-            window.location.href = `homebonde.php?tab=layout&search=${encodeURIComponent(query)}`;
-        }
-
-        function editBonde(id, modelo, descricao, capacidade) {
-            $('#editBondeId').val(id);
-            $('#editModelo').val(modelo);
-            $('#editDescricao').val(descricao);
-            $('#editCapacidade').val(capacidade);
-            $('#editModal').css('display', 'flex');
-
-            // Load or clear photo preview
-            const photoInput = $('#layoutPhoto')[0];
-            if (photoInput.files && photoInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#previewPhoto').attr('src', e.target.result);
-                };
-                reader.readAsDataURL(photoInput.files[0]);
-            } else {
-                $('#previewPhoto').attr('src', ''); // Clear if no file
-            }
-        }
-
-        function saveBonde() {
-            const id = $('#editBondeId').val();
-            const modelo = $('#editModelo').val();
-            const descricao = $('#editDescricao').val();
-            const capacidade = $('#editCapacidade').val();
-
-            $.post('update_bonde.php', { id: id, modelo: modelo, descricao: descricao, capacidade: capacidade }, function(response) {
-                if (response.success) {
-                    location.reload(); // Reload to reflect changes
-                } else {
-                    alert('Erro ao atualizar bonde.');
-                }
-            }, 'json').fail(function() {
-                alert('Erro na conexão com o servidor.');
-            });
-        }
-
-        function closeModal() {
-            $('#editModal, #voltaModal').css('display', 'none');
-            $('#editModelo').val('');
-            $('#editDescricao').val('');
-            $('#editCapacidade').val('');
-            $('#editBondeId').val('');
-            $('#volta_passengers').val('');
-        }
-
-        $('#layoutPhoto').on('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#previewPhoto').attr('src', e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
         function registerVolta() {
             const tripId = $('#voltaModal').data('tripId');
             const volta = $('#volta_passengers').val();
-            if (volta && volta >= 0) {
+            if (volta && parseInt(volta) >= 0) {
                 $.post('process_volta.php', { trip_id: tripId, volta: volta }, function(response) {
-                    if (response.success) {
+                    if (response && response.success) {
                         loadTrips();
                         closeModal();
                     } else {
-                        alert('Erro ao registrar volta.');
+                        alert('Erro ao registrar volta: ' + (response.message || ''));
                     }
-                }, 'json').fail(function() {
-                    alert('Erro na conexão com o servidor.');
+                }, 'json').fail(function(xhr, status, error) {
+                    alert('Erro na conexão com o servidor: ' + error);
                 });
             } else {
                 alert('Insira um número válido de passageiros.');
@@ -385,34 +325,48 @@ include 'header.php';
             $.get('homebonde.php', { action: 'get_trips' }, function(data) {
                 const tbody = $('#tripsTable tbody');
                 tbody.empty();
-                data.forEach(trip => {
-                    const bonde_id = 'B' + trip.bonde_id;
-                    const volta = trip.passageiros_volta !== null ? trip.passageiros_volta : 'N/A';
-                    const status = trip.passageiros_volta !== null ? 'Concluída' : 'Pendente';
-                    tbody.append(`<tr onclick="showModal('${trip.id}')">
-                        <td>${trip.id}</td>
-                        <td>${bonde_id} - ${trip.modelo}</td>
-                        <td>${trip.origem}</td>
-                        <td>${trip.destino}</td>
-                        <td>${trip.passageiros_ida}</td>
-                        <td>${volta}</td>
-                        <td>${status}</td>
-                    </tr>`);
-                });
-            }, 'json');
+                console.log('Dados recebidos da AJAX:', data); // Depuração
+                if (data && data.success && Array.isArray(data.data) && data.data.length > 0) {
+                    data.data.forEach(trip => {
+                        const bonde_id = 'B' + (trip.bonde_id || 'N/A');
+                        const volta = trip.passageiros_volta !== null ? trip.passageiros_volta : 'N/A';
+                        const status = trip.passageiros_volta !== null ? 'Concluída' : 'Pendente';
+                        tbody.append(`<tr onclick="showModal('${htmlspecialchars(trip.id)}')">
+                            <td>${htmlspecialchars(trip.id || 'N/A')}</td>
+                            <td>${bonde_id} - ${htmlspecialchars(trip.modelo || 'Desconhecido')}</td>
+                            <td>${htmlspecialchars(trip.origem || 'N/A')}</td>
+                            <td>${htmlspecialchars(trip.destino || 'N/A')}</td>
+                            <td>${htmlspecialchars(trip.passageiros_ida || '0')}</td>
+                            <td>${volta}</td>
+                            <td>${status}</td>
+                        </tr>`);
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="7">Nenhuma viagem registrada ou erro ao carregar dados.</td></tr>');
+                    console.log('Dados inválidos ou ausentes:', data);
+                }
+            }, 'json').fail(function(xhr, status, error) {
+                console.error('Erro na requisição AJAX:', error, 'Resposta:', xhr.responseText);
+                $('#tripsTable tbody').html('<tr><td colspan="7">Erro ao carregar viagens. Verifique a conexão ou o servidor.</td></tr>');
+            });
         }
 
         function showModal(tripId) {
             $('#voltaModal').data('tripId', tripId).css('display', 'flex');
         }
 
+        function closeModal() {
+            $('.modal').css('display', 'none');
+            $('#volta_passengers').val('');
+        }
+
         function gerarRelatorio() {
             const tipo = $('#tipo_relatorio').val();
             const resultadoDiv = $('#relatorio-resultado');
             if (tipo === 'passageiros') {
-                resultadoDiv.html('<h3>Relatório de Passageiros</h3><p>Total de passageiros (ida): 55<br>Total de passageiros (volta): 48<br>Data: 13/06/2025 18:22</p>');
-            } else {
-                resultadoDiv.html('<h3>Relatório de Manutenção</h3><p>Manutenções realizadas: 3<br>Última manutenção: 10/06/2025<br>Data: 13/06/2025 18:22</p>');
+                resultadoDiv.html('<h3>Relatório de Passageiros</h3><p>Total de passageiros (ida): ' + (<?php echo array_sum(array_column($existing_trips, 'passageiros_ida')); ?> || 0) + '<br>Total de passageiros (volta): ' + (<?php echo array_sum(array_column($existing_trips, 'passageiros_volta')); ?> || 0) + '<br>Data: <?php echo date('d/m/Y H:i'); ?></p>');
+            } else if (tipo === 'manutencao') {
+                resultadoDiv.html('<h3>Relatório de Manutenção</h3><p>Manutenções realizadas: 3<br>Última manutenção: 10/06/2025<br>Data: <?php echo date('d/m/Y H:i'); ?></p>');
             }
         }
 
@@ -430,25 +384,29 @@ include 'header.php';
                 alert('Todos os campos são obrigatórios.');
                 return false;
             }
-            if (ida < 0) {
+            if (parseInt(ida) < 0) {
                 alert('O número de passageiros não pode ser negativo.');
                 return false;
             }
-            $(event.target).submit();
+            event.target.submit();
             return true;
+        }
+
+        function htmlspecialchars(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
         $(document).ready(function() {
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('tab')) {
-                showTab(urlParams.get('tab'));
-            } else {
-                showTab('layout');
-            }
-            if ($('#controle').hasClass('active')) {
-                loadTrips();
-            }
+            const tab = urlParams.get('tab') || 'passageiros';
+            showTab(tab);
         });
     </script>
+    <?php $pdo = null; // Fecha a conexão ?>
 </body>
 </html>

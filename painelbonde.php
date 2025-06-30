@@ -61,7 +61,7 @@ if ($result === false) {
 }
 
 $viagens_hoje = 0;
-$result = $conn->query("SELECT COUNT(*) as total FROM viagens WHERE DATE(data_ida) = CURDATE() OR DATE(data_volta) = CURDATE()");
+$result = $conn->query("SELECT COUNT(*) as total FROM viagens WHERE DATE(data_viagem) = CURDATE() OR DATE(hora) = CURDATE()");
 if ($result === false) {
     die("Erro na consulta de viagens hoje: " . $conn->error);
 } elseif ($result) {
@@ -185,17 +185,17 @@ include 'header.php';
                         </thead>
                         <tbody>
                             <?php
-                            $sql_viagens = "SELECT v.data_ida, v.data_volta, b.modelo, v.origem, v.destino, v.passageiros_ida, v.passageiros_volta 
+                            $sql_viagens = "SELECT v.da, v.data_volta, b.modelo, v.origem, v.destino, v.passageiros_ida, v.passageiros_volta 
                                             FROM viagens v 
                                             JOIN bondes b ON v.bonde_id = b.id 
-                                            ORDER BY v.data_ida DESC LIMIT 5";
+                                            ORDER BY v.data_viagem DESC LIMIT 5";
                             $result_viagens = $conn->query($sql_viagens);
                             if ($result_viagens === false) {
                                 echo "<tr><td colspan='7'>Erro na consulta de viagens: " . $conn->error . "</td></tr>";
                             } elseif ($result_viagens->num_rows > 0) {
                                 while ($row = $result_viagens->fetch_assoc()) {
                                     echo "<tr>";
-                                    echo "<td>" . htmlspecialchars(date('d/m/Y', strtotime($row['data_ida']))) . "</td>";
+                                    echo "<td>" . htmlspecialchars(date('d/m/Y', strtotime($row['data_viagem']))) . "</td>";
                                     echo "<td>" . ($row['data_volta'] ? htmlspecialchars(date('d/m/Y', strtotime($row['data_volta']))) : 'N/A') . "</td>";
                                     echo "<td>" . htmlspecialchars($row['modelo']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['origem']) . "</td>";

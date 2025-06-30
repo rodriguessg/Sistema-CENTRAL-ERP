@@ -1,403 +1,983 @@
 <?php
-// Include database configuration with error handling
+// ====================================================================
+//  viagens_completo.php   –   Bonde de Santa Teresa
+//  Versão FINAL (ATUALIZADA) – 2025-06-27
+// --------------------------------------------------------------------
+//  Funcionalidades
+//    • Cadastro de viagens (subindo/retorno) com barra de capacidade
+//    • Tabela paginada (7 linhas) + setas após 5 botões
+//    • Clique na linha insere linha abaixo com dados do retorno
+//    • Totais consolidados para SUBINDO e RETORNO sempre corretos
+//    • Excluir, Alterar e Limpar Transações (via AJAX)
+//    • Busca por ID
+// ====================================================================
+
+/* ======================= CONEXÃO BD ================================ */
+$servername = "localhost";
+$username   = "root";
+$password   = "";
+$dbname     = "gm_sicbd";
+
 try {
-    include 'bancoo.php';
-    if (!isset($pdo) || !$pdo) {
-        throw new Exception("Falha na conexão com o banco de dados.");
-    }
-} catch (Exception $e) {
-    die("Erro: " . $e->getMessage());
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password, [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+    ]);
+} catch (PDOException $e) {
+    die("Erro na conexão: " . $e->getMessage());
 }
 
-function generateTripId() {
-    return 'V-' . strtoupper(uniqid());
-}
+/* ==================== DADOS PARA SELECTS =========================== */
+$bondes           = $conn->query("SELECT id, modelo FROM bondes ORDER BY modelo")->fetchAll(PDO::FETCH_ASSOC);
+$destinos_subida  = $conn->query("SELECT id, nome FROM destinos ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC); // Todos os destinos
+$destinos_descida = $conn->query("SELECT id, nome FROM destinos ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC); // Todos os destinos
+$maquinistas      = $conn->query("SELECT id, nome FROM maquinistas ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC);
+$agentes          = $conn->query("SELECT id, nome FROM agentes ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC);
 
-$setor = $_SESSION['setor'] ?? '';
+// Os dados da tabela e totais serão carregados via AJAX na inicialização da página
 
-$new_trip_id = generateTripId();
-
-// Fetch existing trips
-$stmt_trips = $pdo->query("SELECT v.id, v.bonde_id, v.origem, v.destino, v.passageiros_ida, v.passageiros_volta, v.data_ida, v.data_volta, b.modelo 
-                    FROM viagens v 
-                    LEFT JOIN bondes b ON v.bonde_id = b.id");
-$existing_trips = $stmt_trips->fetchAll(PDO::FETCH_ASSOC);
-
-// Fetch bondes for dropdowns and layout section
-$stmt_bondes = $pdo->query("SELECT id, modelo, descricao, capacidade FROM bondes");
-$bondes = $stmt_bondes->fetchAll(PDO::FETCH_ASSOC);
-
-// Calculate average travel time
-function calculateAverageTravelTime($trips) {
-    $total_duration = 0;
-    $count = 0;
-    foreach ($trips as $trip) {
-        if (isset($trip['data_ida']) && isset($trip['data_volta'])) {
-            $start = new DateTime($trip['data_ida']);
-            $end = new DateTime($trip['data_volta']);
-            $duration = $end->getTimestamp() - $start->getTimestamp();
-            $total_duration += $duration;
-            $count++;
-        }
-    }
-    if ($count > 0) {
-        $average_duration = $total_duration / $count;
-        $hours = floor($average_duration / 3600);
-        $minutes = floor(($average_duration % 3600) / 60);
-        return sprintf("%d horas e %d minutos", $hours, $minutes);
-    }
-    return "Não há dados suficientes.";
-}
-$average_time = calculateAverageTravelTime($existing_trips);
-
-// Search functionality for Layout tab
-$search_query = isset($_GET['search']) ? strtolower($_GET['search']) : '';
-$filtered_bondes = $search_query ? array_filter($bondes, fn($bonde) => strpos(strtolower($bonde['modelo']), $search_query) !== false) : $bondes;
-
-if (isset($_GET['action']) && $_GET['action'] === 'get_trips') {
-    echo json_encode($existing_trips);
-    exit();
-}
 include 'header.php';
 ?>
-
 <!DOCTYPE html>
-<html lang="Pt-br">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Bondes - Santa Teresa</title>
-    <link rel="stylesheet" href="src/bonde/style/bonde.css">
-    <link rel="stylesheet" href="src/style/tabs.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Controle de Viagens - Bonde de Santa Teresa</title>
+    <link rel="icon" type="image/png" href="Bondes Santa Teresa Logo.png">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
-        .caderno { max-width: 1200px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
-        .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 20px; }
-        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; background: #e0e0e0; transition: background 0.3s; }
-       
-        .form-container { display: none; padding: 20px; }
-        .form-container.active { display: block; }
-        .form-container h2 { margin-top: 0; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        .form-group input[readonly] { background: #e9ecef; }
-       
-       
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        table, th, td { border: 1px solid #ccc; }
-        th, td { padding: 10px; text-align: left; }
-        th { background: #007bff; color: #fff; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center; }
-        .modal-content { background: #fff; padding: 20px; border-radius: 5px; width: 300px; text-align: center; }
-        .modal-content input, .modal-content select, .modal-content textarea { margin-bottom: 10px; width: 100%; padding: 8px; }
-        .photo-upload { width: 300px; padding: 20px; border: 1px dashed #ccc; text-align: center; margin-left: 20px; vertical-align: top; display: inline-block; }
-        .photo-upload img { max-width: 100%; height: auto; margin-top: 10px; }
-        textarea { resize: vertical; min-height: 60px; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .header-section h2 {
+            margin: 0;
+            color: #004a99;
+            font-size: 1.8em;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-section img {
+            max-width: 60px;
+            height: auto;
+        }
+
+        .section-title {
+            background-color: #e0e0e0;
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-item label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .input-item select,
+        .input-item input[type="text"],
+        .input-item input[type="number"],
+        .input-item input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.95em;
+        }
+
+        .input-item input[readonly] {
+            background-color: #eee;
+        }
+
+        .counts-section {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .total-box {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            flex: 1;
+            text-align: center;
+            min-width: 250px;
+        }
+
+        .total-box .section-title {
+            background-color: #d0d0d0;
+            margin-top: 0;
+        }
+
+        .total-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            padding: 3px 0;
+        }
+
+        .total-item span:first-child {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .total-item span:last-child {
+            color: #007bff;
+        }
+
+        .buttons-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+        }
+
+        .buttons-row button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .buttons-row button:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+
+        .buttons-row button:disabled {
+            background-color: #cccccc !important;
+            cursor: not-allowed;
+        }
+
+        #adicionar-btn { background-color: #28a745; } /* Verde */
+        #limpar-form-btn { background-color: #ffc107; color: #333;} /* Amarelo */
+        #excluir-btn { background-color: #dc3545; } /* Vermelho */
+        #alterar-btn { background-color: #007bff; } /* Azul */
+        #limpar-transacoes-btn { background-color: #6c757d; } /* Cinza */
+
+        .id-filter-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 20px;
+        }
+
+        .id-filter-container input {
+            width: 80px;
+        }
+
+        .table-section {
+            margin-top: 20px;
+        }
+
+        .table-section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .table-section th,
+        .table-section td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+
+        .table-section th {
+            background-color: #e9ecef;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .table-section tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .table-section tbody tr:hover {
+            background-color: #e2e6ea;
+            cursor: pointer;
+        }
+
+        .table-section .retorno-line {
+            background: #e7f3ff;
+            font-style: italic;
+            color: #004a99;
+        }
+
+        .table-section .return-form-row td {
+            padding: 5px;
+        }
+
+        .table-section .return-form-row form {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 5px 0;
+        }
+
+        .table-section .return-form-row label {
+            font-weight: normal;
+            margin-bottom: 0;
+            font-size: 0.9em;
+        }
+
+        .table-section .return-form-row input[type="number"] {
+            width: 70px;
+            padding: 3px;
+            font-size: 0.85em;
+        }
+
+        .table-section .return-form-row button {
+            padding: 5px 12px;
+            font-size: 0.85em;
+            margin: 0;
+        }
+
+        .progress-container {
+            margin-top: 15px;
+            margin-bottom: 20px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 0.9em;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4caf50;
+            width: 0;
+            transition: width .3s ease, background-color .3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #fff;
+        }
+
+        .progress-text {
+            z-index: 1;
+            color: #333; /* Cor do texto padrão */
+            position: relative;
+        }
+        .progress-fill .progress-text {
+             color: white; /* Cor do texto quando dentro da barra preenchida */
+        }
+
+
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            margin: 0;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .pagination button:hover:not(.active):not(.arrow):not(:disabled) {
+            background-color: #e9ecef;
+        }
+
+        .pagination .active {
+            background: #007bff;
+            color: #fff;
+            border-color: #007bff;
+            font-weight: bold;
+        }
+
+        .pagination .arrow {
+            font-weight: bold;
+            padding: 8px 15px;
+        }
+        .pagination button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <div class="caderno">
-        <div class="tabs">
-            
-            <div class="tab" data-tab="passageiros" onclick="showTab('passageiros')">
-                <i class="fas fa-users"></i> Gerenciar Passageiros (Ida)
+    <div class="container">
+        <div class="header-section">
+            <h2>CADASTRAMENTO DE TRANSAÇÕES</h2>
+           
+        </div>
+
+        <div class="counts-section">
+            <div class="total-box">
+                <div class="section-title">TOTAL BONDES SUBIDA</div>
+                <div class="total-item"><span>Pagantes</span><span id="total-subida-pagantes">0</span></div>
+                <div class="total-item"><span>Gratuitos</span><span id="total-subida-gratuitos">0</span></div>
+                <div class="total-item"><span>Moradores</span><span id="total-subida-moradores">0</span></div>
+                <div class="total-item"><span>Passageiros</span><span id="total-subida-passageiros">0</span></div>
+                <div class="total-item"><span>Bondes</span><span id="total-subida-bondes">0</span></div>
             </div>
-            <div class="tab" data-tab="controle" onclick="showTab('controle')">
-                <i class="fas fa-route"></i> Controle de Viagens
-            </div>
-    
-            <div class="tab" data-tab="relatorio" onclick="showTab('relatorio')">
-                <i class="fas fa-file-alt"></i> Relatórios
+            <div class="total-box">
+                <div class="section-title">TOTAL BONDES DESCIDA</div>
+                <div class="total-item"><span>Pagantes</span><span id="total-descida-pagantes">0</span></div>
+                <div class="total-item"><span>Gratuitos</span><span id="total-descida-gratuitos">0</span></div>
+                <div class="total-item"><span>Moradores</span><span id="total-descida-moradores">0</span></div>
+                <div class="total-item"><span>Passageiros</span><span id="total-descida-passageiros">0</span></div>
+                <div class="total-item"><span>Bondes</span><span id="total-descida-bondes">0</span></div>
             </div>
         </div>
 
-      
-
-        <!-- Gerenciar Passageiros (Ida) -->
-        <div class="form-container" id="passageiros">
-            <h2>Gerenciar Passageiros (Ida)</h2>
-            <form action="process_passageiros.php" method="POST" onsubmit="return validateIdaForm(event)">
-                <div class="form-group">
-                    <label for="bonde_id_pass">Selecione o Bonde</label>
-                    <select id="bonde_id_pass" name="bonde_id_pass" required>
-                        <option value="">Selecione</option>
-                        <?php foreach ($bondes as $bonde): ?>
-                            <option value="<?php echo $bonde['id']; ?>">B<?php echo $bonde['id']; ?> - <?php echo htmlspecialchars($bonde['modelo']); ?></option>
-                        <?php endforeach; ?>
-                    </select>
+        <div class="section">
+            <div class="section-title">REGISTRAR NOVA VIAGEM</div>
+            <form id="viagemForm">
+                <div class="form-grid">
+                    <div class="input-item">
+                        <label for="bonde_id">BONDE:</label>
+                        <select name="bonde_id" id="bonde_id">
+                            <option value="">Selecione</option>
+                            <?php foreach ($bondes as $b) echo "<option value='{$b['id']}'>" . htmlspecialchars($b['modelo']) . "</option>"; ?>
+                        </select>
+                    </div>
+                    <div class="input-item">
+                        <label for="origem_id">ORIGEM:</label>
+                        <select name="origem_id" id="origem_id">
+                            <option value="">Selecione</option>
+                            <?php foreach ($destinos_subida as $d) echo "<option value='{$d['id']}'>" . htmlspecialchars($d['nome']) . "</option>"; ?>
+                        </select>
+                    </div>
+                    <div class="input-item">
+                        <label for="destino_id">DESTINO (opcional):</label>
+                        <select name="destino_id" id="destino_id">
+                            <option value="">Selecione (somente para retorno)</option>
+                            <?php foreach ($destinos_descida as $d) echo "<option value='{$d['id']}'>" . htmlspecialchars($d['nome']) . "</option>"; ?>
+                        </select>
+                    </div>
+                    <div class="input-item">
+                        <label for="maquinista_id">MAQUINISTA:</label>
+                        <select name="maquinista_id" id="maquinista_id">
+                            <option value="">Selecione</option>
+                            <?php foreach ($maquinistas as $m) echo "<option value='{$m['id']}'>" . htmlspecialchars($m['nome']) . "</option>"; ?>
+                        </select>
+                    </div>
+                    <div class="input-item">
+                        <label for="agente_id">AGENTE:</label>
+                        <select name="agente_id" id="agente_id">
+                            <option value="">Selecione</option>
+                            <?php foreach ($agentes as $a) echo "<option value='{$a['id']}'>" . htmlspecialchars($a['nome']) . "</option>"; ?>
+                        </select>
+                    </div>
+                    <div class="input-item">
+                        <label for="hora">HORA:</label>
+                        <input type="text" name="hora" id="hora" value="<?php echo date('H:i:s'); ?>" readonly>
+                    </div>
+                    <div class="input-item">
+                        <label for="pagantes">PAGANTES:</label>
+                        <input type="number" name="pagantes" id="pagantes" min="0" value="0" required>
+                    </div>
+                    <div class="input-item">
+                        <label for="moradores">MORADORES:</label>
+                        <input type="number" name="moradores" id="moradores" min="0" value="0" required>
+                    </div>
+                    <div class="input-item">
+                        <label for="gratuidade">GRATUIDADE:</label>
+                        <input type="number" name="gratuidade" id="gratuidade" min="0" value="0" required>
+                    </div>
+                     <div class="input-item">
+                        <label for="tipo_viagem">TIPO DE VIAGEM:</label>
+                        <select name="tipo_viagem" id="tipo_viagem" disabled>
+                            <option value="subida">Subida</option>
+                            <option value="descida">Descida</option>
+                        </select>
+                    </div>
+                    <div class="input-item">
+                        <label for="data_viagem">DATA:</label>
+                        <input type="date" name="data_viagem" id="data_viagem" value="<?php echo date('Y-m-d'); ?>" readonly>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="viagem_id">ID da Viagem</label>
-                    <input type="text" id="viagem_id" name="viagem_id" value="<?php echo $new_trip_id; ?>" readonly>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                        <span class="progress-text" id="progressText">0 passageiros (32 lugares restantes)</span>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="origin">Origem</label>
-                    <select id="origin" name="origin" required>
-                        <option value="">Selecione</option>
-                        <option value="Santa Teresa">Santa Teresa</option>
-                        <option value="Lapa">Lapa</option>
-                        <option value="Centro">Centro</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="destination">Destino</label>
-                    <select id="destination" name="destination" required>
-                        <option value="">Selecione</option>
-                        <option value="Lapa">Lapa</option>
-                        <option value="Centro">Centro</option>
-                        <option value="Gloria">Glória</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="motorman">Motorneiro</label>
-                    <input type="text" id="motorman" name="motorman" required>
-                </div>
-                <div class="form-group">
-                    <label for="auxiliary">Auxiliar</label>
-                    <input type="text" id="auxiliary" name="auxiliary" required>
-                </div>
-                <div class="form-group">
-                    <label for="validator">Quem Efetuou a Validação</label>
-                    <input type="text" id="validator" name="validator" required>
-                </div>
-                <div class="form-group">
-                    <label for="passageiros_ida">Passageiros (Ida)</label>
-                    <input type="number" id="passageiros_ida" name="passageiros_ida" required min="0">
-                </div>
-                <div class="form-group">
-                    <button type="submit">Registrar Ida</button>
+                <div class="buttons-row">
+                    <button type="submit" id="adicionar-btn" name="adicionar">Adicionar</button>
+                    <button type="button" id="limpar-form-btn">Limpar Formulário</button>
+                    <button type="button" id="alterar-btn" disabled>Alterar</button>
+                    <button type="button" id="limpar-transacoes-btn">Limpar Todas as Transações</button>
+                    <div class="id-filter-container">
+                        <label for="id-filter">ID:</label>
+                        <input type="number" id="id-filter" placeholder="Buscar ID">
+                    </div>
                 </div>
             </form>
         </div>
 
-        <!-- Controle de Viagens -->
-        <div class="form-container" id="controle">
-            <h2>Controle de Viagens</h2>
-            <p>Tempo médio das viagens: <?php echo $average_time; ?></p>
-            <table id="tripsTable">
+        <div class="section table-section">
+            <h3>Viagens Registradas</h3>
+            <table id="viagens-table">
                 <thead>
                     <tr>
-                        <th>ID Viagem</th>
+                        <th>ID</th>
                         <th>Bonde</th>
                         <th>Origem</th>
                         <th>Destino</th>
-                        <th>Passageiros (Ida)</th>
-                        <th>Passageiros (Volta)</th>
-                        <th>Status</th>
+                        <th>Maquinista</th>
+                        <th>Agente</th>
+                        <th>Hora</th>
+                        <th>Pagantes</th>
+                        <th>Moradores</th>
+                        <th>Gratuidade</th>
+                        <th>Total Passageiros</th>
+                        <th>Tipo Viagem</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($existing_trips as $viagem): ?>
-                        <?php $bonde_id = 'B' . $viagem['bonde_id']; ?>
-                        <?php $volta = isset($viagem['passageiros_volta']) ? $viagem['passageiros_volta'] : 'N/A'; ?>
-                        <?php $status = isset($viagem['passageiros_volta']) ? 'Concluída' : 'Pendente'; ?>
-                        <tr onclick="showModal('<?php echo $viagem['id']; ?>')">
-                            <td><?php echo $viagem['id']; ?></td>
-                            <td><?php echo $bonde_id . ' - ' . $viagem['modelo']; ?></td>
-                            <td><?php echo $viagem['origem']; ?></td>
-                            <td><?php echo $viagem['destino']; ?></td>
-                            <td><?php echo $viagem['passageiros_ida']; ?></td>
-                            <td><?php echo $volta; ?></td>
-                            <td><?php echo $status; ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
+                    </tbody>
+                <tfoot>
+                    </tfoot>
             </table>
-        </div>
-
-     
-
-        <!-- Relatórios -->
-        <div class="form-container" id="relatorio">
-            <h2>Relatórios</h2>
-            <div class="form-group">
-                <label for="tipo_relatorio">Tipo de Relatório</label>
-                <select id="tipo_relatorio" name="tipo_relatorio">
-                    <option value="passageiros">Passageiros por Viagem</option>
-
-                </select>
-            </div>
-            <div class="form-group">
-                <button onclick="gerarRelatorio()">Gerar Relatório</button>
-            </div>
-            <div id="relatorio-resultado">
-                <!-- Resultado do relatório será inserido aqui -->
-            </div>
-        </div>
-
-        <!-- Modal for Volta Registration -->
-        <div id="voltaModal" class="modal">
-            <div class="modal-content">
-                <h3>Registrar Volta</h3>
-                <input type="number" id="volta_passengers" placeholder="Passageiros (Volta)" min="0" required>
-                <button onclick="registerVolta()">Salvar</button>
-                <button onclick="closeModal()">Cancelar</button>
-            </div>
+            <div class="pagination" id="pagination-controls">
+                </div>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        function showTab(tabId) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.form-container').forEach(container => container.classList.remove('active'));
-            document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-            if (tabId === 'controle' && window.location.search.includes('tab=controle')) {
-                loadTrips();
-            }
-        }
+    <script src=".src/bonde/js/bonde-t.js">
+         const MAX_CAPACITY = 32;
+        let currentPage = 1;
+        let selectedRowId = null; // Para alterar e excluir
+        let formMode = 'add'; // 'add' ou 'edit'
 
-        function searchBondes() {
-            const query = $('#searchBonde').val();
-            window.location.href = `homebonde.php?tab=layout&search=${encodeURIComponent(query)}`;
-        }
-
-        function editBonde(id, modelo, descricao, capacidade) {
-            $('#editBondeId').val(id);
-            $('#editModelo').val(modelo);
-            $('#editDescricao').val(descricao);
-            $('#editCapacidade').val(capacidade);
-            $('#editModal').css('display', 'flex');
-
-            // Load or clear photo preview
-            const photoInput = $('#layoutPhoto')[0];
-            if (photoInput.files && photoInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#previewPhoto').attr('src', e.target.result);
-                };
-                reader.readAsDataURL(photoInput.files[0]);
-            } else {
-                $('#previewPhoto').attr('src', ''); // Clear if no file
-            }
-        }
-
-        function saveBonde() {
-            const id = $('#editBondeId').val();
-            const modelo = $('#editModelo').val();
-            const descricao = $('#editDescricao').val();
-            const capacidade = $('#editCapacidade').val();
-
-            $.post('update_bonde.php', { id: id, modelo: modelo, descricao: descricao, capacidade: capacidade }, function(response) {
-                if (response.success) {
-                    location.reload(); // Reload to reflect changes
-                } else {
-                    alert('Erro ao atualizar bonde.');
+        // Funções AJAX
+        function fetchData(page = 1, searchId = null) {
+            $.ajax({
+                url: 'api.php',
+                type: 'POST',
+                dataType: 'json',
+                data: { action: 'get_viagens', page: page, search_id: searchId },
+                success: function(response) {
+                    if (response.success) {
+                        populateTable(response.viagens);
+                        updatePagination(response.totalPages, response.currentPage);
+                        currentPage = response.currentPage;
+                    } else {
+                        alert('Erro ao carregar viagens: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erro na requisição AJAX para get_viagens:", status, error, xhr.responseText);
+                    alert('Erro de comunicação ao carregar viagens.');
                 }
-            }, 'json').fail(function() {
-                alert('Erro na conexão com o servidor.');
+            });
+            updateTotals(); // Sempre atualiza os totais
+        }
+
+        function updateTotals() {
+            $.ajax({
+                url: 'api.php',
+                type: 'POST',
+                dataType: 'json',
+                data: { action: 'get_totals' },
+                success: function(response) {
+                    if (response.success) {
+                        $('#total-subida-pagantes').text(response.totals.subida.pagantes);
+                        $('#total-subida-gratuitos').text(response.totals.subida.gratuitos);
+                        $('#total-subida-moradores').text(response.totals.subida.moradores);
+                        $('#total-subida-passageiros').text(response.totals.subida.passageiros);
+                        $('#total-subida-bondes').text(response.totals.subida.bondes + ' bondes');
+
+                        $('#total-descida-pagantes').text(response.totals.descida.pagantes);
+                        $('#total-descida-gratuitos').text(response.totals.descida.gratuitos);
+                        $('#total-descida-moradores').text(response.totals.descida.moradores);
+                        $('#total-descida-passageiros').text(response.totals.descida.passageiros);
+                        $('#total-descida-bondes').text(response.totals.descida.bondes + ' bondes');
+                    } else {
+                        console.error('Erro ao carregar totais: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erro na requisição AJAX para get_totals:", status, error, xhr.responseText);
+                }
             });
         }
 
-        function closeModal() {
-            $('#editModal, #voltaModal').css('display', 'none');
-            $('#editModelo').val('');
-            $('#editDescricao').val('');
-            $('#editCapacidade').val('');
-            $('#editBondeId').val('');
-            $('#volta_passengers').val('');
+        function populateTable(viagens) {
+            const tbody = $('#viagens-table tbody');
+            tbody.empty();
+            if (viagens.length === 0) {
+                tbody.append('<tr><td colspan="12" class="no-data">Nenhuma viagem encontrada.</td></tr>');
+                return;
+            }
+            viagens.forEach(viagem => {
+                const rowClass = viagem.tipo_viagem === 'descida' ? 'retorno-line' : '';
+                const row = `
+                    <tr data-viagem-id="${viagem.id}" class="${rowClass}">
+                        <td>${viagem.id}</td>
+                        <td>${viagem.bonde}</td>
+                        <td>${viagem.origem}</td>
+                        <td>${viagem.destino || ''}</td>
+                        <td>${viagem.maquinista}</td>
+                        <td>${viagem.agente}</td>
+                        <td>${viagem.hora}</td>
+                        <td>${viagem.pagantes}</td>
+                        <td>${viagem.moradores}</td>
+                        <td>${viagem.gratuidade}</td>
+                        <td>${viagem.passageiros}</td>
+                        <td>${viagem.tipo_viagem}</td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+            // Re-bind click event to new rows
+            bindTableRowClick();
         }
 
-        $('#layoutPhoto').on('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#previewPhoto').attr('src', e.target.result);
-                };
-                reader.readAsDataURL(file);
+        function updatePagination(totalPages, currentPage) {
+            const paginationControls = $('#pagination-controls');
+            paginationControls.empty();
+
+            const visiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+            if (endPage - startPage + 1 < visiblePages) {
+                startPage = Math.max(1, endPage - visiblePages + 1);
+            }
+
+            // Botão "Anterior"
+            paginationControls.append(`<button class="arrow" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">&lt;</button>`);
+
+            // Botões de números
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === currentPage ? 'active' : '';
+                paginationControls.append(`<button class="${activeClass}" data-page="${i}">${i}</button>`);
+            }
+
+            // Botão "Próximo"
+            paginationControls.append(`<button class="arrow" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">&gt;</button>`);
+
+            // Atribui evento de clique aos botões de paginação
+            paginationControls.find('button').off('click').on('click', function() {
+                if ($(this).is(':disabled')) return;
+                const page = parseInt($(this).data('page'));
+                fetchData(page, $('#id-filter').val());
+            });
+        }
+
+
+        // Barra de Progresso
+        function updateProgressBar() {
+            const pagantes = parseInt($('#pagantes').val()) || 0;
+            const moradores = parseInt($('#moradores').val()) || 0;
+            const gratuidade = parseInt($('#gratuidade').val()) || 0;
+            const total = pagantes + moradores + gratuidade;
+
+            const barFill = $('#progressFill');
+            const progressText = $('#progressText');
+
+            let perc = (total / MAX_CAPACITY) * 100;
+            if (perc > 100) perc = 100;
+
+            barFill.css('width', perc + '%');
+            barFill.css('background-color', total > MAX_CAPACITY ? '#dc3545' : '#4caf50');
+
+            if (total > MAX_CAPACITY) {
+                progressText.text(`Capacidade máxima atingida! (${total}/${MAX_CAPACITY})`);
+                progressText.css('color', '#fff'); // Texto branco para contraste no vermelho
+            } else if (total === 0) {
+                progressText.text(`0 passageiros (${MAX_CAPACITY} lugares restantes)`);
+                 progressText.css('color', '#333'); // Texto preto para fundo branco
+            } else {
+                const restantes = MAX_CAPACITY - total;
+                progressText.text(`${total} passageiros (${restantes} lugar${restantes !== 1 ? 'es' : ''} restantes)`);
+                // Ajusta a cor do texto dependendo de onde ele fica
+                if (perc < 50) { // Se a barra estiver pequena, o texto fica fora dela
+                     progressText.css('color', '#333');
+                } else { // Se a barra estiver grande, o texto fica dentro
+                    progressText.css('color', '#fff');
+                }
+            }
+        }
+
+
+        // Limpar formulário (botão "Limpar Formulário")
+        $('#limpar-form-btn').on('click', function() {
+            $('#viagemForm')[0].reset();
+            $('#hora').val('<?php echo date('H:i:s'); ?>');
+            $('#data_viagem').val('<?php echo date('Y-m-d'); ?>');
+            updateProgressBar();
+            selectedRowId = null;
+            formMode = 'add';
+            $('#adicionar-btn').text('Adicionar').prop('disabled', false);
+            $('#alterar-btn, #excluir-btn').prop('disabled', true);
+            // Reativa campos que podem ter sido desabilitados para 'retorno'
+            $('#origem_id').prop('disabled', false);
+            $('#tipo_viagem').val('subida').prop('disabled', true); // Volta para subida e desabilita
+            $('#destino_id').val('').prop('disabled', false); // Limpa e habilita para nova entrada
+            $('#id-filter').val(''); // Limpa o filtro de ID
+            fetchData(1); // Recarrega a tabela para a primeira página
+            highlightRow(null); // Remove qualquer destaque de linha
+        });
+
+        // Limpar todas as transações (botão "Limpar Todas as Transações")
+        $('#limpar-transacoes-btn').on('click', function() {
+            if (confirm('Tem certeza que deseja LIMPAR TODAS as transações? Esta ação é irreversível!')) {
+                $.ajax({
+                    url: 'api.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { action: 'clear_transactions' },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            fetchData(1); // Recarrega a tabela
+                            updateTotals(); // Atualiza os totais
+                        } else {
+                            alert('Erro ao limpar transações: ' + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Erro de comunicação ao limpar transações.');
+                    }
+                });
             }
         });
 
-        function registerVolta() {
-            const tripId = $('#voltaModal').data('tripId');
-            const volta = $('#volta_passengers').val();
-            if (volta && volta >= 0) {
-                $.post('process_volta.php', { trip_id: tripId, volta: volta }, function(response) {
+        // Submeter formulário (Adicionar/Alterar)
+        $('#viagemForm').on('submit', function(e) {
+            e.preventDefault();
+            const formData = $(this).serializeArray();
+            let action = formMode === 'add' ? 'add_viagem' : 'update_viagem';
+            let data = {};
+            formData.forEach(item => {
+                data[item.name] = item.value;
+            });
+
+            // Se for alteração, adiciona o ID
+            if (formMode === 'edit') {
+                data['id'] = selectedRowId;
+            }
+
+            // Garante que o tipo_viagem esteja correto ao adicionar (sempre 'subida' inicialmente)
+            if (formMode === 'add') {
+                 data['tipo_viagem'] = 'subida';
+                 data['destino_id'] = null; // Garante que destino_id seja nulo para subidas
+            }
+
+
+            data['action'] = action;
+
+            $.ajax({
+                url: 'api.php',
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function(response) {
                     if (response.success) {
-                        loadTrips();
-                        closeModal();
+                        alert(response.message);
+                        $('#limpar-form-btn').click(); // Limpa o formulário e reseta o modo
                     } else {
-                        alert('Erro ao registrar volta.');
+                        alert('Erro: ' + response.message);
                     }
-                }, 'json').fail(function() {
-                    alert('Erro na conexão com o servidor.');
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erro na requisição AJAX para submit do formulário:", status, error, xhr.responseText);
+                    alert('Erro de comunicação com o servidor.');
+                }
+            });
+        });
+
+        // Excluir viagem (botão "Excluir")
+        $('#excluir-btn').on('click', function() {
+            if (selectedRowId && confirm('Tem certeza que deseja excluir esta viagem?')) {
+                $.ajax({
+                    url: 'api.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { action: 'delete_viagem', id: selectedRowId },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            $('#limpar-form-btn').click(); // Limpa o formulário e reseta
+                        } else {
+                            alert('Erro ao excluir: ' + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Erro de comunicação ao excluir.');
+                    }
                 });
+            } else if (!selectedRowId) {
+                alert('Selecione uma viagem na tabela para excluir.');
+            }
+        });
+
+        // Função para preencher o formulário ao clicar na linha da tabela
+        function fillFormWithRowData($row) {
+            selectedRowId = $row.data('viagem-id');
+            formMode = 'edit';
+
+            $('#adicionar-btn').text('Atualizar').prop('disabled', false); // Muda texto do botão para "Atualizar"
+            $('#alterar-btn, #excluir-btn').prop('disabled', false); // Habilita botões de alterar e excluir
+
+            const bonde_text = $row.find('td:nth-child(2)').text(); // Bonde
+            const origem_text = $row.find('td:nth-child(3)').text(); // Origem
+            const destino_text = $row.find('td:nth-child(4)').text(); // Destino
+            const maquinista_text = $row.find('td:nth-child(5)').text(); // Maquinista
+            const agente_text = $row.find('td:nth-child(6)').text(); // Agente
+            const hora_text = $row.find('td:nth-child(7)').text(); // Hora
+            const pagantes_val = parseInt($row.find('td:nth-child(8)').text()); // Pagantes
+            const moradores_val = parseInt($row.find('td:nth-child(9)').text()); // Moradores
+            const gratuidade_val = parseInt($row.find('td:nth-child(10)').text()); // Gratuidade
+            const tipo_viagem_text = $row.find('td:nth-child(12)').text(); // Tipo Viagem
+
+            // Preencher selects pelo texto
+            $('#bonde_id option').filter(function() { return $(this).text() === bonde_text; }).prop('selected', true);
+            $('#origem_id option').filter(function() { return $(this).text() === origem_text; }).prop('selected', true);
+            $('#destino_id option').filter(function() { return $(this).text() === destino_text; }).prop('selected', true);
+            $('#maquinista_id option').filter(function() { return $(this).text() === maquinista_text; }).prop('selected', true);
+            $('#agente_id option').filter(function() { return $(this).text() === agente_text; }).prop('selected', true);
+
+            $('#hora').val(hora_text);
+            $('#pagantes').val(pagantes_val);
+            $('#moradores').val(moradores_val);
+            $('#gratuidade').val(gratuidade_val);
+            $('#tipo_viagem').val(tipo_viagem_text).prop('disabled', true); // Desabilita alteração do tipo de viagem
+
+            // Para uma linha já existente, o campo de origem e destino pode precisar de tratamento especial
+            // Se for uma viagem 'subida' clicada, permite preencher o destino para um possível retorno.
+            if (tipo_viagem_text === 'subida') {
+                $('#destino_id').prop('disabled', false);
             } else {
-                alert('Insira um número válido de passageiros.');
+                $('#destino_id').prop('disabled', false); // Se já for descida, mantém habilitado mas não faz sentido alterar o destino
+            }
+             $('#origem_id').prop('disabled', true); // Para edição, não se altera a origem da viagem já feita
+
+            updateProgressBar();
+            highlightRow(selectedRowId);
+        }
+
+        function highlightRow(id) {
+            $('#viagens-table tbody tr').removeClass('highlighted-row');
+            if (id) {
+                $(`tr[data-viagem-id="${id}"]`).addClass('highlighted-row');
             }
         }
 
-        function loadTrips() {
-            $.get('homebonde.php', { action: 'get_trips' }, function(data) {
-                const tbody = $('#tripsTable tbody');
-                tbody.empty();
-                data.forEach(trip => {
-                    const bonde_id = 'B' + trip.bonde_id;
-                    const volta = trip.passageiros_volta !== null ? trip.passageiros_volta : 'N/A';
-                    const status = trip.passageiros_volta !== null ? 'Concluída' : 'Pendente';
-                    tbody.append(`<tr onclick="showModal('${trip.id}')">
-                        <td>${trip.id}</td>
-                        <td>${bonde_id} - ${trip.modelo}</td>
-                        <td>${trip.origem}</td>
-                        <td>${trip.destino}</td>
-                        <td>${trip.passageiros_ida}</td>
-                        <td>${volta}</td>
-                        <td>${status}</td>
-                    </tr>`);
+        // Click na linha da tabela para preencher o formulário ou adicionar retorno
+        function bindTableRowClick() {
+            $('#viagens-table tbody tr').off('click').on('click', function() {
+                const $clickedRow = $(this);
+                const viagemId = $clickedRow.data('viagem-id');
+                const tipoViagem = $clickedRow.find('td:nth-child(12)').text();
+
+                // Remove qualquer linha de retorno existente
+                $('.return-form-row').remove();
+                $('#viagens-table tbody tr').removeClass('highlighted-row'); // Remove destaque de todas as linhas
+
+                // Se for uma linha de "subida", permite adicionar uma linha de retorno
+                if (tipoViagem === 'subida') {
+                    // Preenche o formulário principal
+                    fillFormWithRowData($clickedRow);
+
+                    // Adiciona a linha para registrar o retorno logo abaixo
+                    const bonde = $clickedRow.find('td:nth-child(2)').text();
+                    const maquinista = $clickedRow.find('td:nth-child(5)').text();
+                    const agente = $clickedRow.find('td:nth-child(6)').text();
+                    const hora = '<?php echo date('H:i:s'); ?>'; // Hora atual para o retorno
+
+                    const newRow = `
+                        <tr class="return-form-row">
+                            <td colspan="12">
+                                <form class="return-subform" data-viagem-id="${viagemId}">
+                                    <input type="hidden" name="action" value="update_viagem">
+                                    <input type="hidden" name="id" value="${viagemId}">
+                                    <label>Tipo: <input type="text" value="Descida" readonly style="width:70px;"></label>
+                                    <label>Bonde: <input type="text" value="${bonde}" readonly style="width:100px;"></label>
+                                    <label>Maquinista: <input type="text" value="${maquinista}" readonly style="width:120px;"></label>
+                                    <label>Agente: <input type="text" value="${agente}" readonly style="width:120px;"></label>
+                                    <label>Hora: <input type="text" value="${hora}" readonly style="width:80px;"></label>
+                                    <label>Destino:
+                                        <select name="destino_id" required style="width:120px;">
+                                            <option value="">Selecione</option>
+                                            <?php foreach ($destinos_descida as $d) echo "<option value='{$d['id']}'>" . htmlspecialchars($d['nome']) . "</option>"; ?>
+                                        </select>
+                                    </label>
+                                    <label>Pagantes: <input type="number" name="pagantes" min="0" value="0" required></label>
+                                    <label>Moradores: <input type="number" name="moradores" min="0" value="0" required></label>
+                                    <label>Gratuidade: <input type="number" name="gratuidade" min="0" value="0" required></label>
+                                    <button type="submit" style="background:#007bff;color:#fff;">Salvar Retorno</button>
+                                    <button type="button" class="cancel-return-form-btn" style="background:#dc3545;color:#fff;">Cancelar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `;
+                    $clickedRow.after(newRow);
+
+                    // Adicionar destaque à linha clicada
+                    $clickedRow.addClass('highlighted-row');
+                } else {
+                    // Se for uma linha de "descida" (retorno), apenas preenche o formulário principal
+                    fillFormWithRowData($clickedRow);
+                }
+            });
+
+            // Handle submission of return sub-form
+            $('#viagens-table').on('submit', '.return-subform', function(e) {
+                e.preventDefault();
+                const $form = $(this);
+                const formData = $form.serializeArray();
+                let data = {};
+                formData.forEach(item => {
+                    data[item.name] = item.value;
                 });
-            }, 'json');
+                data['action'] = 'update_viagem'; // Ação para atualizar a viagem existente com dados de retorno
+                data['tipo_viagem'] = 'descida'; // Define explicitamente como descida
+                data['hora'] = $('#hora').val(); // Usa a hora atual do formulário principal ou gera uma nova se necessário
+
+                $.ajax({
+                    url: 'api.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Retorno registrado com sucesso!');
+                            $('#limpar-form-btn').click(); // Limpa o formulário e recarrega
+                        } else {
+                            alert('Erro ao registrar retorno: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erro na requisição AJAX para submeter retorno:", status, error, xhr.responseText);
+                        alert('Erro de comunicação ao registrar retorno.');
+                    }
+                });
+            });
+
+            // Handle cancel button for return sub-form
+            $('#viagens-table').on('click', '.cancel-return-form-btn', function() {
+                $(this).closest('.return-form-row').remove();
+                $('#viagens-table tbody tr').removeClass('highlighted-row');
+                $('#limpar-form-btn').click(); // Limpa o formulário principal também
+            });
         }
 
-        function showModal(tripId) {
-            $('#voltaModal').data('tripId', tripId).css('display', 'flex');
-        }
 
-        function gerarRelatorio() {
-            const tipo = $('#tipo_relatorio').val();
-            const resultadoDiv = $('#relatorio-resultado');
-            if (tipo === 'passageiros') {
-                resultadoDiv.html('<h3>Relatório de Passageiros</h3><p>Total de passageiros (ida): 55<br>Total de passageiros (volta): 48<br>Data: 13/06/2025 18:22</p>');
-            } else {
-                resultadoDiv.html('<h3>Relatório de Manutenção</h3><p>Manutenções realizadas: 3<br>Última manutenção: 10/06/2025<br>Data: 13/06/2025 18:22</p>');
-            }
-        }
-
-        function validateIdaForm(event) {
-            event.preventDefault();
-            const bonde = $('#bonde_id_pass').val();
-            const origin = $('#origin').val();
-            const destination = $('#destination').val();
-            const motorman = $('#motorman').val().trim();
-            const auxiliary = $('#auxiliary').val().trim();
-            const validator = $('#validator').val().trim();
-            const ida = $('#passageiros_ida').val();
-
-            if (!bonde || !origin || !destination || !motorman || !auxiliary || !validator || !ida) {
-                alert('Todos os campos são obrigatórios.');
-                return false;
-            }
-            if (ida < 0) {
-                alert('O número de passageiros não pode ser negativo.');
-                return false;
-            }
-            $(event.target).submit();
-            return true;
-        }
-
+        // Inicialização
         $(document).ready(function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('tab')) {
-                showTab(urlParams.get('tab'));
-            } else {
-                showTab('layout');
-            }
-            if ($('#controle').hasClass('active')) {
-                loadTrips();
-            }
+            fetchData();
+            updateProgressBar();
+
+            // Atribui eventos de input para a barra de progresso
+            $('#pagantes, #moradores, #gratuidade').on('input', updateProgressBar);
+            $('#bonde_id').on('change', function() {
+                const bondeSelecionado = $(this).val() !== "";
+                $('#origem_id, #destino_id, #maquinista_id, #agente_id, #pagantes, #moradores, #gratuidade').prop('disabled', !bondeSelecionado);
+                $('#adicionar-btn').prop('disabled', !bondeSelecionado);
+                updateProgressBar(); // Atualiza a barra ao mudar o bonde
+            });
+
+            // Auto-atualizar hora
+            setInterval(function() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                $('#hora').val(`${hours}:${minutes}:${seconds}`);
+            }, 1000);
+
+            // Filtro por ID
+            let searchTimeout;
+            $('#id-filter').on('keyup', function() {
+                clearTimeout(searchTimeout);
+                const searchId = $(this).val();
+                searchTimeout = setTimeout(() => {
+                    fetchData(1, searchId || null); // Passa null se o campo estiver vazio
+                }, 500); // Atraso de 500ms para evitar muitas requisições
+            });
+
+            // Define o estado inicial dos botões e campos
+            $('#alterar-btn, #excluir-btn').prop('disabled', true);
+            $('#origem_id, #destino_id, #maquinista_id, #agente_id, #pagantes, #moradores, #gratuidade, #tipo_viagem').prop('disabled', true);
         });
     </script>
 </body>

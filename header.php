@@ -120,6 +120,7 @@ try {
             $menuItens = [
                 ['link' => 'painelbonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
                 ['link' => 'operacao.php', 'nome' => 'Home', 'icon' => 'home'],
+                ['link' => 'relatoriobonde.php', 'nome' => 'Relatórios', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
   
             ];

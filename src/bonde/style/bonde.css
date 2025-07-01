@@ -1,4 +1,4 @@
-body {
+   body {
             font-family: Arial, sans-serif;
             margin: 20px;
             background-color: #f0f2f5;
@@ -63,6 +63,10 @@ body {
             margin-bottom: 5px;
             font-weight: bold;
             color: #555;
+        }
+        #page-info {
+              display: flex;
+              align-items: center;
         }
 
         .input-item select,
@@ -230,6 +234,20 @@ body {
             background-color: #ffe0b2;
         }
 
+        .table-section tr.retorno-row {
+            background-color: #f44336;
+            color: #ffffff;
+        }
+
+        .table-section tr.retorno-row:hover {
+            background-color: #d32f2f;
+        }
+
+        .table-section tr.retorno-row.selected {
+            background-color: #b71c1c;
+            font-weight: bold;
+        }
+
         .id-input-container {
             display: flex;
             align-items: center;
@@ -248,20 +266,13 @@ body {
             border-radius: 4px;
             width: 80px;
         }
-        #page-info {
-                display: flex;
-                align-items: center;
-        }
 
         .pagination {
             margin-top: 20px;
             text-align: center;
-            margin-top: 20px;
-            text-align: center;
             display: flex;
             justify-content: center;
-}
-        
+        }
 
         .pagination button {
             padding: 8px 16px;

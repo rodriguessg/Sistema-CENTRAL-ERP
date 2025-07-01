@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 $servername = "localhost";
 $username   = "root";
 $password   = "";
-$dbname     = "gm_sicbd";
+$dbname     = "gm_sicbd"; // Certifique-se de que este é o nome correto do seu banco de dados
 
 try {
     $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password, [
@@ -23,6 +23,9 @@ try {
 $action = $_POST['action'] ?? '';
 
 switch ($action) {
+    case 'get_initial_data':
+        getInitialData($conn);
+        break;
     case 'add_viagem':
         addViagem($conn);
         break;
@@ -46,45 +49,66 @@ switch ($action) {
         break;
 }
 
+// Função para buscar dados iniciais para os selects
+function getInitialData($conn) {
+    try {
+        $bondes = $conn->query("SELECT id, modelo FROM bondes ORDER BY modelo")->fetchAll(PDO::FETCH_ASSOC);
+        $destinos = $conn->query("SELECT id, nome FROM destinos ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC);
+        $maquinistas = $conn->query("SELECT id, nome FROM maquinistas ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC);
+        $agentes = $conn->query("SELECT id, nome FROM agentes ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            'success' => true,
+            'bondes' => $bondes,
+            'destinos' => $destinos,
+            'maquinistas' => $maquinistas,
+            'agentes' => $agentes
+        ]);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => 'Erro ao buscar dados iniciais: ' . $e->getMessage()]);
+    }
+}
+
+// Função para adicionar uma nova viagem
 function addViagem($conn) {
-    $bonde_id    = filter_input(INPUT_POST, 'bonde_id', FILTER_VALIDATE_INT);
-    $origem_id   = filter_input(INPUT_POST, 'origem_id', FILTER_VALIDATE_INT);
-    $destino_id  = filter_input(INPUT_POST, 'destino_id', FILTER_VALIDATE_INT); // Pode ser NULL para a primeira perna
+    $bonde_id      = filter_input(INPUT_POST, 'bonde_id', FILTER_VALIDATE_INT);
+    $origem_id     = filter_input(INPUT_POST, 'origem_id', FILTER_VALIDATE_INT);
+    $destino_id    = filter_input(INPUT_POST, 'destino_id', FILTER_VALIDATE_INT); // Pode ser NULL para subida pendente
     $maquinista_id = filter_input(INPUT_POST, 'maquinista_id', FILTER_VALIDATE_INT);
-    $agente_id   = filter_input(INPUT_POST, 'agente_id', FILTER_VALIDATE_INT);
-    $hora        = filter_input(INPUT_POST, 'hora', FILTER_SANITIZE_STRING);
-    $pagantes    = filter_input(INPUT_POST, 'pagantes', FILTER_VALIDATE_INT);
-    $moradores   = filter_input(INPUT_POST, 'moradores', FILTER_VALIDATE_INT);
-    $gratuidade  = filter_input(INPUT_POST, 'gratuidade', FILTER_VALIDATE_INT);
-    $tipo_viagem = filter_input(INPUT_POST, 'tipo_viagem', FILTER_SANITIZE_STRING); // 'subida' ou 'descida'
-    $data_viagem = date('Y-m-d'); // Sempre a data atual
+    $agente_id     = filter_input(INPUT_POST, 'agente_id', FILTER_VALIDATE_INT);
+    $hora          = filter_input(INPUT_POST, 'hora', FILTER_SANITIZE_STRING);
+    $pagantes      = filter_input(INPUT_POST, 'pagantes', FILTER_VALIDATE_INT);
+    $moradores     = filter_input(INPUT_POST, 'moradores', FILTER_VALIDATE_INT);
+    $gratuidade    = filter_input(INPUT_POST, 'gratuidade', FILTER_VALIDATE_INT); // Corresponde a grat_pcd_idoso
+    $tipo_viagem   = filter_input(INPUT_POST, 'tipo_viagem', FILTER_SANITIZE_STRING);
+    $data_viagem   = filter_input(INPUT_POST, 'data_viagem', FILTER_SANITIZE_STRING);
 
-    $total_passageiros = ($pagantes ?? 0) + ($moradores ?? 0) + ($gratuidade ?? 0);
-
-    if ($total_passageiros > 32) {
-        echo json_encode(['success' => false, 'message' => 'Capacidade máxima de 32 passageiros excedida.']);
+    // Validação básica
+    if (!$bonde_id || !$origem_id || !$maquinista_id || !$agente_id || !$hora || $pagantes === null || $moradores === null || $gratuidade === null || !$tipo_viagem || !$data_viagem) {
+        echo json_encode(['success' => false, 'message' => 'Dados incompletos para adicionar a viagem.']);
         return;
     }
 
-    if (!$bonde_id || !$origem_id || !$maquinista_id || !$agente_id || !$hora || $pagantes === null || $moradores === null || $gratuidade === null || !$tipo_viagem) {
-        echo json_encode(['success' => false, 'message' => 'Dados incompletos para adicionar a viagem.']);
+    $total_passageiros = $pagantes + $moradores + $gratuidade;
+    if ($total_passageiros > 32) {
+        echo json_encode(['success' => false, 'message' => 'Capacidade máxima de 32 passageiros excedida.']);
         return;
     }
 
     try {
         $stmt = $conn->prepare("INSERT INTO viagens (bonde_id, origem_id, destino_id, maquinista_id, agente_id, hora, pagantes, moradores, gratuidade, tipo_viagem, data_viagem) VALUES (:bonde_id, :origem_id, :destino_id, :maquinista_id, :agente_id, :hora, :pagantes, :moradores, :gratuidade, :tipo_viagem, :data_viagem)");
         $stmt->execute([
-            ':bonde_id'    => $bonde_id,
-            ':origem_id'   => $origem_id,
-            ':destino_id'  => $destino_id,
+            ':bonde_id'      => $bonde_id,
+            ':origem_id'     => $origem_id,
+            ':destino_id'    => $destino_id ?: null, // Pode ser null para subida pendente
             ':maquinista_id' => $maquinista_id,
-            ':agente_id'   => $agente_id,
-            ':hora'        => $hora,
-            ':pagantes'    => $pagantes,
-            ':moradores'   => $moradores,
-            ':gratuidade'  => $gratuidade,
-            ':tipo_viagem' => $tipo_viagem,
-            ':data_viagem' => $data_viagem
+            ':agente_id'     => $agente_id,
+            ':hora'          => $hora,
+            ':pagantes'      => $pagantes,
+            ':moradores'     => $moradores,
+            ':gratuidade'    => $gratuidade,
+            ':tipo_viagem'   => $tipo_viagem,
+            ':data_viagem'   => $data_viagem
         ]);
         echo json_encode(['success' => true, 'message' => 'Viagem adicionada com sucesso!', 'id' => $conn->lastInsertId()]);
     } catch (PDOException $e) {
@@ -92,33 +116,47 @@ function addViagem($conn) {
     }
 }
 
+// Função para atualizar uma viagem existente
 function updateViagem($conn) {
-    $id          = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-    $pagantes    = filter_input(INPUT_POST, 'pagantes', FILTER_VALIDATE_INT);
-    $moradores   = filter_input(INPUT_POST, 'moradores', FILTER_VALIDATE_INT);
-    $gratuidade  = filter_input(INPUT_POST, 'gratuidade', FILTER_VALIDATE_INT);
-    $destino_id  = filter_input(INPUT_POST, 'destino_id', FILTER_VALIDATE_INT);
+    $id            = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+    $bonde_id      = filter_input(INPUT_POST, 'bonde_id', FILTER_VALIDATE_INT);
+    $origem_id     = filter_input(INPUT_POST, 'origem_id', FILTER_VALIDATE_INT);
+    $destino_id    = filter_input(INPUT_POST, 'destino_id', FILTER_VALIDATE_INT);
+    $maquinista_id = filter_input(INPUT_POST, 'maquinista_id', FILTER_VALIDATE_INT);
+    $agente_id     = filter_input(INPUT_POST, 'agente_id', FILTER_VALIDATE_INT);
+    $hora          = filter_input(INPUT_POST, 'hora', FILTER_SANITIZE_STRING);
+    $pagantes      = filter_input(INPUT_POST, 'pagantes', FILTER_VALIDATE_INT);
+    $moradores     = filter_input(INPUT_POST, 'moradores', FILTER_VALIDATE_INT);
+    $gratuidade    = filter_input(INPUT_POST, 'gratuidade', FILTER_VALIDATE_INT);
+    $tipo_viagem   = filter_input(INPUT_POST, 'tipo_viagem', FILTER_SANITIZE_STRING);
+    $data_viagem   = filter_input(INPUT_POST, 'data_viagem', FILTER_SANITIZE_STRING);
 
-    $total_passageiros = ($pagantes ?? 0) + ($moradores ?? 0) + ($gratuidade ?? 0);
+    if (!$id || !$bonde_id || !$origem_id || !$maquinista_id || !$agente_id || !$hora || $pagantes === null || $moradores === null || $gratuidade === null || !$tipo_viagem || !$data_viagem) {
+        echo json_encode(['success' => false, 'message' => 'Dados incompletos para atualizar a viagem.']);
+        return;
+    }
 
+    $total_passageiros = $pagantes + $moradores + $gratuidade;
     if ($total_passageiros > 32) {
         echo json_encode(['success' => false, 'message' => 'Capacidade máxima de 32 passageiros excedida.']);
         return;
     }
 
-    if (!$id || $pagantes === null || $moradores === null || $gratuidade === null || !$destino_id) {
-        echo json_encode(['success' => false, 'message' => 'Dados incompletos para atualizar a viagem.']);
-        return;
-    }
-
     try {
-        $stmt = $conn->prepare("UPDATE viagens SET pagantes = :pagantes, moradores = :moradores, gratuidade = :gratuidade, destino_id = :destino_id, tipo_viagem = 'descida' WHERE id = :id");
+        $stmt = $conn->prepare("UPDATE viagens SET bonde_id = :bonde_id, origem_id = :origem_id, destino_id = :destino_id, maquinista_id = :maquinista_id, agente_id = :agente_id, hora = :hora, pagantes = :pagantes, moradores = :moradores, gratuidade = :gratuidade, tipo_viagem = :tipo_viagem, data_viagem = :data_viagem WHERE id = :id");
         $stmt->execute([
-            ':pagantes'   => $pagantes,
-            ':moradores'  => $moradores,
-            ':gratuidade' => $gratuidade,
-            ':destino_id' => $destino_id,
-            ':id'         => $id
+            ':bonde_id'      => $bonde_id,
+            ':origem_id'     => $origem_id,
+            ':destino_id'    => $destino_id ?: null,
+            ':maquinista_id' => $maquinista_id,
+            ':agente_id'     => $agente_id,
+            ':hora'          => $hora,
+            ':pagantes'      => $pagantes,
+            ':moradores'     => $moradores,
+            ':gratuidade'    => $gratuidade,
+            ':tipo_viagem'   => $tipo_viagem,
+            ':data_viagem'   => $data_viagem,
+            ':id'            => $id
         ]);
         echo json_encode(['success' => true, 'message' => 'Viagem atualizada com sucesso!']);
     } catch (PDOException $e) {
@@ -126,6 +164,7 @@ function updateViagem($conn) {
     }
 }
 
+// Função para excluir uma viagem
 function deleteViagem($conn) {
     $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 
@@ -143,6 +182,7 @@ function deleteViagem($conn) {
     }
 }
 
+// Função para limpar todas as transações
 function clearTransactions($conn) {
     try {
         $conn->exec("TRUNCATE TABLE viagens");
@@ -152,6 +192,7 @@ function clearTransactions($conn) {
     }
 }
 
+// Função para buscar viagens paginadas e filtradas
 function getViagens($conn) {
     $page = isset($_POST['page']) ? max(1, (int)$_POST['page']) : 1;
     $perPage = 7;
@@ -162,16 +203,17 @@ function getViagens($conn) {
         SELECT
             v.id,
             b.modelo AS bonde,
-            d1.nome AS origem,
-            d2.nome AS destino,
+            d1.nome AS saida,
+            d2.nome AS retorno,
             m.nome AS maquinista,
             a.nome AS agente,
             DATE_FORMAT(v.hora, '%H:%i:%s') AS hora,
             v.pagantes,
             v.moradores,
-            v.gratuidade,
-            (v.pagantes + v.moradores + v.gratuidade) AS passageiros,
-            v.tipo_viagem
+            v.gratuidade AS gratuidadeCalculated,
+            (v.pagantes + v.moradores + v.gratuidade) AS passageirosCalculated,
+            v.tipo_viagem AS tipoViagem,
+            v.data_viagem AS data
         FROM viagens v
         JOIN bondes b ON v.bonde_id = b.id
         JOIN destinos d1 ON v.origem_id = d1.id
@@ -222,16 +264,17 @@ function getViagens($conn) {
     }
 }
 
+// Função para buscar totais consolidados
 function getTotals($conn) {
     $totais = [
         'subida' => ['pagantes' => 0, 'gratuitos' => 0, 'moradores' => 0, 'passageiros' => 0, 'bondes' => 0],
-        'descida' => ['pagantes' => 0, 'gratuitos' => 0, 'moradores' => 0, 'passageiros' => 0, 'bondes' => 0]
+        'retorno' => ['pagantes' => 0, 'gratuitos' => 0, 'moradores' => 0, 'passageiros' => 0, 'bondes' => 0]
     ];
 
     try {
         $stmt = $conn->query("SELECT pagantes, moradores, gratuidade, tipo_viagem FROM viagens");
         while ($v = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $key = $v['tipo_viagem'] === 'subida' ? 'subida' : 'descida';
+            $key = $v['tipo_viagem'] === 'subida' ? 'subida' : 'retorno';
             $totais[$key]['pagantes'] += $v['pagantes'];
             $totais[$key]['gratuitos'] += $v['gratuidade'];
             $totais[$key]['moradores'] += $v['moradores'];

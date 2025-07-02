@@ -1,82 +1,4 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['username'])) {
-    header('Location: login.php');
-    exit;
-}
-$usuarioLogado = $_SESSION['username'];
-
-// Conexão com o banco
-$host = 'localhost';
-$dbname = 'gm_sicbd';
-$username = 'root';
-$password = '';
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("<div class='error'>Erro ao conectar ao banco: " . $e->getMessage() . "</div>");
-}
-
-// Carrega bondes para o filtro
-$bondes = [];
-try {
-    $stmt = $pdo->query("SELECT modelo FROM bondes ORDER BY modelo ASC");
-    $bondes = $stmt->fetchAll(PDO::FETCH_COLUMN);
-} catch (PDOException $e) {
-    $bondes = [];
-}
-
-// Processa filtro
-$bonde = isset($_GET['bonde']) ? $_GET['bonde'] : '';
-$periodo = isset($_GET['periodo']) ? $_GET['periodo'] : 'dia';
-$dataBase = isset($_GET['data']) ? $_GET['data'] : date('Y-m-d');
-
-// Calcula intervalo de datas
-switch ($periodo) {
-    case 'dia':
-        $dataInicio = $dataBase;
-        $dataFim = $dataBase;
-        $periodoTexto = "Dia: " . date('d/m/Y', strtotime($dataBase));
-        break;
-    case 'semana':
-        $dataInicio = date('Y-m-d', strtotime('monday this week', strtotime($dataBase)));
-        $dataFim = date('Y-m-d', strtotime('sunday this week', strtotime($dataBase)));
-        $periodoTexto = "Semana: " . date('d/m/Y', strtotime($dataInicio)) . " a " . date('d/m/Y', strtotime($dataFim));
-        break;
-    case 'mes':
-        $dataInicio = date('Y-m-01', strtotime($dataBase));
-        $dataFim = date('Y-m-t', strtotime($dataBase));
-        $periodoTexto = "Mês: " . date('m/Y', strtotime($dataBase));
-        break;
-    case 'ano':
-        $dataInicio = date('Y-01-01', strtotime($dataBase));
-        $dataFim = date('Y-12-31', strtotime($dataBase));
-        $periodoTexto = "Ano: " . date('Y', strtotime($dataBase));
-        break;
-    default:
-        $dataInicio = $dataFim = $dataBase;
-        $periodoTexto = "Dia: " . date('d/m/Y', strtotime($dataBase));
-}
-
-// Consulta transações
-$sql = "SELECT modelo, data, pagantes, moradores, gratuidade, passageiros FROM transacoes WHERE data BETWEEN :inicio AND :fim";
-$params = [':inicio' => $dataInicio, ':fim' => $dataFim];
-if ($bonde) {
-    $sql .= " AND modelo = :modelo";
-    $params[':modelo'] = $bonde;
-}
-$sql .= " ORDER BY modelo, data ASC";
-
-try {
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-    $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $resultados = [];
-}
-
 include 'header.php';
 ?>
 <!DOCTYPE html>
@@ -84,449 +6,500 @@ include 'header.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de Bondes</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --success: #27ae60;
-            --danger: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #34495e;
-            --gray: #95a5a6;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            margin-bottom: 25px;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .title {
-            color: var(--primary);
-            font-size: 28px;
-            font-weight: 600;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--light);
-            padding: 10px 15px;
-            border-radius: 30px;
-            font-weight: 500;
-        }
-        
-        .user-info i {
-            color: var(--secondary);
-            font-size: 18px;
-        }
-        
-        .filters {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .filter-group label {
-            font-weight: 500;
-            margin-bottom: 6px;
-            color: var(--dark);
-            font-size: 14px;
-        }
-        
-        .filter-group select, 
-        .filter-group input {
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            background: white;
-            transition: all 0.3s ease;
-        }
-        
-        .filter-group select:focus, 
-        .filter-group input:focus {
-            border-color: var(--secondary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-        }
-        
-        .btn-generate {
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 14px 25px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .btn-generate:hover {
-            background: #219653;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
-        }
-        
-        .btn-generate i {
-            font-size: 18px;
-        }
-        
-        .period-info {
-            background: #e1f5fe;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .period-info i {
-            color: var(--secondary);
-            font-size: 20px;
-        }
-        
-        .results-container {
-            overflow-x: auto;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            min-width: 800px;
-        }
-        
-        th {
-            background: var(--primary);
-            color: white;
-            text-align: left;
-            padding: 15px;
-            font-weight: 600;
-        }
-        
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        
-        tr:hover {
-            background-color: #f1f9ff;
-        }
-        
-        .totals-row {
-            font-weight: 700;
-            background-color: #e3f2fd !important;
-        }
-        
-        .totals-row td {
-            border-top: 2px solid var(--secondary);
-            border-bottom: none;
-        }
-        
-        .no-results {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
-        }
-        
-        .no-results i {
-            font-size: 50px;
-            margin-bottom: 15px;
-            color: #bdc3c7;
-        }
-        
-        .no-results p {
-            font-size: 18px;
-        }
-        
-        .bonde-name {
-            font-weight: 600;
-            color: var(--secondary);
-        }
-        
-        .data-cell {
-            font-weight: 500;
-        }
-        
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .filters {
-                grid-template-columns: 1fr;
-            }
-            
-            .container {
-                padding: 15px;
-            }
-            
-            .card {
-                padding: 20px;
-            }
-        }
-        
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            color: var(--secondary);
-        }
-        
-        .loading i {
-            font-size: 40px;
-            margin-bottom: 10px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-        
-        .summary-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .summary-card .title {
-            font-size: 16px;
-            color: var(--gray);
-            margin-bottom: 10px;
-        }
-        
-        .summary-card .value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .summary-card .bonde {
-            font-size: 14px;
-            color: var(--secondary);
-            margin-top: 5px;
-        }
-    </style>
+    <title>Relatórios - Bondes Santa Teresa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="./src/bonde/style/relatoriobonde.css">
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <div class="header">
-                <h1 class="title">Relatório de Transações dos Bondes</h1>
-                <div class="user-info">
-                    <i class="fas fa-user"></i>
-                    <span>Usuário: <?= htmlspecialchars($usuarioLogado) ?></span>
+        <div class="header">
+            <h1>Relatórios - Bondes Santa Teresa</h1>
+            <img src="logo-placeholder.png" alt="Logo Bondes Santa Teresa">
+        </div>
+        <div class="form-section">
+            <h2>Gerar Relatório</h2>
+            <div class="input-group">
+                <div class="input-item">
+                    <label for="report-type">Tipo de Relatório</label>
+                    <select id="report-type">
+                        <option value="diario">Diário</option>
+                        <option value="semanal">Semanal</option>
+                        <option value="mensal">Mensal</option>
+                        <option value="anual">Anual</option>
+                    </select>
+                </div>
+                <div class="input-item" id="date-input-container">
+                    <label for="report-date">Data</label>
+                    <input type="date" id="report-date" value="2025-07-02">
+                </div>
+                <div class="input-item" id="month-input-container" style="display: none;">
+                    <label for="report-month">Mês</label>
+                    <select id="report-month">
+                        <option value="0">Janeiro</option>
+                        <option value="1">Fevereiro</option>
+                        <option value="2">Março</option>
+                        <option value="3">Abril</option>
+                        <option value="4">Maio</option>
+                        <option value="5">Junho</option>
+                        <option value="6">Julho</option>
+                        <option value="7">Agosto</option>
+                        <option value="8">Setembro</option>
+                        <option value="9">Outubro</option>
+                        <option value="10">Novembro</option>
+                        <option value="11">Dezembro</option>
+                    </select>
+                </div>
+                <div class="input-item">
+                    <label for="bonde">Bonde</label>
+                    <select id="bonde">
+                        <option value="">Todos</option>
+                        <option value="BONDE 17">BONDE 17</option>
+                        <option value="BONDE 16">BONDE 16</option>
+                        <option value="BONDE 19">BONDE 19</option>
+                        <option value="BONDE 22">BONDE 22</option>
+                        <option value="BONDE 18">BONDE 18</option>
+                        <option value="BONDE 20">BONDE 20</option>
+                    </select>
                 </div>
             </div>
-            
-            <form method="GET" id="reportForm">
-                <div class="filters">
-                    <div class="filter-group">
-                        <label for="bonde"><i class="fas fa-train"></i> Bonde:</label>
-                        <select name="bonde" id="bonde">
-                            <option value="">Todos os bondes</option>
-                            <?php foreach ($bondes as $modelo): ?>
-                                <option value="<?= htmlspecialchars($modelo) ?>" <?= ($bonde == $modelo) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($modelo) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label for="periodo"><i class="fas fa-calendar"></i> Período:</label>
-                        <select name="periodo" id="periodo">
-                            <option value="dia" <?= ($periodo == 'dia') ? 'selected' : '' ?>>Dia</option>
-                            <option value="semana" <?= ($periodo == 'semana') ? 'selected' : '' ?>>Semana</option>
-                            <option value="mes" <?= ($periodo == 'mes') ? 'selected' : '' ?>>Mês</option>
-                            <option value="ano" <?= ($periodo == 'ano') ? 'selected' : '' ?>>Ano</option>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label for="data"><i class="fas fa-calendar-day"></i> Data base:</label>
-                        <input type="date" name="data" id="data" value="<?= htmlspecialchars($dataBase) ?>">
-                    </div>
-                    
-                    <div class="filter-group" style="align-self: flex-end;">
-                        <button type="submit" class="btn-generate">
-                            <i class="fas fa-sync-alt"></i> Gerar Relatório
-                        </button>
-                    </div>
-                </div>
-            </form>
-            
-            <div class="period-info">
-                <i class="fas fa-info-circle"></i>
-                <span><?= $periodoTexto ?></span>
-                <?php if ($bonde): ?>
-                    <span> | Bonde selecionado: <strong><?= htmlspecialchars($bonde) ?></strong></span>
-                <?php endif; ?>
+            <div class="buttons-section">
+                <button id="generate-report-btn">Gerar Relatório</button>
+                <button id="export-pdf-btn" disabled>Exportar como PDF</button>
             </div>
-            
-            <div class="loading" id="loadingIndicator">
-                <i class="fas fa-spinner"></i>
-                <p>Carregando dados...</p>
-            </div>
-            
-            <?php if (count($resultados) > 0): ?>
-                <!-- Cards Resumo -->
-                <div class="summary-cards">
-                    <?php
-                    $totPagantes = $totMoradores = $totGratuidade = $totPassageiros = 0;
-                    foreach ($resultados as $linha) {
-                        $totPagantes += $linha['pagantes'];
-                        $totMoradores += $linha['moradores'];
-                        $totGratuidade += $linha['gratuidade'];
-                        $totPassageiros += $linha['passageiros'];
-                    }
-                    ?>
-                    <div class="summary-card">
-                        <div class="title">Total de Pagantes</div>
-                        <div class="value"><?= number_format($totPagantes, 0, ',', '.') ?></div>
-                    </div>
-                    
-                    <div class="summary-card">
-                        <div class="title">Total de Moradores</div>
-                        <div class="value"><?= number_format($totMoradores, 0, ',', '.') ?></div>
-                    </div>
-                    
-                    <div class="summary-card">
-                        <div class="title">Total de Gratuidades</div>
-                        <div class="value"><?= number_format($totGratuidade, 0, ',', '.') ?></div>
-                    </div>
-                    
-                    <div class="summary-card">
-                        <div class="title">Total de Passageiros</div>
-                        <div class="value"><?= number_format($totPassageiros, 0, ',', '.') ?></div>
-                    </div>
-                </div>
-                
-                <!-- Tabela Detalhada -->
-                <div class="results-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Bonde</th>
-                                <th>Pagantes</th>
-                                <th>Moradores</th>
-                                <th>Gratuidade</th>
-                                <th>Total Passageiros</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $totPagantes = $totMoradores = $totGratuidade = $totPassageiros = 0;
-                            foreach ($resultados as $linha):
-                                $totPagantes += $linha['pagantes'];
-                                $totMoradores += $linha['moradores'];
-                                $totGratuidade += $linha['gratuidade'];
-                                $totPassageiros += $linha['passageiros'];
-                                // Formatar data para o padrão brasileiro
-                                $dataFormatada = date('d/m/Y', strtotime($linha['data']));
-                            ?>
-                            <tr>
-                                <td class="data-cell"><?= htmlspecialchars($dataFormatada) ?></td>
-                                <td><span class="bonde-name"><?= htmlspecialchars($linha['modelo']) ?></span></td>
-                                <td><?= number_format($linha['pagantes'], 0, ',', '.') ?></td>
-                                <td><?= number_format($linha['moradores'], 0, ',', '.') ?></td>
-                                <td><?= number_format($linha['gratuidade'], 0, ',', '.') ?></td>
-                                <td><strong><?= number_format($linha['passageiros'], 0, ',', '.') ?></strong></td>
-                            </tr>
-                            <?php endforeach; ?>
-                            <tr class="totals-row">
-                                <td colspan="2">Totais</td>
-                                <td><?= number_format($totPagantes, 0, ',', '.') ?></td>
-                                <td><?= number_format($totMoradores, 0, ',', '.') ?></td>
-                                <td><?= number_format($totGratuidade, 0, ',', '.') ?></td>
-                                <td><strong><?= number_format($totPassageiros, 0, ',', '.') ?></strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            <?php else: ?>
-                <div class="no-results">
-                    <i class="fas fa-file-excel"></i>
-                    <p>Nenhuma transação encontrada para o filtro selecionado</p>
-                </div>
-            <?php endif; ?>
+        </div>
+        <div class="table-section" id="report-table-section" style="display: none;">
+            <table id="report-table">
+                <thead id="report-table-head"></thead>
+                <tbody id="report-table-body"></tbody>
+            </table>
+        </div>
+        <div class="summary-section" id="summary-section" style="display: none;">
+            <h3>Resumo do Relatório</h3>
+            <div id="summary-content"></div>
         </div>
     </div>
 
     <script>
-        document.getElementById('reportForm').addEventListener('submit', function() {
-            // Mostrar indicador de carregamento
-            document.getElementById('loadingIndicator').style.display = 'block';
-        });
-        
-        // Configurar data atual como padrão se não estiver definida
-        if(!document.getElementById('data').value) {
-            document.getElementById('data').value = new Date().toISOString().split('T')[0];
+        const { jsPDF } = window.jspdf;
+        const reportTypeInput = document.getElementById('report-type');
+        const reportDateInput = document.getElementById('report-date');
+        const dateInputContainer = document.getElementById('date-input-container');
+        const monthInputContainer = document.getElementById('month-input-container');
+        const reportMonthInput = document.getElementById('report-month');
+        const bondeInput = document.getElementById('bonde');
+        const generateReportBtn = document.getElementById('generate-report-btn');
+        const exportPdfBtn = document.getElementById('export-pdf-btn');
+        const reportTableSection = document.getElementById('report-table-section');
+        const reportTableHead = document.getElementById('report-table-head');
+        const reportTableBody = document.getElementById('report-table-body');
+        const summarySection = document.getElementById('summary-section');
+        const summaryContent = document.getElementById('summary-content');
+
+        let transactions = [];
+        let currentReportData = null;
+
+        function loadTransactions() {
+            const storedTransactions = localStorage.getItem('bondesSantaTeresaTransactions');
+            if (storedTransactions) {
+                transactions = JSON.parse(storedTransactions);
+            } else {
+                transactions = [
+                    { data: '2025-07-01', bonde: 'BONDE 17', pagantes: 50, moradores: 10, gratPcdIdoso: 5 },
+                    { data: '2025-07-02', bonde: 'BONDE 16', pagantes: 60, moradores: 15, gratPcdIdoso: 8 },
+                    { data: '2025-06-15', bonde: 'BONDE 19', pagantes: 45, moradores: 12, gratPcdIdoso: 3 },
+                    { data: '2025-06-01', bonde: 'BONDE 17', pagantes: 55, moradores: 8, gratPcdIdoso: 4 },
+                    { data: '2025-05-10', bonde: 'BONDE 20', pagantes: 30, moradores: 5, gratPcdIdoso: 2 }
+                ];
+                localStorage.setItem('bondesSantaTeresaTransactions', JSON.stringify(transactions));
+            }
         }
+
+        function updateDateInput() {
+            const reportType = reportTypeInput.value;
+            dateInputContainer.innerHTML = '';
+            monthInputContainer.style.display = 'none';
+            let input;
+            if (reportType === 'diario') {
+                input = document.createElement('input');
+                input.type = 'date';
+                input.id = 'report-date';
+                input.value = '2025-07-02';
+                input.required = true;
+                dateInputContainer.innerHTML = '<label for="report-date">Data</label>';
+                dateInputContainer.appendChild(input);
+            } else if (reportType === 'semanal') {
+                input = document.createElement('input');
+                input.type = 'week';
+                input.id = 'report-date';
+                input.value = '2025-W27';
+                input.required = true;
+                dateInputContainer.innerHTML = '<label for="report-date">Semana</label>';
+                dateInputContainer.appendChild(input);
+            } else if (reportType === 'mensal' || reportType === 'anual') {
+                input = document.createElement('input');
+                input.type = 'number';
+                input.id = 'report-date';
+                input.min = '2000';
+                input.max = new Date().getFullYear();
+                input.value = new Date().getFullYear();
+                input.required = true;
+                dateInputContainer.innerHTML = '<label for="report-date">Ano</label>';
+                dateInputContainer.appendChild(input);
+                monthInputContainer.style.display = reportType === 'mensal' ? 'block' : 'none';
+                if (reportType === 'mensal') {
+                    reportMonthInput.value = new Date().getMonth();
+                }
+            }
+        }
+
+        function getWeekStartEnd(weekString) {
+            const [year, week] = weekString.split('-W').map(Number);
+            const jan1 = new Date(year, 0, 1);
+            const firstMonday = new Date(year, 0, 1 + ((jan1.getDay() === 0 ? -6 : 1) - jan1.getDay()) + (week - 1) * 7);
+            const weekEnd = new Date(firstMonday);
+            weekEnd.setDate(firstMonday.getDate() + 6);
+            return { start: firstMonday, end: weekEnd };
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function generateReport() {
+            const reportType = reportTypeInput.value;
+            const dateValue = document.getElementById('report-date')?.value;
+            const monthValue = reportType === 'mensal' ? reportMonthInput.value : null;
+            const bonde = bondeInput.value;
+            let filteredTransactions = transactions;
+
+            if (!dateValue) {
+                alert('Por favor, selecione uma data, semana ou ano.');
+                return;
+            }
+            if (reportType === 'mensal' && !monthValue) {
+                alert('Por favor, selecione um mês.');
+                return;
+            }
+
+            if (bonde) {
+                filteredTransactions = transactions.filter(t => t.bonde === bonde);
+            }
+
+            reportTableSection.style.display = 'block';
+            summarySection.style.display = 'block';
+            reportTableHead.innerHTML = '';
+            reportTableBody.innerHTML = '';
+            summaryContent.innerHTML = '';
+            exportPdfBtn.disabled = false;
+            currentReportData = null;
+
+            const bondes = ['BONDE 16', 'BONDE 17', 'BONDE 18', 'BONDE 19', 'BONDE 20', 'BONDE 22'];
+
+            if (reportType === 'diario') {
+                filteredTransactions = filteredTransactions.filter(t => t.data === dateValue);
+                reportTableHead.innerHTML = `
+                    <tr>
+                        <th>Bonde</th>
+                        <th>Pagantes</th>
+                        <th>Moradores</th>
+                        <th>Gratuitos</th>
+                        <th>Total Passageiros</th>
+                    </tr>
+                `;
+                const reportData = bondes.map(bonde => {
+                    const bondesTransactions = filteredTransactions.filter(t => t.bonde === bonde);
+                    const pagantes = bondesTransactions.reduce((sum, t) => sum + t.pagantes, 0);
+                    const moradores = bondesTransactions.reduce((sum, t) => sum + t.moradores, 0);
+                    const gratuitos = bondesTransactions.reduce((sum, t) => sum + t.gratPcdIdoso, 0);
+                    const total = pagantes + moradores + gratuitos;
+                    return { bonde, pagantes, moradores, gratuitos, total };
+                }).filter(row => bonde ? row.bonde === bonde : row.total > 0);
+
+                reportData.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.bonde}</td>
+                        <td>${row.pagantes}</td>
+                        <td>${row.moradores}</td>
+                        <td>${row.gratuitos}</td>
+                        <td>${row.total}</td>
+                    `;
+                    reportTableBody.appendChild(tr);
+                });
+
+                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
+                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
+                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
+                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
+
+                summaryContent.innerHTML = `
+                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
+                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
+                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
+                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
+                `;
+                currentReportData = { type: 'diario', date: dateValue, data: reportData, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros } };
+
+            } else if (reportType === 'semanal') {
+                const { start, end } = getWeekStartEnd(dateValue);
+                filteredTransactions = filteredTransactions.filter(t => {
+                    const transactionDate = new Date(t.data);
+                    return transactionDate >= start && transactionDate <= end;
+                });
+                reportTableHead.innerHTML = `
+                    <tr>
+                        <th>Data</th>
+                        <th>Bonde</th>
+                        <th>Pagantes</th>
+                        <th>Moradores</th>
+                        <th>Gratuitos</th>
+                        <th>Total Passageiros</th>
+                    </tr>
+                `;
+                const reportData = [];
+                const dates = [];
+                let currentDate = new Date(start);
+                while (currentDate <= end) {
+                    dates.push(formatDate(currentDate));
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+
+                dates.forEach(date => {
+                    bondes.forEach(bonde => {
+                        const bondesTransactions = filteredTransactions.filter(t => t.data === date && t.bonde === bonde);
+                        if (bondesTransactions.length > 0 || !bonde) {
+                            const pagantes = bondesTransactions.reduce((sum, t) => sum + t.pagantes, 0);
+                            const moradores = bondesTransactions.reduce((sum, t) => sum + t.moradores, 0);
+                            const gratuitos = bondesTransactions.reduce((sum, t) => sum + t.gratPcdIdoso, 0);
+                            const total = pagantes + moradores + gratuitos;
+                            if (total > 0) {
+                                reportData.push({ date, bonde, pagantes, moradores, gratuitos, total });
+                            }
+                        }
+                    });
+                });
+
+                reportData.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.date}</td>
+                        <td>${row.bonde}</td>
+                        <td>${row.pagantes}</td>
+                        <td>${row.moradores}</td>
+                        <td>${row.gratuitos}</td>
+                        <td>${row.total}</td>
+                    `;
+                    reportTableBody.appendChild(tr);
+                });
+
+                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
+                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
+                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
+                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
+
+                summaryContent.innerHTML = `
+                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
+                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
+                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
+                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
+                `;
+                currentReportData = { type: 'semanal', date: dateValue, data: reportData, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros } };
+
+            } else if (reportType === 'mensal') {
+                const year = parseInt(dateValue);
+                const month = parseInt(monthValue);
+                filteredTransactions = filteredTransactions.filter(t => {
+                    const transactionDate = new Date(t.data);
+                    return transactionDate.getFullYear() === year && transactionDate.getMonth() === month;
+                });
+                reportTableHead.innerHTML = `
+                    <tr>
+                        <th>Data</th>
+                        <th>Bonde</th>
+                        <th>Pagantes</th>
+                        <th>Moradores</th>
+                        <th>Gratuitos</th>
+                        <th>Total Passageiros</th>
+                    </tr>
+                `;
+                const reportData = [];
+                const dates = [];
+                const startDate = new Date(year, month, 1);
+                const endDate = new Date(year, month + 1, 0);
+                let currentDate = new Date(startDate);
+                while (currentDate <= endDate) {
+                    dates.push(formatDate(currentDate));
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+
+                dates.forEach(date => {
+                    bondes.forEach(bonde => {
+                        const bondesTransactions = filteredTransactions.filter(t => t.data === date && t.bonde === bonde);
+                        if (bondesTransactions.length > 0 || !bonde) {
+                            const pagantes = bondesTransactions.reduce((sum, t) => sum + t.pagantes, 0);
+                            const moradores = bondesTransactions.reduce((sum, t) => sum + t.moradores, 0);
+                            const gratuitos = bondesTransactions.reduce((sum, t) => sum + t.gratPcdIdoso, 0);
+                            const total = pagantes + moradores + gratuitos;
+                            if (total > 0) {
+                                reportData.push({ date, bonde, pagantes, moradores, gratuitos, total });
+                            }
+                        }
+                    });
+                });
+
+                reportData.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.date}</td>
+                        <td>${row.bonde}</td>
+                        <td>${row.pagantes}</td>
+                        <td>${row.moradores}</td>
+                        <td>${row.gratuitos}</td>
+                        <td>${row.total}</td>
+                    `;
+                    reportTableBody.appendChild(tr);
+                });
+
+                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
+                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
+                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
+                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
+                const totalDays = dates.length;
+                const mediaDiaria = totalDays > 0 ? Math.round(totalPassageiros / totalDays) : 0;
+
+                summaryContent.innerHTML = `
+                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
+                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
+                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
+                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
+                    <div class="summary-item"><span>Média Diária</span><span>${mediaDiaria}</span></div>
+                `;
+                currentReportData = { type: 'mensal', date: `${year}-${String(month + 1).padStart(2, '0')}`, data: reportData, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros, mediaDiaria } };
+
+            } else if (reportType === 'anual') {
+                const year = parseInt(dateValue);
+                filteredTransactions = filteredTransactions.filter(t => new Date(t.data).getFullYear() === year);
+                reportTableHead.innerHTML = `
+                    <tr>
+                        <th>Bonde</th>
+                        <th>Pagantes</th>
+                        <th>Moradores</th>
+                        <th>Gratuitos</th>
+                        <th>Total Passageiros</th>
+                        <th>Média Mensal Passageiros</th>
+                    </tr>
+                `;
+                const reportData = bondes.map(bonde => {
+                    const bondesTransactions = filteredTransactions.filter(t => t.bonde === bonde);
+                    const pagantes = bondesTransactions.reduce((sum, t) => sum + t.pagantes, 0);
+                    const moradores = bondesTransactions.reduce((sum, t) => sum + t.moradores, 0);
+                    const gratuitos = bondesTransactions.reduce((sum, t) => sum + t.gratPcdIdoso, 0);
+                    const total = pagantes + moradores + gratuitos;
+                    const monthsWithData = new Set(bondesTransactions.map(t => new Date(t.data).getMonth())).size;
+                    const mediaMensal = monthsWithData > 0 ? Math.round(total / monthsWithData) : 0;
+                    return { bonde, pagantes, moradores, gratuitos, total, mediaMensal };
+                }).filter(row => bonde ? row.bonde === bonde : row.total > 0);
+
+                reportData.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.bonde}</td>
+                        <td>${row.pagantes}</td>
+                        <td>${row.moradores}</td>
+                        <td>${row.gratuitos}</td>
+                        <td>${row.total}</td>
+                        <td>${row.mediaMensal}</td>
+                    `;
+                    reportTableBody.appendChild(tr);
+                });
+
+                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
+                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
+                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
+                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
+                const monthsWithData = new Set(filteredTransactions.map(t => new Date(t.data).getMonth())).size;
+                const mediaMensalTotal = monthsWithData > 0 ? Math.round(totalPassageiros / monthsWithData) : 0;
+
+                summaryContent.innerHTML = `
+                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
+                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
+                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
+                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
+                    <div class="summary-item"><span>Média Mensal Total</span><span>${mediaMensalTotal}</span></div>
+                `;
+                currentReportData = { type: 'anual', date: dateValue, data: reportData, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros, mediaMensalTotal } };
+            }
+
+            if (reportTableBody.children.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="${reportTableHead.children[0].children.length}" style="text-align: center; color: #e74c3c;">Nenhum dado encontrado para o período selecionado.</td>`;
+                reportTableBody.appendChild(tr);
+                summarySection.style.display = 'none';
+                exportPdfBtn.disabled = true;
+            }
+        }
+
+        function exportToPDF() {
+            if (!currentReportData) {
+                alert('Por favor, gere um relatório antes de exportar.');
+                return;
+            }
+
+            const doc = new jsPDF();
+            const reportType = currentReportData.type;
+            const dateValue = currentReportData.date;
+            const title = `Relatório ${reportType.charAt(0).toUpperCase() + reportType.slice(1)} - Bondes Santa Teresa (${dateValue})`;
+            doc.setFontSize(16);
+            doc.text(title, 10, 10);
+
+            const headers = Array.from(reportTableHead.children[0].children).map(th => th.textContent);
+            const data = Array.from(reportTableBody.children).map(row =>
+                Array.from(row.children).map(cell => cell.textContent)
+            );
+
+            if (headers.length === 0 || data.length === 0) {
+                alert('Nenhum dado disponível para exportar.');
+                return;
+            }
+
+            doc.autoTable({
+                head: [headers],
+                body: data,
+                startY: 20,
+                theme: 'grid',
+                styles: { fontSize: 10, cellPadding: 2 },
+                headStyles: { fillColor: [52, 152, 219], textColor: [255, 255, 255] },
+                alternateRowStyles: { fillColor: [249, 251, 253] }
+            });
+
+            let finalY = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(12);
+            doc.text('Resumo do Relatório', 10, finalY);
+            finalY += 10;
+
+            Object.entries(currentReportData.summary).forEach(([key, value]) => {
+                const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                doc.text(`${label}: ${value}`, 10, finalY);
+                finalY += 10;
+            });
+
+            doc.save(`relatorio_${reportType}_${dateValue}.pdf`);
+        }
+
+        reportTypeInput.addEventListener('change', updateDateInput);
+
+        generateReportBtn.addEventListener('click', generateReport);
+
+        exportPdfBtn.addEventListener('click', exportToPDF);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTransactions();
+            updateDateInput();
+        });
     </script>
 </body>
 </html>

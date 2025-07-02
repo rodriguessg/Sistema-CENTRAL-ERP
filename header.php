@@ -61,6 +61,10 @@ try {
                 ['link' => 'homeRh.php', 'nome' => 'Recursos H', 'icon' => 'users'],
                 ['link' => 'log.php', 'nome' => 'LOG', 'icon' => 'users'],
                 ['link' => 'configuracao.php', 'nome' => 'Configurações', 'icon' => 'cogs'],
+
+
+
+                
             ];
             break;
             
@@ -106,8 +110,8 @@ try {
              case 'sisbonde':
             $menuItens = [
                 ['link' => 'painelbonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
-                ['link' => 'homebonde.php', 'nome' => 'Operacao', 'icon' => 'home'],               
-           
+                ['link' => 'homebonde.php', 'nome' => 'Operacao', 'icon' => 'home'],      
+                ['link' => 'relatoriobonde.php', 'nome' => 'Relatório Bonde', 'icon' => 'home'],               
                 ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios de Acidentes', 'icon' => 'home'],
                 ['link' => 'reportacidentes.php', 'nome' => 'Registrar Acidentes', 'icon' => 'home'],
                   ['link' => 'manutencaobonde.php', 'nome' => 'Registro de manutenção', 'icon' => 'home'],
@@ -120,6 +124,7 @@ try {
             $menuItens = [
                 ['link' => 'painelbonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
                 ['link' => 'operacao.php', 'nome' => 'Home', 'icon' => 'home'],
+                 ['link' => 'relatoriobonde.php', 'nome' => 'Relatório Bonde', 'icon' => 'home'], 
                 ['link' => 'relatoriobonde.php', 'nome' => 'Relatórios', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
   

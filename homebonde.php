@@ -16,6 +16,8 @@ try {
     $bondes = $stmt->fetchAll(PDO::FETCH_COLUMN);
 } catch (PDOException $e) {
     // Fallback to hardcoded options if database query fails
+    // In a production environment, you might want to log this error.
+    error_log("Database connection failed: " . $e->getMessage());
     $bondes = ['BONDE 17', 'BONDE 16', 'BONDE 19', 'BONDE 22', 'BONDE 18', 'BONDE 20'];
 }
 ?>
@@ -25,6 +27,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Viagens - Bondes Santa Teresa</title>
+    <!-- Link to your custom stylesheet -->
     <link rel="stylesheet" href="./src/bonde/style/bonde.css">
 </head>
 <body>
@@ -39,6 +42,7 @@ try {
                             <select id="bonde" name="bonde" required>
                                 <option value="">Selecione</option>
                                 <?php
+                                // Populate bonde options from the fetched data
                                 foreach ($bondes as $bonde) {
                                     echo "<option value=\"{$bonde}\">{$bonde}</option>";
                                 }
@@ -52,6 +56,7 @@ try {
                                 <option value="D.Irmãos">D.Irmãos</option>
                                 <option value="Paula Mattos">Paula Mattos</option>
                                 <option value="Silvestre">Silvestre</option>
+                                <!-- Oficina is generally a return destination, not a departure for ascent -->
                             </select>
                         </div>
                         <div class="input-item">
@@ -138,10 +143,13 @@ try {
                 </div>
             </div>
             <div class="buttons-section">
+                <!-- The type="submit" on add-btn will trigger the form submission to add_viagem.php -->
                 <button type="submit" id="add-btn">Adicionar</button>
                 <button type="button" id="clear-form-btn">Cancelar</button>
                 <button type="button" id="delete-btn" disabled>Excluir</button>
                 <button type="button" id="alter-btn" disabled>Alterar</button>
+                <!-- New button for registering return, initially hidden and managed by JS -->
+                <button type="button" id="return-btn" style="display: none;">Registrar Retorno</button>
                 <button type="button" id="clear-transactions-btn">Limpar Transações</button>
                 <div class="id-input-container">
                     <label for="id-filter">ID:</label>
@@ -197,6 +205,8 @@ try {
             </div>
         </div>
     </div>
+
+    <!-- Link to your JavaScript file -->
     <script src="./src/bonde/js/bonde.js"></script>
 </body>
 </html>

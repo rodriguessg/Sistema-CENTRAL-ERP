@@ -86,9 +86,9 @@ function getRedirectionPage($setor) {
         case 'ccooperacao':
             return 'operacao.php';
             case'sisbonde':
-                return 'homebonde.php';
+                return 'painelbonde.php';
                   case'planejamento':
-                return 'homplanejamento.php';
+                return 'planejamento.php';
                   case'compras':
                 return 'homecompras.php';
                   case'sismed':

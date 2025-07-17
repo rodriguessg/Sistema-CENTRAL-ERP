@@ -227,6 +227,7 @@ include 'header.php';
                        <option value="contratos">Contratos</option>
                        <option value="ccooperacao">Bonde Bilheteria</option>
                        <option value="cco">Sisbonde</option>
+                       <option value="planejamento">planejamento</option>
                     </select>
                 </div>
                 <button type="submit" name="cadastrar">Cadastrar</button>

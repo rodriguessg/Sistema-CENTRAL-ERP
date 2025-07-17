@@ -69,7 +69,15 @@ try {
             break;
             
             
-
+         case 'planejamento':
+            $menuItens = [
+                
+                ['link' => 'planejamento.php', 'nome' => 'Home', 'icon' => 'home'],
+                
+                ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
+            
+            ];
+            break;    
 
         case 'contratos':
             $menuItens = [
@@ -124,7 +132,6 @@ try {
             $menuItens = [
                 ['link' => 'painelbonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
                 ['link' => 'operacao.php', 'nome' => 'Home', 'icon' => 'home'],
-                 ['link' => 'relatoriobonde.php', 'nome' => 'Relatório Bonde', 'icon' => 'home'], 
                 ['link' => 'relatoriobonde.php', 'nome' => 'Relatórios', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
   

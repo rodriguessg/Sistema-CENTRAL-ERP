@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 02-Jul-2025 às 21:47
+-- Tempo de geração: 17-Jul-2025 às 20:53
 -- Versão do servidor: 10.4.32-MariaDB
 -- versão do PHP: 8.2.12
 
@@ -44,7 +44,8 @@ CREATE TABLE `acidentes` (
 
 INSERT INTO `acidentes` (`id`, `data`, `descricao`, `localizacao`, `usuario`, `severidade`, `categoria`, `data_registro`) VALUES
 (1, '2025-06-23', 'teste', 'SALA 501', 'controle', 'Leve', 'Outros', '2025-06-23 12:29:39'),
-(2, '2025-06-23', 'teste 2 ', 'sala 703', 'controle', 'Moderado', 'Descarrilamento', '2025-06-23 13:50:39');
+(2, '2025-06-23', 'teste 2 ', 'sala 703', 'controle', 'Moderado', 'Descarrilamento', '2025-06-23 13:50:39'),
+(3, '2025-07-09', 'lçll', 'SALA - 404', 'controle', 'Moderado', 'Falha Mecânica', '2025-07-09 09:35:11');
 
 -- --------------------------------------------------------
 
@@ -1252,7 +1253,15 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (851, 'bonde', 'Login bem-sucedido', '2025-07-01 12:52:48'),
 (852, 'controle', 'Login bem-sucedido', '2025-07-01 13:06:39'),
 (853, 'bonde', 'Login bem-sucedido', '2025-07-01 13:20:47'),
-(854, 'controle', 'Login bem-sucedido', '2025-07-01 19:12:37');
+(854, 'controle', 'Login bem-sucedido', '2025-07-01 19:12:37'),
+(855, 'bonde', 'Login bem-sucedido', '2025-07-08 12:49:45'),
+(856, 'controle', 'Login bem-sucedido', '2025-07-09 12:32:57'),
+(857, 'CONTRATOS', 'Login bem-sucedido', '2025-07-09 17:14:07'),
+(858, 'master', 'Login falhou: Senha inválida', '2025-07-11 18:47:24'),
+(859, 'MASTER', 'Login bem-sucedido', '2025-07-11 18:47:43'),
+(860, '223', 'foi cadastrado no sistema', '2025-07-11 18:48:40'),
+(861, 'planejamento', 'Login bem-sucedido', '2025-07-11 18:49:36'),
+(862, 'MASTER', 'Login bem-sucedido', '2025-07-17 14:13:10');
 
 -- --------------------------------------------------------
 
@@ -1376,55 +1385,20 @@ CREATE TABLE `notificacoes` (
 --
 
 INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `data_criacao`, `certidao_id`) VALUES
-(1, 'MASTER', 'administrador', 'Contrato \'	PRODERJ\' com validade em 2025-06-04 prestes a expirar.', 'lida', '2025-06-04 23:36:18', 0),
-(2, 'MASTER', 'administrador', 'Contrato \'CONTRATO DE PRESTAÇÃO DE  SERVIDORES\' com validade em 2025-06-04 prestes a expirar.', 'lida', '2025-06-05 00:17:54', 0),
-(3, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/02/2025', '', '2025-06-05 18:04:11', 0),
-(4, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/03/2025', '', '2025-06-05 18:04:11', 0),
-(5, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/04/2025', '', '2025-06-05 18:04:11', 0),
-(6, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/05/2025', '', '2025-06-05 18:04:11', 0),
-(7, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/06/2025', '', '2025-06-05 18:04:11', 0),
-(8, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/07/2025', '', '2025-06-05 18:04:11', 0),
-(9, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/08/2025', '', '2025-06-05 18:04:11', 0),
-(10, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/09/2025', '', '2025-06-05 18:04:11', 0),
-(11, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/10/2025', '', '2025-06-05 18:04:11', 0),
-(12, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/11/2025', '', '2025-06-05 18:04:11', 0),
-(13, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/12/2025', '', '2025-06-05 18:04:11', 0),
-(14, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"PRODERJ VPS\" em 21/01/2026', '', '2025-06-05 18:04:11', 0),
-(15, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/04/2025', '', '2025-06-12 15:07:42', 0),
-(16, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/05/2025', '', '2025-06-12 15:07:42', 0),
-(17, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/06/2025', '', '2025-06-12 15:07:42', 0),
-(18, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/07/2025', '', '2025-06-12 15:07:42', 0),
-(19, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/08/2025', '', '2025-06-12 15:07:42', 0),
-(20, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/09/2025', '', '2025-06-12 15:07:42', 0),
-(21, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/10/2025', '', '2025-06-12 15:07:42', 0),
-(22, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/11/2025', '', '2025-06-12 15:07:42', 0),
-(23, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/12/2025', '', '2025-06-12 15:07:42', 0),
-(24, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/01/2026', '', '2025-06-12 15:07:42', 0),
-(25, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/02/2026', '', '2025-06-12 15:07:42', 0),
-(26, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/03/2026', '', '2025-06-12 15:07:42', 0),
-(27, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/04/2026', '', '2025-06-12 15:07:42', 0),
-(28, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/05/2026', '', '2025-06-12 15:07:42', 0),
-(29, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/06/2026', '', '2025-06-12 15:07:42', 0),
-(30, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/07/2026', '', '2025-06-12 15:07:42', 0),
-(31, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/08/2026', '', '2025-06-12 15:07:42', 0),
-(32, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/09/2026', '', '2025-06-12 15:07:42', 0),
-(33, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/10/2026', '', '2025-06-12 15:07:42', 0),
-(34, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/11/2026', '', '2025-06-12 15:07:42', 0),
-(35, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/12/2026', '', '2025-06-12 15:07:42', 0),
-(36, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/01/2027', '', '2025-06-12 15:07:42', 0),
-(37, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"CLARO\" em 03/02/2027', '', '2025-06-12 15:07:42', 0),
-(38, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/04/2025', '', '2025-06-12 15:52:11', 0),
-(39, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/05/2025', '', '2025-06-12 15:52:11', 0),
-(40, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/06/2025', '', '2025-06-12 15:52:11', 0),
-(41, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/07/2025', '', '2025-06-12 15:52:11', 0),
-(42, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/08/2025', '', '2025-06-12 15:52:11', 0),
-(43, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/09/2025', '', '2025-06-12 15:52:11', 0),
-(44, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/10/2025', '', '2025-06-12 15:52:11', 0),
-(45, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/11/2025', '', '2025-06-12 15:52:11', 0),
-(46, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/12/2025', '', '2025-06-12 15:52:11', 0),
-(47, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/01/2026', '', '2025-06-12 15:52:11', 0),
-(48, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/02/2026', '', '2025-06-12 15:52:11', 0),
-(49, 'contratos', 'contratos', 'Lembrete: Vencimento da parcela do contrato \"OI S/A\" em 03/03/2026', '', '2025-06-12 15:52:11', 0);
+(50, 'Gabriel', 'solucoes_tecnologicas', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-07-17 16:41:00', 0),
+(51, 'Gabriel', 'solucoes_tecnologicas', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-07-17 16:41:00', 0),
+(52, 'Gabriel', 'solucoes_tecnologicas', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-07-17 16:41:00', 0),
+(53, 'Gabriel', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-17 16:41:00', 0),
+(54, 'teste', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-17 16:41:00', 0),
+(55, 'Gabriel', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-17 16:41:00', 0),
+(56, 'Gabriel', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-17 16:41:00', 0),
+(57, 'teste', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-17 16:41:00', 0),
+(58, 'Gabriel', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-17 16:41:00', 0),
+(59, 'Gabriel', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-17 16:41:00', 0),
+(60, 'Gabriel', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-17 16:41:00', 0),
+(61, 'Gabriel', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-17 16:41:00', 0),
+(62, 'Gabriel', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-17 16:41:00', 0),
+(63, 'teste responsavel', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-17 16:41:00', 0);
 
 -- --------------------------------------------------------
 
@@ -1693,46 +1667,6 @@ INSERT INTO `produtos` (`id`, `produto`, `classificacao`, `natureza`, `contabil`
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `relatorios_agendados`
---
-
-CREATE TABLE `relatorios_agendados` (
-  `id` int(11) NOT NULL,
-  `tipo_relatorio` varchar(50) DEFAULT NULL COMMENT 'Tipo de relatório (ex.: completo, mensal, anual)',
-  `contrato_id` int(11) DEFAULT NULL COMMENT 'ID do contrato, se for um relatório de contrato individual',
-  `relatorio_todos` varchar(50) DEFAULT NULL COMMENT 'Tipo de relatório para todos os contratos (ex.: mensal_todos, anual_todos)',
-  `mes` int(11) DEFAULT NULL COMMENT 'Mês do relatório, se aplicável (1 a 12)',
-  `ano` int(11) DEFAULT NULL COMMENT 'Ano do relatório, se aplicável',
-  `email_destinatario` varchar(255) NOT NULL COMMENT 'E-mail do destinatário do relatório',
-  `periodicidade` varchar(20) NOT NULL COMMENT 'Periodicidade do envio (diario, semanal, mensal)',
-  `proximo_envio` datetime NOT NULL COMMENT 'Data e hora do próximo envio',
-  `criado_em` datetime DEFAULT current_timestamp() COMMENT 'Data de criação do agendamento'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Extraindo dados da tabela `relatorios_agendados`
---
-
-INSERT INTO `relatorios_agendados` (`id`, `tipo_relatorio`, `contrato_id`, `relatorio_todos`, `mes`, `ano`, `email_destinatario`, `periodicidade`, `proximo_envio`, `criado_em`) VALUES
-(1, 'completo', 0, NULL, NULL, NULL, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-27 05:14:48', '2025-04-26 00:14:48'),
-(2, 'anual', 0, NULL, NULL, 2024, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-27 05:15:37', '2025-04-26 00:15:37'),
-(3, 'anual_todos', NULL, 'anual_todos', NULL, 2024, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-27 05:34:01', '2025-04-26 00:34:01'),
-(4, 'anual_todos', NULL, 'anual_todos', NULL, 2024, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-27 05:37:00', '2025-04-26 00:37:00'),
-(5, 'anual_todos', NULL, 'anual_todos', NULL, 2024, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-27 05:37:06', '2025-04-26 00:37:06'),
-(6, 'anual_todos', NULL, 'anual_todos', NULL, 2024, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-27 05:37:27', '2025-04-26 00:37:27'),
-(7, 'anual_todos', NULL, 'anual_todos', NULL, 2024, 'gabrielzsouzarodrigues23@gmail.com', 'diario', '2025-04-27 05:38:04', '2025-04-26 00:38:04'),
-(8, 'completo', 0, NULL, NULL, NULL, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-27 05:40:36', '2025-04-26 00:40:36'),
-(9, 'completo', 0, NULL, NULL, NULL, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-27 05:40:45', '2025-04-26 00:40:45'),
-(10, 'compromissos_futuros', 0, NULL, NULL, NULL, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-27 05:41:57', '2025-04-26 00:41:57'),
-(11, 'compromissos_futuros', 0, NULL, NULL, NULL, 'gabrielzsouzarodrigues23@gmail.com', 'diario', '2025-04-27 05:42:14', '2025-04-26 00:42:14'),
-(12, 'compromissos_futuros', 0, NULL, NULL, NULL, 'gabrielzsouzarodrigues23@gmail.com', 'diario', '2025-04-27 05:42:33', '2025-04-26 00:42:33'),
-(13, 'anual_todos', NULL, 'anual_todos', NULL, 2024, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-28 04:11:52', '2025-04-26 23:11:52'),
-(14, 'anual_todos', NULL, 'anual_todos', NULL, 2024, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-28 04:12:33', '2025-04-26 23:12:33'),
-(15, 'anual_todos', NULL, 'anual_todos', NULL, 2024, 'gabrielzsouzarodrigues@gmail.com', 'diario', '2025-04-28 16:07:29', '2025-04-27 11:07:29');
-
--- --------------------------------------------------------
-
---
 -- Estrutura da tabela `setores`
 --
 
@@ -1752,7 +1686,8 @@ INSERT INTO `setores` (`id`, `nome_setor`) VALUES
 (4, 'administrador'),
 (5, 'contratos'),
 (6, 'ccooperacao'),
-(7, 'sisbonde');
+(7, 'sisbonde'),
+(8, 'planejamento');
 
 -- --------------------------------------------------------
 
@@ -1837,7 +1772,7 @@ CREATE TABLE `usuario` (
   `senha` varchar(255) NOT NULL,
   `matricula` varchar(20) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `setor` enum('administrador','estoque','patrimonio','financeiro','contratos','ccooperacao','sisbonde') NOT NULL,
+  `setor` enum('administrador','estoque','patrimonio','financeiro','contratos','ccooperacao','sisbonde','planejamento') NOT NULL,
   `cargo` varchar(50) NOT NULL,
   `situacao` enum('ativo','inativo') DEFAULT 'ativo',
   `foto` varchar(255) DEFAULT 'default.png',
@@ -1860,7 +1795,8 @@ INSERT INTO `usuario` (`id`, `username`, `senha`, `matricula`, `email`, `setor`,
 (10, 'CONTRATOS', '$2y$10$QG5qwt6JfD48s1.YqqS.M.7SUz/p5hBt4SiKnABpKiMN1cGLctEiW', '00', 'asscon@central.rj.gov.br', 'contratos', 'contratos', 'ativo', 'default.png', 1, '2025-03-25 11:43:45'),
 (11, 'MARCO', '$2y$10$V/PS4I1wx9viy9zkpuUMKO7B4AUC/PIRBI.ZZI6LYSvbSBDlQhAIi', '919', 'GERGEP@CENTRAL.RJ.GOV.BR', 'financeiro', 'SUPERINTENDENTE', 'ativo', 'default.png', 1, NULL),
 (12, 'BONDE', '$2y$10$RZ0H8zlSb3mp0rNckKM8fe0WHn2Hma19l33MElYEG5KZzQAIksOwK', '990078', 'bonde@central.rj.gov.br', 'ccooperacao', 'ASSESSOR', 'ativo', 'default.png', 1, NULL),
-(13, 'controle', '$2y$10$KzXaFQUFoZ3ilRZ.gPlI0OqNvfN5xh.Y4UtIdvsQp2httZrq0Od5u', 'contr50', 'controle@central.rj.gov.br', 'sisbonde', 'ASSESSOR', 'ativo', 'default.png', 1, NULL);
+(13, 'controle', '$2y$10$KzXaFQUFoZ3ilRZ.gPlI0OqNvfN5xh.Y4UtIdvsQp2httZrq0Od5u', 'contr50', 'controle@central.rj.gov.br', 'sisbonde', 'ASSESSOR', 'ativo', 'default.png', 1, NULL),
+(14, 'planejamento', '$2y$10$m/e8/fLXlIN4OX8yNt./ae3xICRkoofjMHCcWzLMxSAWLczQXs0nm', '223', 'planejamento@central.rj.gov.br', 'planejamento', 'planejamento', 'ativo', 'default.png', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -1884,19 +1820,21 @@ CREATE TABLE `vencimentos_futuros` (
 
 CREATE TABLE `viagens` (
   `id` int(11) NOT NULL,
-  `bonde_id` int(11) NOT NULL,
+  `modelo_bonde` varchar(50) NOT NULL,
   `saida` varchar(50) NOT NULL,
   `retorno` varchar(50) DEFAULT NULL,
   `maquinista` varchar(100) NOT NULL,
   `agente` varchar(100) NOT NULL,
-  `hora` time NOT NULL,
-  `pagantes` int(11) NOT NULL DEFAULT 0,
-  `grat_pcd_idoso` int(11) NOT NULL DEFAULT 0,
-  `moradores` int(11) NOT NULL DEFAULT 0,
-  `passageiros` int(11) NOT NULL DEFAULT 0,
-  `viagem` decimal(3,1) NOT NULL DEFAULT 1.0,
-  `tipo_viagem` enum('subida','retorno') NOT NULL,
-  `data` date NOT NULL
+  `hora` time DEFAULT NULL,
+  `pagantes` int(11) NOT NULL,
+  `gratuidade` int(11) NOT NULL,
+  `moradores` int(11) NOT NULL,
+  `passageiros` int(11) NOT NULL,
+  `tipo_viagem` varchar(20) NOT NULL,
+  `data_viagem` date NOT NULL,
+  `grat_pcd_idoso` int(11) NOT NULL,
+  `viagem` int(11) NOT NULL,
+  `data` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -2102,14 +2040,6 @@ ALTER TABLE `produtos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `relatorios_agendados`
---
-ALTER TABLE `relatorios_agendados`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_proximo_envio` (`proximo_envio`),
-  ADD KEY `idx_email_destinatario` (`email_destinatario`);
-
---
 -- Índices para tabela `setores`
 --
 ALTER TABLE `setores`
@@ -2164,7 +2094,7 @@ ALTER TABLE `viagens`
 -- AUTO_INCREMENT de tabela `acidentes`
 --
 ALTER TABLE `acidentes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `agentes`
@@ -2272,7 +2202,7 @@ ALTER TABLE `gestao_contratos`
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=855;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=863;
 
 --
 -- AUTO_INCREMENT de tabela `manutencoes`
@@ -2290,7 +2220,7 @@ ALTER TABLE `maquinistas`
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT de tabela `ordens_compra`
@@ -2335,16 +2265,10 @@ ALTER TABLE `produtos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de tabela `relatorios_agendados`
---
-ALTER TABLE `relatorios_agendados`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
-
---
 -- AUTO_INCREMENT de tabela `setores`
 --
 ALTER TABLE `setores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `transferencias`
@@ -2368,7 +2292,7 @@ ALTER TABLE `transicao`
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de tabela `vencimentos_futuros`

@@ -515,7 +515,6 @@ const atualizarGraficoPerformance = () => {
     });
 };
 
-
 const atualizarGraficoDistribuicao = () => {
     const ctx = document.getElementById("distributionChart")?.getContext("2d");
     if (!ctx) return;

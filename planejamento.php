@@ -18,7 +18,7 @@ include 'header.php';
         <header class="header">
        <div class="header-content">
     <h1><i class="fas fa-chart-line"></i> Planejamento de Negócios</h1>
-    <input type="text" id="filterInput" class="filter-input" placeholder="Filtrar por título..." onkeyup="filtrarOportunidades()">
+    <!-- <input type="text" id="filterInput" class="filter-input" placeholder="Filtrar por título..." onkeyup="filtrarOportunidades()"> -->
     <!-- <button class="btn btn-primary" onclick="abrirModal()">
         <i class="fas fa-plus"></i> Nova Oportunidade
     </button> -->
@@ -126,313 +126,316 @@ include 'header.php';
     </div>
 </div>
 
-        <!-- Abas de Setores -->
-        <div id="bondes" class="tab-content">
-            <div class="sector-header">
-                <h2><i class="fas fa-train"></i> Bondes de Santa Teresa</h2>
-                <div class="sector-meta">
-                    <span class="meta-label">Meta PE:</span>
-                    <span class="meta-value">R$ 200.000,00</span>
-                </div>
+<!-- Abas de Setores -->
+<div id="bondes" class="tab-content">
+    <div class="sector-header">
+        <h2><i class="fas fa-train"></i> Bondes de Santa Teresa</h2>
+       
+    </div>
+    <div class="estimation-panel">
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-money-bill-wave"></i>
             </div>
-            <div class="estimation-panel">
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="estimated-value-bondes">R$ 0,00</h3>
-                        <p>Valor Total Estimado</p>
-                    </div>
-                </div>
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="goal-progress-bondes">0%</h3>
-                        <p>% da Meta Alcançada</p>
-                    </div>
-                </div>
+            <div class="estimation-content">
+                <h3 id="estimated-value-bondes">R$ 0,00</h3>
+                <p>Valor Total Estimado</p>
             </div>
-            <button class="btn btn-primary" onclick="abrirModal()">
-                <i class="fas fa-plus"></i> Nova Oportunidade
-            </button>
-            <div class="opportunities-grid" id="opportunities-bondes"></div>
         </div>
-
-        <div id="ferrovia" class="tab-content">
-            <div class="sector-header">
-                <h2><i class="fas fa-road"></i> Ferrovia</h2>
-                <div class="sector-meta">
-                    <span class="meta-label">Meta PE:</span>
-                    <span class="meta-value">R$ 300.000,00</span>
-                </div>
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-percentage"></i>
             </div>
-            <div class="estimation-panel">
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="estimated-value-ferrovia">R$ 0,00</h3>
-                        <p>Valor Total Estimado</p>
-                    </div>
-                </div>
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="goal-progress-ferrovia">0%</h3>
-                        <p>% da Meta Alcançada</p>
-                    </div>
-                </div>
+            <div class="estimation-content">
+                <h3 id="goal-progress-bondes">0%</h3>
+                <p>% da Meta Alcançada</p>
             </div>
-            <button class="btn btn-primary" onclick="abrirModal()">
-                <i class="fas fa-plus"></i> Nova Oportunidade
-            </button>
-            <div class="opportunities-grid" id="opportunities-ferrovia"></div>
-        </div>
-
-        <div id="teleferico" class="tab-content">
-            <div class="sector-header">
-                <h2><i class="fas fa-parachute-box"></i> Teleférico</h2>
-                <div class="sector-meta">
-                    <span class="meta-label">Meta PE:</span>
-                    <span class="meta-value">R$ 250.000,00</span>
-                </div>
-            </div>
-            <div class="estimation-panel">
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="estimated-value-teleferico">R$ 0,00</h3>
-                        <p>Valor Total Estimado</p>
-                    </div>
-                </div>
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="goal-progress-teleferico">0%</h3>
-                        <p>% da Meta Alcançada</p>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="abrirModal()">
-                <i class="fas fa-plus"></i> Nova Oportunidade
-            </button>
-            <div class="opportunities-grid" id="opportunities-teleferico"></div>
-        </div>
-
-        <div id="ti" class="tab-content">
-            <div class="sector-header">
-                <h2><i class="fas fa-laptop-code"></i> Hardwares, Softwares e Sistemas (TI)</h2>
-                <!-- <div class="sector-meta">
-                    <span class="meta-label">Meta PE:</span>
-                    <span class="meta-value">R$ 400.000,00</span>
-                </div> -->
-            </div>
-            <div class="estimation-panel">
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="estimated-value-ti">R$ 0,00</h3>
-                        <p>Valor Total Estimado</p>
-                    </div>
-                </div>
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="goal-progress-ti">0%</h3>
-                        <p>% da Meta Alcançada</p>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="abrirModal()">
-                <i class="fas fa-plus"></i> Nova Oportunidade
-            </button>
-            <div class="opportunities-grid" id="opportunities-ti"></div>
-        </div>
-
-        <div id="capacitacao" class="tab-content">
-            <div class="sector-header">
-                <h2><i class="fas fa-graduation-cap"></i> Capacitação</h2>
-                <div class="sector-meta">
-                    <span class="meta-label">Meta PE:</span>
-                    <span class="meta-value">R$ 150.000,00</span>
-                </div>
-            </div>
-            <div class="estimation-panel">
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="estimated-value-capacitacao">R$ 0,00</h3>
-                        <p>Valor Total Estimado</p>
-                    </div>
-                </div>
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="goal-progress-capacitacao">0%</h3>
-                        <p>% da Meta Alcançada</p>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="abrirModal()">
-                <i class="fas fa-plus"></i> Nova Oportunidade
-            </button>
-            <div class="opportunities-grid" id="opportunities-capacitacao"></div>
-        </div>
-
-        <div id="patrimonio" class="tab-content">
-            <div class="sector-header">
-                <h2><i class="fas fa-landmark"></i> Patrimônio</h2>
-                <div class="sector-meta">
-                    <span class="meta-label">Meta PE:</span>
-                    <span class="meta-value">R$ 200.000,00</span>
-                </div>
-            </div>
-            <div class="estimation-panel">
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="estimated-value-patrimonio">R$ 0,00</h3>
-                        <p>Valor Total Estimado</p>
-                    </div>
-                </div>
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="goal-progress-patrimonio">0%</h3>
-                        <p>% da Meta Alcançada</p>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="abrirModal()">
-                <i class="fas fa-plus"></i> Nova Oportunidade
-            </button>
-            <div class="opportunities-grid" id="opportunities-patrimonio"></div>
-        </div>
-
-        <div id="pca" class="tab-content">
-            <div class="sector-header">
-                <h2><i class="fas fa-file-contract"></i> Plano de Contratação Anual - PCA</h2>
-                <div class="sector-meta">
-                    <span class="meta-label">Meta PE:</span>
-                    <span class="meta-value">R$ 100.000,00</span>
-                </div>
-            </div>
-            <div class="estimation-panel">
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="estimated-value-pca">R$ 0,00</h3>
-                        <p>Valor Total Estimado</p>
-                    </div>
-                </div>
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="goal-progress-pca">0%</h3>
-                        <p>% da Meta Alcançada</p>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="abrirModal()">
-                <i class="fas fa-plus"></i> Nova Oportunidade
-            </button>
-            <div class="opportunities-grid" id="opportunities-pca"></div>
-        </div>
-
-        <div id="gestao_pessoas" class="tab-content">
-            <div class="sector-header">
-                <h2><i class="fas fa-users"></i> Gestão de Pessoas</h2>
-                <div class="sector-meta">
-                    <span class="meta-label">Meta PE:</span>
-                    <span class="meta-value">R$ 150.000,00</span>
-                </div>
-            </div>
-            <div class="estimation-panel">
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="estimated-value-gestao_pessoas">R$ 0,00</h3>
-                        <p>Valor Total Estimado</p>
-                    </div>
-                </div>
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="goal-progress-gestao_pessoas">0%</h3>
-                        <p>% da Meta Alcançada</p>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="abrirModal()">
-                <i class="fas fa-plus"></i> Nova Oportunidade
-            </button>
-            <div class="opportunities-grid" id="opportunities-gestao_pessoas"></div>
-        </div>
-
-        <div id="solucoes_tecnologicas" class="tab-content">
-            <div class="sector-header">
-                <h2><i class="fas fa-cogs"></i> Soluções Tecnológicas</h2>
-                <div class="sector-meta">
-                    <span class="meta-label">Meta PE:</span>
-                    <span class="meta-value">R$ 300.000,00</span>
-                </div>
-            </div>
-            <div class="estimation-panel">
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="estimated-value-solucoes_tecnologicas">R$ 0,00</h3>
-                        <p>Valor Total Estimado</p>
-                    </div>
-                </div>
-                <div class="estimation-card">
-                    <div class="estimation-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="estimation-content">
-                        <h3 id="goal-progress-solucoes_tecnologicas">0%</h3>
-                        <p>% da Meta Alcançada</p>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="abrirModal()">
-                <i class="fas fa-plus"></i> Nova Oportunidade
-            </button>
-            <div class="opportunities-grid" id="opportunities-solucoes_tecnologicas"></div>
         </div>
     </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Nova Oportunidade
+        </button>
+        <input type="text" id="search-bondes" placeholder="Pesquisar por nome da oportunidade" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px;">
+    </div>
+    <div class="opportunities-grid" id="opportunities-bondes"></div>
+</div>
+
+<div id="ferrovia" class="tab-content">
+    <div class="sector-header">
+        <h2><i class="fas fa-road"></i> Ferrovia</h2>
+    
+    </div>
+    <div class="estimation-panel">
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="estimated-value-ferrovia">R$ 0,00</h3>
+                <p>Valor Total Estimado</p>
+            </div>
+        </div>
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="goal-progress-ferrovia">0%</h3>
+                <p>% da Meta Alcançada</p>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Nova Oportunidade
+        </button>
+        <input type="text" id="search-ferrovia" placeholder="Pesquisar por nome da oportunidade" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px;">
+    </div>
+    <div class="opportunities-grid" id="opportunities-ferrovia"></div>
+</div>
+
+<div id="teleferico" class="tab-content">
+    <div class="sector-header">
+        <h2><i class="fas fa-parachute-box"></i> Teleférico</h2>
+        
+    </div>
+    <div class="estimation-panel">
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="estimated-value-teleferico">R$ 0,00</h3>
+                <p>Valor Total Estimado</p>
+            </div>
+        </div>
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="goal-progress-teleferico">0%</h3>
+                <p>% da Meta Alcançada</p>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Nova Oportunidade
+        </button>
+        <input type="text" id="search-teleferico" placeholder="Pesquisar por nome da oportunidade" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px;">
+    </div>
+    <div class="opportunities-grid" id="opportunities-teleferico"></div>
+</div>
+
+<div id="ti" class="tab-content">
+    <div class="sector-header">
+        <h2><i class="fas fa-laptop-code"></i> Hardwares, Softwares e Sistemas (TI)</h2>
+        <!-- <div class="sector-meta">
+            <span class="meta-label">Meta PE:</span>
+            <span class="meta-value">R$ 400.000,00</span>
+        </div> -->
+    </div>
+    <div class="estimation-panel">
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="estimated-value-ti">R$ 0,00</h3>
+                <p>Valor Total Estimado</p>
+            </div>
+        </div>
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="goal-progress-ti">0%</h3>
+                <p>% da Meta Alcançada</p>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Nova Oportunidade
+        </button>
+        <input type="text" id="search-ti" placeholder="Pesquisar por nome da oportunidade" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px;">
+    </div>
+    <div class="opportunities-grid" id="opportunities-ti"></div>
+</div>
+
+<div id="capacitacao" class="tab-content">
+    <div class="sector-header">
+        <h2><i class="fas fa-graduation-cap"></i> Capacitação</h2>
+       
+    </div>
+    <div class="estimation-panel">
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="estimated-value-capacitacao">R$ 0,00</h3>
+                <p>Valor Total Estimado</p>
+            </div>
+        </div>
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="goal-progress-capacitacao">0%</h3>
+                <p>% da Meta Alcançada</p>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Nova Oportunidade
+        </button>
+        <input type="text" id="search-capacitacao" placeholder="Pesquisar por nome da oportunidade" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px;">
+    </div>
+    <div class="opportunities-grid" id="opportunities-capacitacao"></div>
+</div>
+
+<div id="patrimonio" class="tab-content">
+    <div class="sector-header">
+        <h2><i class="fas fa-landmark"></i> Patrimônio</h2>
+        
+    </div>
+    <div class="estimation-panel">
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="estimated-value-patrimonio">R$ 0,00</h3>
+                <p>Valor Total Estimado</p>
+            </div>
+        </div>
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="goal-progress-patrimonio">0%</h3>
+                <p>% da Meta Alcançada</p>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Nova Oportunidade
+        </button>
+        <input type="text" id="search-patrimonio" placeholder="Pesquisar por nome da oportunidade" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px;">
+    </div>
+    <div class="opportunities-grid" id="opportunities-patrimonio"></div>
+</div>
+
+<div id="pca" class="tab-content">
+    <div class="sector-header">
+        <h2><i class="fas fa-file-contract"></i> Plano de Contratação Anual - PCA</h2>
+        
+    </div>
+    <div class="estimation-panel">
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="estimated-value-pca">R$ 0,00</h3>
+                <p>Valor Total Estimado</p>
+            </div>
+        </div>
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="goal-progress-pca">0%</h3>
+                <p>% da Meta Alcançada</p>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Nova Oportunidade
+        </button>
+        <input type="text" id="search-pca" placeholder="Pesquisar por nome da oportunidade" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px;">
+    </div>
+    <div class="opportunities-grid" id="opportunities-pca"></div>
+</div>
+
+<div id="gestao_pessoas" class="tab-content">
+    <div class="sector-header">
+        <h2><i class="fas fa-users"></i> Gestão de Pessoas</h2>
+       
+    </div>
+    <div class="estimation-panel">
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="estimated-value-gestao_pessoas">R$ 0,00</h3>
+                <p>Valor Total Estimado</p>
+            </div>
+        </div>
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="goal-progress-gestao_pessoas">0%</h3>
+                <p>% da Meta Alcançada</p>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Nova Oportunidade
+        </button>
+        <input type="text" id="search-gestao_pessoas" placeholder="Pesquisar por nome da oportunidade" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px;">
+    </div>
+    <div class="opportunities-grid" id="opportunities-gestao_pessoas"></div>
+</div>
+
+<div id="solucoes_tecnologicas" class="tab-content">
+    <div class="sector-header">
+        <h2><i class="fas fa-cogs"></i> Soluções Tecnológicas</h2>
+      
+    </div>
+    <div class="estimation-panel">
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="estimated-value-solucoes_tecnologicas">R$ 0,00</h3>
+                <p>Valor Total Estimado</p>
+            </div>
+        </div>
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="goal-progress-solucoes_tecnologicas">0%</h3>
+                <p>% da Meta Alcançada</p>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Nova Oportunidade
+        </button>
+        <input type="text" id="search-solucoes_tecnologicas" placeholder="Pesquisar por nome da oportunidade" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px;">
+    </div>
+    <div class="opportunities-grid" id="opportunities-solucoes_tecnologicas"></div>
+</div>
+
 
  <!-- Modal para Nova Oportunidade -->
 <div id="opportunityModal" class="modal">

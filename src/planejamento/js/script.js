@@ -177,7 +177,7 @@ const fecharModal = () => {
 const abrirEditModal = (opportunityId) => {
     console.log("Tentando abrir modal para ID:", opportunityId, " (tipo:", typeof opportunityId, ")");
     console.log("Opportunities atuais:", opportunities);
-    const opportunity = opportunities.find(opp => Number(opp.id) === Number(opportunityId)); // Conversão explícita
+    const opportunity = opportunities.find(opp => Number(opp.id) === Number(opportunityId));
     if (!opportunity) {
         console.error("Oportunidade não encontrada para ID:", opportunityId, "Lista de IDs disponíveis:", opportunities.map(opp => opp.id));
         alert("Oportunidade não encontrada. Verifique os dados ou recarregue a página.");
@@ -193,7 +193,7 @@ const abrirEditModal = (opportunityId) => {
     document.getElementById("editId").value = opportunity.id || "";
     document.getElementById("editTitle").value = opportunity.title || "";
     document.getElementById("editSector").value = opportunity.sector || "";
-    document.getElementById("editValue").value = opportunity.value ? Number(opportunity.value.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.')).toFixed(2) : "";
+    document.getElementById("editValue").value = opportunity.value ? Number(opportunity.value).toFixed(2) : "";
     document.getElementById("editDeadline").value = opportunity.deadline || "";
     document.getElementById("editStatus").value = opportunity.status || "planejamento";
     document.getElementById("editDescription").value = opportunity.description || "";
@@ -451,13 +451,11 @@ const reindexMacroetapas = (planId) => {
 // Opportunity Management
 const excluirOportunidade = async (opportunityId) => {
     console.log("Tentando excluir ID:", opportunityId, " (tipo:", typeof opportunityId, ")");
-    console.log("Opportunities atuais:", opportunities.map(opp => ({ id: opp.id, title: opp.title, type: typeof opp.id }))); // Log com tipos
+    console.log("Opportunities atuais:", opportunities.map(opp => ({ id: opp.id, title: opp.title, type: typeof opp.id })));
 
-    // Busca explícita pela oportunidade, convertendo opp.id para número
     const opportunity = opportunities.find(opp => Number(opp.id) === Number(opportunityId));
     console.log("Oportunidade encontrada:", opportunity);
 
-    // Verifica se a oportunidade foi encontrada e solicita confirmação
     if (!opportunity) {
         console.log("Oportunidade não encontrada para o ID:", opportunityId);
         alert("Oportunidade não encontrada. Verifique os dados ou recarregue a página.");
@@ -476,9 +474,8 @@ const excluirOportunidade = async (opportunityId) => {
             body: JSON.stringify({ id: opportunityId })
         });
 
-        // Ler o corpo da resposta uma única vez
         const text = await response.text();
-        console.log("Resposta recebida:", text); // Usar o texto já lido
+        console.log("Resposta recebida:", text);
 
         let data;
         try {
@@ -502,6 +499,7 @@ const excluirOportunidade = async (opportunityId) => {
         alert("Falha ao excluir oportunidade. Tente novamente.");
     }
 };
+
 const atualizarStatusEtapa = async (opportunityId, macroIndex, etapaIndex) => {
     const opportunity = opportunities.find(opp => Number(opp.id) === Number(opportunityId));
     if (!opportunity) {
@@ -517,13 +515,11 @@ const atualizarStatusEtapa = async (opportunityId, macroIndex, etapaIndex) => {
         return;
     }
 
-    // Alterna o estado da etapa localmente
     const newCompleted = !etapa.completed;
     etapa.completed = newCompleted;
     console.log("Atualizando etapa:", { opportunityId, macroIndex, etapaIndex, etapaNome: etapa.name, completed: newCompleted, setor: opportunity.sector });
 
     try {
-        // Enviar dados para o backend
         const response = await fetch('./atualizar_planejamento.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -551,21 +547,20 @@ const atualizarStatusEtapa = async (opportunityId, macroIndex, etapaIndex) => {
         if (data.success) {
             atualizarSetor(opportunity.sector);
             atualizarPainel();
-            alert("Etapa  atualizada com sucesso!");
+            alert("Etapa atualizada com sucesso!");
         } else {
             alert(data.message || "Erro ao adicionar/atualizar etapa.");
-            // Reverte o estado local em caso de falha
             etapa.completed = !newCompleted;
             atualizarSetor(opportunity.sector);
         }
     } catch (error) {
         console.error("Erro ao atualizar etapa:", error);
         alert("Falha ao atualizar etapa. Tente novamente.");
-        // Reverte o estado local em caso de erro
         etapa.completed = !newCompleted;
         atualizarSetor(opportunity.sector);
     }
 };
+
 const atualizarStatusOportunidade = async (opportunityId, newStatus) => {
     const opportunity = opportunities.find(opp => Number(opp.id) === Number(opportunityId));
     if (!opportunity) {
@@ -599,15 +594,15 @@ const atualizarStatusOportunidade = async (opportunityId, newStatus) => {
             atualizarSetor(opportunity.sector);
             console.log(`Status da oportunidade ${opportunityId} atualizado para ${newStatus}`);
         } else {
-            opportunity.status = previousStatus; // Reverte o status em caso de erro
+            opportunity.status = previousStatus;
             alert(data.message || "Erro ao atualizar status.");
-            atualizarSetor(opportunity.sector); // Atualiza a interface para refletir o estado revertido
+            atualizarSetor(opportunity.sector);
         }
     } catch (error) {
         console.error("Erro ao atualizar status:", error);
-        opportunity.status = previousStatus; // Reverte o status em caso de erro
+        opportunity.status = previousStatus;
         alert("Falha ao atualizar status. Tente novamente.");
-        atualizarSetor(opportunity.sector); // Atualiza a interface para refletir o estado revertido
+        atualizarSetor(opportunity.sector);
     }
 };
 
@@ -674,7 +669,7 @@ document.getElementById("opportunityForm")?.addEventListener("submit", async (e)
         }
 
         if (data.success) {
-            opportunities.push({ ...opportunity, id: data.id, value: value.toFixed(2) });
+            opportunities.push({ ...opportunity, id: data.id, value: value });
             atualizarMetasSetores();
             atualizarPainel();
             atualizarTodosSetores();
@@ -711,14 +706,24 @@ const carregarDados = async () => {
 
         if (data.success && Array.isArray(data.opportunities)) {
             opportunities = data.opportunities.map(opp => {
-                let parsedValue = typeof opp.value === 'string' ? parseFloat(opp.value.replace(/[^\d.-]/g, '')) || 0 : (parseFloat(opp.value) || 0);
-                if (isNaN(parsedValue)) {
-                    console.warn(`Valor inválido para oportunidade ID ${opp.id}: ${opp.value}, usando 0 como fallback`);
-                    parsedValue = 0;
+                let parsedValue = 0;
+                if (opp.value !== undefined && opp.value !== null) {
+                    if (typeof opp.value === 'string' && opp.value.trim()) {
+                        parsedValue = parseFloat(opp.value.replace(/\./g, '').replace(',', '.')) || 0;
+                        if (isNaN(parsedValue)) {
+                            console.warn(`Valor inválido para oportunidade ID ${opp.id}: ${opp.value}, usando 0 como fallback`);
+                        }
+                    } else if (typeof opp.value === 'number') {
+                        parsedValue = opp.value;
+                    } else {
+                        console.warn(`Tipo de valor inesperado para oportunidade ID ${opp.id}: ${typeof opp.value}, usando 0 como fallback`);
+                    }
+                } else {
+                    console.warn(`Valor ausente para oportunidade ID ${opp.id}, usando 0 como fallback`);
                 }
                 return {
                     ...opp,
-                    value: Number(parsedValue).toLocaleString('pt-BR', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+                    value: parsedValue, // Store raw number
                     projectPlan: opp.projectPlan ? opp.projectPlan.map(macro => ({
                         ...macro,
                         etapas: macro.etapas ? macro.etapas.map(e => ({
@@ -751,7 +756,7 @@ document.getElementById("editForm")?.addEventListener("submit", async (e) => {
     opportunity.title = document.getElementById("editTitle").value.trim() || "";
     opportunity.sector = document.getElementById("editSector").value.trim() || "";
     let valueInput = document.getElementById("editValue").value.trim() || "";
-    opportunity.value = valueInput ? (parseFloat(valueInput.replace(/[^\d,.]/g, '').replace(/\.(?=.*\.)/g, '').replace(',', '.')) || 0).toFixed(2) : "0,00";
+    opportunity.value = valueInput ? parseFloat(valueInput.replace(/[^\d,.]/g, '').replace(/\.(?=.*\.)/g, '').replace(',', '.')) || 0 : 0;
     opportunity.deadline = document.getElementById("editDeadline").value || null;
     opportunity.status = document.getElementById("editStatus").value || "planejamento";
     opportunity.description = document.getElementById("editDescription").value.trim() || "";
@@ -788,7 +793,7 @@ document.getElementById("editForm")?.addEventListener("submit", async (e) => {
 
         if (data.success) {
             const index = opportunities.findIndex(opp => opp.id === opportunity.id);
-            if (index !== -1) opportunities[index] = { ...opportunity, value: opportunity.value };
+            if (index !== -1) opportunities[index] = { ...opportunity };
             atualizarMetasSetores();
             atualizarPainel();
             atualizarTodosSetores();
@@ -837,12 +842,12 @@ const enviarNotificacao = async (username, setor, mensagem) => {
 // Dashboard and Visualization
 const atualizarPainel = () => {
     const filteredOpps = filteredSector ? opportunities.filter(opp => opp.sector === filteredSector) : opportunities;
-    const totalValue = filteredOpps.reduce((sum, opp) => opp.status !== "finalizado" ? sum + (parseFloat(opp.value.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.')) || 0) : sum, 0);
+    const totalValue = filteredOpps.reduce((sum, opp) => opp.status !== "finalizado" ? sum + (parseFloat(opp.value) || 0) : sum, 0);
     const totalOpportunities = filteredOpps.length;
     const completedOpportunities = filteredOpps.filter(opp => opp.status === "finalizado").length;
     const conversionRate = totalOpportunities > 0 ? (completedOpportunities / totalOpportunities) * 100 : 0;
     const totalGoal = filteredSector ? sectorGoals[filteredSector] : Object.values(sectorGoals).reduce((sum, goal) => sum + (parseFloat(goal) || 0), 0);
-    const completedValue = filteredOpps.filter(opp => opp.status === "finalizado").reduce((sum, opp) => sum + (parseFloat(opp.value.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.')) || 0), 0);
+    const completedValue = filteredOpps.filter(opp => opp.status === "finalizado").reduce((sum, opp) => sum + (parseFloat(opp.value) || 0), 0);
     const goalProgress = totalGoal > 0 ? (completedValue / totalGoal) * 100 : 0;
 
     const updateElement = (id, value) => {
@@ -879,7 +884,7 @@ const atualizarGraficoPerformance = () => {
 
     const sectorData = Object.keys(sectorGoals).map(sector => {
         const sectorOpportunities = opportunities.filter(opp => opp.sector === sector && opp.status === "finalizado");
-        const achieved = sectorOpportunities.reduce((sum, opp) => sum + (parseFloat(opp.value.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.')) || 0), 0);
+        const achieved = sectorOpportunities.reduce((sum, opp) => sum + (parseFloat(opp.value) || 0), 0);
         return { sector: sector.charAt(0).toUpperCase() + sector.slice(1).replace('_', ' '), achieved, goal: sectorGoals[sector] };
     });
 
@@ -1028,18 +1033,12 @@ const atualizarAlertas = () => {
     document.head.appendChild(style);
 };
 
-// Sector Updates
-const atualizarSetor = (setor) => {
-    atualizarPainelEstimativa(setor);
-    renderizarOportunidades(setor);
-};
-
 const atualizarTodosSetores = () => Object.keys(sectorGoals).forEach(atualizarSetor);
 
 const atualizarPainelEstimativa = (setor) => {
     const sectorOpportunities = opportunities.filter(opp => opp.sector === setor);
-    const totalEstimatedValue = sectorOpportunities.reduce((sum, opp) => opp.status !== "finalizado" ? sum + (parseFloat(opp.value.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.')) || 0) : sum, 0);
-    const completedValue = sectorOpportunities.filter(opp => opp.status === "finalizado").reduce((sum, opp) => sum + (parseFloat(opp.value.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.')) || 0), 0);
+    const totalEstimatedValue = sectorOpportunities.reduce((sum, opp) => opp.status !== "finalizado" ? sum + (parseFloat(opp.value) || 0) : sum, 0);
+    const completedValue = sectorOpportunities.filter(opp => opp.status === "finalizado").reduce((sum, opp) => sum + (parseFloat(opp.value) || 0), 0);
     const goal = sectorGoals[setor] || 0;
     const goalProgress = goal > 0 ? (completedValue / goal) * 100 : 0;
 
@@ -1052,7 +1051,58 @@ const atualizarPainelEstimativa = (setor) => {
     updateElement(`goal-progress-${setor}`, goalProgress.toFixed(1) + "%");
 };
 
-const renderizarOportunidades = (setor) => {
+// Função para buscar oportunidades no backend
+const buscarOportunidades = async (setor, termoPesquisa) => {
+    try {
+        const response = await fetch('./buscar_planejamento.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ setor, termo: termoPesquisa.trim() })
+        });
+        const text = await response.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error('Resposta não é JSON:', text);
+            throw new Error('Resposta inválida do servidor');
+        }
+
+        if (data.success && Array.isArray(data.opportunities)) {
+            return data.opportunities.map(opp => {
+                let parsedValue = 0;
+                if (opp.value !== undefined && opp.value !== null) {
+                    if (typeof opp.value === 'string' && opp.value.trim()) {
+                        parsedValue = parseFloat(opp.value.replace(/\./g, '').replace(',', '.')) || 0;
+                    } else if (typeof opp.value === 'number') {
+                        parsedValue = opp.value;
+                    }
+                }
+                return {
+                    ...opp,
+                    value: parsedValue,
+                    projectPlan: opp.projectPlan ? opp.projectPlan.map(macro => ({
+                        ...macro,
+                        etapas: macro.etapas ? macro.etapas.map(e => ({
+                            name: e.name || '',
+                            completed: e.completed === 'sim' || e.completed === true
+                        })) : [],
+                        expanded: macro.expanded !== undefined ? macro.expanded : true
+                    })) : []
+                };
+            });
+        } else {
+            throw new Error(data.message || 'Erro ao buscar oportunidades');
+        }
+    } catch (error) {
+        console.error('Erro ao buscar oportunidades:', error);
+        alert('Falha ao buscar oportunidades: ' + error.message);
+        return [];
+    }
+};
+
+// Modificação na função renderizarOportunidades para aceitar oportunidades filtradas
+const renderizarOportunidades = (setor, filteredOpportunities = null) => {
     const opportunitiesGrid = document.getElementById(`opportunities-${setor}`);
     if (!opportunitiesGrid) {
         console.warn(`Elemento opportunities-${setor} não encontrado no DOM.`);
@@ -1060,12 +1110,32 @@ const renderizarOportunidades = (setor) => {
     }
 
     opportunitiesGrid.innerHTML = "";
-    const sectorOpportunities = opportunities.filter(opp => opp.sector === setor);
+    const sectorOpportunities = filteredOpportunities || opportunities.filter(opp => opp.sector === setor);
 
     if (sectorOpportunities.length === 0) {
         opportunitiesGrid.innerHTML = `<p style="color: #7f8c8d;">Nenhuma oportunidade encontrada para o setor ${setor}.</p>`;
         return;
     }
+
+    const style = document.createElement("style");
+    style.textContent = `
+        .status-planejamento { background-color: #f39c12; color: white; }
+        .status-andamento { background-color: #f1c40f; color: white; }
+        .status-finalizado { background-color: #2ecc71; color: white; }
+        .status-dropdown { 
+            padding: 2px 8px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            font-size: 14px; 
+            appearance: none; 
+            -webkit-appearance: none; 
+            -moz-appearance: none; 
+            background-color: white; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+        }
+    `;
+    document.head.appendChild(style);
 
     sectorOpportunities.forEach(opp => {
         if (!opp.id) {
@@ -1084,15 +1154,13 @@ const renderizarOportunidades = (setor) => {
                     <div>
                         <div class="opportunity-title" style="font-size:18px;font-weight:bold;color:#2c3e50;margin-bottom:5px;">${opp.title || "Sem Título"}</div>
                         <div class="opportunity-meta" style="font-size:14px;color:#7f8c8d;display:flex;gap:10px;flex-wrap:wrap;">
-                            <span>R$ ${formatarMoeda(parseFloat(opp.value.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.')) || 0)}</span><span>|</span>
+                            <span>R$ ${formatarMoeda(opp.value || 0)}</span><span>|</span>
                             <span>${opp.deadline ? new Date(opp.deadline).toLocaleDateString("pt-BR") : "Sem Prazo"}</span><span>|</span>
-                            <span class="opportunity-status status-${opp.status}" style="padding:2px 8px;border-radius:3px;${
-                                opp.status === 'planejamento' ? 'background-color:#f1c40f;' : opp.status === 'andamento' ? 'background-color:#3498db;' : 'background-color:#2ecc71;'
-                            }color:white;">${
-                                opp.status === "planejamento" ? "Em Planejamento" : opp.status === "andamento" ? "Em Andamento" : "Finalizado"
-                            }</span>
+                            <span class="opportunity-status status-${opp.status}" style="padding:2px 8px;border-radius:3px;">
+                                ${opp.status === "planejamento" ? "Em Planejamento" : opp.status === "andamento" ? "Em Andamento" : "Finalizado"}
+                            </span>
                             ${isExpired ? `<span style="color:#e74c3c;font-weight:bold;">${expiredMessage}</span>` : ""}
-                            <select class="status-dropdown" onchange="atualizarStatusOportunidade(${opp.id}, this.value)" style="padding:2px 8px;border:1px solid #ddd;border-radius:4px;font-size:14px;" aria-label="Alterar status">
+                            <select class="status-dropdown status-${opp.status}" onchange="atualizarStatusOportunidade(${opp.id}, this.value)" onblur="this.size = 1;" onfocus="this.size = 3;" aria-label="Alterar status">
                                 <option value="planejamento" ${opp.status === "planejamento" ? "selected" : ""}>Em Planejamento</option>
                                 <option value="andamento" ${opp.status === "andamento" ? "selected" : ""}>Em Andamento</option>
                                 <option value="finalizado" ${opp.status === "finalizado" ? "selected" : ""}>Finalizado</option>
@@ -1103,9 +1171,9 @@ const renderizarOportunidades = (setor) => {
                         <button class="btn btn-edit" onclick="abrirEditModal(${opp.id})" style="background:#e67e22;color:#fff;display:flex;justify-content:center;align-items:center;padding:5px 10px;border:none;border-radius:4px;width:65px;height:29px;" aria-label="Editar oportunidade">
                             <i class="fas fa-edit"></i> Editar
                         </button>
-                       <button class="btn btn-delete" onclick="excluirOportunidade(${Number(opp.id)})" style="background:#e74c3c;color:#fff;display:flex;justify-content:center;align-items:center;padding:5px 10px;border:none;border-radius:4px;width:65px;height:29px;" aria-label="Excluir oportunidade">
-    <i class="fas fa-trash"></i> Excluir
-</button>
+                        <button class="btn btn-delete" onclick="excluirOportunidade(${Number(opp.id)})" style="background:#e74c3c;color:#fff;display:flex;justify-content:center;align-items:center;padding:5px 10px;border:none;border-radius:4px;width:65px;height:29px;" aria-label="Excluir oportunidade">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
                     </div>
                 </div>
                 <div class="opportunity-progress" style="margin-top:10px;">
@@ -1133,6 +1201,32 @@ const renderizarOportunidades = (setor) => {
     });
 };
 
+// Modificação em atualizarSetor para suportar pesquisa
+const atualizarSetor = async (setor) => {
+    const searchInput = document.getElementById(`search-${setor}`);
+    const termoPesquisa = searchInput ? searchInput.value.trim() : '';
+
+    let sectorOpportunities = opportunities.filter(opp => opp.sector === setor);
+    if (termoPesquisa) {
+        sectorOpportunities = await buscarOportunidades(setor, termoPesquisa);
+    }
+
+    atualizarPainelEstimativa(setor);
+    renderizarOportunidades(setor, sectorOpportunities);
+};
+
+// Adicionar event listeners para os campos de pesquisa
+document.addEventListener("DOMContentLoaded", () => {
+    Object.keys(sectorGoals).forEach(setor => {
+        const searchInput = document.getElementById(`search-${setor}`);
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                atualizarSetor(setor);
+            });
+        }
+    });
+});
+
 const toggleMacroetapa = (opportunityId, macroIndex) => {
     const opportunity = opportunities.find(opp => opp.id === opportunityId);
     if (!opportunity) return;
@@ -1154,7 +1248,7 @@ const atualizarMetasSetores = () => {
     };
     opportunities.forEach(opp => {
         if (newSectorGoals[opp.sector] !== undefined) {
-            newSectorGoals[opp.sector] += parseFloat(opp.value.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.')) || 0;
+            newSectorGoals[opp.sector] += parseFloat(opp.value) || 0;
         }
     });
     Object.assign(sectorGoals, newSectorGoals);

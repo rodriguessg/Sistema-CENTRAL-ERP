@@ -1226,7 +1226,83 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+const atualizarMacroetapas = async () => {
+    const macroetapasContainer = document.getElementById("macroetapas-container");
+    if (!macroetapasContainer) return;
 
+    macroetapasContainer.innerHTML = "<p style='color: #7f8c8d;'>Carregando macroetapas...</p>";
+
+    try {
+        const response = await fetch('./emAndamentoEtapasPlanejamento.php');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const data = await response.json();
+        if (!data.success) throw new Error(data.message || "Falha ao carregar macroetapas.");
+
+        macroetapasContainer.innerHTML = "";
+
+        data.oportunidades.forEach(oportunidade => {
+            const totalEtapas = oportunidade.macroetapas.length || 1;
+            const etapasConcluidas = oportunidade.macroetapas.filter(m => m.etapa_concluida === 'sim').length;
+            const progressoOportunidade = totalEtapas > 0 ? (etapasConcluidas / totalEtapas) * 100 : 0;
+
+            const macroCard = document.createElement("div");
+            macroCard.className = "macroetapa-card";
+            macroCard.style.cssText = `
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 15px;
+                background: #fff;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                width: 100%;
+            `;
+
+            macroCard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div>
+                        <h4 style="font-size: 16px; font-weight: bold; color: #2c3e50; margin: 0;">${oportunidade.titulo_oportunidade}</h4>
+                        <p style="font-size: 12px; color: #7f8c8d; margin: 5px 0;">Setor: ${oportunidade.setor}</p>
+                        ${oportunidade.is_expired ? `<p style="color: #e74c3c;">${oportunidade.expired_message}</p>` : ''}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 12px; color: #7f8c8d;">Progresso: ${progressoOportunidade.toFixed(1)}%</span>
+                    </div>
+                </div>
+                <div style="margin-top: 10px;">
+                    <div class="progress-bar-small" style="width: 100%; height: 6px; background: #ecf0f1; border-radius: 3px;">
+                        <div class="progress-fill-small" style="height: 100%; width: ${progressoOportunidade}%; background: #3498db; border-radius: 3px;"></div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            ${oportunidade.macroetapas.map(macro => `
+                                <li style="display: flex; align-items: center; gap: 10px; margin-top: 5px; padding: 5px; background: ${macro.etapa_concluida === 'sim' ? '#e8f5e9' : '#fffef7'}; border-radius: 4px;">
+                                    <input type="checkbox" ${macro.etapa_concluida === 'sim' ? 'checked' : ''} disabled style="margin: 0;">
+                                    <span style="flex: 1;">${macro.nome_macroetapa} - ${macro.etapa_nome}</span>
+                                    <span style="font-size: 12px; color: ${macro.etapa_concluida === 'sim' ? '#2ecc71' : '#7f8c8d'};">${macro.data_conclusao ? new Date(macro.data_conclusao).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'Pendente'}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            macroetapasContainer.appendChild(macroCard);
+        });
+
+        const updateTime = document.getElementById("update-time");
+        if (updateTime) {
+            updateTime.textContent = new Date(data.last_updated).toLocaleString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
+                timeZone: "America/Sao_Paulo",
+                hour12: true
+            }).replace(" ", " -03, ") + ", " + new Date(data.last_updated).toLocaleDateString("pt-BR");
+        }
+    } catch (error) {
+        console.error("Erro ao atualizar macroetapas:", error);
+        macroetapasContainer.innerHTML = `<p style="color: #e74c3c;">Erro ao carregar macroetapas: ${error.message}</p>`;
+    }
+};
 const toggleMacroetapa = (opportunityId, macroIndex) => {
     const opportunity = opportunities.find(opp => opp.id === opportunityId);
     if (!opportunity) return;

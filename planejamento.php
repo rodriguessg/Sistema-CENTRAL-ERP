@@ -30,32 +30,41 @@ include 'header.php';
             <button class="tab-btn active" onclick="exibirAba('dashboard')">
                 <i class="fas fa-tachometer-alt"></i> Painel Geral
             </button>
-            <button class="tab-btn" onclick="exibirAba('bondes')">
-                <i class="fas fa-train"></i> Bondes de Santa Teresa
+            <button class="tab-btn active" onclick="exibirAba('macroetapas')">
+                <i class="fas fa-tachometer-alt"></i> Andamento Etapas
             </button>
+
+            <button class="tab-btn" onclick="exibirAba('bondes1')">
+                <i class="fas fa-train"></i> PE1
+            </button>
+                 <button class="tab-btn" onclick="exibirAba('bondes')">
+                <i class="fas fa-train"></i> PE2
+            </button>
+            
             <button class="tab-btn" onclick="exibirAba('ferrovia')">
-                <i class="fas fa-road"></i> Ferrovia
+                <i class="fas fa-road"></i> PE3
             </button>
             <button class="tab-btn" onclick="exibirAba('teleferico')">
-                <i class="fas fa-parachute-box"></i> Teleférico
+                <i class="fas fa-parachute-box"></i> PE4
             </button>
             <button class="tab-btn" onclick="exibirAba('ti')">
-                <i class="fas fa-laptop-code"></i> Hardwares, Softwares e Sistemas (TI)
+                <i class="fas fa-laptop-code"></i> PE5
             </button>
             <button class="tab-btn" onclick="exibirAba('capacitacao')">
-                <i class="fas fa-graduation-cap"></i> Capacitação
+                <i class="fas fa-graduation-cap"></i> PE6
             </button>
             <button class="tab-btn" onclick="exibirAba('patrimonio')">
-                <i class="fas fa-landmark"></i> Patrimônio
+                <i class="fas fa-landmark"></i> PE7
             </button>
+
             <button class="tab-btn" onclick="exibirAba('pca')">
-                <i class="fas fa-file-contract"></i> Plano de Contratação Anual - PCA
+                <i class="fas fa-file-contract"></i> PE8
             </button>
             <button class="tab-btn" onclick="exibirAba('gestao_pessoas')">
-                <i class="fas fa-users"></i> Gestão de Pessoas
+                <i class="fas fa-users"></i> PE9
             </button>
             <button class="tab-btn" onclick="exibirAba('solucoes_tecnologicas')">
-                <i class="fas fa-cogs"></i> Soluções Tecnológicas
+                <i class="fas fa-cogs"></i> PE10
             </button>
         </nav>
 
@@ -108,25 +117,68 @@ include 'header.php';
                 <h3>Desempenho por Setor</h3>
                 <canvas id="performanceChart"></canvas>
             </div>
-          
             <div class="chart-card">
                 <h3>Distribuição de Oportunidades</h3>
                 <canvas id="distributionChart"></canvas>
             </div>
-              <div class="chart-card">
+            <!-- <div class="chart-card">
                 <h3>Evolução das Oportunidades</h3>
                 <canvas id="evolutionChart"></canvas>
-            </div>
+            </div> -->
         </div>
         <!-- Alertas Inteligentes -->
         <div class="alerts-section" style="margin-top: 20px;">
             <h3>Alertas Inteligentes</h3>
             <div id="alerts-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
+    
     </div>
 </div>
 
-<!-- Abas de Setores -->
+ <div id="macroetapas" class="tab-content">
+   
+
+    <!-- Progresso das Macroetapas -->
+        <div class="macroetapas-section" style="margin-top: 20px;">
+            <h3>Progresso das Macroetapas</h3>
+            <div id="macroetapas-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+</div>
+
+ <div id="bondes1" class="tab-content">
+    <div class="sector-header">
+        <h2><i class="fas fa-train"></i> OPERACIONALIZAÇÃO DO SISTEMA DE BONDES DE SANTA TERESA </h2>
+       
+    </div>
+    <div class="estimation-panel">
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="estimated-value-bondes1">R$ 0,00</h3>
+                <p>Valor Total Estimado</p>
+            </div>
+        </div>
+        <div class="estimation-card">
+            <div class="estimation-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="estimation-content">
+                <h3 id="goal-progress-bondes">0%</h3>
+                <p>% da Meta Alcançada</p>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-primary" onclick="abrirModal()">
+            <i class="fas fa-plus"></i> Nova Oportunidade
+        </button>
+        <input type="text" id="search-bondes" placeholder="Pesquisar por nome da oportunidade" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px;">
+    </div>
+    <div class="opportunities-grid" id="opportunities-bondes1"></div>
+</div>
+
 <div id="bondes" class="tab-content">
     <div class="sector-header">
         <h2><i class="fas fa-train"></i> Bondes de Santa Teresa</h2>
@@ -455,6 +507,7 @@ include 'header.php';
                     <select id="sector" name="sector" required onchange="carregarTemplateSetor()">
                         <option value="">Selecione um setor</option>
                         <option value="bondes">Bondes de Santa Teresa</option>
+                        <option value="bondes1">OPERACIONALIZAÇÃO DO SISTEMA DE BONDES DE SANTA TERESA</option>
                         <option value="ferrovia">Ferrovia</option>
                         <option value="teleferico">Teleférico</option>
                         <option value="ti">Hardwares, Softwares e Sistemas (TI)</option>
@@ -507,7 +560,17 @@ include 'header.php';
 
 <!-- Modal para Edição -->
 <div id="editModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 61%;
+    max-height: 80vh;
+    overflow-y: scroll;
+">
         <div class="modal-header">
             <h2><i class="fas fa-edit"></i> Editar Oportunidade</h2>
             <span class="close" onclick="fecharEditModal()">×</span>
@@ -523,6 +586,7 @@ include 'header.php';
                     <label for="editSector">Setor</label>
                     <select id="editSector" name="sector" required onchange="carregarTemplateSetorEdit()">
                         <option value="bondes">Bondes de Santa Teresa</option>
+                        <option value="bondes1">OPERACIONALIZAÇÃO DO SISTEMA DE BONDES DE SANTA TERESA</option>
                         <option value="ferrovia">Ferrovia</option>
                         <option value="teleferico">Teleférico</option>
                         <option value="ti">Hardwares, Softwares e Sistemas (TI)</option>

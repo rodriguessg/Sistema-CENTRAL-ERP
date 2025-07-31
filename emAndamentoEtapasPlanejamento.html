@@ -1,0 +1,613 @@
+<?php
+// Configuração inicial
+header('Content-Type: text/html; charset=utf-8');
+
+// Verifica se é uma requisição AJAX (fetch)
+$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+// Definições de conexão com o banco de dados
+$host = 'localhost';
+$dbname = 'gm_sicbd';
+$username = 'root';
+$password = '';
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    error_log("Erro ao conectar ao banco de dados: " . $e->getMessage());
+    if ($isAjax) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Erro de conexão: ' . $e->getMessage()]);
+        exit;
+    }
+    $oportunidades = [];
+}
+
+// Obtém a data e hora atual no fuso horário de São Paulo
+$dateTimeNow = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
+$currentDateTime = $dateTimeNow->format('Y-m-d H:i:s');
+
+// Inicializa variáveis para os resultados
+$resultado = [];
+$oportunidades = [];
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Consulta às oportunidades em andamento com depuração
+    $sqlPlanejamento = "
+        SELECT id, titulo_oportunidade, setor, valor_estimado, prazo, status, descricao, project_plan, created_at
+        FROM planejamento
+        WHERE status = :status
+        ORDER BY created_at DESC
+    ";
+    $stmtPlanejamento = $pdo->prepare($sqlPlanejamento);
+    $stmtPlanejamento->execute([':status' => 'andamento']);
+    $oportunidades = $stmtPlanejamento->fetchAll(PDO::FETCH_ASSOC);
+
+    // Depuração: Verifica se há dados retornados
+    if (empty($oportunidades)) {
+        error_log("Nenhum registro encontrado em 'planejamento' com status 'andamento'.");
+    } else {
+        error_log("Registros encontrados: " . count($oportunidades));
+    }
+
+    // Calcula totais globais a partir do project_plan
+    $totalAtividades = 0;
+    $totalConcluidas = 0;
+    foreach ($oportunidades as $index => $oportunidade) {
+        $projectPlan = json_decode($oportunidade['project_plan'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log("Erro ao decodificar JSON em project_plan (índice $index): " . json_last_error_msg() . ". Conteúdo: " . $oportunidade['project_plan']);
+            continue; // Pula este registro se o JSON for inválido
+        }
+        $macroetapas = $projectPlan['macroetapas'] ?? [];
+        if (!is_array($macroetapas)) {
+            error_log("Chave 'macroetapas' não encontrada ou inválida em project_plan (índice $index). Conteúdo: " . print_r($projectPlan, true));
+            continue;
+        }
+        $totalAtividades += count($macroetapas);
+        $totalConcluidas += array_reduce($macroetapas, fn($carry, $macro) => $carry + ($macro['etapa_concluida'] === 'sim' ? 1 : 0), 0);
+    }
+
+    // Processa os dados das oportunidades com project_plan
+    foreach ($oportunidades as $oportunidade) {
+        $id = $oportunidade['id'];
+        $projectPlan = json_decode($oportunidade['project_plan'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) continue;
+        $macroetapas = $projectPlan['macroetapas'] ?? [];
+
+        foreach ($macroetapas as $macro) {
+            $macroetapaFormatada = [
+                'id' => $id,
+                'titulo_oportunidade' => $oportunidade['titulo_oportunidade'] ?? 'Sem Título',
+                'setor' => $oportunidade['setor'] ?? 'Sem Setor',
+                'valor_estimado' => floatval($oportunidade['valor_estimado'] ?? 0),
+                'prazo' => $oportunidade['prazo'] ?? $currentDateTime,
+                'status' => $oportunidade['status'] ?? 'andamento',
+                'descricao' => $oportunidade['descricao'] ?? 'Sem Descrição',
+                'created_at' => $oportunidade['created_at'] ?? $currentDateTime,
+                'macro_id' => $macro['id'] ?? 'N/A',
+                'nome_macroetapa' => $macro['nome_macroetapa'] ?? 'Sem Nome',
+                'etapa_nome' => $macro['etapa_nome'] ?? 'Sem Etapa',
+                'responsavel' => $macro['responsavel'] ?? 'N/A',
+                'etapa_concluida' => $macro['etapa_concluida'] ?? 'não',
+                'data_conclusao' => $macro['data_conclusao'] ?? null,
+                'progresso' => isset($macro['etapa_concluida']) && $macro['etapa_concluida'] === 'sim' ? 100 : 0,
+                'is_expired' => $oportunidade['status'] !== 'finalizado' && (new DateTime($oportunidade['prazo'] ?? $currentDateTime, new DateTimeZone('America/Sao_Paulo'))) < $dateTimeNow,
+                'expired_message' => $oportunidade['status'] !== 'finalizado' && (new DateTime($oportunidade['prazo'] ?? $currentDateTime, new DateTimeZone('America/Sao_Paulo'))) < $dateTimeNow ? 'Vencido em: ' . (new DateTime($oportunidade['prazo'] ?? $currentDateTime, new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y') : ''
+            ];
+            $resultado[] = $macroetapaFormatada;
+        }
+    }
+
+    // Se for requisição AJAX, retorna JSON
+    if ($isAjax) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'oportunidades' => $resultado,
+            'last_updated' => $currentDateTime,
+            'total_atividades' => $totalAtividades,
+            'total_concluidas' => $totalConcluidas
+        ]);
+        exit;
+    }
+} catch (PDOException $e) {
+    error_log("Erro ao consultar dados: " . $e->getMessage());
+    if ($isAjax) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Erro ao carregar dados: ' . $e->getMessage()]);
+        exit;
+    }
+    $resultado = [];
+}
+
+$pdo = null;
+?>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acompanhamento de Etapas em Andamento</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a73e8;
+            margin: 0;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        .filter-btn, .export-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .filter-btn {
+            background-color: #4285f4;
+            color: #fff;
+        }
+        .filter-btn:hover {
+            background-color: #3267d6;
+        }
+        .export-btn {
+            background-color: #34a853;
+            color: #fff;
+        }
+        .export-btn:hover {
+            background-color: #2e8b57;
+        }
+        .card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .card h2 {
+            font-size: 18px;
+            color: #1a73e8;
+            margin: 0 0 10px;
+        }
+        .card p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #ddd;
+            color: #333;
+        }
+        .tab-button.active {
+            background-color: #1a73e8;
+            color: #fff;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .progress-section, .activities-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .filter-section {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        .filter-section input, .filter-section select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #1a73e8;
+            color: #fff;
+            font-weight: 500;
+        }
+        td {
+            background-color: #fff;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #34a853;
+            border-radius: 4px;
+        }
+        .status-completed {
+            color: #34a853;
+            font-weight: bold;
+        }
+        .status-pending {
+            color: #ea4335;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-edit {
+            background-color: #fbbc04;
+            color: #fff;
+        }
+        .btn-delete {
+            background-color: #ea4335;
+            color: #fff;
+        }
+        #last-updated {
+            font-size: 12px;
+            color: #757575;
+            text-align: right;
+            margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            .header, .progress-section, .activities-section {
+                padding: 10px;
+            }
+            th, td {
+                padding: 8px;
+                font-size: 14px;
+            }
+            .filter-section, .tabs {
+                flex-direction: column;
+            }
+            .card {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Acompanhamento de Etapas em Andamento</h1>
+            <div class="controls">
+                <button class="filter-btn" onclick="toggleFilter()">Filtrar</button>
+                <button class="export-btn" onclick="exportToCSV()">Exportar CSV</button>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Total de Atividades</h2>
+            <p>Total: <?php echo $totalAtividades; ?></p>
+            <p>Concluídas: <?php echo $totalConcluidas; ?> (<?php echo $totalAtividades > 0 ? number_format(($totalConcluidas / $totalAtividades) * 100, 1) : 0; ?>%)</p>
+        </div>
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('progress')">Progresso Geral</button>
+            <button class="tab-button" onclick="openTab('phases')">Progresso por Fases</button>
+        </div>
+        <div id="progress" class="tab-content active">
+            <div class="progress-section" id="progress-section">
+                <div class="filter-section" id="filter-section" style="display: none;">
+                    <input type="text" id="filter-macro" placeholder="Filtrar por ID ou Nome da Macroetapa" onkeyup="filterActivities()">
+                </div>
+                <table id="macroetapas-table">
+                    <thead>
+                        <tr>
+                            <th>Oportunidade</th>
+                            <th>Setor</th>
+                            <th>Prazo</th>
+                            <th>Macroetapa</th>
+                            <th>Etapa</th>
+                            <th>Responsável</th>
+                            <th>Progresso</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="macroetapas-container">
+                        <?php if (empty($resultado)): ?>
+                            <tr><td colspan="9" style="text-align: center; color: #ea4335;">Nenhum dado disponível ou erro ao carregar. Verifique o log de erros.</td></tr>
+                        <?php else: ?>
+                            <?php foreach ($resultado as $item): ?>
+                                <?php
+                                    $prazoDate = (new DateTime($item['prazo'], new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y');
+                                    $status = $item['is_expired'] ? 'Vencido' : ($item['etapa_concluida'] === 'sim' ? 'Concluído' : 'Em Andamento');
+                                ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($item['titulo_oportunidade']); ?></td>
+                                    <td><?php echo htmlspecialchars($item['setor']); ?></td>
+                                    <td><?php echo $prazoDate; ?></td>
+                                    <td><?php echo htmlspecialchars($item['nome_macroetapa']); ?></td>
+                                    <td><?php echo htmlspecialchars($item['etapa_nome']); ?></td>
+                                    <td><?php echo htmlspecialchars($item['responsavel']); ?></td>
+                                    <td>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: <?php echo $item['progresso']; ?>%;"></div>
+                                        </div>
+                                        <span style="display: block; text-align: center; font-size: 12px;"><?php echo number_format($item['progresso'], 1); ?>%</span>
+                                    </td>
+                                    <td class="<?php echo $status === 'Concluído' ? 'status-completed' : ($status === 'Vencido' ? 'status-pending' : ''); ?>">
+                                        <?php echo $status; ?>
+                                    </td>
+                                    <td class="actions">
+                                        <button class="btn btn-edit" onclick="editarOportunidade(<?php echo $item['id']; ?>, '<?php echo $item['macro_id']; ?>')">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <button class="btn btn-delete" onclick="excluirOportunidade(<?php echo $item['id']; ?>, '<?php echo $item['macro_id']; ?>')">
+                                            <i class="fas fa-trash"></i> Excluir
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+                <p id="last-updated">
+                    Última atualização: <span id="update-time"><?php echo $dateTimeNow->format('h:i A -03, d/m/Y'); ?></span>
+                </p>
+            </div>
+            <div class="activities-section" id="activities-section" style="display: none;">
+                <table id="activities-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome da Macroetapa</th>
+                            <th>Etapa</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activities-container">
+                        <?php foreach ($oportunidades as $oportunidade): ?>
+                            <?php
+                                $projectPlan = json_decode($oportunidade['project_plan'], true) ?: [];
+                                $macroetapas = $projectPlan['macroetapas'] ?? [];
+                                foreach ($macroetapas as $macro) {
+                                    $macroId = $macro['id'] ?? 'N/A';
+                            ?>
+                            <tr>
+                                <td><?php echo $macroId; ?></td>
+                                <td><?php echo htmlspecialchars($macro['nome_macroetapa'] ?? 'Sem Nome'); ?></td>
+                                <td><?php echo htmlspecialchars($macro['etapa_nome'] ?? 'Sem Etapa'); ?></td>
+                                <td class="<?php echo isset($macro['etapa_concluida']) && $macro['etapa_concluida'] === 'sim' ? 'status-completed' : 'status-pending'; ?>">
+                                    <?php echo isset($macro['etapa_concluida']) && $macro['etapa_concluida'] === 'sim' ? 'Concluído' : 'Pendente'; ?>
+                                </td>
+                            </tr>
+                            <?php } ?>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="phases" class="tab-content">
+            <div class="progress-section">
+                <?php
+                    $setores = array_unique(array_column($oportunidades, 'setor'));
+                    foreach ($setores as $setor) {
+                        $setorOportunidades = array_filter($oportunidades, fn($op) => $op['setor'] === $setor);
+                        $totalEtapasSetor = 0;
+                        $etapasConcluidasSetor = 0;
+                        foreach ($setorOportunidades as $op) {
+                            $projectPlan = json_decode($op['project_plan'], true) ?: [];
+                            $macroetapas = $projectPlan['macroetapas'] ?? [];
+                            $totalEtapasSetor += count($macroetapas);
+                            $etapasConcluidasSetor += array_reduce($macroetapas, fn($carry, $macro) => $carry + (isset($macro['etapa_concluida']) && $macro['etapa_concluida'] === 'sim' ? 1 : 0), 0);
+                        }
+                        $progressoSetor = $totalEtapasSetor > 0 ? ($etapasConcluidasSetor / $totalEtapasSetor) * 100 : 0;
+                ?>
+                    <div style="margin-bottom: 15px;">
+                        <h3><?php echo htmlspecialchars($setor); ?></h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: <?php echo $progressoSetor; ?>%;"></div>
+                        </div>
+                        <span style="display: block; text-align: center; font-size: 12px;"><?php echo number_format($progressoSetor, 1); ?>%</span>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const macroetapasContainer = document.getElementById("macroetapas-container");
+            const activitiesContainer = document.getElementById("activities-container");
+            const filterSection = document.getElementById("filter-section");
+            const activitiesSection = document.getElementById("activities-section");
+
+            function toggleFilter() {
+                filterSection.style.display = filterSection.style.display === 'none' ? 'flex' : 'none';
+                activitiesSection.style.display = activitiesSection.style.display === 'none' ? 'block' : 'none';
+                if (activitiesSection.style.display === 'block') filterActivities();
+            }
+
+            function filterActivities() {
+                const filterValue = document.getElementById("filter-macro").value.toLowerCase();
+                activitiesContainer.innerHTML = '';
+                <?php foreach ($oportunidades as $oportunidade): ?>
+                    <?php $projectPlan = json_decode($oportunidade['project_plan'], true) ?: []; ?>
+                    <?php $macroetapas = $projectPlan['macroetapas'] ?? []; ?>
+                    <?php foreach ($macroetapas as $macro): ?>
+                        const macroId = "<?php echo $macro['id'] ?? 'N/A'; ?>";
+                        const macroName = "<?php echo strtolower(htmlspecialchars($macro['nome_macroetapa'] ?? 'Sem Nome')); ?>";
+                        if (macroId.toString().includes(filterValue) || macroName.includes(filterValue)) {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${macroId}</td>
+                                <td><?php echo htmlspecialchars($macro['nome_macroetapa'] ?? 'Sem Nome'); ?></td>
+                                <td><?php echo htmlspecialchars($macro['etapa_nome'] ?? 'Sem Etapa'); ?></td>
+                                <td class="<?php echo isset($macro['etapa_concluida']) && $macro['etapa_concluida'] === 'sim' ? 'status-completed' : 'status-pending'; ?>">
+                                    <?php echo isset($macro['etapa_concluida']) && $macro['etapa_concluida'] === 'sim' ? 'Concluído' : 'Pendente'; ?>
+                                </td>
+                            `;
+                            activitiesContainer.appendChild(row);
+                        }
+                    <?php endforeach; ?>
+                <?php endforeach; ?>
+            }
+
+            function openTab(tabName) {
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+                document.querySelector(`.tab-button[onclick="openTab('${tabName}')"]`).classList.add('active');
+                if (tabName === 'progress') atualizarMacroetapas();
+            }
+
+            async function atualizarMacroetapas() {
+                macroetapasContainer.innerHTML = "<tr><td colspan='9' style='text-align: center; color: #757575;'>Atualizando...</td></tr>";
+
+                try {
+                    const response = await fetch('./emAndamentoEtapasPlanejamento.php', {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                    const data = await response.json();
+                    if (!data.success) throw new Error(data.message || "Falha ao carregar macroetapas.");
+
+                    macroetapasContainer.innerHTML = "";
+
+                    data.oportunidades.forEach(oportunidade => {
+                        oportunidade.macroetapas.forEach(macro => {
+                            const prazoDate = new Date(oportunidade.prazo).toLocaleDateString('pt-BR');
+                            const status = oportunidade.is_expired ? 'Vencido' : (macro.etapa_concluida === 'sim' ? 'Concluído' : 'Em Andamento');
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${oportunidade.titulo_oportunidade}</td>
+                                <td>${oportunidade.setor}</td>
+                                <td>${prazoDate}</td>
+                                <td>${macro.nome_macroetapa || 'Sem Nome'}</td>
+                                <td>${macro.etapa_nome || 'Sem Etapa'}</td>
+                                <td>${macro.responsavel || 'N/A'}</td>
+                                <td>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${macro.progresso || 0}%;"></div>
+                                    </div>
+                                    <span style="display: block; text-align: center; font-size: 12px;">${(macro.progresso || 0).toFixed(1)}%</span>
+                                </td>
+                                <td class="${status === 'Concluído' ? 'status-completed' : (status === 'Vencido' ? 'status-pending' : '')}">
+                                    ${status}
+                                </td>
+                                <td class="actions">
+                                    <button class="btn btn-edit" onclick="editarOportunidade(${oportunidade.id}, '${macro.macro_id || 'N/A'}')">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="btn btn-delete" onclick="excluirOportunidade(${oportunidade.id}, '${macro.macro_id || 'N/A'}')">
+                                        <i class="fas fa-trash"></i> Excluir
+                                    </button>
+                                </td>
+                            `;
+                            macroetapasContainer.appendChild(row);
+                        });
+                    });
+
+                    const updateTime = document.getElementById("update-time");
+                    if (updateTime) {
+                        updateTime.textContent = new Date(data.last_updated).toLocaleString("pt-BR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            timeZone: "America/Sao_Paulo",
+                            hour12: true
+                        }).replace(" ", " -03, ") + ", " + new Date(data.last_updated).toLocaleDateString("pt-BR");
+                    }
+                } catch (error) {
+                    console.error("Erro ao atualizar macroetapas:", error);
+                    macroetapasContainer.innerHTML = "<tr><td colspan='9' style='text-align: center; color: #ea4335;'>Erro ao carregar dados: " + error.message + "</td></tr>";
+                }
+            }
+
+            window.editarOportunidade = (id, macroId) => alert(`Editar oportunidade ID: ${id}, Macroetapa ID: ${macroId}`);
+            window.excluirOportunidade = (id, macroId) => {
+                if (confirm(`Deseja excluir a macroetapa ID: ${macroId} da oportunidade ID: ${id}?`)) {
+                    alert(`Excluindo macroetapa ID: ${macroId} da oportunidade ID: ${id}`);
+                }
+            };
+
+            window.exportToCSV = () => {
+                let csv = 'Oportunidade,Setor,Prazo,Macroetapa,Etapa,Responsável,Progresso,Status\n';
+                document.querySelectorAll('#macroetapas-container tr').forEach(row => {
+                    const cols = row.querySelectorAll('td');
+                    if (cols.length) {
+                        csv += [
+                            cols[0].textContent,
+                            cols[1].textContent,
+                            cols[2].textContent,
+                            cols[3].textContent,
+                            cols[4].textContent,
+                            cols[5].textContent,
+                            cols[6].querySelector('span').textContent,
+                            cols[7].textContent
+                        ].map(col => `"${col.replace(/"/g, '""')}"`).join(',') + '\n';
+                    }
+                });
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'etapas_em_andamento.csv';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            };
+
+            atualizarMacroetapas();
+            setInterval(() => atualizarMacroetapas(), 60000); // Atualiza a cada 1 minuto
+        });
+    </script>
+</body>
+</html>

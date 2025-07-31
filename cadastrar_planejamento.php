@@ -74,6 +74,30 @@ switch ($method) {
                 $stmt->execute([$titulo_oportunidade, $setor, $valor_estimado, $prazo, $status, $descricao, $project_plan, $created_at]);
                 $id = $pdo->lastInsertId();
             }
+
+            // Sincronizar novas etapas de project_plan com macroetapas
+            $projectPlanData = json_decode($project_plan, true) ?: [];
+            $macroetapasExistentes = $pdo->prepare("SELECT nome_macroetapa FROM macroetapas WHERE planejamento_id = ?");
+            $macroetapasExistentes->execute([$id]);
+            $nomesExistentes = array_column($macroetapasExistentes->fetchAll(PDO::FETCH_ASSOC), 'nome_macroetapa');
+            $macroetapasPlan = $projectPlanData['macroetapas'] ?? [];
+
+            foreach ($macroetapasPlan as $macro) {
+                if (!in_array($macro['nome_macroetapa'], $nomesExistentes)) {
+                    $stmtInsert = $pdo->prepare("INSERT INTO macroetapas (planejamento_id, setor, nome_macroetapa, responsavel, etapa_nome, etapa_concluida, data_conclusao) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    $stmtInsert->execute([
+                        $id,
+                        $setor,
+                        $macro['nome_macroetapa'] ?? 'Sem Nome',
+                        $macro['responsavel'] ?? 'N/A',
+                        $macro['etapa_nome'] ?? 'Sem Etapa',
+                        $macro['etapa_concluida'] ?? 'não',
+                        $macro['data_conclusao'] ?? null
+                    ]);
+                    error_log("Nova etapa inserida em macroetapas para planejamento ID $id: " . ($macro['nome_macroetapa'] ?? 'Sem Nome'));
+                }
+            }
+
             exit(json_encode(['success' => true, 'id' => $id]));
         } catch (PDOException $e) {
             error_log("Erro ao salvar oportunidade: " . $e->getMessage());
@@ -100,6 +124,30 @@ switch ($method) {
         try {
             $stmt = $pdo->prepare('UPDATE planejamento SET titulo_oportunidade = ?, setor = ?, valor_estimado = ?, prazo = ?, status = ?, descricao = ?, project_plan = ?, created_at = ? WHERE id = ?');
             $stmt->execute([$titulo_oportunidade, $setor, $valor_estimado, $prazo, $status, $descricao, $project_plan, $created_at, $id]);
+
+            // Sincronizar novas etapas de project_plan com macroetapas
+            $projectPlanData = json_decode($project_plan, true) ?: [];
+            $macroetapasExistentes = $pdo->prepare("SELECT nome_macroetapa FROM macroetapas WHERE planejamento_id = ?");
+            $macroetapasExistentes->execute([$id]);
+            $nomesExistentes = array_column($macroetapasExistentes->fetchAll(PDO::FETCH_ASSOC), 'nome_macroetapa');
+            $macroetapasPlan = $projectPlanData['macroetapas'] ?? [];
+
+            foreach ($macroetapasPlan as $macro) {
+                if (!in_array($macro['nome_macroetapa'], $nomesExistentes)) {
+                    $stmtInsert = $pdo->prepare("INSERT INTO macroetapas (planejamento_id, setor, nome_macroetapa, responsavel, etapa_nome, etapa_concluida, data_conclusao) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    $stmtInsert->execute([
+                        $id,
+                        $setor,
+                        $macro['nome_macroetapa'] ?? 'Sem Nome',
+                        $macro['responsavel'] ?? 'N/A',
+                        $macro['etapa_nome'] ?? 'Sem Etapa',
+                        $macro['etapa_concluida'] ?? 'não',
+                        $macro['data_conclusao'] ?? null
+                    ]);
+                    error_log("Nova etapa inserida em macroetapas para planejamento ID $id: " . ($macro['nome_macroetapa'] ?? 'Sem Nome'));
+                }
+            }
+
             exit(json_encode(['success' => true]));
         } catch (PDOException $e) {
             error_log("Erro ao atualizar oportunidade: " . $e->getMessage());
@@ -128,4 +176,6 @@ switch ($method) {
         exit(json_encode(['success' => false, 'message' => 'Método não suportado']));
         break;
 }
+
+$pdo = null;
 ?>

@@ -21,7 +21,7 @@ try {
         echo json_encode(['success' => false, 'message' => 'Erro de conexão: ' . $e->getMessage()]);
         exit;
     }
-    $oportunidades = [];
+    $records = [];
 }
 
 // Obtém a data e hora atual no fuso horário de São Paulo
@@ -47,20 +47,20 @@ try {
         $macroetapasDb = $macroetapasExistentes->fetchAll(PDO::FETCH_ASSOC);
         $nomesExistentes = array_column($macroetapasDb, 'nome_macroetapa');
 
-        $macroetapasPlan = $projectPlan['macroetapas'] ?? [];
+        $macroetapasPlan = $projectPlan; // Ajuste para o formato correto de projectPlan
         foreach ($macroetapasPlan as $macro) {
-            if (!in_array($macro['nome_macroetapa'], $nomesExistentes)) {
+            if (!in_array($macro['name'] ?? $macro['nome_macroetapa'], $nomesExistentes)) {
                 $sqlInsert = "INSERT INTO macroetapas (planejamento_id, setor, nome_macroetapa, responsavel, etapa_nome, etapa_concluida, data_conclusao) VALUES (:id, (SELECT setor FROM planejamento WHERE id = :id), :nome, :responsavel, :etapa, :concluida, :data)";
                 $stmtInsert = $pdo->prepare($sqlInsert);
                 $stmtInsert->execute([
                     ':id' => $id,
-                    ':nome' => $macro['nome_macroetapa'] ?? 'Sem Nome',
-                    ':responsavel' => $macro['responsavel'] ?? 'N/A',
-                    ':etapa' => $macro['etapa_nome'] ?? 'Sem Etapa',
-                    ':concluida' => $macro['etapa_concluida'] ?? 'não',
-                    ':data' => $macro['data_conclusao'] ?? null
+                    ':nome' => $macro['name'] ?? $macro['nome_macroetapa'] ?? 'Sem Nome',
+                    ':responsavel' => $macro['responsible'] ?? 'N/A',
+                    ':etapa' => isset($macro['etapas'][0]['name']) ? $macro['etapas'][0]['name'] : 'Sem Etapa',
+                    ':concluida' => isset($macro['etapas'][0]['completed']) && $macro['etapas'][0]['completed'] ? 'sim' : 'não',
+                    ':data' => isset($macro['etapas'][0]['completed']) && $macro['etapas'][0]['completed'] ? $currentDateTime : null
                 ]);
-                error_log("Nova etapa inserida em macroetapas para planejamento ID $id: " . $macro['nome_macroetapa']);
+                error_log("Nova etapa inserida em macroetapas para planejamento ID $id: " . ($macro['name'] ?? $macro['nome_macroetapa']));
             }
         }
     }
@@ -68,44 +68,90 @@ try {
     error_log("Erro ao sincronizar project_plan: " . $e->getMessage());
 }
 
-// Consulta às oportunidades em andamento com macroetapas
+// Consulta às oportunidades em andamento com todas as macroetapas
 $sql = "
-    SELECT p.id, p.titulo_oportunidade, p.setor, p.valor_estimado, p.prazo, p.status, p.descricao, p.created_at,
-           m.id AS macro_id, m.nome_macroetapa, m.responsavel, m.etapa_nome, m.etapa_concluida, m.data_conclusao
+    SELECT 
+        p.id AS planejamento_id, 
+        p.titulo_oportunidade, 
+        p.setor, 
+        p.valor_estimado, 
+        p.prazo, 
+        p.status, 
+        p.descricao, 
+        p.created_at,
+        m.id AS macro_id, 
+        m.nome_macroetapa, 
+        m.responsavel, 
+        m.etapa_nome, 
+        m.etapa_concluida, 
+        m.data_conclusao
     FROM planejamento p
     LEFT JOIN macroetapas m ON p.id = m.planejamento_id
     WHERE p.status = :status
-    ORDER BY p.created_at DESC, m.id
+    ORDER BY p.created_at DESC, m.nome_macroetapa
 ";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([':status' => 'andamento']);
 $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Organiza os dados por setor
+// Calcular médias por setor
+$mediaPorSetor = [];
+foreach ($records as $record) {
+    $setor = $record['setor'] ?? 'Sem Setor';
+    if (!isset($mediaPorSetor[$setor])) {
+        $mediaPorSetor[$setor] = [
+            'totalMacroetapas' => 0,
+            'macroetapasConcluidas' => 0
+        ];
+    }
+    if ($record['macro_id']) {
+        $mediaPorSetor[$setor]['totalMacroetapas']++;
+        if ($record['etapa_concluida'] === 'sim') {
+            $mediaPorSetor[$setor]['macroetapasConcluidas']++;
+        }
+    }
+}
+
+$cardsData = [];
+foreach ($mediaPorSetor as $setor => $dados) {
+    $progresso = $dados['totalMacroetapas'] > 0 ? ($dados['macroetapasConcluidas'] / $dados['totalMacroetapas']) * 100 : 0;
+    $cardsData[] = [
+        'setor' => $setor,
+        'progresso' => $progresso,
+        'totalMacroetapas' => $dados['totalMacroetapas'],
+        'macroetapasConcluidas' => $dados['macroetapasConcluidas']
+    ];
+}
+
+// Organiza os dados por oportunidade e setor para a tabela
 $oportunidadesPorSetor = [];
 foreach ($records as $record) {
     $setor = $record['setor'] ?? 'Sem Setor';
-    if (!isset($oportunidadesPorSetor[$setor])) {
-        $oportunidadesPorSetor[$setor] = [];
-    }
-    $oportunidadesPorSetor[$setor][] = $record;
-}
+    $oportunidadeId = $record['planejamento_id'];
 
-// Calcula totais e progresso
-$totaisPorSetor = [];
-foreach ($oportunidadesPorSetor as $setor => $oportunidades) {
-    $totalEtapas = 0;
-    $etapasConcluidas = 0;
-    foreach ($oportunidades as $op) {
-        if ($op['macro_id']) {
-            $totalEtapas++;
-            if ($op['etapa_concluida'] === 'sim') {
-                $etapasConcluidas++;
-            }
-        }
+    if (!isset($oportunidadesPorSetor[$setor][$oportunidadeId])) {
+        $oportunidadesPorSetor[$setor][$oportunidadeId] = [
+            'titulo_oportunidade' => $record['titulo_oportunidade'],
+            'setor' => $record['setor'],
+            'valor_estimado' => $record['valor_estimado'],
+         
+            'status' => $record['status'],
+            'descricao' => $record['descricao'],
+            'created_at' => $record['created_at'],
+            'macroetapas' => []
+        ];
     }
-    $progresso = $totalEtapas > 0 ? ($etapasConcluidas / $totalEtapas) * 100 : 0;
-    $totaisPorSetor[$setor] = ['total' => $totalEtapas, 'concluidas' => $etapasConcluidas, 'progresso' => $progresso];
+
+    if ($record['macro_id']) {
+        $oportunidadesPorSetor[$setor][$oportunidadeId]['macroetapas'][] = [
+            'macro_id' => $record['macro_id'],
+            'nome_macroetapa' => $record['nome_macroetapa'],
+            'responsavel' => $record['responsavel'],
+            'etapa_nome' => $record['etapa_nome'],
+            'etapa_concluida' => $record['etapa_concluida'],
+            'data_conclusao' => $record['data_conclusao']
+        ];
+    }
 }
 
 // Se for requisição AJAX, retorna JSON
@@ -114,7 +160,7 @@ if ($isAjax) {
     echo json_encode([
         'success' => true,
         'oportunidades_por_setor' => $oportunidadesPorSetor,
-        'totais_por_setor' => $totaisPorSetor,
+        'cards_data' => $cardsData,
         'last_updated' => $currentDateTime
     ]);
     exit;
@@ -135,6 +181,12 @@ $pdo = null;
         .container { max-width: 1200px; margin: 0 auto; }
         .header { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
         h1 { font-size: 24px; font-weight: 600; color: #1a73e8; margin: 0; }
+        .cards-container { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+        .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 15px; width: 200px; text-align: center; }
+        .card h3 { margin: 0 0 10px; font-size: 16px; color: #1a73e8; }
+        .card .progress { font-size: 24px; font-weight: bold; color: #34a853; }
+        .card .progress-bar { width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; margin-top: 10px; }
+        .card .progress-fill { height: 100%; background: #34a853; border-radius: 4px; }
         .section { margin-bottom: 20px; }
         .section h2 { color: #1a73e8; margin-bottom: 10px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -157,40 +209,61 @@ $pdo = null;
         <div class="header">
             <h1>Acompanhamento de Etapas em Andamento</h1>
         </div>
+        <!-- Seção de Cards -->
+        <div class="cards-container">
+            <?php foreach ($cardsData as $card): ?>
+                <div class="card">
+                    <h3><?php echo htmlspecialchars($card['setor']); ?></h3>
+                    <div class="progress"><?php echo number_format($card['progresso'], 1); ?>%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: <?php echo $card['progresso']; ?>%;"></div>
+                    </div>
+                    <p>Total Macroetapas: <?php echo $card['totalMacroetapas']; ?>, Concluídas: <?php echo $card['macroetapasConcluidas']; ?></p>
+                </div>
+            <?php endforeach; ?>
+            <?php if (empty($cardsData)): ?>
+                <p style="text-align: center; color: #ea4335;">Nenhum setor com dados disponíveis.</p>
+            <?php endif; ?>
+        </div>
+        <!-- Restante do conteúdo (tabela) -->
         <div id="content">
             <?php foreach ($oportunidadesPorSetor as $setor => $oportunidades): ?>
                 <div class="section">
-                    <h2><?php echo htmlspecialchars($setor); ?> (Total Etapas: <?php echo $totaisPorSetor[$setor]['total']; ?>, Concluídas: <?php echo $totaisPorSetor[$setor]['concluidas']; ?> - <?php echo number_format($totaisPorSetor[$setor]['progresso'], 1); ?>%)</h2>
+                    <h2><?php echo htmlspecialchars($setor); ?> (Total Etapas: <?php echo array_reduce($oportunidades, fn($sum, $op) => $sum + count($op['macroetapas']), 0); ?>, Concluídas: <?php echo array_reduce($oportunidades, fn($sum, $op) => $sum + array_reduce($op['macroetapas'], fn($carry, $macro) => $carry + ($macro['etapa_concluida'] === 'sim' ? 1 : 0), 0), 0); ?> - <?php
+                        $total = array_reduce($oportunidades, fn($sum, $op) => $sum + count($op['macroetapas']), 0);
+                        $concluidas = array_reduce($oportunidades, fn($sum, $op) => $sum + array_reduce($op['macroetapas'], fn($carry, $macro) => $carry + ($macro['etapa_concluida'] === 'sim' ? 1 : 0), 0), 0);
+                        echo number_format($total > 0 ? ($concluidas / $total) * 100 : 0, 1);
+                    ?>%)</h2>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: <?php echo $totaisPorSetor[$setor]['progresso']; ?>%;"></div>
+                        <div class="progress-fill" style="width: <?php echo $total > 0 ? ($concluidas / $total) * 100 : 0; ?>%;"></div>
                     </div>
                     <table>
                         <thead>
                             <tr>
                                 <th>Oportunidade</th>
-                                <th>Prazo</th>
+                         
                                 <th>Macroetapa</th>
                                 <th>Etapa</th>
                                 <th>Responsável</th>
                                 <th>Progresso</th>
                                 <th>Status</th>
-                                <th>Ações</th>
+                         
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($oportunidades as $op): ?>
-                                <?php if ($op['macro_id']): ?>
+                            <?php foreach ($oportunidades as $oportunidadeId => $op): ?>
+                                <?php foreach ($op['macroetapas'] as $macro): ?>
                                     <?php
-                                        $prazoDate = (new DateTime($op['prazo'], new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y');
-                                        $status = $op['etapa_concluida'] === 'sim' ? 'Concluído' : 'Em Andamento';
-                                        $progresso = $op['etapa_concluida'] === 'sim' ? 100 : 0;
+                                     
+                                        $status = $macro['etapa_concluida'] === 'sim' ? 'Concluído' : 'Em Andamento';
+                                        $progresso = $macro['etapa_concluida'] === 'sim' ? 100 : 0;
                                     ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($op['titulo_oportunidade']); ?></td>
-                                        <td><?php echo $prazoDate; ?></td>
-                                        <td><?php echo htmlspecialchars($op['nome_macroetapa'] ?? 'Sem Nome'); ?></td>
-                                        <td><?php echo htmlspecialchars($op['etapa_nome'] ?? 'Sem Etapa'); ?></td>
-                                        <td><?php echo htmlspecialchars($op['responsavel'] ?? 'N/A'); ?></td>
+                                     
+                                        <td><?php echo htmlspecialchars($macro['nome_macroetapa'] ?? 'Sem Nome'); ?></td>
+                                        <td><?php echo htmlspecialchars($macro['etapa_nome'] ?? 'Sem Etapa'); ?></td>
+                                        <td><?php echo htmlspecialchars($macro['responsavel'] ?? 'N/A'); ?></td>
                                         <td>
                                             <div class="progress-bar">
                                                 <div class="progress-fill" style="width: <?php echo $progresso; ?>%;"></div>
@@ -200,14 +273,21 @@ $pdo = null;
                                         <td class="<?php echo $status === 'Concluído' ? 'status-completed' : 'status-pending'; ?>">
                                             <?php echo $status; ?>
                                         </td>
-                                        <td class="actions">
-                                            <button class="btn btn-edit" onclick="editarOportunidade(<?php echo $op['id']; ?>, '<?php echo $op['macro_id']; ?>')">
+                                        <!-- <td class="actions">
+                                            <button class="btn btn-edit" onclick="editarOportunidade(<?php echo $op['planejamento_id']; ?>, '<?php echo isset($macro['macro_id']) ? htmlspecialchars($macro['macro_id']) : '0'; ?>')">
                                                 <i class="fas fa-edit"></i> Editar
                                             </button>
-                                            <button class="btn btn-delete" onclick="excluirOportunidade(<?php echo $op['id']; ?>, '<?php echo $op['macro_id']; ?>')">
+                                            <button class="btn btn-delete" onclick="excluirOportunidade(<?php echo $op['planejamento_id']; ?>, '<?php echo isset($macro['macro_id']) ? htmlspecialchars($macro['macro_id']) : '0'; ?>')">
                                                 <i class="fas fa-trash"></i> Excluir
                                             </button>
-                                        </td>
+                                        </td> -->
+                                    </tr>
+                                <?php endforeach; ?>
+                                <?php if (empty($op['macroetapas'])): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($op['titulo_oportunidade']); ?></td>
+                                      
+                                        <td colspan="6" style="text-align: center; color: #ea4335;">Nenhuma macroetapa cadastrada</td>
                                     </tr>
                                 <?php endif; ?>
                             <?php endforeach; ?>
@@ -224,11 +304,11 @@ $pdo = null;
 
     <script>
         function editarOportunidade(id, macroId) {
-            alert(`Editar oportunidade ID: ${id}, Macroetapa ID: ${macroId}`);
+            alert(`Editar oportunidade ID: ${id}, Macroetapa ID: ${macroId || 'não especificada'}`);
         }
         function excluirOportunidade(id, macroId) {
-            if (confirm(`Deseja excluir a macroetapa ID: ${macroId} da oportunidade ID: ${id}?`)) {
-                alert(`Excluindo macroetapa ID: ${macroId} da oportunidade ID: ${id}`);
+            if (confirm(`Deseja excluir a macroetapa ID: ${macroId || 'não especificada'} da oportunidade ID: ${id}?`)) {
+                alert(`Excluindo macroetapa ID: ${macroId || 'não especificada'} da oportunidade ID: ${id}`);
             }
         }
 
@@ -240,25 +320,39 @@ $pdo = null;
             .then(data => {
                 if (data.success) {
                     const content = document.getElementById('content');
-                    let html = '';
+                    const cardsContainer = document.querySelector('.cards-container');
+                    let cardsHtml = '';
+                    data.cards_data.forEach(card => {
+                        cardsHtml += `<div class="card"><h3>${card.setor}</h3><div class="progress">${card.progresso.toFixed(1)}%</div><div class="progress-bar"><div class="progress-fill" style="width: ${card.progresso}%;"></div></div><p>Total Macroetapas: ${card.totalMacroetapas}, Concluídas: ${card.macroetapasConcluidas}</p></div>`;
+                    });
+                    if (data.cards_data.length === 0) {
+                        cardsHtml = '<p style="text-align: center; color: #ea4335;">Nenhum setor com dados disponíveis.</p>';
+                    }
+                    cardsContainer.innerHTML = cardsHtml;
+
+                    let tableHtml = '';
                     for (const [setor, oportunidades] of Object.entries(data.oportunidades_por_setor)) {
-                        html += `<div class="section"><h2>${setor} (Total Etapas: ${data.totais_por_setor[setor].total}, Concluídas: ${data.totais_por_setor[setor].concluidas} - ${data.totais_por_setor[setor].progresso.toFixed(1)}%)</h2>`;
-                        html += `<div class="progress-bar"><div class="progress-fill" style="width: ${data.totais_por_setor[setor].progresso}%;"></div></div>`;
-                        html += '<table><thead><tr><th>Oportunidade</th><th>Prazo</th><th>Macroetapa</th><th>Etapa</th><th>Responsável</th><th>Progresso</th><th>Status</th><th>Ações</th></tr></thead><tbody>';
-                        oportunidades.forEach(op => {
-                            if (op.macro_id) {
+                        tableHtml += `<div class="section"><h2>${setor} (Total Etapas: ${Object.values(oportunidades).reduce((sum, op) => sum + op.macroetapas.length, 0)}, Concluídas: ${Object.values(oportunidades).reduce((sum, op) => sum + op.macroetapas.filter(m => m.etapa_concluida === 'sim').length, 0)} - ${data.cards_data.find(c => c.setor === setor)?.progresso.toFixed(1) || 0}%)</h2>`;
+                        tableHtml += `<div class="progress-bar"><div class="progress-fill" style="width: ${data.cards_data.find(c => c.setor === setor)?.progresso || 0}%;"></div></div>`;
+                        tableHtml += '<table><thead><tr><th>Oportunidade</th><th>Prazo</th><th>Macroetapa</th><th>Etapa</th><th>Responsável</th><th>Progresso</th><th>Status</th><th>Ações</th></tr></thead><tbody>';
+                        for (const [oportunidadeId, op] of Object.entries(oportunidades)) {
+                            op.macroetapas.forEach(macro => {
                                 const prazoDate = new Date(op.prazo).toLocaleDateString('pt-BR');
-                                const status = op.etapa_concluida === 'sim' ? 'Concluído' : 'Em Andamento';
-                                const progresso = op.etapa_concluida === 'sim' ? 100 : 0;
-                                html += `<tr><td>${op.titulo_oportunidade}</td><td>${prazoDate}</td><td>${op.nome_macroetapa || 'Sem Nome'}</td><td>${op.etapa_nome || 'Sem Etapa'}</td><td>${op.responsavel || 'N/A'}</td><td><div class="progress-bar"><div class="progress-fill" style="width: ${progresso}%;"></div><span style="display: block; text-align: center; font-size: 12px;">${progresso.toFixed(1)}%</span></div></td><td class="${status === 'Concluído' ? 'status-completed' : 'status-pending'}">${status}</td><td class="actions"><button class="btn btn-edit" onclick="editarOportunidade(${op.id}, '${op.macro_id}')"><i class="fas fa-edit"></i> Editar</button><button class="btn btn-delete" onclick="excluirOportunidade(${op.id}, '${op.macro_id}')"><i class="fas fa-trash"></i> Excluir</button></td></tr>`;
+                                const status = macro.etapa_concluida === 'sim' ? 'Concluído' : 'Em Andamento';
+                                const progresso = macro.etapa_concluida === 'sim' ? 100 : 0;
+                                tableHtml += `<tr><td>${op.titulo_oportunidade}</td><td>${prazoDate}</td><td>${macro.nome_macroetapa || 'Sem Nome'}</td><td>${macro.etapa_nome || 'Sem Etapa'}</td><td>${macro.responsavel || 'N/A'}</td><td><div class="progress-bar"><div class="progress-fill" style="width: ${progresso}%;"></div><span style="display: block; text-align: center; font-size: 12px;">${progresso.toFixed(1)}%</span></div></td><td class="${status === 'Concluído' ? 'status-completed' : 'status-pending'}">${status}</td><td class="actions"><button class="btn btn-edit" onclick="editarOportunidade(${op.planejamento_id}, '${macro.macro_id || '0'}')"><i class="fas fa-edit"></i> Editar</button><button class="btn btn-delete" onclick="excluirOportunidade(${op.planejamento_id}, '${macro.macro_id || '0'}')"><i class="fas fa-trash"></i> Excluir</button></td></tr>`;
+                            });
+                            if (op.macroetapas.length === 0) {
+                                const prazoDate = new Date(op.prazo).toLocaleDateString('pt-BR');
+                                tableHtml += `<tr><td>${op.titulo_oportunidade}</td><td>${prazoDate}</td><td colspan="6" style="text-align: center; color: #ea4335;">Nenhuma macroetapa cadastrada</td></tr>`;
                             }
-                        });
-                        html += '</tbody></table></div>';
+                        }
+                        tableHtml += '</tbody></table></div>';
                     }
                     if (Object.keys(data.oportunidades_por_setor).length === 0) {
-                        html = '<p style="text-align: center; color: #ea4335;">Nenhum dado disponível para status \'andamento\'.</p>';
+                        tableHtml = '<p style="text-align: center; color: #ea4335;">Nenhum dado disponível para status \'andamento\'.</p>';
                     }
-                    content.innerHTML = html;
+                    content.innerHTML = tableHtml;
                     document.getElementById('last-updated').textContent = `Última atualização: ${new Date(data.last_updated).toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo', hour12: true }).replace(' ', ' -03, ') + ', ' + new Date(data.last_updated).toLocaleDateString('pt-BR')}`;
                 }
             })

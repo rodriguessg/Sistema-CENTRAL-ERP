@@ -21,72 +21,271 @@ const sectorGoals = {
 const sectorTemplates = {
     bondes: {
         title: "Projetos de Bondes",
-        macroetapas: [
-            { name: "Operacionalização do Sistema de Bondes", etapas: ["Reativação de Linhas"] },
-            { name: "Recuperação do Sistema de Bondes", etapas: ["Operação do Bonde"] }
+         macroetapas: [{ name: "PLANEJAMENTO PCA", etapas: ["Desenvolvimento de novas soluções tecnológicas"] },
+        {name: "FASE PREPARATÓRIA", etapas:["Estudo Técnico Preliminar / Matriz de Risco",
+            "Termo de Referência ",
+        "Pesquisa de Preços / Relatório Analítico",
+        "Autorização do Ordenador de Despesa",
+        "DDO - Declaração de Dotação Orçamentária",
+        "Minuta Edital/Contrato",
+        "Parecer Jurídico (ASSJUR)",
+        "Lançamento do Edital no SIGA"
+    ]},
+        {name: "FASE EXTERNA", etapas: ["Recibo de envio de Edital ao TCE / Lançamento SIGA",
+            "Abertura do Pregão / Dispensa de Licitação",
+            "Adjudicação (Declaração do Vencedor)",
+            "Compliance (Due Diligence - ASSGER)",
+            "Homologação e Publicação no D.O"
+        ]},
+        {name: "FASE DE CONTRATAÇÃO", etapas: ["Contratação no SIGA",
+            "NAD / Nota de Empenho",
+            "Contrato (Assinatura)",
+            "Gestores e Fiscais",
+            "Garantia Contratual"
+
+        ]}
         ]
     },
     ferrovia: {
         title: "Projetos de Ferrovia",
-        macroetapas: [{ name: "Projetos de Engenharia", etapas: ["Planejamento e Execução"] }]
+         macroetapas: [{ name: "PLANEJAMENTO PCA", etapas: ["Desenvolvimento de novas soluções tecnológicas"] },
+        {name: "FASE PREPARATÓRIA", etapas:["Estudo Técnico Preliminar / Matriz de Risco",
+            "Termo de Referência ",
+        "Pesquisa de Preços / Relatório Analítico",
+        "Autorização do Ordenador de Despesa",
+        "DDO - Declaração de Dotação Orçamentária",
+        "Minuta Edital/Contrato",
+        "Parecer Jurídico (ASSJUR)",
+        "Lançamento do Edital no SIGA"
+    ]},
+        {name: "FASE EXTERNA", etapas: ["Recibo de envio de Edital ao TCE / Lançamento SIGA",
+            "Abertura do Pregão / Dispensa de Licitação",
+            "Adjudicação (Declaração do Vencedor)",
+            "Compliance (Due Diligence - ASSGER)",
+            "Homologação e Publicação no D.O"
+        ]},
+        {name: "FASE DE CONTRATAÇÃO", etapas: ["Contratação no SIGA",
+            "NAD / Nota de Empenho",
+            "Contrato (Assinatura)",
+            "Gestores e Fiscais",
+            "Garantia Contratual"
+
+        ]}]
     },
     teleferico: {
         title: "Projetos de Teleférico",
-        macroetapas: [{ name: "Reativação e Operacionalização", etapas: ["Reativação do Sistema de Transporte do Teleférico do Alemão"] }]
+        macroetapas: [{ name: "PLANEJAMENTO PCA", etapas: ["Desenvolvimento de novas soluções tecnológicas"] },
+        {name: "FASE PREPARATÓRIA", etapas:["Estudo Técnico Preliminar / Matriz de Risco",
+            "Termo de Referência ",
+        "Pesquisa de Preços / Relatório Analítico",
+        "Autorização do Ordenador de Despesa",
+        "DDO - Declaração de Dotação Orçamentária",
+        "Minuta Edital/Contrato",
+        "Parecer Jurídico (ASSJUR)",
+        "Lançamento do Edital no SIGA"
+    ]},
+        {name: "FASE EXTERNA", etapas: ["Recibo de envio de Edital ao TCE / Lançamento SIGA",
+            "Abertura do Pregão / Dispensa de Licitação",
+            "Adjudicação (Declaração do Vencedor)",
+            "Compliance (Due Diligence - ASSGER)",
+            "Homologação e Publicação no D.O"
+        ]},
+        {name: "FASE DE CONTRATAÇÃO", etapas: ["Contratação no SIGA",
+            "NAD / Nota de Empenho",
+            "Contrato (Assinatura)",
+            "Gestores e Fiscais",
+            "Garantia Contratual"
+
+        ]}]
     },
     ti: {
         title: "Projetos de TI",
-        macroetapas: [
-            {
-                name: "Infraestrutura de TI",
-                etapas: [
-                    "Estruturar o banco de dados dos projetos de engenharia",
-                    "Aquisição de equipamentos e softwares",
-                    "Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários",
-                    "Reestruturação de toda Infraestrutura de Rede com Segurança"
-                ]
-            },
-            { name: "Modernização", etapas: ["Modernização do parque computacional (desktops e notebooks)"] },
-            { name: "Soluções de Atendimento", etapas: ["Solução de Atendimento ao Usuário – ITSM", "Wi-Fi corporativo com segurança e gerenciamento"] },
-            { name: "Monitoramento", etapas: ["Monitoramento e Observabilidade da Infraestrutura"] },
-            { name: "Conectividade", etapas: ["Contratação de link de internet dedicado", "Aquisição de softwares diversos", "Serviço de cabeamento estruturado"] }
+         macroetapas: [{ name: "PLANEJAMENTO PCA", etapas: ["Desenvolvimento de novas soluções tecnológicas"] },
+        {name: "FASE PREPARATÓRIA", etapas:["Estudo Técnico Preliminar / Matriz de Risco",
+            "Termo de Referência ",
+        "Pesquisa de Preços / Relatório Analítico",
+        "Autorização do Ordenador de Despesa",
+        "DDO - Declaração de Dotação Orçamentária",
+        "Minuta Edital/Contrato",
+        "Parecer Jurídico (ASSJUR)",
+        "Lançamento do Edital no SIGA"
+    ]},
+        {name: "FASE EXTERNA", etapas: ["Recibo de envio de Edital ao TCE / Lançamento SIGA",
+            "Abertura do Pregão / Dispensa de Licitação",
+            "Adjudicação (Declaração do Vencedor)",
+            "Compliance (Due Diligence - ASSGER)",
+            "Homologação e Publicação no D.O"
+        ]},
+        {name: "FASE DE CONTRATAÇÃO", etapas: ["Contratação no SIGA",
+            "NAD / Nota de Empenho",
+            "Contrato (Assinatura)",
+            "Gestores e Fiscais",
+            "Garantia Contratual"
+
+        ]}
         ]
     },
     capacitacao: {
         title: "Projetos de Capacitação",
-        macroetapas: [
-            {
-                name: "Capacitação Geral",
-                etapas: [
-                    "Capacitação dos empregados da GERGEP nos softwares de edição de texto e planilhas",
-                    "Capacitação dos empregados da GERGEP no tratamento do arquivamento de documentos",
-                    "Formação e capacitação do corpo técnico em processos de TIC"
-                ]
-            },
-            {
-                name: "Treinamentos Específicos",
-                etapas: ["Treinamentos no Sistema e-Social", "Treinamentos para área de Segurança do Trabalho", "Treinamentos visando à Educação Ambiental"]
-            }
+        macroetapas: [{ name: "PLANEJAMENTO PCA", etapas: ["Desenvolvimento de novas soluções tecnológicas"] },
+        {name: "FASE PREPARATÓRIA", etapas:["Estudo Técnico Preliminar / Matriz de Risco",
+            "Termo de Referência ",
+        "Pesquisa de Preços / Relatório Analítico",
+        "Autorização do Ordenador de Despesa",
+        "DDO - Declaração de Dotação Orçamentária",
+        "Minuta Edital/Contrato",
+        "Parecer Jurídico (ASSJUR)",
+        "Lançamento do Edital no SIGA"
+    ]},
+        {name: "FASE EXTERNA", etapas: ["Recibo de envio de Edital ao TCE / Lançamento SIGA",
+            "Abertura do Pregão / Dispensa de Licitação",
+            "Adjudicação (Declaração do Vencedor)",
+            "Compliance (Due Diligence - ASSGER)",
+            "Homologação e Publicação no D.O"
+        ]},
+        {name: "FASE DE CONTRATAÇÃO", etapas: ["Contratação no SIGA",
+            "NAD / Nota de Empenho",
+            "Contrato (Assinatura)",
+            "Gestores e Fiscais",
+            "Garantia Contratual"
+
+        ]}
         ]
     },
     patrimonio: {
         title: "Projetos de Patrimônio",
-        macroetapas: [
-            { name: "Gestão Documental", etapas: ["Tratamento e digitalização de documentação administrativa e histórica"] },
-            { name: "Controle de Bens", etapas: ["Controle de todos os bens móveis e imóveis", "Identificação dos bens que integram o acervo patrimonial"] }
+        macroetapas: [{ name: "PLANEJAMENTO PCA", etapas: ["Desenvolvimento de novas soluções tecnológicas"] },
+        {name: "FASE PREPARATÓRIA", etapas:["Estudo Técnico Preliminar / Matriz de Risco",
+            "Termo de Referência ",
+        "Pesquisa de Preços / Relatório Analítico",
+        "Autorização do Ordenador de Despesa",
+        "DDO - Declaração de Dotação Orçamentária",
+        "Minuta Edital/Contrato",
+        "Parecer Jurídico (ASSJUR)",
+        "Lançamento do Edital no SIGA"
+    ]},
+        {name: "FASE EXTERNA", etapas: ["Recibo de envio de Edital ao TCE / Lançamento SIGA",
+            "Abertura do Pregão / Dispensa de Licitação",
+            "Adjudicação (Declaração do Vencedor)",
+            "Compliance (Due Diligence - ASSGER)",
+            "Homologação e Publicação no D.O"
+        ]},
+        {name: "FASE DE CONTRATAÇÃO", etapas: ["Contratação no SIGA",
+            "NAD / Nota de Empenho",
+            "Contrato (Assinatura)",
+            "Gestores e Fiscais",
+            "Garantia Contratual"
+
+        ]}
         ]
     },
     pca: {
         title: "Plano de Contratação Anual",
-        macroetapas: [{ name: "Planejamento", etapas: ["Plano de Contratação Anual (PCA) da CENTRAL"] }]
+        macroetapas: [{ name: "PLANEJAMENTO PCA", etapas: ["Desenvolvimento de novas soluções tecnológicas"] },
+        {name: "FASE PREPARATÓRIA", etapas:["Estudo Técnico Preliminar / Matriz de Risco",
+            "Termo de Referência ",
+        "Pesquisa de Preços / Relatório Analítico",
+        "Autorização do Ordenador de Despesa",
+        "DDO - Declaração de Dotação Orçamentária",
+        "Minuta Edital/Contrato",
+        "Parecer Jurídico (ASSJUR)",
+        "Lançamento do Edital no SIGA"
+    ]},
+        {name: "FASE EXTERNA", etapas: ["Recibo de envio de Edital ao TCE / Lançamento SIGA",
+            "Abertura do Pregão / Dispensa de Licitação",
+            "Adjudicação (Declaração do Vencedor)",
+            "Compliance (Due Diligence - ASSGER)",
+            "Homologação e Publicação no D.O"
+        ]},
+        {name: "FASE DE CONTRATAÇÃO", etapas: ["Contratação no SIGA",
+            "NAD / Nota de Empenho",
+            "Contrato (Assinatura)",
+            "Gestores e Fiscais",
+            "Garantia Contratual"
+
+        ]}]
     },
     gestao_pessoas: {
         title: "Gestão de Pessoas",
-        macroetapas: [{ name: "Programas", etapas: ["Planejamento do Programa de Desligamento Voluntário Incentivado - PDVI"] }]
+         macroetapas: [{ name: "PLANEJAMENTO PCA", etapas: ["Desenvolvimento de novas soluções tecnológicas"] },
+        {name: "FASE PREPARATÓRIA", etapas:["Estudo Técnico Preliminar / Matriz de Risco",
+            "Termo de Referência ",
+        "Pesquisa de Preços / Relatório Analítico",
+        "Autorização do Ordenador de Despesa",
+        "DDO - Declaração de Dotação Orçamentária",
+        "Minuta Edital/Contrato",
+        "Parecer Jurídico (ASSJUR)",
+        "Lançamento do Edital no SIGA"
+    ]},
+        {name: "FASE EXTERNA", etapas: ["Recibo de envio de Edital ao TCE / Lançamento SIGA",
+            "Abertura do Pregão / Dispensa de Licitação",
+            "Adjudicação (Declaração do Vencedor)",
+            "Compliance (Due Diligence - ASSGER)",
+            "Homologação e Publicação no D.O"
+        ]},
+        {name: "FASE DE CONTRATAÇÃO", etapas: ["Contratação no SIGA",
+            "NAD / Nota de Empenho",
+            "Contrato (Assinatura)",
+            "Gestores e Fiscais",
+            "Garantia Contratual"
+
+        ]}]
     },
+    
+    
     solucoes_tecnologicas: {
         title: "Soluções Tecnológicas",
-        macroetapas: [{ name: "Inovações", etapas: ["Desenvolvimento de novas soluções tecnológicas"] }]
+        macroetapas: [{ name: "PLANEJAMENTO PCA", etapas: ["Desenvolvimento de novas soluções tecnológicas"] },
+        {name: "FASE PREPARATÓRIA", etapas:["Estudo Técnico Preliminar / Matriz de Risco",
+            "Termo de Referência ",
+        "Pesquisa de Preços / Relatório Analítico",
+        "Autorização do Ordenador de Despesa",
+        "DDO - Declaração de Dotação Orçamentária",
+        "Minuta Edital/Contrato",
+        "Parecer Jurídico (ASSJUR)",
+        "Lançamento do Edital no SIGA"
+    ]},
+        {name: "FASE EXTERNA", etapas: ["Recibo de envio de Edital ao TCE / Lançamento SIGA",
+            "Abertura do Pregão / Dispensa de Licitação",
+            "Adjudicação (Declaração do Vencedor)",
+            "Compliance (Due Diligence - ASSGER)",
+            "Homologação e Publicação no D.O"
+        ]},
+        {name: "FASE DE CONTRATAÇÃO", etapas: ["Contratação no SIGA",
+            "NAD / Nota de Empenho",
+            "Contrato (Assinatura)",
+            "Gestores e Fiscais",
+            "Garantia Contratual"
+
+        ]}
+    ]
+    },
+    recuperacao_bonde: {
+        title: "OPERACIONALIZAÇÃO DO SISTEMA DE BONDES DE SANTA TERESA ",
+         macroetapas: [{ name: "PLANEJAMENTO PCA", etapas: ["Desenvolvimento de novas soluções tecnológicas"] },
+        {name: "FASE PREPARATÓRIA", etapas:["Estudo Técnico Preliminar / Matriz de Risco",
+            "Termo de Referência ",
+        "Pesquisa de Preços / Relatório Analítico",
+        "Autorização do Ordenador de Despesa",
+        "DDO - Declaração de Dotação Orçamentária",
+        "Minuta Edital/Contrato",
+        "Parecer Jurídico (ASSJUR)",
+        "Lançamento do Edital no SIGA"
+    ]},
+        {name: "FASE EXTERNA", etapas: ["Recibo de envio de Edital ao TCE / Lançamento SIGA",
+            "Abertura do Pregão / Dispensa de Licitação",
+            "Adjudicação (Declaração do Vencedor)",
+            "Compliance (Due Diligence - ASSGER)",
+            "Homologação e Publicação no D.O"
+        ]},
+        {name: "FASE DE CONTRATAÇÃO", etapas: ["Contratação no SIGA",
+            "NAD / Nota de Empenho",
+            "Contrato (Assinatura)",
+            "Gestores e Fiscais",
+            "Garantia Contratual"
+
+        ]}
+    ]
     }
 };
 
@@ -95,6 +294,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         await loadChartJs();
         await carregarDados();
+        await atualizarMacroetapas();
     } catch (error) {
         console.error("Erro na inicialização:", error);
         alert("Erro ao carregar os dados iniciais. Tente novamente.");
@@ -115,9 +315,9 @@ const loadChartJs = () => {
     });
 };
 
-const formatarMoeda = (valor) => {
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
-};
+// const formatarMoeda = (valor) => {
+//     return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
+// };
 
 const lightenColor = (color, amount) => {
     const hex = color.replace('#', '');
@@ -457,7 +657,7 @@ const excluirOportunidade = async (opportunityId) => {
     console.log("Oportunidade encontrada:", opportunity);
 
     if (!opportunity) {
-        console.log("Oportunidade não encontrada para o ID:", opportunityId);
+        console.error("Oportunidade não encontrada para ID:", opportunityId);
         alert("Oportunidade não encontrada. Verifique os dados ou recarregue a página.");
         return;
     }
@@ -500,113 +700,145 @@ const excluirOportunidade = async (opportunityId) => {
     }
 };
 
-const atualizarStatusEtapa = async (opportunityId, macroIndex, etapaIndex) => {
-    const opportunity = opportunities.find(opp => Number(opp.id) === Number(opportunityId));
-    if (!opportunity) {
-        console.log("Oportunidade não encontrada para o ID:", opportunityId);
-        alert("Oportunidade não encontrada. Recarregue a página.");
-        return;
-    }
+// const atualizarStatusEtapa = async (opportunityId, macroIndex, etapaIndex) => {
+//     const opportunity = opportunities.find(opp => Number(opp.id) === Number(opportunityId));
+//     if (!opportunity) {
+//         console.error("Oportunidade não encontrada para o ID:", opportunityId);
+//         alert("Oportunidade não encontrada. Recarregue a página.");
+//         return;
+//     }
 
-    const macro = opportunity.projectPlan[macroIndex];
-    const etapa = macro.etapas[etapaIndex];
-    if (!etapa) {
-        console.log("Etapa não encontrada para os índices:", { opportunityId, macroIndex, etapaIndex });
-        return;
-    }
+//     const macro = opportunity.projectPlan[macroIndex];
+//     const etapa = macro.etapas[etapaIndex];
+//     if (!etapa) {
+//         console.error("Etapa não encontrada para os índices:", { opportunityId, macroIndex, etapaIndex });
+//         return;
+//     }
 
-    const newCompleted = !etapa.completed;
-    etapa.completed = newCompleted;
-    console.log("Atualizando etapa:", { opportunityId, macroIndex, etapaIndex, etapaNome: etapa.name, completed: newCompleted, setor: opportunity.sector });
+//     const newCompleted = !etapa.completed;
+//     etapa.completed = newCompleted;
 
-    try {
-        const response = await fetch('./atualizar_planejamento.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                planejamento_id: opportunityId,
-                setor: opportunity.sector,
-                nome_macroetapa: macro.name || `Macroetapa ${macroIndex + 1}`,
-                responsavel: macro.responsible || '',
-                etapa_nome: etapa.name,
-                etapa_concluida: newCompleted ? 'sim' : 'nao',
-                data_conclusao: newCompleted ? new Date().toISOString() : null
-            })
-        });
+//     console.log("Atualizando etapa - Antes da requisição:", {
+//         opportunityId,
+//         macroIndex,
+//         etapaIndex,
+//         etapaNome: etapa.name,
+//         completed: newCompleted,
+//         setor: opportunity.sector
+//     });
 
-        const text = await response.text();
-        console.log("Resposta do backend:", text);
-        let data;
-        try {
-            data = JSON.parse(text);
-        } catch (e) {
-            console.error('Resposta não é JSON:', text);
-            throw new Error('Resposta inválida do servidor');
-        }
+//     try {
+//         const response = await fetch('./atualizar_planejamento.php', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({
+//                 planejamento_id: opportunityId,
+//                 setor: opportunity.sector || '',
+//                 nome_macroetapa: macro.name || `Macroetapa ${macroIndex + 1}`,
+//                 responsavel: macro.responsible || '',
+//                 etapa_nome: etapa.name,
+//                 etapa_concluida: newCompleted ? 'sim' : 'nao',
+//                 data_conclusao: newCompleted ? new Date().toISOString() : null
+//             })
+//         });
 
-        if (data.success) {
-            atualizarSetor(opportunity.sector);
-            atualizarPainel();
-            alert("Etapa atualizada com sucesso!");
-        } else {
-            alert(data.message || "Erro ao adicionar/atualizar etapa.");
-            etapa.completed = !newCompleted;
-            atualizarSetor(opportunity.sector);
-        }
-    } catch (error) {
-        console.error("Erro ao atualizar etapa:", error);
-        alert("Falha ao atualizar etapa. Tente novamente.");
-        etapa.completed = !newCompleted;
-        atualizarSetor(opportunity.sector);
-    }
-};
+//         if (!response.ok) {
+//             throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+//         }
 
-const atualizarStatusOportunidade = async (opportunityId, newStatus) => {
-    const opportunity = opportunities.find(opp => Number(opp.id) === Number(opportunityId));
-    if (!opportunity) {
-        console.error("Oportunidade não encontrada para ID:", opportunityId);
-        alert("Oportunidade não encontrada.");
-        return;
-    }
+//         const text = await response.text();
+//         let data;
+//         try {
+//             data = JSON.parse(text);
+//         } catch (parseError) {
+//             console.error('Resposta do backend não é JSON válido:', text);
+//             throw new Error('Resposta inválida do servidor');
+//         }
 
-    const previousStatus = opportunity.status;
-    opportunity.status = newStatus;
+//         if (!data.success) {
+//             throw new Error(data.message || "Falha ao atualizar etapa no servidor.");
+//         }
 
-    try {
-        const response = await fetch('./atualizar_planejamento.php', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: opportunityId, status: newStatus })
-        });
+//         console.log("Resposta do backend:", data);
 
-        const text = await response.text();
-        let data;
-        try {
-            data = JSON.parse(text);
-        } catch (e) {
-            console.error('Resposta não é JSON:', text);
-            throw new Error('Resposta inválida do servidor');
-        }
+//         if (data.updated_etapa) {
+//             etapa.completed = data.updated_etapa.etapa_concluida === 'sim';
+//             etapa.data_conclusao = data.updated_etapa.data_conclusao;
+//             console.log("Etapa sincronizada com backend:", {
+//                 completed: etapa.completed,
+//                 data_conclusao: etapa.data_conclusao
+//             });
+//         } else {
+//             console.warn("Nenhum updated_etapa retornado pelo backend.");
+//         }
 
-        if (data.success) {
-            atualizarMetasSetores();
-            atualizarPainel();
-            atualizarSetor(opportunity.sector);
-            console.log(`Status da oportunidade ${opportunityId} atualizado para ${newStatus}`);
-        } else {
-            opportunity.status = previousStatus;
-            alert(data.message || "Erro ao atualizar status.");
-            atualizarSetor(opportunity.sector);
-        }
-    } catch (error) {
-        console.error("Erro ao atualizar status:", error);
-        opportunity.status = previousStatus;
-        alert("Falha ao atualizar status. Tente novamente.");
-        atualizarSetor(opportunity.sector);
-    }
-};
+//         if (typeof atualizarSetor === 'function') {
+//             await atualizarSetor(opportunity.sector);
+//         }
+//         if (typeof atualizarPainel === 'function') {
+//             await atualizarPainel();
+//         }
+
+//         console.log("Etapa atualizada com sucesso:", { opportunityId, etapaNome: etapa.name, completed: etapa.completed });
+//         alert("Etapa atualizada com sucesso!");
+//     } catch (error) {
+//         console.error("Erro ao atualizar etapa:", error.message);
+//         etapa.completed = !newCompleted;
+//         if (typeof atualizarSetor === 'function') {
+//             await atualizarSetor(opportunity.sector);
+//         }
+//         alert(`Falha ao atualizar etapa: ${error.message}. Tente novamente.`);
+//     }
+// };
+
+// const atualizarStatusOportunidade = async (opportunityId, newStatus) => {
+//     const opportunity = opportunities.find(opp => Number(opp.id) === Number(opportunityId));
+//     if (!opportunity) {
+//         console.error("Oportunidade não encontrada para ID:", opportunityId);
+//         alert("Oportunidade não encontrada.");
+//         return;
+//     }
+
+//     const previousStatus = opportunity.status;
+//     opportunity.status = newStatus;
+
+//     try {
+//         const response = await fetch('./atualizar_planejamento.php', {
+//             method: 'PUT',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ id: opportunityId, status: newStatus })
+//         });
+
+//         const text = await response.text();
+//         let data;
+//         try {
+//             data = JSON.parse(text);
+//         } catch (e) {
+//             console.error('Resposta não é JSON:', text);
+//             throw new Error('Resposta inválida do servidor');
+//         }
+
+//         if (data.success) {
+//             atualizarMetasSetores();
+//             atualizarPainel();
+//             atualizarSetor(opportunity.sector);
+//             console.log(`Status da oportunidade ${opportunityId} atualizado para ${newStatus}`);
+//         } else {
+//             opportunity.status = previousStatus;
+//             alert(data.message || "Erro ao atualizar status.");
+//             atualizarSetor(opportunity.sector);
+//         }
+//     } catch (error) {
+//         console.error("Erro ao atualizar status:", error);
+//         opportunity.status = previousStatus;
+//         alert("Falha ao atualizar status. Tente novamente.");
+//         atualizarSetor(opportunity.sector);
+//     }
+// };
 
 // Form Handling
+
+
 document.getElementById("opportunityForm")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -693,9 +925,9 @@ const carregarDados = async () => {
             headers: { 'Content-Type': 'application/json' }
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
+
         const text = await response.text();
-        console.log("Resposta bruta do backend:", text);
+        console.log("Resposta bruta do backend (carregarDados):", text);
         let data;
         try {
             data = JSON.parse(text);
@@ -705,36 +937,69 @@ const carregarDados = async () => {
         }
 
         if (data.success && Array.isArray(data.opportunities)) {
-            opportunities = data.opportunities.map(opp => {
+            opportunities = await Promise.all(data.opportunities.map(async opp => {
                 let parsedValue = 0;
                 if (opp.value !== undefined && opp.value !== null) {
                     if (typeof opp.value === 'string' && opp.value.trim()) {
                         parsedValue = parseFloat(opp.value.replace(/\./g, '').replace(',', '.')) || 0;
-                        if (isNaN(parsedValue)) {
-                            console.warn(`Valor inválido para oportunidade ID ${opp.id}: ${opp.value}, usando 0 como fallback`);
-                        }
                     } else if (typeof opp.value === 'number') {
                         parsedValue = opp.value;
-                    } else {
-                        console.warn(`Tipo de valor inesperado para oportunidade ID ${opp.id}: ${typeof opp.value}, usando 0 como fallback`);
                     }
-                } else {
-                    console.warn(`Valor ausente para oportunidade ID ${opp.id}, usando 0 como fallback`);
                 }
-                return {
-                    ...opp,
-                    value: parsedValue, // Store raw number
-                    projectPlan: opp.projectPlan ? opp.projectPlan.map(macro => ({
+
+                // Fetch macroetapas for this opportunity
+                const macroResponse = await fetch(`./get_macroetapas_by_opportunity.php?planejamento_id=${opp.id}&setor=${encodeURIComponent(opp.sector)}`);
+                const macroText = await macroResponse.text();
+                let macroData;
+                try {
+                    macroData = JSON.parse(macroText);
+                } catch (e) {
+                    console.error(`Resposta não é JSON para oportunidade ID ${opp.id}:`, macroText);
+                    macroData = { success: false, macroetapas: [] };
+                }
+
+         let projectPlan = [];
+                if (macroData.success && Array.isArray(macroData.macroetapas) && macroData.macroetapas.length > 0) {
+                    projectPlan = macroData.macroetapas.map(macro => ({
+                        name: macro.nome_macroetapa || `Macroetapa`,
+                        responsible: macro.responsavel || '',
+                        etapas: Array.isArray(macro.etapas) ? macro.etapas.map(e => ({
+                            name: e.etapa_nome || '',
+                            completed: e.etapa_concluida === 'sim',
+                            data_conclusao: e.data_conclusao || null
+                        })) : [],
+                        expanded: true
+                    }));
+                } else {
+                    let fallbackPlan = opp.projectPlan;
+                    if (typeof fallbackPlan === 'string') {
+                        try {
+                            fallbackPlan = JSON.parse(fallbackPlan);
+                        } catch (parseError) {
+                            console.error(`Erro ao parsear projectPlan para oportunidade ID ${opp.id}:`, parseError);
+                            fallbackPlan = []; // Fallback to empty array on parse failure
+                        }
+                    }
+                    projectPlan = Array.isArray(fallbackPlan) ? fallbackPlan.map(macro => ({
                         ...macro,
-                        etapas: macro.etapas ? macro.etapas.map(e => ({
+                        etapas: Array.isArray(macro.etapas) ? macro.etapas.map(e => ({
                             name: e.name || '',
-                            completed: e.completed === 'sim' || e.completed === true
+                            completed: e.completed || false, // Adjust based on your data (was e.etapa_concluida in original)
+                            data_conclusao: e.data_conclusao || null
                         })) : [],
                         expanded: macro.expanded !== undefined ? macro.expanded : true
-                    })) : []
+                    })) : [];
+                }
+
+                console.log(`Oportunidade ID ${opp.id} mapeada:`, { ...opp, value: parsedValue, projectPlan });
+                return {
+                    ...opp,
+                    value: parsedValue,
+                    projectPlan
                 };
-            });
-            console.log("Opportunities carregadas:", opportunities);
+            }));
+
+            console.log("Opportunities carregadas após mapeamento:", opportunities);
             atualizarMetasSetores();
             atualizarPainel();
             atualizarTodosSetores();
@@ -947,7 +1212,8 @@ const atualizarGraficoEvolucao = () => {
     if (!ctx) return;
 
     const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-    const currentYear = new Date().getFullYear();
+    const currentYear = new Date().getFullYear(); // 2025
+
     const monthlyData = months.reduce((acc, month, index) => {
         const monthKey = `${currentYear}-${String(index + 1).padStart(2, '0')}`;
         acc[monthKey] = { total: 0, completed: 0 };
@@ -955,31 +1221,66 @@ const atualizarGraficoEvolucao = () => {
     }, {});
 
     opportunities.forEach(opp => {
+        if (!opp.createdAt) {
+            console.warn(`Oportunidade sem created_at:`, opp);
+            return;
+        }
         const createdDate = new Date(opp.createdAt);
+        if (isNaN(createdDate.getTime())) {
+            console.warn(`Data inválida em created_at para oportunidade ID ${opp.id}: ${opp.createdAt}`);
+            return;
+        }
         if (createdDate.getFullYear() === currentYear) {
             const monthKey = `${currentYear}-${String(createdDate.getMonth() + 1).padStart(2, '0')}`;
             monthlyData[monthKey].total++;
-            if (opp.status === "finalizado") monthlyData[monthKey].completed++;
+            if (opp.status === "finalizado") {
+                monthlyData[monthKey].completed++;
+            }
         }
     });
 
     const totalData = months.map((_, index) => monthlyData[`${currentYear}-${String(index + 1).padStart(2, '0')}`].total);
     const completedData = months.map((_, index) => monthlyData[`${currentYear}-${String(index + 1).padStart(2, '0')}`].completed);
 
+    if (evolutionChart) evolutionChart.destroy();
     evolutionChart = new Chart(ctx, {
         type: "line",
         data: {
             labels: months,
             datasets: [
-                { label: "Total de Oportunidades", data: totalData, borderColor: "rgba(54, 162, 235, 1)", backgroundColor: "rgba(54, 162, 235, 0.2)", fill: false, tension: 0.1, borderWidth: 2, pointRadius: 4 },
-                { label: "Oportunidades Concluídas", data: completedData, borderColor: "rgba(75, 192, 192, 1)", backgroundColor: "rgba(75, 192, 192, 0.2)", fill: false, tension: 0.1, borderWidth: 2, pointRadius: 4 },
+                { 
+                    label: "Total de Oportunidades", 
+                    data: totalData, 
+                    borderColor: "rgba(54, 162, 235, 1)", 
+                    backgroundColor: "rgba(54, 162, 235, 0.2)", 
+                    fill: false, 
+                    tension: 0.1, 
+                    borderWidth: 2, 
+                    pointRadius: 4 
+                },
+                { 
+                    label: "Oportunidades Concluídas", 
+                    data: completedData, 
+                    borderColor: "rgba(75, 192, 192, 1)", 
+                    backgroundColor: "rgba(75, 192, 192, 0.2)", 
+                    fill: false, 
+                    tension: 0.1, 
+                    borderWidth: 2, 
+                    pointRadius: 4 
+                },
             ],
         },
         options: {
             responsive: true,
             maintainAspectRatio: true,
-            scales: { x: { title: { display: true, text: "Mês" }, position: "bottom" }, y: { beginAtZero: true, title: { display: true, text: "Quantidade" } } },
-            plugins: { legend: { position: "top" }, tooltip: { callbacks: { label: context => `${context.dataset.label}: ${context.parsed.y}` } } },
+            scales: { 
+                x: { title: { display: true, text: "Mês" }, position: "bottom" }, 
+                y: { beginAtZero: true, title: { display: true, text: "Quantidade" } } 
+            },
+            plugins: { 
+                legend: { position: "top" }, 
+                tooltip: { callbacks: { label: context => `${context.dataset.label}: ${context.parsed.y}` } } 
+            },
         },
     });
 };
@@ -988,12 +1289,12 @@ const atualizarAlertas = () => {
     const alertsContainer = document.getElementById("alerts-container");
     if (!alertsContainer) return;
 
-    const currentDate = new Date();
+    const currentDate = new Date("2025-07-29T17:23:00-03:00"); // 02:23 PM -03
     alertsContainer.innerHTML = "";
 
     const expiredOpps = opportunities.filter(opp => {
-        const deadline = new Date(opp.deadline);
-        return opp.status !== "finalizado" && deadline < currentDate && opp.deadline;
+        const deadline = new Date(opp.deadline || "");
+        return opp.status !== "finalizado" && !isNaN(deadline.getTime()) && deadline < currentDate && opp.deadline;
     });
 
     expiredOpps.forEach((opp, index) => {
@@ -1035,23 +1336,23 @@ const atualizarAlertas = () => {
 
 const atualizarTodosSetores = () => Object.keys(sectorGoals).forEach(atualizarSetor);
 
-const atualizarPainelEstimativa = (setor) => {
-    const sectorOpportunities = opportunities.filter(opp => opp.sector === setor);
-    const totalEstimatedValue = sectorOpportunities.reduce((sum, opp) => opp.status !== "finalizado" ? sum + (parseFloat(opp.value) || 0) : sum, 0);
-    const completedValue = sectorOpportunities.filter(opp => opp.status === "finalizado").reduce((sum, opp) => sum + (parseFloat(opp.value) || 0), 0);
-    const goal = sectorGoals[setor] || 0;
-    const goalProgress = goal > 0 ? (completedValue / goal) * 100 : 0;
+// const atualizarPainelEstimativa = (setor) => {
+//     const sectorOpportunities = opportunities.filter(opp => opp.sector === setor);
+//     const totalEstimatedValue = sectorOpportunities.reduce((sum, opp) => opp.status !== "finalizado" ? sum + (parseFloat(opp.value) || 0) : sum, 0);
+//     const completedValue = sectorOpportunities.filter(opp => opp.status === "finalizado").reduce((sum, opp) => sum + (parseFloat(opp.value) || 0), 0);
+//     const goal = sectorGoals[setor] || 0;
+//     const goalProgress = goal > 0 ? (completedValue / goal) * 100 : 0;
 
-    const updateElement = (id, value) => {
-        const element = document.getElementById(id);
-        if (element) element.textContent = value;
-    };
+//     const updateElement = (id, value) => {
+//         const element = document.getElementById(id);
+//         if (element) element.textContent = value;
+//     };
 
-    updateElement(`estimated-value-${setor}`, formatarMoeda(totalEstimatedValue));
-    updateElement(`goal-progress-${setor}`, goalProgress.toFixed(1) + "%");
-};
+//     updateElement(`estimated-value-${setor}`, formatarMoeda(totalEstimatedValue));
+//     updateElement(`goal-progress-${setor}`, goalProgress.toFixed(1) + "%");
+// };
 
-// Função para buscar oportunidades no backend
+// Search and Sector Update
 const buscarOportunidades = async (setor, termoPesquisa) => {
     try {
         const response = await fetch('./buscar_planejamento.php', {
@@ -1085,7 +1386,8 @@ const buscarOportunidades = async (setor, termoPesquisa) => {
                         ...macro,
                         etapas: macro.etapas ? macro.etapas.map(e => ({
                             name: e.name || '',
-                            completed: e.completed === 'sim' || e.completed === true
+                            completed: e.etapa_concluida === 'sim',
+                            data_conclusao: e.data_conclusao || null
                         })) : [],
                         expanded: macro.expanded !== undefined ? macro.expanded : true
                     })) : []
@@ -1101,7 +1403,125 @@ const buscarOportunidades = async (setor, termoPesquisa) => {
     }
 };
 
-// Modificação na função renderizarOportunidades para aceitar oportunidades filtradas
+const atualizarSetor = async (setor) => {
+    const searchInput = document.getElementById(`search-${setor}`);
+    const termoPesquisa = searchInput ? searchInput.value.trim() : '';
+
+    let sectorOpportunities = opportunities.filter(opp => opp.sector === setor);
+    if (termoPesquisa) {
+        sectorOpportunities = await buscarOportunidades(setor, termoPesquisa);
+    }
+
+    atualizarPainelEstimativa(setor);
+    renderizarOportunidades(setor, sectorOpportunities);
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    Object.keys(sectorGoals).forEach(setor => {
+        const searchInput = document.getElementById(`search-${setor}`);
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                atualizarSetor(setor);
+            });
+        }
+    });
+});
+
+const toggleMacroetapa = (opportunityId, macroIndex) => {
+    const opportunity = opportunities.find(opp => opp.id === opportunityId);
+    if (!opportunity) return;
+    opportunity.projectPlan[macroIndex].expanded = !opportunity.projectPlan[macroIndex].expanded;
+    atualizarSetor(opportunity.sector);
+};
+
+const atualizarMetasSetores = () => {
+    const newSectorGoals = {
+        bondes: 0,
+        ferrovia: 0,
+        teleferico: 0,
+        ti: 0,
+        capacitacao: 0,
+        patrimonio: 0,
+        pca: 0,
+        gestao_pessoas: 0,
+        solucoes_tecnologicas: 0,
+    };
+    opportunities.forEach(opp => {
+        if (newSectorGoals[opp.sector] !== undefined) {
+            newSectorGoals[opp.sector] += parseFloat(opp.value) || 0;
+        }
+    });
+    Object.assign(sectorGoals, newSectorGoals);
+};
+
+// Rendering and Macroetapas
+const atualizarMacroetapas = async () => {
+    const macroetapasContainer = document.getElementById("macroetapas-container");
+    if (!macroetapasContainer) return;
+
+    macroetapasContainer.innerHTML = "<p style='color: #7f8c8d;'>Carregando macroetapas...</p>";
+
+    try {
+        const response = await fetch('./get_macroetapas.php');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const data = await response.json();
+        if (!data.success) throw new Error(data.message || "Falha ao carregar macroetapas.");
+
+        macroetapasContainer.innerHTML = "";
+
+        data.macroetapas.forEach(macro => {
+            const totalEtapas = macro.etapas.length;
+            const etapasConcluidas = macro.etapas.filter(e => e.etapa_concluida === "sim").length;
+            const progresso = totalEtapas > 0 ? (etapasConcluidas / totalEtapas) * 100 : 0;
+
+            const macroCard = document.createElement("div");
+            macroCard.className = "macroetapa-card";
+            macroCard.style.cssText = `
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 15px;
+                background: #fff;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                width: 100%;
+            `;
+
+            macroCard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div>
+                        <h4 style="font-size: 16px; font-weight: bold; color: #2c3e50; margin: 0;">${macro.nome_macroetapa}</h4>
+                        <p style="font-size: 12px; color: #7f8c8d; margin: 5px 0;">Responsável: ${macro.responsavel || "N/A"}</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 12px; color: #7f8c8d;">Progresso: ${progresso.toFixed(1)}%</span>
+                    </div>
+                </div>
+                <div style="margin-top: 10px;">
+                    <div class="progress-bar-small" style="width: 100%; height: 6px; background: #ecf0f1; border-radius: 3px;">
+                        <div class="progress-fill-small" style="height: 100%; width: ${progresso}%; background: #3498db; border-radius: 3px;"></div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            ${macro.etapas.map(etapa => `
+                                <li style="display: flex; align-items: center; gap: 10px; margin-top: 5px; padding: 5px; background: ${etapa.etapa_concluida === 'sim' ? '#e8f5e9' : '#fffef7'}; border-radius: 4px;">
+                                    <input type="checkbox" ${etapa.etapa_concluida === 'sim' ? 'checked' : ''} disabled style="margin: 0;">
+                                    <span style="flex: 1;">${etapa.etapa_nome}</span>
+                                  
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            macroetapasContainer.appendChild(macroCard);
+        });
+    } catch (error) {
+        console.error("Erro ao atualizar macroetapas:", error);
+        macroetapasContainer.innerHTML = `<p style="color: #e74c3c;">Erro ao carregar macroetapas: ${error.message}</p>`;
+    }
+};
+
 const renderizarOportunidades = (setor, filteredOpportunities = null) => {
     const opportunitiesGrid = document.getElementById(`opportunities-${setor}`);
     if (!opportunitiesGrid) {
@@ -1134,6 +1554,17 @@ const renderizarOportunidades = (setor, filteredOpportunities = null) => {
             cursor: pointer; 
             transition: all 0.2s ease;
         }
+        .progress-bar-small, .macro-progress-bar { 
+            width: 100%; 
+            height: 6px; 
+            background: #ecf0f1; 
+            border-radius: 3px; 
+        }
+        .progress-fill-small, .macro-progress-fill { 
+            height: 100%; 
+            border-radius: 3px; 
+            background: #3498db; 
+        }
     `;
     document.head.appendChild(style);
 
@@ -1144,8 +1575,8 @@ const renderizarOportunidades = (setor, filteredOpportunities = null) => {
         }
         const progress = opp.projectPlan.reduce((total, macro) => total + (macro.etapas.filter(e => e.completed).length / (macro.etapas.length || 1)), 0) / (opp.projectPlan.length || 1) * 100;
         const deadlineDate = new Date(opp.deadline || "");
-        const currentDate = new Date();
-        const isExpired = deadlineDate && deadlineDate < currentDate;
+        const currentDate = new Date("2025-07-29T17:23:00-03:00"); // 02:23 PM -03
+        const isExpired = deadlineDate && deadlineDate < currentDate && opp.status !== "finalizado";
         const expiredMessage = isExpired ? `Vencido em: ${deadlineDate.toLocaleDateString("pt-BR")}` : "";
 
         const html = `
@@ -1177,155 +1608,36 @@ const renderizarOportunidades = (setor, filteredOpportunities = null) => {
                     </div>
                 </div>
                 <div class="opportunity-progress" style="margin-top:10px;">
-                    <div class="progress-bar-small" style="width:100%;height:6px;background:#ecf0f1;border-radius:3px;">
-                        <div class="progress-fill-small" style="height:100%;width:${progress}%;background:#3498db;border-radius:3px;"></div>
+                    <div class="progress-bar-small">
+                        <div class="progress-fill-small" style="width:${progress}%;"></div>
                     </div>
                     <span style="display:block;font-size:12px;color:#7f8c8d;margin-top:5px;">Progresso: ${progress.toFixed(1)}%</span>
                 </div>
-                ${opp.projectPlan.map((macro, macroIndex) => `
-                    <div class="macroetapa-header ${macro.expanded ? '' : 'collapsed'}" style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:bold;color:#2c3e50;margin-top:10px;padding:5px;border-bottom:1px solid #eee;" onclick="toggleMacroetapa(${opp.id},${macroIndex})">
-                        <i class="fas fa-chevron-down" style="transition:transform 0.3s;"></i> ${macro.name || `Macroetapa ${macroIndex + 1}`} (Responsável: ${macro.responsible || "N/A"})
-                    </div>
-                    <div class="etapas-list" style="display:${macro.expanded ? 'block' : 'none'};margin-left:20px;margin-top:5px;">
-                        ${macro.etapas.map((etapa, etapaIndex) => `
-                            <div class="etapa-item" style="display:flex;align-items:center;gap:5px;margin-top:5px;">
-                                <input type="checkbox" ${etapa.completed ? "checked" : ""} onchange="atualizarStatusEtapa(${opp.id},${macroIndex},${etapaIndex})" aria-label="Marcar etapa como concluída">
-                                <span style="flex:1;">${etapa.name || ''}</span>
+                ${opp.projectPlan.map((macro, macroIndex) => {
+                    const macroProgress = macro.etapas.length > 0 ? (macro.etapas.filter(e => e.completed).length / macro.etapas.length) * 100 : 0;
+                    return `
+                        <div class="macroetapa-header ${macro.expanded ? '' : 'collapsed'}" style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:bold;color:#2c3e50;margin-top:10px;padding:5px;border-bottom:1px solid #eee;" onclick="toggleMacroetapa(${opp.id},${macroIndex})">
+                            <i class="fas fa-chevron-down" style="transition:transform 0.3s;"></i> ${macro.name || `Macroetapa ${macroIndex + 1}`} (Responsável: ${macro.responsible || "N/A"})
+                        </div>
+                        <div class="macro-progress" style="margin-left:20px;margin-bottom:5px;">
+                            <div class="macro-progress-bar">
+                                <div class="macro-progress-fill" style="width:${macroProgress}%;"></div>
                             </div>
-                        `).join('')}
-                    </div>
-                `).join('')}
+                            <span style="display:block;font-size:12px;color:#7f8c8d;">Progresso: ${macroProgress.toFixed(1)}%</span>
+                        </div>
+                        <div class="etapas-list" style="display:${macro.expanded ? 'block' : 'none'};margin-left:20px;margin-top:5px;">
+                            ${macro.etapas.map((etapa, etapaIndex) => `
+                                <div class="etapa-item" style="display:flex;align-items:center;gap:5px;margin-top:5px;">
+                                    <input type="checkbox" ${etapa.completed ? "checked" : ""} onchange="atualizarStatusEtapa(${opp.id},${macroIndex},${etapaIndex})" aria-label="Marcar etapa como concluída">
+                                    <span style="flex:1;">${etapa.name || ''}</span>
+                                  
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }).join('')}
             </div>
         `;
         opportunitiesGrid.innerHTML += html;
     });
-};
-
-// Modificação em atualizarSetor para suportar pesquisa
-const atualizarSetor = async (setor) => {
-    const searchInput = document.getElementById(`search-${setor}`);
-    const termoPesquisa = searchInput ? searchInput.value.trim() : '';
-
-    let sectorOpportunities = opportunities.filter(opp => opp.sector === setor);
-    if (termoPesquisa) {
-        sectorOpportunities = await buscarOportunidades(setor, termoPesquisa);
-    }
-
-    atualizarPainelEstimativa(setor);
-    renderizarOportunidades(setor, sectorOpportunities);
-};
-
-// Adicionar event listeners para os campos de pesquisa
-document.addEventListener("DOMContentLoaded", () => {
-    Object.keys(sectorGoals).forEach(setor => {
-        const searchInput = document.getElementById(`search-${setor}`);
-        if (searchInput) {
-            searchInput.addEventListener('input', () => {
-                atualizarSetor(setor);
-            });
-        }
-    });
-});
-const atualizarMacroetapas = async () => {
-    const macroetapasContainer = document.getElementById("macroetapas-container");
-    if (!macroetapasContainer) return;
-
-    macroetapasContainer.innerHTML = "<p style='color: #7f8c8d;'>Carregando macroetapas...</p>";
-
-    try {
-        const response = await fetch('./emAndamentoEtapasPlanejamento.php');
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-        const data = await response.json();
-        if (!data.success) throw new Error(data.message || "Falha ao carregar macroetapas.");
-
-        macroetapasContainer.innerHTML = "";
-
-        data.oportunidades.forEach(oportunidade => {
-            const totalEtapas = oportunidade.macroetapas.length || 1;
-            const etapasConcluidas = oportunidade.macroetapas.filter(m => m.etapa_concluida === 'sim').length;
-            const progressoOportunidade = totalEtapas > 0 ? (etapasConcluidas / totalEtapas) * 100 : 0;
-
-            const macroCard = document.createElement("div");
-            macroCard.className = "macroetapa-card";
-            macroCard.style.cssText = `
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                padding: 15px;
-                background: #fff;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                width: 100%;
-            `;
-
-            macroCard.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                    <div>
-                        <h4 style="font-size: 16px; font-weight: bold; color: #2c3e50; margin: 0;">${oportunidade.titulo_oportunidade}</h4>
-                        <p style="font-size: 12px; color: #7f8c8d; margin: 5px 0;">Setor: ${oportunidade.setor}</p>
-                        ${oportunidade.is_expired ? `<p style="color: #e74c3c;">${oportunidade.expired_message}</p>` : ''}
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 12px; color: #7f8c8d;">Progresso: ${progressoOportunidade.toFixed(1)}%</span>
-                    </div>
-                </div>
-                <div style="margin-top: 10px;">
-                    <div class="progress-bar-small" style="width: 100%; height: 6px; background: #ecf0f1; border-radius: 3px;">
-                        <div class="progress-fill-small" style="height: 100%; width: ${progressoOportunidade}%; background: #3498db; border-radius: 3px;"></div>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                            ${oportunidade.macroetapas.map(macro => `
-                                <li style="display: flex; align-items: center; gap: 10px; margin-top: 5px; padding: 5px; background: ${macro.etapa_concluida === 'sim' ? '#e8f5e9' : '#fffef7'}; border-radius: 4px;">
-                                    <input type="checkbox" ${macro.etapa_concluida === 'sim' ? 'checked' : ''} disabled style="margin: 0;">
-                                    <span style="flex: 1;">${macro.nome_macroetapa} - ${macro.etapa_nome}</span>
-                                    <span style="font-size: 12px; color: ${macro.etapa_concluida === 'sim' ? '#2ecc71' : '#7f8c8d'};">${macro.data_conclusao ? new Date(macro.data_conclusao).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'Pendente'}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                </div>
-            `;
-
-            macroetapasContainer.appendChild(macroCard);
-        });
-
-        const updateTime = document.getElementById("update-time");
-        if (updateTime) {
-            updateTime.textContent = new Date(data.last_updated).toLocaleString("pt-BR", {
-                hour: "2-digit",
-                minute: "2-digit",
-                timeZone: "America/Sao_Paulo",
-                hour12: true
-            }).replace(" ", " -03, ") + ", " + new Date(data.last_updated).toLocaleDateString("pt-BR");
-        }
-    } catch (error) {
-        console.error("Erro ao atualizar macroetapas:", error);
-        macroetapasContainer.innerHTML = `<p style="color: #e74c3c;">Erro ao carregar macroetapas: ${error.message}</p>`;
-    }
-};
-const toggleMacroetapa = (opportunityId, macroIndex) => {
-    const opportunity = opportunities.find(opp => opp.id === opportunityId);
-    if (!opportunity) return;
-    opportunity.projectPlan[macroIndex].expanded = !opportunity.projectPlan[macroIndex].expanded;
-    atualizarSetor(opportunity.sector);
-};
-
-const atualizarMetasSetores = () => {
-    const newSectorGoals = {
-        bondes: 0,
-        ferrovia: 0,
-        teleferico: 0,
-        ti: 0,
-        capacitacao: 0,
-        patrimonio: 0,
-        pca: 0,
-        gestao_pessoas: 0,
-        solucoes_tecnologicas: 0,
-    };
-    opportunities.forEach(opp => {
-        if (newSectorGoals[opp.sector] !== undefined) {
-            newSectorGoals[opp.sector] += parseFloat(opp.value) || 0;
-        }
-    });
-    Object.assign(sectorGoals, newSectorGoals);
 };

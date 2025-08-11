@@ -75,6 +75,7 @@ try {
                 ['link' => 'planejamento.php', 'nome' => 'Home', 'icon' => 'home'],
                 
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
+                ['link' => 'relatoriosplanejamento.php', 'nome' => 'Relatórios', 'icon' => 'home'],
             
             ];
             break;    

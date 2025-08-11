@@ -187,7 +187,7 @@
             font-size: 14px;
         }
         .opportunities-grid {
-            display: grid;
+            /* display: grid; */
             grid-template-columns: repeat(auto-fit, minmax(300px, 0fr));
             gap: 20px;
         }

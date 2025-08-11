@@ -1,49 +1,63 @@
 <?php
-// Função para carregar dados (simulada, substitua por consulta ao banco)
-function carregarDados() {
-    return [
-        'planejamento' => [
-            ['id' => 1, 'titulo_oportunidade' => 'Reestruturação da Via Permanente', 'setor' => 'Bondes de Santa Teresa', 'status' => 'planejamento', 'descricao' => 'Manutenção e conservação da via permanente e rede aérea.', 'created_at' => '2024-01-01'],
-            ['id' => 2, 'titulo_oportunidade' => 'Melhorias Operacionais 2024-2025', 'setor' => 'Bondes de Santa Teresa', 'status' => 'andamento', 'descricao' => 'Reforma de bondes e extensões para Paula Mattos e Silvestre.', 'created_at' => '2024-02-01'],
-            ['id' => 3, 'titulo_oportunidade' => 'Modernização Saracuruna/Guapimirim', 'setor' => 'Ferrovia', 'status' => 'planejamento', 'descricao' => 'Modernização da ligação via VLT.', 'created_at' => '2024-03-01']
-        ],
-        'macroetapas' => [
-            ['id' => 1, 'planejamento_id' => 1, 'setor' => 'Bondes de Santa Teresa', 'nome_macroetapa' => 'Via Permanente', 'etapa_nome' => 'Manutenção da via permanente', 'etapa_concluida' => 'nao'],
-            ['id' => 2, 'planejamento_id' => 1, 'setor' => 'Bondes de Santa Teresa', 'nome_macroetapa' => 'Via Permanente', 'etapa_nome' => 'Conservação dos trilhos', 'etapa_concluida' => 'nao'],
-            ['id' => 3, 'planejamento_id' => 1, 'setor' => 'Bondes de Santa Teresa', 'nome_macroetapa' => 'Via Permanente', 'etapa_nome' => 'Manutenção da rede aérea', 'etapa_concluida' => 'nao'],
-            ['id' => 4, 'planejamento_id' => 2, 'setor' => 'Bondes de Santa Teresa', 'nome_macroetapa' => 'Melhorias 2024', 'etapa_nome' => 'Reforma dos bondes', 'etapa_concluida' => 'sim'],
-            ['id' => 5, 'planejamento_id' => 2, 'setor' => 'Bondes de Santa Teresa', 'nome_macroetapa' => 'Melhorias 2024', 'etapa_nome' => 'Reforma da estação Carioca', 'etapa_concluida' => 'nao'],
-            ['id' => 6, 'planejamento_id' => 2, 'setor' => 'Bondes de Santa Teresa', 'nome_macroetapa' => 'Extensões 2025', 'etapa_nome' => 'Extensão para Paula Mattos', 'etapa_concluida' => 'nao'],
-            ['id' => 7, 'planejamento_id' => 2, 'setor' => 'Bondes de Santa Teresa', 'nome_macroetapa' => 'Extensões 2025', 'etapa_nome' => 'Extensão para Silvestre', 'etapa_concluida' => 'nao'],
-            ['id' => 8, 'planejamento_id' => 3, 'setor' => 'Ferrovia', 'nome_macroetapa' => 'Modernização', 'etapa_nome' => 'Contratação de empresa especializada', 'etapa_concluida' => 'nao'],
-            ['id' => 9, 'planejamento_id' => 3, 'setor' => 'Ferrovia', 'nome_macroetapa' => 'Modernização', 'etapa_nome' => 'Apoio técnico da CENTRAL/RJ', 'etapa_concluida' => 'nao']
-        ]
-    ];
+// Função para carregar dados do banco de dados
+function carregarDados($pdo) {
+    // Query planejamento table
+    $stmt = $pdo->query("SELECT id, pe_code, titulo_oportunidade, setor, valor_estimado, prazo, status, descricao, project_plan, created_at FROM planejamento");
+    $planejamento = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Query macroetapas table
+    $stmt = $pdo->query("SELECT id, planejamento_id, setor, nome_macroetapa, responsavel, etapa_nome, etapa_concluida, data_conclusao FROM macroetapas");
+    $macroetapas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Organize macroetapas by planejamento_id
+    $macro_by_id = [];
+    foreach ($macroetapas as $me) {
+        $pid = $me['planejamento_id'];
+        if (!isset($macro_by_id[$pid])) {
+            $macro_by_id[$pid] = [];
+        }
+        $macro_by_id[$pid][] = $me;
+    }
+
+    return ['planejamento' => $planejamento, 'macroetapas' => $macroetapas, 'macro_by_id' => $macro_by_id];
 }
 
-$datos = carregarDados();
+try {
+    $pdo = new PDO("mysql:host=localhost;dbname=gm_sicbd;charset=utf8", 'root', '');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erro na conexão com o banco de dados: " . $e->getMessage());
+}
+
+$datos = carregarDados($pdo);
 $planejamento = $datos['planejamento'];
 $macroetapas = $datos['macroetapas'];
+$macro_by_id = $datos['macro_by_id'];
 
 // Calcular progresso por setor
 $setores = array_unique(array_column($planejamento, 'setor'));
 $setorProgress = [];
 foreach ($setores as $setor) {
-    $setorOportunidades = array_filter($planejamento, fn($p) => $p['setor'] === $setor);
-    $totalEtapasSetor = count(array_filter($macroetapas, fn($me) => in_array($me['planejamento_id'], array_column($setorOportunidades, 'id'))));
-    $completedEtapasSetor = count(array_filter($macroetapas, fn($me) => $me['etapa_concluida'] === 'sim' && in_array($me['planejamento_id'], array_column($setorOportunidades, 'id'))));
+    $setorOportunidades = array_filter($planejamento, function($p) use ($setor) { return $p['setor'] === $setor; });
+    $totalEtapasSetor = 0;
+    $completedEtapasSetor = 0;
+    foreach ($setorOportunidades as $op) {
+        $etapas = $macro_by_id[$op['id']] ?? [];
+        $totalEtapasSetor += count($etapas);
+        $completedEtapasSetor += count(array_filter($etapas, function($me) { return $me['etapa_concluida'] === 'sim'; }));
+    }
     $setorProgress[$setor] = $totalEtapasSetor > 0 ? ($completedEtapasSetor / $totalEtapasSetor) * 100 : 0;
 }
 
 // Calcular médias e medianas por setor
 $setorStats = [];
 foreach ($setores as $setor) {
-    $oportunidadesSetor = array_filter($planejamento, fn($p) => $p['setor'] === $setor);
+    $oportunidadesSetor = array_filter($planejamento, function($p) use ($setor) { return $p['setor'] === $setor; });
     $progressos = [];
     foreach ($oportunidadesSetor as $op) {
-        $etapas = array_filter($macroetapas, fn($me) => $me['planejamento_id'] == $op['id']);
+        $etapas = $macro_by_id[$op['id']] ?? [];
         $total = count($etapas);
-        $completed = count(array_filter($etapas, fn($me) => $me['etapa_concluida'] === 'sim'));
+        $completed = count(array_filter($etapas, function($me) { return $me['etapa_concluida'] === 'sim'; }));
         $progressos[] = $total > 0 ? ($completed / $total) * 100 : 0;
     }
     sort($progressos);
@@ -53,15 +67,18 @@ foreach ($setores as $setor) {
     $setorStats[$setor] = ['media' => $media, 'mediana' => $mediana];
 }
 
-$mediaGlobal = count($setores) > 0 ? array_sum(array_column($setorStats, 'media')) / count($setores) : 0;
+$mediaGlobal = count($setores) > 0 ? array_sum(array_map(function($s) { return $s['media']; }, $setorStats)) / count($setores) : 0;
 
 $faseMap = [
-    "Via Permanente" => "Planejamento PCA",
-    "Melhorias 2024" => "Planejamento PCA",
-    "Extensões 2025" => "Fase Preparatória",
-    "Modernização" => "Fase Externa",
-    "Contratação" => "Fase Contratação"
+    "PLANEJAMENTO PCA" => "Planejamento PCA",
+    "FASE PREPARATÓRIA" => "Fase Preparatória",
+    "FASE EXTERNA" => "Fase Externa",
+    "FASE DE CONTRATAÇÃO" => "Fase Contratação"
+    // Adicione mais mapeamentos conforme necessário baseados nos dados reais
 ];
+$phases = array_values($faseMap);
+
+// Para cada opportunity, calcular progress por phase baseado em nome_macroetapa e project_plan
 include 'header.php';
 ?>
 <!DOCTYPE html>
@@ -94,7 +111,7 @@ include 'header.php';
         <table id="tabelaRelatorio" class="w-full border-collapse text-sm">
             <thead>
                 <tr>
-                    <th class="border p-2 text-left font-semibold">Referência</th>
+                    <th class="border p-2 text-left font-semibold">PE_CODE</th>
                     <th class="border p-2 text-left font-semibold">Realizado Tema % (Média)</th>
                     <th class="border p-2 text-left font-semibold">Realizado Tema % (Médiana)</th>
                     <th class="border p-2 text-left font-semibold">Realizado Ação % (Média)</th>
@@ -110,73 +127,78 @@ include 'header.php';
                 </tr>
             </thead>
             <tbody id="relatorioBody">
-                <?php foreach ($planejamento as $index => $oportunidade): ?>
+                <?php foreach ($planejamento as $oportunidade): ?>
                     <?php
-                    $etapasRelacionadas = array_filter($macroetapas, fn($me) => $me['planejamento_id'] == $oportunidade['id']);
-                    $totalEtapas = count($etapasRelacionadas);
-                    $completedEtapas = count(array_filter($etapasRelacionadas, fn($me) => $me['etapa_concluida'] === 'sim'));
+                    $pid = $oportunidade['id'];
+                    $etapas = $macro_by_id[$pid] ?? [];
+                    $totalEtapas = count($etapas);
+                    $completedEtapas = count(array_filter($etapas, function($me) { return $me['etapa_concluida'] === 'sim'; }));
                     $progressAcao = $totalEtapas > 0 ? ($completedEtapas / $totalEtapas) * 100 : 0;
-                    $progressPE = $setorProgress[$oportunidade['setor']] ?? 0;
+                    $setor = $oportunidade['setor'];
 
-                    // Calcular médias e medianas por ação no setor
-                    $acoesProgress = [];
-                    foreach (array_filter($planejamento, fn($p) => $p['setor'] === $oportunidade['setor']) as $acao) {
-                        $etapasAcao = array_filter($macroetapas, fn($me) => $me['planejamento_id'] == $acao['id']);
-                        $totalAcao = count($etapasAcao);
-                        $completedAcao = count(array_filter($etapasAcao, fn($me) => $me['etapa_concluida'] === 'sim'));
-                        $acoesProgress[] = $totalAcao > 0 ? ($completedAcao / $totalAcao) * 100 : 0;
-                    }
-                    sort($acoesProgress);
-                    $countAcoes = count($acoesProgress);
-                    $mediaAcao = $countAcoes > 0 ? array_sum($acoesProgress) / $countAcoes : 0;
-                    $medianaAcao = $countAcoes > 0 ? ($countAcoes % 2 == 0 ? ($acoesProgress[$countAcoes/2 - 1] + $acoesProgress[$countAcoes/2]) / 2 : $acoesProgress[($countAcoes-1)/2]) : 0;
-
-                    // Percentuais por fase
-                    $faseProgress = ['Planejamento PCA' => 0, 'Fase Preparatória' => 0, 'Fase Externa' => 0, 'Fase Contratação' => 0];
-                    $totalFases = 0;
-                    foreach ($etapasRelacionadas as $me) {
-                        $fase = $faseMap[$me['nome_macroetapa']] ?? 'N/A';
-                        if (array_key_exists($fase, $faseProgress)) {
-                            $faseProgress[$fase]++;
-                            $totalFases++;
+                    // Parse project_plan for total stages per phase
+                    $project_plan = json_decode($oportunidade['project_plan'], true) ?? [];
+                    $faseTotal = array_fill_keys($phases, 0);
+                    foreach ($project_plan as $macro) {
+                        $macro_name = $macro['name'] ?? $macro['nome_macroetapa'] ?? 'N/A';
+                        $fase = $faseMap[$macro_name] ?? 'N/A';
+                        if (in_array($fase, $phases)) {
+                            $faseTotal[$fase] += count($macro['etapas'] ?? []);
                         }
                     }
-                    foreach ($faseProgress as $fase => &$percent) {
-                        $percent = $totalFases > 0 ? ($percent / $totalFases) * 100 : 0;
-                    }
-                    unset($percent);
 
-                    // Tipo de atividade (simulado)
+                    // Completed from macroetapas, mapped to phases
+                    $faseProgress = array_fill_keys($phases, 0);
+                    foreach ($etapas as $me) {
+                        $macro_name = $me['nome_macroetapa'];
+                        $fase = $faseMap[$macro_name] ?? 'N/A';
+                        if (in_array($fase, $phases) && $me['etapa_concluida'] === 'sim') {
+                            $faseProgress[$fase]++;
+                        }
+                    }
+
+                    // Calculate percentages
+                    $fasePercent = [];
+                    foreach ($phases as $phase) {
+                        $t = $faseTotal[$phase];
+                        $c = $faseProgress[$phase];
+                        $fasePercent[$phase] = $t > 0 ? ($c / $t) * 100 : 0;
+                    }
+
+                    // Media and Mediana for tema (setor) and ação (opportunity)
+                    $mediaTema = $setorStats[$setor]['media'] ?? 0;
+                    $medianaTema = $setorStats[$setor]['mediana'] ?? 0;
+                    $mediaAcao = $progressAcao; // Since single value for action
+                    $medianaAcao = $progressAcao; // Same
+
+                    // Tipo de atividade (simulated based on title)
                     $tipoAtividade = strpos($oportunidade['titulo_oportunidade'], 'Manutenção') !== false ? 'Manutenção' : 'Modernização';
 
-                    // Gerar referência
-                    $referencia = "PE " . $oportunidade['id'];
-                    if ($totalEtapas > 0) {
-                        $referencia .= "." . $totalEtapas . "." . ($index + 1);
-                    }
+                    // SEI (simulated)
+                    $sei = 'SEI-' . str_pad($oportunidade['id'], 5, '0', STR_PAD_LEFT);
                     ?>
                     <tr class="toggle-details">
-                        <td class="border p-2"><?php echo $referencia; ?></td>
-                        <td class="border p-2"><?php echo number_format($setorStats[$oportunidade['setor']]['media'], 1); ?>%</td>
-                        <td class="border p-2"><?php echo number_format($setorStats[$oportunidade['setor']]['mediana'], 1); ?>%</td>
+                        <td class="border p-2"><?php echo htmlspecialchars($oportunidade['pe_code'] ?? 'N/A'); ?></td>
+                        <td class="border p-2"><?php echo number_format($mediaTema, 1); ?>%</td>
+                        <td class="border p-2"><?php echo number_format($medianaTema, 1); ?>%</td>
                         <td class="border p-2"><?php echo number_format($mediaAcao, 1); ?>%</td>
                         <td class="border p-2"><?php echo number_format($medianaAcao, 1); ?>%</td>
-                        <td class="border p-2"><?php echo $oportunidade['titulo_oportunidade']; ?></td>
-                        <td class="border p-2"><?php echo $tipoAtividade; ?></td>
-                        <td class="border p-2">SEI-<?php echo str_pad($oportunidade['id'], 5, '0', STR_PAD_LEFT); ?></td>
-                        <td class="border p-2"><?php echo number_format($faseProgress['Planejamento PCA'], 1); ?>%</td>
-                        <td class="border p-2"><?php echo number_format($faseProgress['Fase Preparatória'], 1); ?>%</td>
-                        <td class="border p-2"><?php echo number_format($faseProgress['Fase Externa'], 1); ?>%</td>
-                        <td class="border p-2"><?php echo number_format($faseProgress['Fase Contratação'], 1); ?>%</td>
+                        <td class="border p-2"><?php echo htmlspecialchars($oportunidade['titulo_oportunidade']); ?></td>
+                        <td class="border p-2"><?php echo htmlspecialchars($tipoAtividade); ?></td>
+                        <td class="border p-2"><?php echo $sei; ?></td>
+                        <td class="border p-2"><?php echo number_format($fasePercent['Planejamento PCA'], 1); ?>%</td>
+                        <td class="border p-2"><?php echo number_format($fasePercent['Fase Preparatória'], 1); ?>%</td>
+                        <td class="border p-2"><?php echo number_format($fasePercent['Fase Externa'], 1); ?>%</td>
+                        <td class="border p-2"><?php echo number_format($fasePercent['Fase Contratação'], 1); ?>%</td>
                         <td class="border p-2"><?php echo number_format($progressAcao, 1); ?>%</td>
                     </tr>
                     <tr class="details-section details-<?php echo $oportunidade['id']; ?>">
                         <td colspan="13" class="border p-2 bg-gray-50">
                             <h4 class="font-semibold text-gray-700 mb-1">Etapas:</h4>
                             <ul class="list-disc pl-5 text-sm">
-                                <?php foreach ($etapasRelacionadas as $me): ?>
+                                <?php foreach ($etapas as $me): ?>
                                     <li class="py-0.5">
-                                        <span class="<?php echo $me['etapa_concluida'] === 'sim' ? 'line-through text-green-700' : 'text-gray-600'; ?>"><?php echo $me['etapa_nome']; ?></span>
+                                        <span class="<?php echo $me['etapa_concluida'] === 'sim' ? 'line-through text-green-700' : 'text-gray-600'; ?>"><?php echo htmlspecialchars($me['etapa_nome']); ?></span>
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
@@ -200,3 +222,7 @@ include 'header.php';
     </script>
 </body>
 </html>
+<?php
+$pdo = null;
+include 'footer.php';
+?> ```

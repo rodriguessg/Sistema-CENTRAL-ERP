@@ -56,6 +56,7 @@ try {
                 ['link' => 'reportacidentes.php', 'nome' => 'Registrar Acidentes', 'icon' => 'home'],
                   ['link' => 'manutencaobonde.php', 'nome' => 'Registro de manutenção', 'icon' => 'home'],
                 ['link' => 'calendar.php', 'nome' => 'Calendário / Tarefas', 'icon' => 'calendar-alt'],
+                   ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
                 ['link' => 'cadastro_usuario.php', 'nome' => 'Cadastrar Usuário', 'icon' => 'user-plus'],
                 ['link' => 'gerenciarpermissao.php', 'nome' => 'Usuários', 'icon' => 'key'],
                 ['link' => 'homeRh.php', 'nome' => 'Recursos H', 'icon' => 'users'],
@@ -72,8 +73,7 @@ try {
          case 'planejamento':
             $menuItens = [
                 
-                ['link' => 'planejamento.php', 'nome' => 'Home', 'icon' => 'home'],
-                
+                ['link' => 'planejamento.php', 'nome' => 'Home', 'icon' => 'home'],            
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
                 ['link' => 'relatoriosplanejamento.php', 'nome' => 'Relatórios', 'icon' => 'home'],
             

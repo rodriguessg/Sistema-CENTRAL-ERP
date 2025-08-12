@@ -111,7 +111,7 @@ include 'header.php';
         <table id="tabelaRelatorio" class="w-full border-collapse text-sm">
             <thead>
                 <tr>
-                    <th class="border p-2 text-left font-semibold">PE_CODE</th>
+                    <th class="border p-2 text-left font-semibold">Referência</th>
                     <th class="border p-2 text-left font-semibold">Realizado Tema % (Média)</th>
                     <th class="border p-2 text-left font-semibold">Realizado Tema % (Médiana)</th>
                     <th class="border p-2 text-left font-semibold">Realizado Ação % (Média)</th>

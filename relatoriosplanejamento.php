@@ -81,6 +81,7 @@ $phases = array_values($faseMap);
 // Para cada opportunity, calcular progress por phase baseado em nome_macroetapa e project_plan
 include 'header.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>

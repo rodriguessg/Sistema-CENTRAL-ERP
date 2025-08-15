@@ -82,6 +82,7 @@ include './header.php';
           <option value="SUPVIP">SUPVIP</option>
           <option value="SUPDAM">SUPDAM</option>
           <option value="SUPTRA">SUPTRA</option>
+           <option value="PRESI">PRESIDÊNCIA</option>
         </select>
 
 

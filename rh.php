@@ -86,8 +86,8 @@ include './header.php';
         </select>
 
 
-         <label for="email">E-mail:</label>
-        <input type="email" id="email" required />
+         <!-- <label for="email">E-mail:</label>
+        <input type="email" id="email" required /> -->
 
         <label for="tel">Telefone:</label>
         <input type="number" id="tel" required />

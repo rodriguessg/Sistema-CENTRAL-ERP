@@ -690,16 +690,16 @@ display: flex !important;
 }
 
 /* ========== ESTILOS PARA O FOOTER ========== */
-footer {
+/* footer {
   background: linear-gradient(90deg, var(--cor-principal) 0%, #1d70a3 100%);
   color: white;
   text-align: center;
   padding: 0.75rem;
   margin-top: auto;
   position: relative;
-}
+} */
 
-footer::before {
+/* footer::before {
   content: "";
   position: absolute;
   top: 0;
@@ -707,7 +707,7 @@ footer::before {
   width: 100%;
   height: 2px;
   background: linear-gradient(90deg, var(--cor-secundaria) 0%, #d4b13b 100%);
-}
+} */
 
 /* ========== MELHORIAS DE PERFORMANCE ========== */
 .form-container3,

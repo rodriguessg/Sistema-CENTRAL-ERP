@@ -57,21 +57,22 @@ body {
 /* Menu Lateral - Versão Limpa */
 #sidebar {
   background: var(--primary-gradient);
-  color: white;
-  padding: 1rem;
-  position: fixed;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: var(--sidebar-width);
-  box-shadow: var(--shadow-xl);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  z-index: 1000;
-  transition: var(--transition-smooth);
-  backdrop-filter: blur(10px);
+color: white;
+padding: 1rem;
+position: fixed;
+height: 100vh;
+top: 0;
+left: 0;
+display: flex;
+flex-direction: column;
+align-items: stretch;
+width: var(--sidebar-width);
+box-shadow: var(--shadow-xl);
+border-right: 1px solid rgba(255, 255, 255, 0.1);
+z-index: 1000;
+transition: var(--transition-smooth);
+backdrop-filter: blur(10px);
+overflow-y: auto; /* Adds vertical scrollbar when content overflows */
 }
 
 /* Efeito sutil de brilho lateral */

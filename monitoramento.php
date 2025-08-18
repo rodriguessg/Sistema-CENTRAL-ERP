@@ -17,6 +17,6 @@ include 'header.php';
      <h1>Monitoramento CCO</h1>
 
 
-     <img src="" alt="">
+     <img src="./src/img/WhatsApp Image 2025-08-12 at 11.56.45.jpeg" alt="" style="width: 1200px; height:700px;">
 </body>
 </html>

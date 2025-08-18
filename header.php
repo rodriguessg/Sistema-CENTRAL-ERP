@@ -48,13 +48,17 @@ try {
                 ['link' => 'painel.php', 'nome' => 'Painel', 'icon' => 'tachometer-alt'],
                 ['link' => 'homeestoque.php', 'nome' => 'Estoque', 'icon' => 'box'],
                 ['link' => 'homecontratos.php', 'nome' => 'Contratos', 'icon' => 'file-contract'],
-                 ['link' => 'certidoes.php', 'nome' => 'Certidões', 'icon' => 'envelope'],
+                 ['link' => 'certidoes.php', 'nome' => 'Certidões de contratos', 'icon' => 'envelope'],
                 ['link' => 'homefinanceiro.php', 'nome' => 'Financeiro', 'icon' => 'money-bill'],
                 ['link' => 'homepatrimonio.php', 'nome' => 'Patrimônio', 'icon' => 'building'],
-                 ['link' => 'homebonde.php', 'nome' => 'Operacao', 'icon' => 'home'],               
-                ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios de Acidentes', 'icon' => 'home'],
-                ['link' => 'reportacidentes.php', 'nome' => 'Registrar Acidentes', 'icon' => 'home'],
+                 ['link' => 'homebonde.php', 'nome' => 'Operacao bonde', 'icon' => 'home'],
+                 ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios de Acidentes', 'icon' => 'home'],
+                 ['link' => 'reportacidentes.php', 'nome' => 'Registrar Acidentes', 'icon' => 'home'],
                   ['link' => 'manutencaobonde.php', 'nome' => 'Registro de manutenção', 'icon' => 'home'],
+                   ['link' => 'relatoriobonde.php', 'nome' => 'Relatório Bonde', 'icon' => 'home'],
+                    ['link' => 'monitoramento.php', 'nome' => 'Monitoramento', 'icon' => 'home'],     
+                 ['link' => 'planejamento.php', 'nome' => 'Home Planejamento', 'icon' => 'home'], 
+                 ['link' => 'relatoriosplanejamento.php', 'nome' => 'Relatórios Planejamento', 'icon' => 'home'],           
                 ['link' => 'calendar.php', 'nome' => 'Calendário / Tarefas', 'icon' => 'calendar-alt'],
                    ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
                 ['link' => 'cadastro_usuario.php', 'nome' => 'Cadastrar Usuário', 'icon' => 'user-plus'],
@@ -126,6 +130,14 @@ try {
                   ['link' => 'manutencaobonde.php', 'nome' => 'Registro de manutenção', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
   
+            ];
+            break;
+                 
+        case 'estoque':
+            $menuItens = [
+                ['link' => 'painelalmoxarifado.php', 'nome' => 'Painel', 'icon' => 'cogs'],
+                ['link' => 'homeestoque.php', 'nome' => 'Home', 'icon' => 'home'],
+                ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
             ];
             break;
 

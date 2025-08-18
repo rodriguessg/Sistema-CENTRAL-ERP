@@ -75,7 +75,7 @@ function calculateProgress($etapas) {
 
         <nav class="nav-tabs">
             <button class="tab-btn active" onclick="exibirAba('dashboard')"> <i class="fas fa-tachometer-alt"></i> Painel Geral</button>
-            <button class="tab-btn" onclick="exibirAba('macroetapas')"><i class="fas fa-tachometer-alt"></i> Andamento Etapas</button>
+            <!-- <button class="tab-btn" onclick="exibirAba('macroetapas')"><i class="fas fa-tachometer-alt"></i> Andamento Etapas</button> -->
             <button class="tab-btn" onclick="exibirAba('operacionalizacao_bonde')"><i class="fas fa-train"></i> PE1</button>
             <button class="tab-btn" onclick="exibirAba('bondes')"><i class="fas fa-train"></i> PE2</button>
             <button class="tab-btn" onclick="exibirAba('ferrovia')"><i class="fas fa-road"></i> PE3</button>

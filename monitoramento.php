@@ -1,6 +1,8 @@
 <?php
+
 session_start();
 
+include 'header.php';
 // Conexão com o banco
 $host = 'localhost';
 $user = 'root';
@@ -60,6 +62,8 @@ $viagens = [
 
 // Reiniciar ponteiro do resultado
 $result->data_seek(0);
+
+
 ?>
 
 <!DOCTYPE html>

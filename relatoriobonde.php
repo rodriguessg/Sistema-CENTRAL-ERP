@@ -1,6 +1,30 @@
 <?php
 include 'header.php';
 ?>
+
+  <?php
+// Configuração da conexão com o banco de dados
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "gm_sicbd";
+
+try {
+    // Criar conexão com o banco
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Query para buscar os modelos da tabela bondes
+    $sql = "SELECT modelo FROM bondes ORDER BY modelo";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $bondes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Erro na conexão: " . $e->getMessage();
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -50,18 +74,20 @@ include 'header.php';
                         <option value="11">Dezembro</option>
                     </select>
                 </div>
-                <div class="input-item">
-                    <label for="bonde">Bonde</label>
-                    <select id="bonde">
-                        <option value="">Todos</option>
-                        <option value="BONDE 17">BONDE 17</option>
-                        <option value="BONDE 16">BONDE 16</option>
-                        <option value="BONDE 19">BONDE 19</option>
-                        <option value="BONDE 22">BONDE 22</option>
-                        <option value="BONDE 18">BONDE 18</option>
-                        <option value="BONDE 20">BONDE 20</option>
-                    </select>
-                </div>
+             
+<!-- HTML com o select preenchido dinamicamente -->
+<div class="input-item">
+    <label for="bonde">Bonde</label>
+    <select id="bonde">
+        <option value="">Todos</option>
+        <?php
+        // Loop para gerar as opções com base nos dados do banco
+        foreach ($bondes as $bonde) {
+            echo '<option value="' . htmlspecialchars($bonde['modelo']) . '">' . htmlspecialchars($bonde['modelo']) . '</option>';
+        }
+        ?>
+    </select>
+</div>
             </div>
             <div class="buttons-section">
                 <button id="generate-report-btn">Gerar Relatório</button>

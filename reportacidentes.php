@@ -134,6 +134,56 @@ if ($stmtCount) {
 $totalPages = ceil($totalRows / $perPage);
 
 include 'header.php';
+
+
+// Conexão com o banco
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$dbname = 'gm_sicbd';
+
+$conn = new mysqli($host, $user, $password, $dbname);
+include 'header.php';
+
+// Verifica conexão
+if ($conn->connect_error) {
+    die("Erro na conexão com o banco de dados: " . $conn->connect_error);
+}
+
+// Verifica sessão
+if (!isset($_SESSION['username'])) {
+    die("Erro: Usuário não autenticado ou sessão expirada!");
+}
+$username = $_SESSION['username'];
+
+// Ativa erros PHP
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Consulta acidentes
+$sql = "SELECT descricao, localizacao, severidade, categoria, usuario, cor, data_registro FROM acidentes ORDER BY data_registro DESC";
+$result = $conn->query($sql);
+
+// Verifica se a consulta foi executada corretamente
+if (!$result) {
+    die("Erro na consulta SQL: " . $conn->error);
+}
+
+// Verifica se há dados
+$temDados = ($result instanceof mysqli_result && $result->num_rows > 0);
+
+// Map colors to CSS classes
+$colorClasses = [
+    'Verde' => 'severity-green',
+    'Amarelo' => 'severity-yellow',
+    'Vermelho' => 'severity-red',
+    'Amarelo/Vermelho' => 'severity-yellow-red'
+];
+
+// Determine the CSS class for each row's severity based on the 'cor' column
+function getSeverityClass($cor, $colorClasses) {
+    return isset($colorClasses[$cor]) ? $colorClasses[$cor] : '';
+}
 ?>
 
 <!DOCTYPE html>
@@ -311,6 +361,37 @@ include 'header.php';
             </div>
             <button type="submit">Salvar Registro</button>
         </form>
+               <div class="accidents-table">
+                <h2>Histórico de Acidentes</h2>
+
+                <?php if ($temDados): ?>
+                    <table>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Localização</th>
+                            <th>Severidade</th>
+                            <th>Categoria</th>
+                          
+                            <th>Data de Registro</th>
+                        </tr>
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($row['descricao']) ?></td>
+                                <td><?= htmlspecialchars($row['localizacao']) ?></td>
+                                <td class="<?= getSeverityClass($row['cor'], $colorClasses) ?>">
+                                    <?= htmlspecialchars($row['severidade']) ?>
+                                </td>
+                                <td><?= htmlspecialchars($row['categoria']) ?></td>
+                             
+                               
+                                <td><?= htmlspecialchars($row['data_registro']) ?></td>
+                            </tr>
+                        <?php endwhile; ?>
+                    </table>
+                <?php else: ?>
+                    <div class="no-data">Nenhum acidente registrado.</div>
+                <?php endif; ?>
+            </div>
 
    
     </div>

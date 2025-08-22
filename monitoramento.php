@@ -1,8 +1,41 @@
 <?php
-
 session_start();
 
-include 'header.php';
+// Handle AJAX request for table data
+if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
+    $host = 'localhost';
+    $user = 'root';
+    $password = '';
+    $dbname = 'gm_sicbd';
+
+    $conn = new mysqli($host, $user, $password, $dbname);
+    if ($conn->connect_error) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Erro na conexão com o banco de dados']);
+        exit;
+    }
+
+    $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro FROM acidentes ORDER BY data_registro DESC";
+    $result = $conn->query($sql);
+
+    if (!$result) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Erro na consulta SQL']);
+        exit;
+    }
+
+    $rows = [];
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
+    }
+
+    $conn->close();
+    header('Content-Type: application/json');
+    echo json_encode($rows);
+    exit;
+}
+
+// include 'header.php';
 // Conexão com o banco
 $host = 'localhost';
 $user = 'root';
@@ -62,8 +95,6 @@ $viagens = [
 
 // Reiniciar ponteiro do resultado
 $result->data_seek(0);
-
-
 ?>
 
 <!DOCTYPE html>
@@ -211,6 +242,10 @@ $result->data_seek(0);
         }
         .viagens-table .subindo { background-color: #d1f5d3; color: #2f855a; }
         .viagens-table .descendo { background-color: #a3bffa; color: #1e40af; }
+        .selected {
+            background-color: #d1e7dd !important;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -230,44 +265,47 @@ $result->data_seek(0);
         </div>
 
         <div class="table-container">
-            <table>
-                <tr>
-                    <th>Nível Emerg.</th>
-                    <th>Gravidade</th>
-                    <th>Tipo</th>
-                    <th>Local</th>
-                    <th>Hora</th>
-                    <th>Status</th>
-                </tr>
-                <?php
-                while ($row = $result->fetch_assoc()) {
-                    $nivel = $severityMap[$row['severidade']] ?? 'Nível Desconhecido';
-                    $corClass = str_replace(' ', '-', strtolower($nivel));
-                    $severityClass = 'cor-' . str_replace('/', '-', strtolower($row['cor']));
-                    $hora = date('H:i', strtotime($row['data_registro']));
-                    $status = (strtotime($row['data_registro']) > strtotime('-1 hour')) ? 'Aberta' : 'Resolvida';
-                    ?>
-                    <tr onclick="selectOccurrence(<?= $row['id'] ?>, this)">
-                        <td class="nivel-emerg <?= $corClass ?>"><?= $nivel ?></td>
-                        <td class="severity-bg <?= $severityClass ?>"><?= htmlspecialchars($row['severidade']) ?></td>
-                        <td><?= htmlspecialchars($row['categoria']) ?></td>
-                        <td><?= htmlspecialchars($row['localizacao']) ?></td>
-                        <td><?= $hora ?></td>
-                        <td><?= htmlspecialchars($status) ?></td>
+            <table id="accidents-table">
+                <thead>
+                    <tr>
+                        <th>Nível Emerg.</th>
+                        <th>Gravidade</th>
+                        <th>Tipo</th>
+                        <th>Local</th>
+                        <th>Hora</th>
+                        <th>Status</th>
                     </tr>
+                </thead>
+                <tbody>
                     <?php
-                }
-                ?>
+                    while ($row = $result->fetch_assoc()) {
+                        $nivel = $severityMap[$row['severidade']] ?? 'Nível Desconhecido';
+                        $corClass = str_replace(' ', '-', strtolower($nivel));
+                        $severityClass = 'cor-' . str_replace('/', '-', strtolower($row['cor']));
+                        $hora = date('H:i', strtotime($row['data_registro']));
+                        $status = (strtotime($row['data_registro']) > strtotime('-1 hour')) ? 'Aberta' : 'Resolvida';
+                        ?>
+                        <tr onclick="selectOccurrence(<?= $row['id'] ?>, this)">
+                            <td class="nivel-emerg <?= $corClass ?>"><?= htmlspecialchars($nivel) ?></td>
+                            <td class="severity-bg <?= $severityClass ?>"><?= htmlspecialchars($row['severidade']) ?></td>
+                            <td><?= htmlspecialchars($row['categoria']) ?></td>
+                            <td><?= htmlspecialchars($row['localizacao']) ?></td>
+                            <td><?= $hora ?></td>
+                            <td><?= htmlspecialchars($status) ?></td>
+                        </tr>
+                        <?php
+                    }
+                    ?>
+                </tbody>
             </table>
         </div>
 
         <div class="map-details">
             <div class="map-section">
-                <!-- <h3>Mapa em Tempo Real</h3> -->
                 <iframe src="https://monitoramento.mobilesat.com.br/locator/index.html?t=4ebee7c35e2e2fbedde92f4b2611c141F0AA094FB415B295867B3BD93520050BB6566DD7" allowfullscreen></iframe>
             </div>
             <div class="details-section" id="occurrence-details">
-                <h3>Detalhes da Ocorrência Selecionada</h3>
+                <h3>Detalhes Sobre úiltima Ocorrência </h3>
                 <p>Nível: N/A</p>
                 <p>Gravidade: N/A</p>
                 <p>Tipo: N/A</p>
@@ -278,7 +316,7 @@ $result->data_seek(0);
         </div>
 
         <div class="viagens-container">
-            <h3>    Em desenvolvimento</h3>
+            <h3>Em desenvolvimento</h3>
             <!-- <table class="viagens-table">
                 <tr>
                     <th>Bonde ID</th>
@@ -297,12 +335,62 @@ $result->data_seek(0);
     </div>
 
     <script>
+        // Severity mappings for client-side rendering
+        const severityMap = {
+            'Leve': 'Nível I',
+            'Moderado': 'Nível II',
+            'Grave': 'Nível III',
+            'Moderado a Grave': 'Nível II/III'
+        };
+
+        // Function to fetch and update table data
+        function updateTable() {
+            fetch('?ajax=get_table_data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Erro ao atualizar tabela:', data.error);
+                        return;
+                    }
+
+                    const tbody = document.querySelector('#accidents-table tbody');
+                    tbody.innerHTML = ''; // Clear existing rows
+
+                    data.forEach(row => {
+                        const nivel = severityMap[row.severidade] || 'Nível Desconhecido';
+                        const corClass = nivel.toLowerCase().replace(' ', '-');
+                        const severityClass = 'cor-' + row.cor.toLowerCase().replace('/', '-');
+                        const hora = new Date(row.data_registro).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                        const status = (new Date(row.data_registro) > new Date(Date.now() - 60 * 60 * 1000)) ? 'Aberta' : 'Resolvida';
+
+                        const tr = document.createElement('tr');
+                        tr.setAttribute('onclick', `selectOccurrence(${row.id}, this)`);
+                        tr.innerHTML = `
+                            <td class="nivel-emerg ${corClass}">${nivel}</td>
+                            <td class="severity-bg ${severityClass}">${row.severidade}</td>
+                            <td>${row.categoria}</td>
+                            <td>${row.localizacao}</td>
+                            <td>${hora}</td>
+                            <td>${status}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(error => console.error('Erro ao atualizar tabela:', error));
+        }
+
+        // Run updateTable every 2 seconds
+        setInterval(updateTable, 2000);
+
+        // Initial table update
+        updateTable();
+
         function selectOccurrence(id, row) {
             // Remove highlight from all rows
-            document.querySelectorAll('table tr').forEach(r => r.classList.remove('selected'));
+            document.querySelectorAll('#accidents-table tr').forEach(r => r.classList.remove('selected'));
             row.classList.add('selected');
 
-            // Fetch details from the current row
+            // Fetch details from the row
             const rowData = row.cells;
             const details = {
                 nivel: rowData[0].textContent,
@@ -310,7 +398,7 @@ $result->data_seek(0);
                 tipo: rowData[2].textContent,
                 local: rowData[3].textContent,
                 status: rowData[5].textContent,
-                acoes: 'Ações em andamento' // Placeholder, replace with real data if available
+                acoes: 'Ações em andamento' // Placeholder
             };
 
             const detailsDiv = document.getElementById('occurrence-details');
@@ -325,13 +413,6 @@ $result->data_seek(0);
             `;
         }
     </script>
-
-    <style>
-        .selected {
-            background-color: #d1e7dd !important;
-            font-weight: bold;
-        }
-    </style>
 
     <?php $conn->close(); ?>
 </body>

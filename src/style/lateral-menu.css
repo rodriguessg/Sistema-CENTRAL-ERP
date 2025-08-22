@@ -60,7 +60,7 @@ body {
 color: white;
 padding: 1rem;
 position: fixed;
-max-height: 100%;
+height: 100vh;
 top: 0;
 left: 0;
 display: flex;
@@ -72,7 +72,7 @@ border-right: 1px solid rgba(255, 255, 255, 0.1);
 z-index: 1000;
 transition: var(--transition-smooth);
 backdrop-filter: blur(10px);
-overflow-y: auto; /* Adds vertical scrollbar when content overflows */
+overflow-x: auto; /* Adds vertical scrollbar when content overflows */
 }
 
 /* Efeito sutil de brilho lateral */

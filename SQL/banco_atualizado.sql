@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 21/07/2025 às 21:41
+-- Tempo de geração: 22/08/2025 às 19:09
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.0.28
 
@@ -35,16 +35,44 @@ CREATE TABLE `acidentes` (
   `usuario` varchar(100) NOT NULL,
   `severidade` varchar(50) NOT NULL,
   `categoria` varchar(100) NOT NULL,
-  `data_registro` datetime NOT NULL DEFAULT current_timestamp()
+  `data_registro` datetime NOT NULL DEFAULT current_timestamp(),
+  `cor` varchar(50) NOT NULL DEFAULT '',
+  `status` varchar(20) NOT NULL DEFAULT 'em andamento'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `acidentes`
 --
 
-INSERT INTO `acidentes` (`id`, `data`, `descricao`, `localizacao`, `usuario`, `severidade`, `categoria`, `data_registro`) VALUES
-(1, '2025-06-23', 'teste', 'SALA 501', 'controle', 'Leve', 'Outros', '2025-06-23 12:29:39'),
-(2, '2025-06-23', 'teste 2 ', 'sala 703', 'controle', 'Moderado', 'Descarrilamento', '2025-06-23 13:50:39');
+INSERT INTO `acidentes` (`id`, `data`, `descricao`, `localizacao`, `usuario`, `severidade`, `categoria`, `data_registro`, `cor`, `status`) VALUES
+(1, '2025-06-23', 'teste', 'SALA 501', 'controle', 'Leve', 'Outros', '2025-06-23 12:29:39', '', 'em andamento'),
+(2, '2025-06-23', 'teste 2 ', 'sala 703', 'controle', 'Moderado', 'Descarrilamento', '2025-06-23 13:50:39', '', 'em andamento'),
+(3, '2025-08-20', 'asdf', 'SALA 501', 'master', 'Leve', 'Colisão', '2025-08-20 15:29:29', '', 'em andamento'),
+(4, '2025-08-20', 'sdfg', 'sdfg', 'master', 'Leve', 'Obstrução na via', '2025-08-20 15:31:10', 'Verde', 'em andamento'),
+(5, '2025-08-20', 'asdf', 'sala 703', 'master', 'Moderado', 'Carro estacionado no trilho', '2025-08-20 15:31:32', 'Amarelo', 'em andamento'),
+(6, '2025-08-20', 'teste', 'TESTE', 'master', 'Grave', 'Agressão entre passageiros', '2025-08-20 15:32:48', 'Vermelho', 'em andamento'),
+(7, '2025-08-21', 'Descarrilamento', 'Rua Almirante Alexandrino', 'admin', 'Grave', 'Descarrilamento', '2025-08-21 14:00:00', 'Vermelho', 'em andamento'),
+(8, '2025-08-21', 'sf', 'teste 23', 'master', 'Grave', 'Descarrilamento sem vítimas', '2025-08-21 15:36:38', 'Vermelho', 'em andamento'),
+(9, '2025-08-22', 'hgc', 'h', 'master', 'Moderado', 'Pane elétrica', '2025-08-21 19:07:46', 'Amarelo', 'em andamento'),
+(10, '2025-08-22', 'xcvgb', 'SALA 501', 'master', 'Moderado', 'Ato de vandalismo no bonde', '2025-08-22 11:03:44', 'Amarelo', 'em andamento'),
+(11, '2025-08-22', 'teste', '1', 'master', 'Grave', 'Incêndio em área próxima à via', '2025-08-22 11:11:33', 'Vermelho', 'em andamento'),
+(12, '2025-08-22', 'eteseeeeeee', 'testeeee', 'master', 'Leve', 'Obstrução na via', '2025-08-22 11:15:05', 'Verde', 'em andamento'),
+(13, '2025-08-22', 'asdfadfasdf', 'sdaf', 'master', 'Grave', 'Colisão com veículo', '2025-08-22 11:15:31', 'Vermelho', 'em andamento'),
+(14, '2025-08-22', 'jklhjkhkjghjkhjkhjk', 'santa', 'master', 'Moderado', 'Carro estacionado no trilho', '2025-08-22 11:17:27', 'Amarelo', 'em andamento');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `blocos`
+--
+
+CREATE TABLE `blocos` (
+  `id` int(11) NOT NULL,
+  `projeto_id` int(11) DEFAULT NULL,
+  `numero` int(11) DEFAULT NULL,
+  `titulo` varchar(255) DEFAULT NULL,
+  `descricao` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1223,7 +1251,31 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (857, 'planejamento', 'Login falhou: Usuário não encontrado', '2025-07-21 11:56:24'),
 (858, 'planejamento', 'Login falhou: Usuário não encontrado', '2025-07-21 11:56:49'),
 (859, 'planejamento', 'Login falhou: Setor incorreto', '2025-07-21 12:01:24'),
-(860, 'planejamento', 'Login bem-sucedido', '2025-07-21 12:03:48');
+(860, 'planejamento', 'Login bem-sucedido', '2025-07-21 12:03:48'),
+(861, 'planejamento', 'Login bem-sucedido', '2025-07-28 14:36:03'),
+(862, 'BONDE', 'Login falhou: Setor incorreto', '2025-08-05 18:56:00'),
+(863, 'BONDE', 'Login falhou: Setor incorreto', '2025-08-05 18:56:08'),
+(864, 'controle', 'Login bem-sucedido', '2025-08-05 18:56:19'),
+(865, 'bonde', 'Login bem-sucedido', '2025-08-05 19:00:57'),
+(866, 'planejamento', 'Login bem-sucedido', '2025-08-08 13:51:42'),
+(867, 'master', 'Login bem-sucedido', '2025-08-12 13:54:14'),
+(868, 'planejamento', 'Login bem-sucedido', '2025-08-12 13:55:16'),
+(869, 'contratos', 'Login bem-sucedido', '2025-08-12 23:05:21'),
+(870, 'contratos', 'Login bem-sucedido', '2025-08-15 13:26:08'),
+(871, 'master', 'Login bem-sucedido', '2025-08-18 12:49:03'),
+(872, 'PATRICIA', 'Login falhou: Senha inválida', '2025-08-18 12:56:30'),
+(873, 'PAULO', 'Login bem-sucedido', '2025-08-18 12:56:45'),
+(874, 'PAULO', 'Login bem-sucedido', '2025-08-18 12:58:15'),
+(875, 'master', 'Login bem-sucedido', '2025-08-18 12:59:38'),
+(876, 'master', 'Login falhou: Senha inválida', '2025-08-18 13:52:30'),
+(877, 'master', 'Login bem-sucedido', '2025-08-18 13:52:42'),
+(878, 'contratos', 'Login falhou: Senha inválida', '2025-08-18 14:21:43'),
+(879, 'contratos', 'Login bem-sucedido', '2025-08-18 14:22:03'),
+(880, 'master', 'Login bem-sucedido', '2025-08-18 17:34:13'),
+(881, 'master', 'Login bem-sucedido', '2025-08-21 21:32:29'),
+(882, 'contratos', 'Login bem-sucedido', '2025-08-22 16:25:20'),
+(883, 'master', 'Login bem-sucedido', '2025-08-22 16:31:59'),
+(884, 'master', 'Login bem-sucedido', '2025-08-22 16:50:55');
 
 -- --------------------------------------------------------
 
@@ -1247,7 +1299,71 @@ CREATE TABLE `macroetapas` (
 --
 
 INSERT INTO `macroetapas` (`id`, `planejamento_id`, `setor`, `nome_macroetapa`, `responsavel`, `etapa_nome`, `etapa_concluida`, `data_conclusao`) VALUES
-(1, 10, 'teleferico', 'Reativação e Operacionalização', '', 'Reativação do Sistema de Transporte do Teleférico do Alemão', 'sim', '0000-00-00');
+(1, 68, 'operacionalizacao_bonde', 'PLANEJAMENTO PCA', '', 'DFD (Doc.de Formalização de Demanda)', 'sim', '0000-00-00'),
+(2, 68, 'operacionalizacao_bonde', 'PLANEJAMENTO PCA', '', 'Sistema PCA (Plano de Contratações Anual)', 'sim', '0000-00-00'),
+(3, 38, 'ti', 'Modernização', '', 'Modernização do parque computacional (desktops e notebooks)', 'não', '0000-00-00'),
+(4, 68, 'operacionalizacao_bonde', 'Fase Preparatória', '', 'Estudo Técnico Preliminar / Matriz de Risco', 'sim', '0000-00-00'),
+(5, 55, 'capacitacao', 'Treinamentos Específicos', '', 'Treinamentos para área de Segurança do Trabalho', 'sim', '0000-00-00'),
+(6, 17, 'bondes', 'Operacionalização do Sistema de Bondes', '', 'Reativação de Linhas', 'sim', '0000-00-00'),
+(7, 17, 'bondes', 'Recuperação do Sistema de Bondes', '', 'Operação do Bonde', 'sim', '0000-00-00'),
+(8, 14, 'bondes', 'Operacionalização do Sistema de Bondes', '', 'Reativação de Linhas', 'sim', '0000-00-00'),
+(9, 36, 'ti', 'Modernização', '', 'Modernização do parque computacional (desktops e notebooks)', 'sim', '0000-00-00'),
+(10, 25, 'ferrovia', 'Projetos de Engenharia', '', 'Planejamento e Execução', 'sim', '0000-00-00'),
+(11, 70, 'bondes', 'FASE PREPARATÓRIA', '', 'Termo de Referência', 'não', '0000-00-00'),
+(12, 70, 'bondes', 'PLANEJAMENTO PCA', '', 'Desenvolvimento de novas soluções tecnológicas', 'não', '0000-00-00'),
+(13, 21, 'bondes', 'Recuperação do Sistema de Bondes', '', 'Operação do Bonde', 'não', '0000-00-00'),
+(14, 70, 'bondes', 'FASE EXTERNA', '', 'Abertura do Pregão / Dispensa de Licitação', 'não', '0000-00-00'),
+(15, 70, 'bondes', 'FASE PREPARATÓRIA', '', 'Estudo Técnico Preliminar / Matriz de Risco', 'não', '0000-00-00'),
+(16, 70, 'bondes', 'FASE PREPARATÓRIA', '', 'DDO - Declaração de Dotação Orçamentária', 'não', '0000-00-00'),
+(17, 68, 'operacionalizacao_bonde', 'Fase Preparatória', '', 'Pesquisa de Preços / Relatório Analítico', 'sim', '0000-00-00'),
+(18, 15, 'bondes', 'Operacionalização do Sistema de Bondes', '', 'Reativação de Linhas', 'sim', '0000-00-00'),
+(19, 24, 'ferrovia', 'Projetos de Engenharia', '', 'Planejamento e Execução', 'sim', '0000-00-00'),
+(20, 34, 'teleferico', 'Reativação e Operacionalização', '', 'Reativação do Sistema de Transporte do Teleférico do Alemão', 'sim', '0000-00-00'),
+(21, 35, 'teleferico', 'Reativação e Operacionalização', '', 'Reativação do Sistema de Transporte do Teleférico do Alemão', 'não', '0000-00-00'),
+(22, 26, 'ferrovia', 'Projetos de Engenharia', '', 'Planejamento e Execução', 'sim', '0000-00-00'),
+(23, 27, 'ferrovia', 'Projetos de Engenharia', '', 'Planejamento e Execução', 'não', '0000-00-00'),
+(24, 33, 'ferrovia', 'Projetos de Engenharia', '', 'Planejamento e Execução', 'não', '0000-00-00'),
+(25, 44, 'ti', 'Infraestrutura de TI', '', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'sim', '0000-00-00'),
+(26, 44, 'ti', 'Infraestrutura de TI', '', 'Aquisição de equipamentos e softwares', 'sim', '0000-00-00'),
+(27, 44, 'ti', 'Infraestrutura de TI', '', 'Estruturar o banco de dados dos projetos de engenharia', 'sim', '0000-00-00'),
+(28, 44, 'ti', 'Infraestrutura de TI', '', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'sim', '0000-00-00'),
+(29, 44, 'ti', 'Modernização', '', 'Modernização do parque computacional (desktops e notebooks)', 'não', '0000-00-00'),
+(30, 44, 'ti', 'Soluções de Atendimento', '', 'Solução de Atendimento ao Usuário – ITSM', 'não', '0000-00-00'),
+(31, 44, 'ti', 'Soluções de Atendimento', '', 'Wi-Fi corporativo com segurança e gerenciamento', 'não', '0000-00-00'),
+(32, 44, 'ti', 'Monitoramento', '', 'Monitoramento e Observabilidade da Infraestrutura', 'não', '0000-00-00'),
+(33, 44, 'ti', 'Conectividade', '', 'Contratação de link de internet dedicado', 'não', '0000-00-00'),
+(34, 44, 'ti', 'Conectividade', '', 'Aquisição de softwares diversos', 'não', '0000-00-00'),
+(35, 44, 'ti', 'Conectividade', '', 'Serviço de cabeamento estruturado', 'não', '0000-00-00'),
+(36, 56, 'capacitacao', 'Treinamentos Específicos', '', 'Treinamentos no Sistema e-Social', 'não', '0000-00-00'),
+(37, 56, 'capacitacao', 'Treinamentos Específicos', '', 'Treinamentos para área de Segurança do Trabalho', 'sim', '0000-00-00'),
+(38, 56, 'capacitacao', 'Treinamentos Específicos', '', 'Treinamentos visando à Educação Ambiental', 'sim', '0000-00-00'),
+(39, 57, 'capacitacao', 'Capacitação Geral', '', 'Capacitação dos empregados da GERGEP nos softwares de edição de texto e planilhas', 'sim', '0000-00-00'),
+(40, 58, 'capacitacao', 'Capacitação Geral', '', 'Capacitação dos empregados da GERGEP nos softwares de edição de texto e planilhas', 'sim', '0000-00-00'),
+(41, 88, 'solucoes_tecnologicas', 'PLANEJAMENTO PCA', '', 'Desenvolvimento de novas soluções tecnológicas', 'sim', '0000-00-00'),
+(42, 89, 'solucoes_tecnologicas', 'PLANEJAMENTO PCA', '', 'Desenvolvimento de novas soluções tecnológicas', 'sim', '0000-00-00'),
+(43, 88, 'solucoes_tecnologicas', 'FASE DE CONTRATAÇÃO', '', 'Garantia Contratual', 'sim', '0000-00-00'),
+(44, 88, 'solucoes_tecnologicas', 'FASE PREPARATÓRIA', '', 'Pesquisa de Preços / Relatório Analítico', 'sim', '0000-00-00'),
+(45, 90, 'solucoes_tecnologicas', 'PLANEJAMENTO PCA', '', 'Desenvolvimento de novas soluções tecnológicas', 'sim', '0000-00-00'),
+(46, 90, 'solucoes_tecnologicas', 'FASE DE CONTRATAÇÃO', '', 'NAD / Nota de Empenho', 'sim', '0000-00-00'),
+(47, 91, 'ferrovia', 'PLANEJAMENTO PCA', '', 'Desenvolvimento de novas soluções tecnológicas', 'sim', '0000-00-00'),
+(48, 91, 'ferrovia', 'FASE PREPARATÓRIA', '', 'Estudo Técnico Preliminar / Matriz de Risco', 'sim', '0000-00-00'),
+(49, 88, 'solucoes_tecnologicas', 'FASE EXTERNA', '', 'Homologação e Publicação no D.O', 'sim', '0000-00-00'),
+(50, 42, 'ti', 'Conectividade', '', 'Contratação de link de internet dedicado', 'sim', '0000-00-00'),
+(51, 42, 'ti', 'Conectividade', '', 'Aquisição de softwares diversos', 'sim', '0000-00-00'),
+(52, 42, 'ti', 'Conectividade', '', 'Serviço de cabeamento estruturado', 'sim', '0000-00-00'),
+(53, 43, 'ti', 'Modernização', '', 'Modernização do parque computacional (desktops e notebooks)', 'sim', '0000-00-00'),
+(54, 42, 'ti', 'Modernização', '', 'Modernização do parque computacional (desktops e notebooks)', 'sim', '0000-00-00'),
+(55, 16, 'bondes', 'Recuperação do Sistema de Bondes', '', 'Operação do Bonde', 'sim', '0000-00-00'),
+(56, 16, 'bondes', 'Operacionalização do Sistema de Bondes', '', 'Reativação de Linhas', 'sim', '0000-00-00'),
+(57, 18, 'bondes', 'Operacionalização do Sistema de Bondes', '', 'Reativação de Linhas', 'sim', '0000-00-00'),
+(58, 18, 'bondes', 'Recuperação do Sistema de Bondes', '', 'Operação do Bonde', 'sim', '0000-00-00'),
+(59, 19, 'bondes', 'Recuperação do Sistema de Bondes', '', 'Operação do Bonde', 'sim', '0000-00-00'),
+(60, 19, 'bondes', 'Operacionalização do Sistema de Bondes', '', 'Reativação de Linhas', 'sim', '0000-00-00'),
+(61, 20, 'bondes', 'Operacionalização do Sistema de Bondes', '', 'Reativação de Linhas', 'sim', '0000-00-00'),
+(62, 20, 'bondes', 'Recuperação do Sistema de Bondes', '', 'Operação do Bonde', 'sim', '0000-00-00'),
+(63, 22, 'bondes', 'Recuperação do Sistema de Bondes', '', 'Operação do Bonde', 'sim', '0000-00-00'),
+(64, 23, 'bondes', 'Operacionalização do Sistema de Bondes', '', 'Reativação de Linhas', 'sim', '0000-00-00'),
+(65, 29, 'ferrovia', 'Projetos de Engenharia', '', 'Planejamento e Execução', 'sim', '0000-00-00');
 
 -- --------------------------------------------------------
 
@@ -1501,7 +1617,618 @@ INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `
 (150, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-21 22:05:08', 0),
 (151, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-21 22:05:08', 0),
 (152, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-21 22:07:50', 0),
-(153, 'N/A', 'teleferico', 'Reativação do Sistema de Transporte do Teleférico do Alemão', 'nao lida', '2025-07-21 22:16:42', 0);
+(153, 'N/A', 'teleferico', 'Reativação do Sistema de Transporte do Teleférico do Alemão', 'nao lida', '2025-07-21 22:16:42', 0),
+(154, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 18:06:10', 0),
+(155, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 18:06:22', 0),
+(156, 'N/A', 'bondes', 'DFD (Doc.de Formalização de Demanda)', 'nao lida', '2025-07-23 19:27:58', 0),
+(157, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-23 19:27:58', 0),
+(158, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-23 19:28:32', 0),
+(159, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-23 19:28:32', 0),
+(160, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-23 19:28:57', 0),
+(161, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-23 19:28:57', 0),
+(162, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-23 19:29:31', 0),
+(163, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-23 19:29:31', 0),
+(164, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-23 19:32:07', 0),
+(165, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-23 19:32:07', 0),
+(166, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-23 21:18:40', 0),
+(167, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-23 21:18:40', 0),
+(168, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-23 21:19:11', 0),
+(169, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-23 21:19:11', 0),
+(170, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-23 21:19:11', 0),
+(171, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-23 21:19:11', 0),
+(172, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-23 21:19:28', 0),
+(173, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-23 21:19:28', 0),
+(174, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-23 21:19:46', 0),
+(175, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-23 21:19:46', 0),
+(176, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-23 21:20:01', 0),
+(177, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-23 21:20:01', 0),
+(178, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 21:20:29', 0),
+(179, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 21:20:43', 0),
+(180, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 21:20:59', 0),
+(181, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 21:21:14', 0),
+(182, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 21:21:27', 0),
+(183, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 21:21:47', 0),
+(184, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 21:22:01', 0),
+(185, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 21:26:01', 0),
+(186, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 21:26:42', 0),
+(187, 'N/A', 'ferrovia', 'Planejamento e Execução', 'nao lida', '2025-07-23 21:26:58', 0),
+(188, 'N/A', 'teleferico', 'Reativação do Sistema de Transporte do Teleférico do Alemão', 'nao lida', '2025-07-23 21:27:23', 0),
+(189, 'N/A', 'teleferico', 'Reativação do Sistema de Transporte do Teleférico do Alemão', 'nao lida', '2025-07-23 21:27:41', 0),
+(190, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:28:23', 0),
+(191, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:28:23', 0),
+(192, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:28:23', 0),
+(193, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:28:23', 0),
+(194, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:28:23', 0),
+(195, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:28:23', 0),
+(196, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:28:23', 0),
+(197, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:28:23', 0),
+(198, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:28:23', 0),
+(199, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:28:23', 0),
+(200, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:28:23', 0),
+(201, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:28:56', 0),
+(202, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:29:23', 0),
+(203, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:29:48', 0),
+(204, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:31:08', 0),
+(205, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:31:08', 0),
+(206, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:31:08', 0),
+(207, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:31:40', 0),
+(208, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:32:20', 0),
+(209, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:32:20', 0),
+(210, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:32:20', 0),
+(211, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:32:20', 0),
+(212, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:32:42', 0),
+(213, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:32:42', 0),
+(214, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:32:42', 0),
+(215, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:32:42', 0),
+(216, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:32:42', 0),
+(217, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:32:42', 0),
+(218, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:32:42', 0),
+(219, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:32:42', 0),
+(220, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:32:42', 0),
+(221, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:32:42', 0),
+(222, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:32:42', 0),
+(223, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:33:09', 0),
+(224, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:33:09', 0),
+(225, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:33:09', 0),
+(226, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:33:09', 0),
+(227, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:33:09', 0),
+(228, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:33:09', 0),
+(229, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:33:09', 0),
+(230, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:33:09', 0),
+(231, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:33:09', 0),
+(232, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:33:09', 0),
+(233, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:33:09', 0),
+(234, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:33:09', 0),
+(235, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:33:09', 0),
+(236, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:33:09', 0),
+(237, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:33:09', 0),
+(238, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:33:09', 0),
+(239, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:33:09', 0),
+(240, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:33:09', 0),
+(241, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:33:09', 0),
+(242, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:33:09', 0),
+(243, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:33:09', 0),
+(244, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:33:09', 0),
+(245, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:33:35', 0),
+(246, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:33:35', 0),
+(247, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:33:35', 0),
+(248, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:33:35', 0),
+(249, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:33:35', 0),
+(250, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:33:35', 0),
+(251, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:33:35', 0),
+(252, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:33:35', 0),
+(253, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:33:35', 0),
+(254, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:33:35', 0),
+(255, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:33:35', 0),
+(256, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:33:47', 0),
+(257, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:33:47', 0),
+(258, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:33:47', 0),
+(259, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:33:47', 0),
+(260, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:33:47', 0),
+(261, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:33:47', 0),
+(262, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:33:47', 0),
+(263, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:33:47', 0),
+(264, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:33:47', 0),
+(265, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:33:47', 0),
+(266, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:33:47', 0),
+(267, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:34:03', 0),
+(268, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:34:03', 0),
+(269, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:34:03', 0),
+(270, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:34:03', 0),
+(271, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:34:03', 0),
+(272, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:34:03', 0),
+(273, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:34:03', 0),
+(274, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:34:03', 0),
+(275, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:34:03', 0),
+(276, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:34:03', 0),
+(277, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:34:03', 0),
+(278, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:34:20', 0),
+(279, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:34:20', 0),
+(280, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:34:20', 0),
+(281, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:34:20', 0),
+(282, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:34:20', 0),
+(283, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:34:20', 0),
+(284, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:34:20', 0),
+(285, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:34:20', 0),
+(286, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:34:20', 0),
+(287, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:34:20', 0),
+(288, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:34:20', 0),
+(289, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:34:42', 0),
+(290, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:34:42', 0),
+(291, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:34:42', 0),
+(292, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:34:42', 0),
+(293, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:34:42', 0),
+(294, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:34:42', 0),
+(295, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:34:42', 0),
+(296, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:34:42', 0),
+(297, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:34:42', 0),
+(298, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:34:42', 0),
+(299, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:34:42', 0),
+(300, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:35:25', 0),
+(301, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:35:25', 0),
+(302, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:35:25', 0),
+(303, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:35:25', 0),
+(304, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:35:25', 0),
+(305, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:35:25', 0),
+(306, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:35:25', 0),
+(307, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:35:25', 0),
+(308, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:35:25', 0),
+(309, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:35:25', 0),
+(310, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:35:25', 0),
+(311, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:35:47', 0),
+(312, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:35:47', 0),
+(313, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:35:47', 0),
+(314, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:35:47', 0),
+(315, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:35:47', 0),
+(316, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:35:47', 0),
+(317, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:35:47', 0),
+(318, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:35:47', 0),
+(319, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:35:47', 0),
+(320, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:35:47', 0),
+(321, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:35:47', 0),
+(322, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:36:08', 0),
+(323, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:36:08', 0),
+(324, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:36:08', 0),
+(325, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:36:08', 0),
+(326, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:36:08', 0),
+(327, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:36:08', 0),
+(328, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:36:08', 0),
+(329, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:36:08', 0),
+(330, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:36:08', 0),
+(331, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:36:08', 0),
+(332, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:36:08', 0),
+(333, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-07-23 21:40:23', 0),
+(334, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-07-23 21:40:23', 0),
+(335, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-07-23 21:40:23', 0),
+(336, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-07-23 21:40:23', 0),
+(337, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-07-23 21:40:23', 0),
+(338, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-07-23 21:40:23', 0),
+(339, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-07-23 21:40:23', 0),
+(340, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-07-23 21:40:23', 0),
+(341, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-07-23 21:40:23', 0),
+(342, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-07-23 21:40:23', 0),
+(343, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-07-23 21:40:23', 0),
+(344, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP nos softwares de edição de texto e planilhas', 'nao lida', '2025-07-23 21:42:11', 0),
+(345, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP no tratamento do arquivamento de documentos', 'nao lida', '2025-07-23 21:42:11', 0),
+(346, 'N/A', 'capacitacao', 'Treinamentos visando à Educação Ambiental', 'nao lida', '2025-07-23 21:42:11', 0),
+(347, 'N/A', 'capacitacao', 'Formação e capacitação do corpo técnico em processos de TIC', 'nao lida', '2025-07-23 21:42:11', 0),
+(348, 'N/A', 'capacitacao', 'Treinamentos para área de Segurança do Trabalho', 'nao lida', '2025-07-23 21:42:11', 0),
+(349, 'N/A', 'capacitacao', 'Treinamentos no Sistema e-Social', 'nao lida', '2025-07-23 21:42:11', 0),
+(350, 'N/A', 'capacitacao', 'Treinamentos para área de Segurança do Trabalho', 'nao lida', '2025-07-23 21:42:29', 0),
+(351, 'N/A', 'capacitacao', 'Treinamentos no Sistema e-Social', 'nao lida', '2025-07-23 21:42:29', 0),
+(352, 'N/A', 'capacitacao', 'Treinamentos visando à Educação Ambiental', 'nao lida', '2025-07-23 21:42:29', 0),
+(353, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP nos softwares de edição de texto e planilhas', 'nao lida', '2025-07-23 21:42:48', 0),
+(354, 'N/A', 'capacitacao', 'Formação e capacitação do corpo técnico em processos de TIC', 'nao lida', '2025-07-23 21:42:48', 0),
+(355, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP no tratamento do arquivamento de documentos', 'nao lida', '2025-07-23 21:42:48', 0),
+(356, 'N/A', 'capacitacao', 'Treinamentos no Sistema e-Social', 'nao lida', '2025-07-23 21:42:48', 0),
+(357, 'N/A', 'capacitacao', 'Treinamentos para área de Segurança do Trabalho', 'nao lida', '2025-07-23 21:42:48', 0),
+(358, 'N/A', 'capacitacao', 'Treinamentos visando à Educação Ambiental', 'nao lida', '2025-07-23 21:42:48', 0),
+(359, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP nos softwares de edição de texto e planilhas', 'nao lida', '2025-07-23 21:43:05', 0),
+(360, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP no tratamento do arquivamento de documentos', 'nao lida', '2025-07-23 21:43:05', 0),
+(361, 'N/A', 'capacitacao', 'Formação e capacitação do corpo técnico em processos de TIC', 'nao lida', '2025-07-23 21:43:05', 0),
+(362, 'N/A', 'capacitacao', 'Treinamentos no Sistema e-Social', 'nao lida', '2025-07-23 21:43:05', 0),
+(363, 'N/A', 'capacitacao', 'Treinamentos para área de Segurança do Trabalho', 'nao lida', '2025-07-23 21:43:05', 0),
+(364, 'N/A', 'capacitacao', 'Treinamentos visando à Educação Ambiental', 'nao lida', '2025-07-23 21:43:05', 0),
+(365, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP nos softwares de edição de texto e planilhas', 'nao lida', '2025-07-23 21:43:18', 0),
+(366, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP no tratamento do arquivamento de documentos', 'nao lida', '2025-07-23 21:43:18', 0),
+(367, 'N/A', 'capacitacao', 'Formação e capacitação do corpo técnico em processos de TIC', 'nao lida', '2025-07-23 21:43:18', 0),
+(368, 'N/A', 'capacitacao', 'Treinamentos no Sistema e-Social', 'nao lida', '2025-07-23 21:43:18', 0),
+(369, 'N/A', 'capacitacao', 'Treinamentos para área de Segurança do Trabalho', 'nao lida', '2025-07-23 21:43:18', 0),
+(370, 'N/A', 'capacitacao', 'Treinamentos visando à Educação Ambiental', 'nao lida', '2025-07-23 21:43:18', 0),
+(371, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP no tratamento do arquivamento de documentos', 'nao lida', '2025-07-23 21:43:34', 0),
+(372, 'N/A', 'capacitacao', 'Formação e capacitação do corpo técnico em processos de TIC', 'nao lida', '2025-07-23 21:43:34', 0),
+(373, 'N/A', 'capacitacao', 'Treinamentos no Sistema e-Social', 'nao lida', '2025-07-23 21:43:34', 0),
+(374, 'N/A', 'capacitacao', 'Treinamentos para área de Segurança do Trabalho', 'nao lida', '2025-07-23 21:43:34', 0),
+(375, 'N/A', 'capacitacao', 'Treinamentos visando à Educação Ambiental', 'nao lida', '2025-07-23 21:43:34', 0),
+(376, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP nos softwares de edição de texto e planilhas', 'nao lida', '2025-07-23 21:43:34', 0),
+(377, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP no tratamento do arquivamento de documentos', 'nao lida', '2025-07-23 21:45:30', 0),
+(378, 'N/A', 'capacitacao', 'Formação e capacitação do corpo técnico em processos de TIC', 'nao lida', '2025-07-23 21:45:30', 0),
+(379, 'N/A', 'capacitacao', 'Treinamentos no Sistema e-Social', 'nao lida', '2025-07-23 21:45:30', 0),
+(380, 'N/A', 'capacitacao', 'Capacitação dos empregados da GERGEP nos softwares de edição de texto e planilhas', 'nao lida', '2025-07-23 21:45:30', 0),
+(381, 'N/A', 'capacitacao', 'Treinamentos visando à Educação Ambiental', 'nao lida', '2025-07-23 21:45:30', 0),
+(382, 'N/A', 'capacitacao', 'Treinamentos para área de Segurança do Trabalho', 'nao lida', '2025-07-23 21:45:30', 0),
+(383, 'N/A', 'patrimonio', 'Identificação dos bens que integram o acervo patrimonial', 'nao lida', '2025-07-23 21:45:43', 0),
+(384, 'N/A', 'patrimonio', 'Controle de todos os bens móveis e imóveis', 'nao lida', '2025-07-23 21:45:43', 0),
+(385, 'N/A', 'patrimonio', 'Tratamento e digitalização de documentação administrativa e histórica', 'nao lida', '2025-07-23 21:45:43', 0),
+(386, 'N/A', 'teleferico', 'Reativação do Sistema de Transporte do Teleférico do Alemão', 'nao lida', '2025-07-28 20:09:40', 0),
+(387, 'N/A', 'teleferico', 'Reativação do Sistema de Transporte do Teleférico do Alemão', 'nao lida', '2025-07-28 20:10:21', 0),
+(388, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-28 20:13:24', 0),
+(389, 'Gabriel', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-28 20:13:24', 0),
+(390, 'N/A', 'bondes', 'Reativação de Linhas', 'nao lida', '2025-07-28 20:40:40', 0),
+(391, 'N/A', 'bondes', 'Operação do Bonde', 'nao lida', '2025-07-28 20:40:40', 0),
+(392, 'N/A', 'ti', 'Estruturar o banco de dados dos projetos de engenharia', 'nao lida', '2025-08-01 15:30:17', 0),
+(393, 'N/A', 'ti', 'Solução de Atendimento ao Usuário – ITSM', 'nao lida', '2025-08-01 15:30:17', 0),
+(394, 'N/A', 'ti', 'Implantação da tecnologia BIM na CENTRAL e capacitar seus usuários', 'nao lida', '2025-08-01 15:30:17', 0),
+(395, 'N/A', 'ti', 'Reestruturação de toda Infraestrutura de Rede com Segurança', 'nao lida', '2025-08-01 15:30:17', 0),
+(396, 'N/A', 'ti', 'Modernização do parque computacional (desktops e notebooks)', 'nao lida', '2025-08-01 15:30:17', 0),
+(397, 'N/A', 'ti', 'Aquisição de equipamentos e softwares', 'nao lida', '2025-08-01 15:30:17', 0),
+(398, 'N/A', 'ti', 'Wi-Fi corporativo com segurança e gerenciamento', 'nao lida', '2025-08-01 15:30:17', 0),
+(399, 'N/A', 'ti', 'Monitoramento e Observabilidade da Infraestrutura', 'nao lida', '2025-08-01 15:30:17', 0),
+(400, 'N/A', 'ti', 'Contratação de link de internet dedicado', 'nao lida', '2025-08-01 15:30:17', 0),
+(401, 'N/A', 'ti', 'Serviço de cabeamento estruturado', 'nao lida', '2025-08-01 15:30:17', 0),
+(402, 'N/A', 'ti', 'Aquisição de softwares diversos', 'nao lida', '2025-08-01 15:30:17', 0),
+(403, 'N/A', 'bondes', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-05 19:25:23', 0),
+(404, 'N/A', 'bondes', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-05 19:25:23', 0),
+(405, 'N/A', 'bondes', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-05 19:25:23', 0),
+(406, 'N/A', 'bondes', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-05 19:25:23', 0),
+(407, 'N/A', 'bondes', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-05 19:25:23', 0),
+(408, 'N/A', 'bondes', 'Termo de Referência', 'nao lida', '2025-08-05 19:25:23', 0),
+(409, 'N/A', 'bondes', 'Minuta Edital/Contrato', 'nao lida', '2025-08-05 19:25:23', 0),
+(410, 'N/A', 'bondes', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-05 19:25:23', 0),
+(411, 'N/A', 'bondes', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-05 19:25:23', 0),
+(412, 'N/A', 'bondes', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-05 19:25:23', 0),
+(413, 'N/A', 'bondes', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-05 19:25:23', 0),
+(414, 'N/A', 'bondes', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-05 19:25:23', 0),
+(415, 'N/A', 'bondes', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-05 19:25:23', 0),
+(416, 'N/A', 'bondes', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-05 19:25:23', 0),
+(417, 'N/A', 'bondes', 'Contratação no SIGA', 'nao lida', '2025-08-05 19:25:23', 0),
+(418, 'N/A', 'bondes', 'NAD / Nota de Empenho', 'nao lida', '2025-08-05 19:25:23', 0),
+(419, 'N/A', 'bondes', 'Contrato (Assinatura)', 'nao lida', '2025-08-05 19:25:23', 0),
+(420, 'N/A', 'bondes', 'Gestores e Fiscais', 'nao lida', '2025-08-05 19:25:23', 0),
+(421, 'N/A', 'bondes', 'Garantia Contratual', 'nao lida', '2025-08-05 19:25:23', 0),
+(422, 'N/A', 'bondes', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 17:36:41', 0),
+(423, 'N/A', 'bondes', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 17:36:41', 0),
+(424, 'N/A', 'bondes', 'Termo de Referência', 'nao lida', '2025-08-11 17:36:41', 0),
+(425, 'N/A', 'bondes', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 17:36:41', 0),
+(426, 'N/A', 'bondes', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 17:36:41', 0),
+(427, 'N/A', 'bondes', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 17:36:41', 0),
+(428, 'N/A', 'bondes', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 17:36:41', 0),
+(429, 'N/A', 'bondes', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 17:36:41', 0),
+(430, 'N/A', 'bondes', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 17:36:41', 0),
+(431, 'N/A', 'bondes', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 17:36:41', 0),
+(432, 'N/A', 'bondes', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 17:36:41', 0),
+(433, 'N/A', 'bondes', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 17:36:41', 0),
+(434, 'N/A', 'bondes', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 17:36:41', 0),
+(435, 'N/A', 'bondes', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 17:36:41', 0),
+(436, 'N/A', 'bondes', 'Contratação no SIGA', 'nao lida', '2025-08-11 17:36:41', 0),
+(437, 'N/A', 'bondes', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 17:36:41', 0),
+(438, 'N/A', 'bondes', 'Gestores e Fiscais', 'nao lida', '2025-08-11 17:36:41', 0),
+(439, 'N/A', 'bondes', 'Garantia Contratual', 'nao lida', '2025-08-11 17:36:41', 0),
+(440, 'N/A', 'bondes', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 17:36:41', 0),
+(441, 'N/A', 'solucoes_tecnologicas', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 19:46:45', 0),
+(442, 'N/A', 'solucoes_tecnologicas', 'Termo de Referência', 'nao lida', '2025-08-11 19:46:45', 0),
+(443, 'N/A', 'solucoes_tecnologicas', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 19:46:45', 0),
+(444, 'N/A', 'solucoes_tecnologicas', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 19:46:45', 0),
+(445, 'N/A', 'solucoes_tecnologicas', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 19:46:45', 0),
+(446, 'N/A', 'solucoes_tecnologicas', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 19:46:45', 0),
+(447, 'N/A', 'solucoes_tecnologicas', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 19:46:45', 0),
+(448, 'N/A', 'solucoes_tecnologicas', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 19:46:45', 0),
+(449, 'N/A', 'solucoes_tecnologicas', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 19:46:45', 0),
+(450, 'N/A', 'solucoes_tecnologicas', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 19:46:45', 0),
+(451, 'N/A', 'solucoes_tecnologicas', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 19:46:45', 0),
+(452, 'N/A', 'solucoes_tecnologicas', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 19:46:45', 0),
+(453, 'N/A', 'solucoes_tecnologicas', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 19:46:45', 0),
+(454, 'N/A', 'solucoes_tecnologicas', 'Contratação no SIGA', 'nao lida', '2025-08-11 19:46:45', 0),
+(455, 'N/A', 'solucoes_tecnologicas', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 19:46:45', 0),
+(456, 'N/A', 'solucoes_tecnologicas', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 19:46:45', 0),
+(457, 'N/A', 'solucoes_tecnologicas', 'Gestores e Fiscais', 'nao lida', '2025-08-11 19:46:45', 0),
+(458, 'N/A', 'solucoes_tecnologicas', 'Garantia Contratual', 'nao lida', '2025-08-11 19:46:45', 0),
+(459, 'N/A', 'solucoes_tecnologicas', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 19:46:45', 0),
+(460, 'N/A', 'solucoes_tecnologicas', 'Termo de Referência', 'nao lida', '2025-08-11 19:47:00', 0),
+(461, 'N/A', 'solucoes_tecnologicas', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 19:47:00', 0),
+(462, 'N/A', 'solucoes_tecnologicas', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 19:47:00', 0),
+(463, 'N/A', 'solucoes_tecnologicas', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 19:47:00', 0),
+(464, 'N/A', 'solucoes_tecnologicas', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 19:47:00', 0),
+(465, 'N/A', 'solucoes_tecnologicas', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 19:47:00', 0),
+(466, 'N/A', 'solucoes_tecnologicas', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 19:47:00', 0),
+(467, 'N/A', 'solucoes_tecnologicas', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 19:47:00', 0),
+(468, 'N/A', 'solucoes_tecnologicas', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 19:47:00', 0),
+(469, 'N/A', 'solucoes_tecnologicas', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 19:47:00', 0),
+(470, 'N/A', 'solucoes_tecnologicas', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 19:47:00', 0),
+(471, 'N/A', 'solucoes_tecnologicas', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 19:47:00', 0),
+(472, 'N/A', 'solucoes_tecnologicas', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 19:47:00', 0);
+INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `data_criacao`, `certidao_id`) VALUES
+(473, 'N/A', 'solucoes_tecnologicas', 'Contratação no SIGA', 'nao lida', '2025-08-11 19:47:00', 0),
+(474, 'N/A', 'solucoes_tecnologicas', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 19:47:00', 0),
+(475, 'N/A', 'solucoes_tecnologicas', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 19:47:00', 0),
+(476, 'N/A', 'solucoes_tecnologicas', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 19:47:00', 0),
+(477, 'N/A', 'solucoes_tecnologicas', 'Gestores e Fiscais', 'nao lida', '2025-08-11 19:47:00', 0),
+(478, 'N/A', 'solucoes_tecnologicas', 'Garantia Contratual', 'nao lida', '2025-08-11 19:47:00', 0),
+(479, 'N/A', 'solucoes_tecnologicas', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 19:47:23', 0),
+(480, 'N/A', 'solucoes_tecnologicas', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 19:47:23', 0),
+(481, 'N/A', 'solucoes_tecnologicas', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 19:47:23', 0),
+(482, 'N/A', 'solucoes_tecnologicas', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 19:47:23', 0),
+(483, 'N/A', 'solucoes_tecnologicas', 'Termo de Referência', 'nao lida', '2025-08-11 19:47:23', 0),
+(484, 'N/A', 'solucoes_tecnologicas', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 19:47:23', 0),
+(485, 'N/A', 'solucoes_tecnologicas', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 19:47:23', 0),
+(486, 'N/A', 'solucoes_tecnologicas', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 19:47:23', 0),
+(487, 'N/A', 'solucoes_tecnologicas', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 19:47:23', 0),
+(488, 'N/A', 'solucoes_tecnologicas', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 19:47:23', 0),
+(489, 'N/A', 'solucoes_tecnologicas', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 19:47:23', 0),
+(490, 'N/A', 'solucoes_tecnologicas', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 19:47:23', 0),
+(491, 'N/A', 'solucoes_tecnologicas', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 19:47:23', 0),
+(492, 'N/A', 'solucoes_tecnologicas', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 19:47:23', 0),
+(493, 'N/A', 'solucoes_tecnologicas', 'Contratação no SIGA', 'nao lida', '2025-08-11 19:47:23', 0),
+(494, 'N/A', 'solucoes_tecnologicas', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 19:47:23', 0),
+(495, 'N/A', 'solucoes_tecnologicas', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 19:47:23', 0),
+(496, 'N/A', 'solucoes_tecnologicas', 'Gestores e Fiscais', 'nao lida', '2025-08-11 19:47:23', 0),
+(497, 'N/A', 'solucoes_tecnologicas', 'Garantia Contratual', 'nao lida', '2025-08-11 19:47:23', 0),
+(498, 'N/A', 'bondes', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 20:29:49', 0),
+(499, 'N/A', 'bondes', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 20:29:49', 0),
+(500, 'N/A', 'bondes', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 20:29:49', 0),
+(501, 'N/A', 'bondes', 'Termo de Referência', 'nao lida', '2025-08-11 20:29:49', 0),
+(502, 'N/A', 'bondes', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 20:29:49', 0),
+(503, 'N/A', 'bondes', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 20:29:49', 0),
+(504, 'N/A', 'bondes', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 20:29:49', 0),
+(505, 'N/A', 'bondes', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 20:29:49', 0),
+(506, 'N/A', 'bondes', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 20:29:49', 0),
+(507, 'N/A', 'bondes', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 20:29:49', 0),
+(508, 'N/A', 'bondes', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 20:29:49', 0),
+(509, 'N/A', 'bondes', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 20:29:49', 0),
+(510, 'N/A', 'bondes', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 20:29:49', 0),
+(511, 'N/A', 'bondes', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 20:29:49', 0),
+(512, 'N/A', 'bondes', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 20:29:49', 0),
+(513, 'N/A', 'bondes', 'Gestores e Fiscais', 'nao lida', '2025-08-11 20:29:49', 0),
+(514, 'N/A', 'bondes', 'Garantia Contratual', 'nao lida', '2025-08-11 20:29:49', 0),
+(515, 'N/A', 'bondes', 'Contratação no SIGA', 'nao lida', '2025-08-11 20:29:49', 0),
+(516, 'N/A', 'bondes', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 20:29:49', 0),
+(517, 'N/A', 'bondes', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 20:30:46', 0),
+(518, 'N/A', 'bondes', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 20:30:46', 0),
+(519, 'N/A', 'bondes', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 20:30:46', 0),
+(520, 'N/A', 'bondes', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 20:30:46', 0),
+(521, 'N/A', 'bondes', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 20:30:46', 0),
+(522, 'N/A', 'bondes', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 20:30:46', 0),
+(523, 'N/A', 'bondes', 'Termo de Referência', 'nao lida', '2025-08-11 20:30:46', 0),
+(524, 'N/A', 'bondes', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 20:30:46', 0),
+(525, 'N/A', 'bondes', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 20:30:46', 0),
+(526, 'N/A', 'bondes', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 20:30:46', 0),
+(527, 'N/A', 'bondes', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 20:30:46', 0),
+(528, 'N/A', 'bondes', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 20:30:46', 0),
+(529, 'N/A', 'bondes', 'Contratação no SIGA', 'nao lida', '2025-08-11 20:30:46', 0),
+(530, 'N/A', 'bondes', 'Gestores e Fiscais', 'nao lida', '2025-08-11 20:30:46', 0),
+(531, 'N/A', 'bondes', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 20:30:46', 0),
+(532, 'N/A', 'bondes', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 20:30:46', 0),
+(533, 'N/A', 'bondes', 'Garantia Contratual', 'nao lida', '2025-08-11 20:30:46', 0),
+(534, 'N/A', 'bondes', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 20:30:46', 0),
+(535, 'N/A', 'bondes', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 20:30:46', 0),
+(536, 'N/A', 'bondes', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 20:41:40', 0),
+(537, 'N/A', 'bondes', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 20:41:40', 0),
+(538, 'N/A', 'bondes', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 20:41:40', 0),
+(539, 'N/A', 'bondes', 'Termo de Referência', 'nao lida', '2025-08-11 20:41:40', 0),
+(540, 'N/A', 'bondes', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 20:41:40', 0),
+(541, 'N/A', 'bondes', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 20:41:40', 0),
+(542, 'N/A', 'bondes', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 20:41:40', 0),
+(543, 'N/A', 'bondes', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 20:41:40', 0),
+(544, 'N/A', 'bondes', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 20:41:40', 0),
+(545, 'N/A', 'bondes', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 20:41:40', 0),
+(546, 'N/A', 'bondes', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 20:41:40', 0),
+(547, 'N/A', 'bondes', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 20:41:40', 0),
+(548, 'N/A', 'bondes', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 20:41:40', 0),
+(549, 'N/A', 'bondes', 'Contratação no SIGA', 'nao lida', '2025-08-11 20:41:40', 0),
+(550, 'N/A', 'bondes', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 20:41:40', 0),
+(551, 'N/A', 'bondes', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 20:41:40', 0),
+(552, 'N/A', 'bondes', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 20:41:40', 0),
+(553, 'N/A', 'bondes', 'Gestores e Fiscais', 'nao lida', '2025-08-11 20:41:40', 0),
+(554, 'N/A', 'bondes', 'Garantia Contratual', 'nao lida', '2025-08-11 20:41:40', 0),
+(555, 'N/A', 'bondes', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 20:48:41', 0),
+(556, 'N/A', 'bondes', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 20:48:41', 0),
+(557, 'N/A', 'bondes', 'Termo de Referência', 'nao lida', '2025-08-11 20:48:41', 0),
+(558, 'N/A', 'bondes', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 20:48:41', 0),
+(559, 'N/A', 'bondes', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 20:48:41', 0),
+(560, 'N/A', 'bondes', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 20:48:41', 0),
+(561, 'N/A', 'bondes', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 20:48:41', 0),
+(562, 'N/A', 'bondes', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 20:48:41', 0),
+(563, 'N/A', 'bondes', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 20:48:41', 0),
+(564, 'N/A', 'bondes', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 20:48:41', 0),
+(565, 'N/A', 'bondes', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 20:48:41', 0),
+(566, 'N/A', 'bondes', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 20:48:41', 0),
+(567, 'N/A', 'bondes', 'Contratação no SIGA', 'nao lida', '2025-08-11 20:48:41', 0),
+(568, 'N/A', 'bondes', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 20:48:41', 0),
+(569, 'N/A', 'bondes', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 20:48:41', 0),
+(570, 'N/A', 'bondes', 'Gestores e Fiscais', 'nao lida', '2025-08-11 20:48:41', 0),
+(571, 'N/A', 'bondes', 'Garantia Contratual', 'nao lida', '2025-08-11 20:48:41', 0),
+(572, 'N/A', 'bondes', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 20:48:41', 0),
+(573, 'N/A', 'bondes', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 20:48:41', 0),
+(574, 'N/A', 'bondes', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 20:49:07', 0),
+(575, 'N/A', 'bondes', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 20:49:07', 0),
+(576, 'N/A', 'bondes', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 20:49:07', 0),
+(577, 'N/A', 'bondes', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 20:49:07', 0),
+(578, 'N/A', 'bondes', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 20:49:07', 0),
+(579, 'N/A', 'bondes', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 20:49:07', 0),
+(580, 'N/A', 'bondes', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 20:49:07', 0),
+(581, 'N/A', 'bondes', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 20:49:07', 0),
+(582, 'N/A', 'bondes', 'Termo de Referência', 'nao lida', '2025-08-11 20:49:07', 0),
+(583, 'N/A', 'bondes', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 20:49:08', 0),
+(584, 'N/A', 'bondes', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 20:49:08', 0),
+(585, 'N/A', 'bondes', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 20:49:08', 0),
+(586, 'N/A', 'bondes', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 20:49:08', 0),
+(587, 'N/A', 'bondes', 'Contratação no SIGA', 'nao lida', '2025-08-11 20:49:08', 0),
+(588, 'N/A', 'bondes', 'Gestores e Fiscais', 'nao lida', '2025-08-11 20:49:08', 0),
+(589, 'N/A', 'bondes', 'Garantia Contratual', 'nao lida', '2025-08-11 20:49:08', 0),
+(590, 'N/A', 'bondes', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 20:49:07', 0),
+(591, 'N/A', 'bondes', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 20:49:08', 0),
+(592, 'N/A', 'bondes', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 20:49:08', 0),
+(593, 'N/A', 'bondes', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 20:49:40', 0),
+(594, 'N/A', 'bondes', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 20:49:40', 0),
+(595, 'N/A', 'bondes', 'Termo de Referência', 'nao lida', '2025-08-11 20:49:40', 0),
+(596, 'N/A', 'bondes', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 20:49:40', 0),
+(597, 'N/A', 'bondes', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 20:49:40', 0),
+(598, 'N/A', 'bondes', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 20:49:40', 0),
+(599, 'N/A', 'bondes', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 20:49:40', 0),
+(600, 'N/A', 'bondes', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 20:49:40', 0),
+(601, 'N/A', 'bondes', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 20:49:40', 0),
+(602, 'N/A', 'bondes', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 20:49:40', 0),
+(603, 'N/A', 'bondes', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 20:49:40', 0),
+(604, 'N/A', 'bondes', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 20:49:40', 0),
+(605, 'N/A', 'bondes', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 20:49:40', 0),
+(606, 'N/A', 'bondes', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 20:49:40', 0),
+(607, 'N/A', 'bondes', 'Contratação no SIGA', 'nao lida', '2025-08-11 20:49:40', 0),
+(608, 'N/A', 'bondes', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 20:49:40', 0),
+(609, 'N/A', 'bondes', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 20:49:40', 0),
+(610, 'N/A', 'bondes', 'Gestores e Fiscais', 'nao lida', '2025-08-11 20:49:40', 0),
+(611, 'N/A', 'bondes', 'Garantia Contratual', 'nao lida', '2025-08-11 20:49:40', 0),
+(612, 'N/A', 'bondes', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 20:50:11', 0),
+(613, 'N/A', 'bondes', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 20:50:11', 0),
+(614, 'N/A', 'bondes', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 20:50:11', 0),
+(615, 'N/A', 'bondes', 'Termo de Referência', 'nao lida', '2025-08-11 20:50:11', 0),
+(616, 'N/A', 'bondes', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 20:50:11', 0),
+(617, 'N/A', 'bondes', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 20:50:11', 0),
+(618, 'N/A', 'bondes', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 20:50:11', 0),
+(619, 'N/A', 'bondes', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 20:50:11', 0),
+(620, 'N/A', 'bondes', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 20:50:11', 0),
+(621, 'N/A', 'bondes', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 20:50:11', 0),
+(622, 'N/A', 'bondes', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 20:50:11', 0),
+(623, 'N/A', 'bondes', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 20:50:11', 0),
+(624, 'N/A', 'bondes', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 20:50:11', 0),
+(625, 'N/A', 'bondes', 'Contratação no SIGA', 'nao lida', '2025-08-11 20:50:11', 0),
+(626, 'N/A', 'bondes', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 20:50:11', 0),
+(627, 'N/A', 'bondes', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 20:50:11', 0),
+(628, 'N/A', 'bondes', 'Gestores e Fiscais', 'nao lida', '2025-08-11 20:50:11', 0),
+(629, 'N/A', 'bondes', 'Garantia Contratual', 'nao lida', '2025-08-11 20:50:11', 0),
+(630, 'N/A', 'bondes', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 20:50:11', 0),
+(631, 'N/A', 'bondes', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 20:50:39', 0),
+(632, 'N/A', 'bondes', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 20:50:39', 0),
+(633, 'N/A', 'bondes', 'Termo de Referência', 'nao lida', '2025-08-11 20:50:39', 0),
+(634, 'N/A', 'bondes', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 20:50:39', 0),
+(635, 'N/A', 'bondes', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 20:50:39', 0),
+(636, 'N/A', 'bondes', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 20:50:39', 0),
+(637, 'N/A', 'bondes', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 20:50:39', 0),
+(638, 'N/A', 'bondes', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 20:50:39', 0),
+(639, 'N/A', 'bondes', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 20:50:39', 0),
+(640, 'N/A', 'bondes', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 20:50:39', 0),
+(641, 'N/A', 'bondes', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 20:50:39', 0),
+(642, 'N/A', 'bondes', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 20:50:39', 0),
+(643, 'N/A', 'bondes', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 20:50:39', 0),
+(644, 'N/A', 'bondes', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 20:50:39', 0),
+(645, 'N/A', 'bondes', 'Contratação no SIGA', 'nao lida', '2025-08-11 20:50:39', 0),
+(646, 'N/A', 'bondes', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 20:50:39', 0),
+(647, 'N/A', 'bondes', 'Gestores e Fiscais', 'nao lida', '2025-08-11 20:50:39', 0),
+(648, 'N/A', 'bondes', 'Garantia Contratual', 'nao lida', '2025-08-11 20:50:39', 0),
+(649, 'N/A', 'bondes', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 20:50:39', 0),
+(650, 'N/A', 'ferrovia', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 20:57:50', 0),
+(651, 'N/A', 'ferrovia', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 20:57:50', 0),
+(652, 'N/A', 'ferrovia', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 20:57:50', 0),
+(653, 'N/A', 'ferrovia', 'Termo de Referência', 'nao lida', '2025-08-11 20:57:50', 0),
+(654, 'N/A', 'ferrovia', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 20:57:50', 0),
+(655, 'N/A', 'ferrovia', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 20:57:50', 0),
+(656, 'N/A', 'ferrovia', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 20:57:50', 0),
+(657, 'N/A', 'ferrovia', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 20:57:50', 0),
+(658, 'N/A', 'ferrovia', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 20:57:50', 0),
+(659, 'N/A', 'ferrovia', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 20:57:50', 0),
+(660, 'N/A', 'ferrovia', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 20:57:50', 0),
+(661, 'N/A', 'ferrovia', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 20:57:50', 0),
+(662, 'N/A', 'ferrovia', 'Contratação no SIGA', 'nao lida', '2025-08-11 20:57:50', 0),
+(663, 'N/A', 'ferrovia', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 20:57:50', 0),
+(664, 'N/A', 'ferrovia', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 20:57:50', 0),
+(665, 'N/A', 'ferrovia', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 20:57:50', 0),
+(666, 'N/A', 'ferrovia', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 20:57:50', 0),
+(667, 'N/A', 'ferrovia', 'Gestores e Fiscais', 'nao lida', '2025-08-11 20:57:50', 0),
+(668, 'N/A', 'ferrovia', 'Garantia Contratual', 'nao lida', '2025-08-11 20:57:50', 0),
+(669, 'N/A', 'ferrovia', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 20:58:25', 0),
+(670, 'N/A', 'ferrovia', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 20:58:25', 0),
+(671, 'N/A', 'ferrovia', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 20:58:25', 0),
+(672, 'N/A', 'ferrovia', 'Termo de Referência', 'nao lida', '2025-08-11 20:58:25', 0),
+(673, 'N/A', 'ferrovia', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 20:58:25', 0),
+(674, 'N/A', 'ferrovia', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 20:58:25', 0),
+(675, 'N/A', 'ferrovia', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 20:58:25', 0),
+(676, 'N/A', 'ferrovia', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 20:58:25', 0),
+(677, 'N/A', 'ferrovia', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 20:58:25', 0),
+(678, 'N/A', 'ferrovia', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 20:58:25', 0),
+(679, 'N/A', 'ferrovia', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 20:58:25', 0),
+(680, 'N/A', 'ferrovia', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 20:58:25', 0),
+(681, 'N/A', 'ferrovia', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 20:58:25', 0),
+(682, 'N/A', 'ferrovia', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 20:58:25', 0),
+(683, 'N/A', 'ferrovia', 'Contratação no SIGA', 'nao lida', '2025-08-11 20:58:25', 0),
+(684, 'N/A', 'ferrovia', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 20:58:25', 0),
+(685, 'N/A', 'ferrovia', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 20:58:25', 0),
+(686, 'N/A', 'ferrovia', 'Gestores e Fiscais', 'nao lida', '2025-08-11 20:58:25', 0),
+(687, 'N/A', 'ferrovia', 'Garantia Contratual', 'nao lida', '2025-08-11 20:58:25', 0),
+(688, 'N/A', 'solucoes_tecnologicas', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 21:02:11', 0),
+(689, 'N/A', 'solucoes_tecnologicas', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 21:02:11', 0),
+(690, 'N/A', 'solucoes_tecnologicas', 'Termo de Referência', 'nao lida', '2025-08-11 21:02:11', 0),
+(691, 'N/A', 'solucoes_tecnologicas', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 21:02:11', 0),
+(692, 'N/A', 'solucoes_tecnologicas', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 21:02:11', 0),
+(693, 'N/A', 'solucoes_tecnologicas', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 21:02:11', 0),
+(694, 'N/A', 'solucoes_tecnologicas', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 21:02:11', 0),
+(695, 'N/A', 'solucoes_tecnologicas', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 21:02:11', 0),
+(696, 'N/A', 'solucoes_tecnologicas', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 21:02:11', 0),
+(697, 'N/A', 'solucoes_tecnologicas', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 21:02:11', 0),
+(698, 'N/A', 'solucoes_tecnologicas', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 21:02:11', 0),
+(699, 'N/A', 'solucoes_tecnologicas', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 21:02:11', 0),
+(700, 'N/A', 'solucoes_tecnologicas', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 21:02:11', 0),
+(701, 'N/A', 'solucoes_tecnologicas', 'Contratação no SIGA', 'nao lida', '2025-08-11 21:02:11', 0),
+(702, 'N/A', 'solucoes_tecnologicas', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 21:02:11', 0),
+(703, 'N/A', 'solucoes_tecnologicas', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 21:02:11', 0),
+(704, 'N/A', 'solucoes_tecnologicas', 'Gestores e Fiscais', 'nao lida', '2025-08-11 21:02:11', 0),
+(705, 'N/A', 'solucoes_tecnologicas', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 21:02:11', 0),
+(706, 'N/A', 'solucoes_tecnologicas', 'Garantia Contratual', 'nao lida', '2025-08-11 21:02:11', 0),
+(707, 'N/A', 'solucoes_tecnologicas', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 21:02:24', 0),
+(708, 'N/A', 'solucoes_tecnologicas', 'Termo de Referência', 'nao lida', '2025-08-11 21:02:24', 0),
+(709, 'N/A', 'solucoes_tecnologicas', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 21:02:24', 0),
+(710, 'N/A', 'solucoes_tecnologicas', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 21:02:24', 0),
+(711, 'N/A', 'solucoes_tecnologicas', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 21:02:24', 0),
+(712, 'N/A', 'solucoes_tecnologicas', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 21:02:24', 0),
+(713, 'N/A', 'solucoes_tecnologicas', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 21:02:24', 0),
+(714, 'N/A', 'solucoes_tecnologicas', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 21:02:24', 0),
+(715, 'N/A', 'solucoes_tecnologicas', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 21:02:24', 0),
+(716, 'N/A', 'solucoes_tecnologicas', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 21:02:24', 0),
+(717, 'N/A', 'solucoes_tecnologicas', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 21:02:24', 0),
+(718, 'N/A', 'solucoes_tecnologicas', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 21:02:24', 0),
+(719, 'N/A', 'solucoes_tecnologicas', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 21:02:24', 0),
+(720, 'N/A', 'solucoes_tecnologicas', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 21:02:24', 0),
+(721, 'N/A', 'solucoes_tecnologicas', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 21:02:24', 0),
+(722, 'N/A', 'solucoes_tecnologicas', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 21:02:24', 0),
+(723, 'N/A', 'solucoes_tecnologicas', 'Gestores e Fiscais', 'nao lida', '2025-08-11 21:02:24', 0),
+(724, 'N/A', 'solucoes_tecnologicas', 'Garantia Contratual', 'nao lida', '2025-08-11 21:02:24', 0),
+(725, 'N/A', 'solucoes_tecnologicas', 'Contratação no SIGA', 'nao lida', '2025-08-11 21:02:24', 0),
+(726, 'N/A', 'solucoes_tecnologicas', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 21:02:36', 0),
+(727, 'N/A', 'solucoes_tecnologicas', 'Termo de Referência', 'nao lida', '2025-08-11 21:02:36', 0),
+(728, 'N/A', 'solucoes_tecnologicas', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 21:02:36', 0),
+(729, 'N/A', 'solucoes_tecnologicas', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 21:02:36', 0),
+(730, 'N/A', 'solucoes_tecnologicas', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 21:02:36', 0),
+(731, 'N/A', 'solucoes_tecnologicas', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 21:02:36', 0),
+(732, 'N/A', 'solucoes_tecnologicas', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 21:02:36', 0),
+(733, 'N/A', 'solucoes_tecnologicas', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 21:02:36', 0),
+(734, 'N/A', 'solucoes_tecnologicas', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 21:02:36', 0),
+(735, 'N/A', 'solucoes_tecnologicas', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 21:02:36', 0),
+(736, 'N/A', 'solucoes_tecnologicas', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 21:02:36', 0),
+(737, 'N/A', 'solucoes_tecnologicas', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 21:02:36', 0),
+(738, 'N/A', 'solucoes_tecnologicas', 'Contratação no SIGA', 'nao lida', '2025-08-11 21:02:36', 0),
+(739, 'N/A', 'solucoes_tecnologicas', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 21:02:36', 0),
+(740, 'N/A', 'solucoes_tecnologicas', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 21:02:36', 0),
+(741, 'N/A', 'solucoes_tecnologicas', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 21:02:36', 0),
+(742, 'N/A', 'solucoes_tecnologicas', 'Gestores e Fiscais', 'nao lida', '2025-08-11 21:02:36', 0),
+(743, 'N/A', 'solucoes_tecnologicas', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 21:02:36', 0),
+(744, 'N/A', 'solucoes_tecnologicas', 'Garantia Contratual', 'nao lida', '2025-08-11 21:02:36', 0),
+(745, 'N/A', 'ferrovia', 'Desenvolvimento de novas soluções tecnológicas', 'nao lida', '2025-08-11 22:23:28', 0),
+(746, 'N/A', 'ferrovia', 'Estudo Técnico Preliminar / Matriz de Risco', 'nao lida', '2025-08-11 22:23:28', 0),
+(747, 'N/A', 'ferrovia', 'Termo de Referência', 'nao lida', '2025-08-11 22:23:28', 0),
+(748, 'N/A', 'ferrovia', 'DDO - Declaração de Dotação Orçamentária', 'nao lida', '2025-08-11 22:23:28', 0),
+(749, 'N/A', 'ferrovia', 'Pesquisa de Preços / Relatório Analítico', 'nao lida', '2025-08-11 22:23:28', 0),
+(750, 'N/A', 'ferrovia', 'Autorização do Ordenador de Despesa', 'nao lida', '2025-08-11 22:23:28', 0),
+(751, 'N/A', 'ferrovia', 'Minuta Edital/Contrato', 'nao lida', '2025-08-11 22:23:28', 0),
+(752, 'N/A', 'ferrovia', 'Parecer Jurídico (ASSJUR)', 'nao lida', '2025-08-11 22:23:28', 0),
+(753, 'N/A', 'ferrovia', 'Abertura do Pregão / Dispensa de Licitação', 'nao lida', '2025-08-11 22:23:28', 0),
+(754, 'N/A', 'ferrovia', 'Adjudicação (Declaração do Vencedor)', 'nao lida', '2025-08-11 22:23:28', 0),
+(755, 'N/A', 'ferrovia', 'Compliance (Due Diligence - ASSGER)', 'nao lida', '2025-08-11 22:23:28', 0),
+(756, 'N/A', 'ferrovia', 'Contratação no SIGA', 'nao lida', '2025-08-11 22:23:28', 0),
+(757, 'N/A', 'ferrovia', 'Contrato (Assinatura)', 'nao lida', '2025-08-11 22:23:28', 0),
+(758, 'N/A', 'ferrovia', 'NAD / Nota de Empenho', 'nao lida', '2025-08-11 22:23:28', 0),
+(759, 'N/A', 'ferrovia', 'Gestores e Fiscais', 'nao lida', '2025-08-11 22:23:28', 0),
+(760, 'N/A', 'ferrovia', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 22:23:28', 0),
+(761, 'N/A', 'ferrovia', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 22:23:28', 0),
+(762, 'N/A', 'ferrovia', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 22:23:28', 0),
+(763, 'N/A', 'ferrovia', 'Garantia Contratual', 'nao lida', '2025-08-11 22:23:28', 0);
 
 -- --------------------------------------------------------
 
@@ -1718,21 +2445,74 @@ CREATE TABLE `planejamento` (
   `id` int(11) NOT NULL,
   `titulo_oportunidade` varchar(255) NOT NULL,
   `setor` varchar(100) NOT NULL,
-  `valor_estimado` decimal(15,2) NOT NULL,
+  `valor_estimado` decimal(15,2) NOT NULL DEFAULT 0.00,
   `prazo` date NOT NULL,
   `status` varchar(50) NOT NULL,
   `descricao` text DEFAULT NULL,
   `project_plan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`project_plan`)),
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `pe_code` varchar(220) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `planejamento`
 --
 
-INSERT INTO `planejamento` (`id`, `titulo_oportunidade`, `setor`, `valor_estimado`, `prazo`, `status`, `descricao`, `project_plan`, `created_at`) VALUES
-(8, 'teste', 'ti', 450.00, '2025-07-26', 'andamento', 'sdf', '[{\"name\":\"Infraestrutura de TI\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Estruturar o banco de dados dos projetos de engenharia\",\"completed\":false},{\"name\":\"Aquisi\\u00e7\\u00e3o de equipamentos e softwares\",\"completed\":false},{\"name\":\"Implanta\\u00e7\\u00e3o da tecnologia BIM na CENTRAL e capacitar seus usu\\u00e1rios\",\"completed\":false},{\"name\":\"Reestrutura\\u00e7\\u00e3o de toda Infraestrutura de Rede com Seguran\\u00e7a\",\"completed\":false}],\"expanded\":true},{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true},{\"name\":\"Solu\\u00e7\\u00f5es de Atendimento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Solu\\u00e7\\u00e3o de Atendimento ao Usu\\u00e1rio \\u2013 ITSM\",\"completed\":false},{\"name\":\"Wi-Fi corporativo com seguran\\u00e7a e gerenciamento\",\"completed\":false}],\"expanded\":true},{\"name\":\"Monitoramento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Monitoramento e Observabilidade da Infraestrutura\",\"completed\":false}],\"expanded\":true},{\"name\":\"Conectividade\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Contrata\\u00e7\\u00e3o de link de internet dedicado\",\"completed\":false},{\"name\":\"Aquisi\\u00e7\\u00e3o de softwares diversos\",\"completed\":false},{\"name\":\"Servi\\u00e7o de cabeamento estruturado\",\"completed\":false}],\"expanded\":true}]', '2025-07-22 00:05:08'),
-(10, 'fteste', 'teleferico', 23423.00, '2025-08-02', 'finalizado', '', '[{\"name\":\"Reativa\\u00e7\\u00e3o e Operacionaliza\\u00e7\\u00e3o\",\"responsible\":\"Gabriel\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o do Sistema de Transporte do Telef\\u00e9rico do Alem\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-22 00:41:24');
+INSERT INTO `planejamento` (`id`, `titulo_oportunidade`, `setor`, `valor_estimado`, `prazo`, `status`, `descricao`, `project_plan`, `created_at`, `pe_code`) VALUES
+(14, 'Reforma da Estação Carioca', 'bondes', 0.00, '2025-08-01', 'finalizado', '', '[{\"name\":\"Operacionaliza\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o de Linhas\",\"completed\":false}],\"expanded\":true},{\"name\":\"Recupera\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Opera\\u00e7\\u00e3o do Bonde\",\"completed\":false}],\"expanded\":true}]', '2025-08-04 22:17:51', ''),
+(15, 'Aquisição de 6 Bondes', 'bondes', 0.00, '2025-08-01', 'finalizado', 'Aquisição de 6 Bondes', '[{\"name\":\"Operacionaliza\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o de Linhas\",\"completed\":false}],\"expanded\":true},{\"name\":\"Recupera\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Opera\\u00e7\\u00e3o do Bonde\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 21:28:57', ''),
+(16, 'Reativação do Ramal Paula Mattos/Silvestre', 'bondes', 70880625.93, '2025-08-08', 'finalizado', '', '[{\"name\":\"Operacionaliza\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o de Linhas\",\"completed\":false}],\"expanded\":true},{\"name\":\"Recupera\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Opera\\u00e7\\u00e3o do Bonde\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:15:41', ''),
+(17, 'Aquisição de Materiais Diversos - (Reforma bonde 16, 17 e 18)', 'bondes', 2510316.88, '2025-07-24', 'finalizado', '', '[{\"name\":\"Operacionaliza\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o de Linhas\",\"completed\":false}],\"expanded\":true},{\"name\":\"Recupera\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Opera\\u00e7\\u00e3o do Bonde\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 21:55:19', ''),
+(18, 'Sistema GPS Bonde', 'bondes', 7680.00, '2025-08-09', 'finalizado', 'Sistema GPS Bonde', '[{\"name\":\"Operacionaliza\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o de Linhas\",\"completed\":false}],\"expanded\":true},{\"name\":\"Recupera\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Opera\\u00e7\\u00e3o do Bonde\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:18:40', ''),
+(19, 'Circuito fechado de TV (CFTV)', 'bondes', 0.00, '2025-08-08', 'finalizado', 'SEI-100006/001486/2023', '[{\"name\":\"Operacionaliza\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o de Linhas\",\"completed\":false}],\"expanded\":true},{\"name\":\"Recupera\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Opera\\u00e7\\u00e3o do Bonde\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:19:11', ''),
+(20, 'Circuito fechado de TV (CFTV)', 'bondes', 0.00, '2025-08-08', 'finalizado', 'SEI-100006/001486/2023', '[{\"name\":\"Operacionaliza\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o de Linhas\",\"completed\":false}],\"expanded\":true},{\"name\":\"Recupera\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Opera\\u00e7\\u00e3o do Bonde\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:19:11', ''),
+(21, 'Implantação do controle da manutenção do Sistema de Bondes Santa Teresa.', 'bondes', 0.00, '2025-08-08', 'andamento', 'Implantação do controle da manutenção do Sistema de Bondes Santa Teresa.', '[{\"name\":\"Operacionaliza\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o de Linhas\",\"completed\":false}],\"expanded\":true},{\"name\":\"Recupera\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Opera\\u00e7\\u00e3o do Bonde\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:19:28', ''),
+(22, 'Bilhetagem Eletrônica', 'bondes', 2966440.00, '2025-08-09', 'andamento', 'Bilhetagem Eletrônica', '[{\"name\":\"Operacionaliza\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o de Linhas\",\"completed\":false}],\"expanded\":true},{\"name\":\"Recupera\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Opera\\u00e7\\u00e3o do Bonde\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:19:46', ''),
+(23, 'Aquisição de veículo rodoferroviário para serviços auxiliares de manutenção de via permanente; material rodante e elementos de sinalização; e equipamentos para manutenção dos bondes', 'bondes', 0.00, '2025-08-02', 'andamento', 'Aquisição de veículo rodoferroviário para serviços auxiliares de manutenção de via permanente; material rodante e elementos de sinalização; e equipamentos para manutenção dos bondes', '[{\"name\":\"Operacionaliza\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o de Linhas\",\"completed\":false}],\"expanded\":true},{\"name\":\"Recupera\\u00e7\\u00e3o do Sistema de Bondes\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Opera\\u00e7\\u00e3o do Bonde\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:20:01', ''),
+(24, 'Aquisição de 6 (Seis) VLT', 'ferrovia', 163935040.38, '2025-08-09', 'finalizado', 'Aquisição de 6 (Seis) VLT', '[{\"name\":\"Projetos de Engenharia\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Planejamento e Execu\\u00e7\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:20:29', ''),
+(25, 'Contratar empresa especializada para a execução de obra de modernização da ligação Saracuruna / Guapimirim – VLT.', 'ferrovia', 0.00, '2025-08-07', 'finalizado', 'Contratar empresa especializada para a execução de obra de modernização da ligação Saracuruna / Guapimirim – VLT.', '[{\"name\":\"Projetos de Engenharia\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Planejamento e Execu\\u00e7\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:20:43', ''),
+(26, 'Contratar empresa especializada para a execução de obras para a modernização da ligação Saracuruna/Vila Inhomirim, via VLT.', 'ferrovia', 0.00, '2025-08-02', 'finalizado', 'Contratar empresa especializada para a execução de obras para a modernização da ligação Saracuruna/Vila Inhomirim, via VLT.', '[{\"name\":\"Projetos de Engenharia\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Planejamento e Execu\\u00e7\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:20:59', ''),
+(27, 'Contratar empresa especializada para a execução de obra de construção de passarelas e muros na via férrea de transporte urbano.', 'ferrovia', 0.00, '2025-08-08', 'andamento', 'Contratar empresa especializada para a execução de obra de construção de passarelas e muros na via férrea de transporte urbano.', '[{\"name\":\"Projetos de Engenharia\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Planejamento e Execu\\u00e7\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:21:14', ''),
+(28, 'Elaborar Termo de Referência e os custos estimados das obras para contratação de empresa para execução de obras cujo objeto é a construção da 2ª Via eletrificada entre as estações de Gramacho e Saracuruna, com a extensão total de 10,6 km.', 'ferrovia', 0.00, '2025-07-30', 'planejamento', 'Elaborar Termo de Referência e os custos estimados das obras para contratação de empresa para execução de obras cujo objeto é a construção da 2ª Via eletrificada entre as estações de Gramacho e Saracuruna, com a extensão total de 10,6 km.', '[{\"name\":\"Projetos de Engenharia\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Planejamento e Execu\\u00e7\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:21:27', ''),
+(29, 'Elaborar Termo de Referência e os custos estimados das obras para contratação de empresa para execução de obras para a construção do 2º circuito de 4,4kV (sinalização) entre a Subestação de Benfica e Saracuruna, com extensão total de 29 km.', 'ferrovia', 0.00, '2025-08-08', 'finalizado', 'Elaborar Termo de Referência e os custos estimados das obras para contratação de empresa para execução de obras para a construção do 2º circuito de 4,4kV (sinalização) entre a Subestação de Benfica e Saracuruna, com extensão total de 29 km.', '[{\"name\":\"Projetos de Engenharia\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Planejamento e Execu\\u00e7\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:21:47', ''),
+(30, 'Elaborar Termo de Referência e os custos estimados das obras para contratação de empresa para execução de obras para a construção do 2º circuito de 44kv (linha de transmissão) entre a Subestação de Benfica e a Subestação de Gramacho, com extensão de 19 km', 'ferrovia', 0.00, '2025-08-08', 'planejamento', 'Elaborar Termo de Referência e os custos estimados das obras para contratação de empresa para execução de obras para a construção do 2º circuito de 44kv (linha de transmissão) entre a Subestação de Benfica e a Subestação de Gramacho, com extensão de 19 km.', '[{\"name\":\"Projetos de Engenharia\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Planejamento e Execu\\u00e7\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:22:01', ''),
+(31, 'Elaborar Termo de Referência e os custos estimados das obras para contratação de empresa para execução de obras para a construção do 2º circuito de 4,4kV (sinalização) entre a Subestação de Benfica e Belford Roxo, com extensão total de 28 km.', 'ferrovia', 0.00, '2025-08-07', 'planejamento', 'Elaborar Termo de Referência e os custos estimados das obras para contratação de empresa para execução de obras para a construção do 2º circuito de 4,4kV (sinalização) entre a Subestação de Benfica e Belford Roxo, com extensão total de 28 km.', '[{\"name\":\"Projetos de Engenharia\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Planejamento e Execu\\u00e7\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:26:01', ''),
+(32, 'Ampliar a Acessibilidade nas Estações Ferroviárias.', 'ferrovia', 0.00, '2025-08-08', 'planejamento', 'Ampliar a Acessibilidade nas Estações Ferroviárias.', '[{\"name\":\"Projetos de Engenharia\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Planejamento e Execu\\u00e7\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:26:42', ''),
+(33, 'Consultoria CTPM', 'ferrovia', 0.00, '2025-08-07', 'andamento', 'Consultoria CTPM', '[{\"name\":\"Projetos de Engenharia\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Planejamento e Execu\\u00e7\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:26:58', ''),
+(34, 'Ano 2023 - Término das obras civis (execução pela SEIC) - 2025', 'teleferico', 0.00, '2025-08-01', 'finalizado', 'Ano 2023 - Término das obras civis (execução pela SEIC) - 2025					\nFinalizada pela SEIOP', '[{\"name\":\"Reativa\\u00e7\\u00e3o e Operacionaliza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o do Sistema de Transporte do Telef\\u00e9rico do Alem\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:27:23', ''),
+(35, 'Vigilância desarmada para o teleférico e bonde de santa teresa (2025)', 'teleferico', 2982285.00, '2025-08-07', 'andamento', 'Vigilância desarmada para o teleférico e bonde de santa teresa (2025)', '[{\"name\":\"Reativa\\u00e7\\u00e3o e Operacionaliza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Reativa\\u00e7\\u00e3o do Sistema de Transporte do Telef\\u00e9rico do Alem\\u00e3o\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:27:41', ''),
+(36, 'Aquisição de licença permanente do CAD com previsão de treinamento para os funcionários da DIREO.', 'ti', 100000.00, '2025-08-08', 'finalizado', 'Aquisição de licença permanente do CAD com previsão de treinamento para os funcionários da DIREO.', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:28:23', ''),
+(37, 'Aquisição de Switches gerenciáveis de 24p ou de 48p.', 'ti', 600000.00, '2025-08-01', 'planejamento', 'Aquisição de Switches gerenciáveis de 24p ou de 48p.', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:28:56', ''),
+(38, 'Aquisição de Desktops.', 'ti', 97350.00, '2025-08-07', 'andamento', 'Aquisição de Desktops.', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:29:23', ''),
+(39, 'Aquisição de Estabilizadores e No-Breaks', 'ti', 35242.00, '2025-08-08', 'andamento', 'Aquisição de Estabilizadores e No-Breaks', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:29:48', ''),
+(40, 'Aquisição de  Monitores 23.8', 'ti', 0.00, '2025-08-06', 'andamento', 'oação do Rio Previdência para a CENTRAL. 20 desktops e 20 monitores', '[{\"name\":\"Solu\\u00e7\\u00f5es de Atendimento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Solu\\u00e7\\u00e3o de Atendimento ao Usu\\u00e1rio \\u2013 ITSM\",\"completed\":false},{\"name\":\"Wi-Fi corporativo com seguran\\u00e7a e gerenciamento\",\"completed\":false}],\"expanded\":true},{\"name\":\"Monitoramento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Monitoramento e Observabilidade da Infraestrutura\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:31:08', ''),
+(41, 'Aquisição de solução corporativa com gerenciamento e segurança, 8 (oito) Aps - (SEDE e BONDE)', 'ti', 0.00, '2025-08-08', 'planejamento', 'Aquisição de solução corporativa com gerenciamento e segurança, 8 (oito) Aps - (SEDE e BONDE)', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:31:40', ''),
+(42, 'Solução de Atendimento ao Usuário – ITSM (Usado para chamado de suporte da TI)', 'ti', 0.00, '2025-08-09', 'finalizado', 'Gratuito', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true},{\"name\":\"Conectividade\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Contrata\\u00e7\\u00e3o de link de internet dedicado\",\"completed\":false},{\"name\":\"Aquisi\\u00e7\\u00e3o de softwares diversos\",\"completed\":false},{\"name\":\"Servi\\u00e7o de cabeamento estruturado\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:32:20', ''),
+(43, 'Serviço de Hospedagem de Mensageria Eletrônica (e-mail) – renovação de contrato com PRODERJ', 'ti', 102600.00, '2025-08-07', 'finalizado', 'Serviço de Hospedagem de Mensageria Eletrônica (e-mail) – renovação de contrato com PRODERJ', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:32:42', ''),
+(44, 'Serviço de Hospedagem em servidores Virtuais Privados (VPS) – renovação de contrato com PRODERJ', 'ti', 112310.64, '2025-08-07', 'planejamento', 'Serviço de Hospedagem em servidores Virtuais Privados (VPS) – renovação de contrato com PRODERJ', '[{\"name\":\"Infraestrutura de TI\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Estruturar o banco de dados dos projetos de engenharia\",\"completed\":false},{\"name\":\"Aquisi\\u00e7\\u00e3o de equipamentos e softwares\",\"completed\":false},{\"name\":\"Implanta\\u00e7\\u00e3o da tecnologia BIM na CENTRAL e capacitar seus usu\\u00e1rios\",\"completed\":false},{\"name\":\"Reestrutura\\u00e7\\u00e3o de toda Infraestrutura de Rede com Seguran\\u00e7a\",\"completed\":false}],\"expanded\":true},{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true},{\"name\":\"Solu\\u00e7\\u00f5es de Atendimento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Solu\\u00e7\\u00e3o de Atendimento ao Usu\\u00e1rio \\u2013 ITSM\",\"completed\":false},{\"name\":\"Wi-Fi corporativo com seguran\\u00e7a e gerenciamento\",\"completed\":false}],\"expanded\":true},{\"name\":\"Monitoramento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Monitoramento e Observabilidade da Infraestrutura\",\"completed\":false}],\"expanded\":true},{\"name\":\"Conectividade\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Contrata\\u00e7\\u00e3o de link de internet dedicado\",\"completed\":false},{\"name\":\"Aquisi\\u00e7\\u00e3o de softwares diversos\",\"completed\":false},{\"name\":\"Servi\\u00e7o de cabeamento estruturado\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:33:09', ''),
+(45, 'Serviço de Hospedagem em servidores Virtuais Privados (VPS) – renovação de contrato com PRODERJ', 'ti', 112310.64, '2025-08-07', 'planejamento', 'Serviço de Hospedagem em servidores Virtuais Privados (VPS) – renovação de contrato com PRODERJ', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:33:09', ''),
+(46, 'Link de internet dedicado (Bonde) – CLARO', 'ti', 0.00, '2025-08-08', 'planejamento', 'Link de internet dedicado (Bonde) – CLARO', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:33:35', ''),
+(47, 'Link de internet dedicado 100 (Copacabana) - CLARO', 'ti', 0.00, '2025-08-09', 'planejamento', 'Link de internet dedicado 100 (Copacabana) - CLARO', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:33:47', ''),
+(48, 'Aquisição de Anti-Vírus', 'ti', 0.00, '2025-08-08', 'planejamento', 'Aquisição de Anti-Vírus', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:34:03', ''),
+(49, 'Aquisição de Sistema de Almoxarifado (O Sistema foi desenvolvido pela equipe da TI, faltando somente a chancela do PRODERJ)', 'ti', 0.00, '2025-08-09', 'planejamento', 'Falta só a chancela obrigatória do PRODERJ', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:34:20', ''),
+(50, 'Aquisição de Sistema de Folha de Pagamento e Estoque/Patrimônio', 'ti', 0.00, '2025-08-09', 'planejamento', 'Aquisição de Sistema de Folha de Pagamento e Estoque/Patrimônio					\nSEI-100006/000729/2023', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:34:42', ''),
+(51, 'Aquisição de Sistema de Contas a Pagar e Acompanhamento de Contratos', 'ti', 0.00, '2025-08-08', 'planejamento', 'Aquisição de Sistema de Contas a Pagar e Acompanhamento de Contratos', '[{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:35:25', ''),
+(52, 'Aquisição de licença anual de Softwares para elaboração de textos, planilhas e Apresentações para 180 usuários', 'ti', 200000.00, '2025-08-09', 'planejamento', 'Aquisição de licença anual de Softwares para elaboração de textos, planilhas e Apresentações para 180 usuários', '[{\"name\":\"Infraestrutura de TI\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Estruturar o banco de dados dos projetos de engenharia\",\"completed\":false},{\"name\":\"Aquisi\\u00e7\\u00e3o de equipamentos e softwares\",\"completed\":false},{\"name\":\"Implanta\\u00e7\\u00e3o da tecnologia BIM na CENTRAL e capacitar seus usu\\u00e1rios\",\"completed\":false},{\"name\":\"Reestrutura\\u00e7\\u00e3o de toda Infraestrutura de Rede com Seguran\\u00e7a\",\"completed\":false}],\"expanded\":true},{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true},{\"name\":\"Solu\\u00e7\\u00f5es de Atendimento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Solu\\u00e7\\u00e3o de Atendimento ao Usu\\u00e1rio \\u2013 ITSM\",\"completed\":false},{\"name\":\"Wi-Fi corporativo com seguran\\u00e7a e gerenciamento\",\"completed\":false}],\"expanded\":true},{\"name\":\"Monitoramento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Monitoramento e Observabilidade da Infraestrutura\",\"completed\":false}],\"expanded\":true},{\"name\":\"Conectividade\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Contrata\\u00e7\\u00e3o de link de internet dedicado\",\"completed\":false},{\"name\":\"Aquisi\\u00e7\\u00e3o de softwares diversos\",\"completed\":false},{\"name\":\"Servi\\u00e7o de cabeamento estruturado\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:35:47', ''),
+(53, 'Aquisição do software ArcGis', 'ti', 120000.00, '2025-08-07', 'planejamento', 'Aquisição do software ArcGis', '[{\"name\":\"Infraestrutura de TI\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Estruturar o banco de dados dos projetos de engenharia\",\"completed\":false},{\"name\":\"Aquisi\\u00e7\\u00e3o de equipamentos e softwares\",\"completed\":false},{\"name\":\"Implanta\\u00e7\\u00e3o da tecnologia BIM na CENTRAL e capacitar seus usu\\u00e1rios\",\"completed\":false},{\"name\":\"Reestrutura\\u00e7\\u00e3o de toda Infraestrutura de Rede com Seguran\\u00e7a\",\"completed\":false}],\"expanded\":true},{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true},{\"name\":\"Solu\\u00e7\\u00f5es de Atendimento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Solu\\u00e7\\u00e3o de Atendimento ao Usu\\u00e1rio \\u2013 ITSM\",\"completed\":false},{\"name\":\"Wi-Fi corporativo com seguran\\u00e7a e gerenciamento\",\"completed\":false}],\"expanded\":true},{\"name\":\"Monitoramento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Monitoramento e Observabilidade da Infraestrutura\",\"completed\":false}],\"expanded\":true},{\"name\":\"Conectividade\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Contrata\\u00e7\\u00e3o de link de internet dedicado\",\"completed\":false},{\"name\":\"Aquisi\\u00e7\\u00e3o de softwares diversos\",\"completed\":false},{\"name\":\"Servi\\u00e7o de cabeamento estruturado\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:36:08', ''),
+(54, 'Serviço de Cabeamento Estruturado e Certificado', 'ti', 600000.00, '2025-08-01', 'planejamento', '', '[{\"name\":\"Infraestrutura de TI\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Estruturar o banco de dados dos projetos de engenharia\",\"completed\":false},{\"name\":\"Aquisi\\u00e7\\u00e3o de equipamentos e softwares\",\"completed\":false},{\"name\":\"Implanta\\u00e7\\u00e3o da tecnologia BIM na CENTRAL e capacitar seus usu\\u00e1rios\",\"completed\":false},{\"name\":\"Reestrutura\\u00e7\\u00e3o de toda Infraestrutura de Rede com Seguran\\u00e7a\",\"completed\":false}],\"expanded\":true},{\"name\":\"Moderniza\\u00e7\\u00e3o\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Moderniza\\u00e7\\u00e3o do parque computacional (desktops e notebooks)\",\"completed\":false}],\"expanded\":true},{\"name\":\"Solu\\u00e7\\u00f5es de Atendimento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Solu\\u00e7\\u00e3o de Atendimento ao Usu\\u00e1rio \\u2013 ITSM\",\"completed\":false},{\"name\":\"Wi-Fi corporativo com seguran\\u00e7a e gerenciamento\",\"completed\":false}],\"expanded\":true},{\"name\":\"Monitoramento\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Monitoramento e Observabilidade da Infraestrutura\",\"completed\":false}],\"expanded\":true},{\"name\":\"Conectividade\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Contrata\\u00e7\\u00e3o de link de internet dedicado\",\"completed\":false},{\"name\":\"Aquisi\\u00e7\\u00e3o de softwares diversos\",\"completed\":false},{\"name\":\"Servi\\u00e7o de cabeamento estruturado\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:40:23', ''),
+(55, 'Capacitação dos empregados da GERGEP nos softwares de edição de texto e planilhas.', 'capacitacao', 0.00, '2025-08-09', 'finalizado', 'Capacitação dos empregados da GERGEP nos softwares de edição de texto e planilhas.', '[{\"name\":\"Capacita\\u00e7\\u00e3o Geral\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP nos softwares de edi\\u00e7\\u00e3o de texto e planilhas\",\"completed\":false},{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP no tratamento do arquivamento de documentos\",\"completed\":false},{\"name\":\"Forma\\u00e7\\u00e3o e capacita\\u00e7\\u00e3o do corpo t\\u00e9cnico em processos de TIC\",\"completed\":false}],\"expanded\":true},{\"name\":\"Treinamentos Espec\\u00edficos\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Treinamentos no Sistema e-Social\",\"completed\":false},{\"name\":\"Treinamentos para \\u00e1rea de Seguran\\u00e7a do Trabalho\",\"completed\":false},{\"name\":\"Treinamentos visando \\u00e0 Educa\\u00e7\\u00e3o Ambiental\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:42:11', ''),
+(56, 'Contratação de cursos para capacitação dos empregados da GERGEP, pertinentes ao trabalho realizado na gerência.', 'capacitacao', 0.00, '2025-08-07', 'andamento', 'Contratação de cursos para capacitação dos empregados da GERGEP, pertinentes ao trabalho realizado na gerência.', '[{\"name\":\"Treinamentos Espec\\u00edficos\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Treinamentos no Sistema e-Social\",\"completed\":false},{\"name\":\"Treinamentos para \\u00e1rea de Seguran\\u00e7a do Trabalho\",\"completed\":false},{\"name\":\"Treinamentos visando \\u00e0 Educa\\u00e7\\u00e3o Ambiental\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:42:29', ''),
+(57, 'Treinamento no software CAD', 'capacitacao', 0.00, '2025-08-07', 'andamento', 'Treinamento no software CAD', '[{\"name\":\"Capacita\\u00e7\\u00e3o Geral\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP nos softwares de edi\\u00e7\\u00e3o de texto e planilhas\",\"completed\":false},{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP no tratamento do arquivamento de documentos\",\"completed\":false},{\"name\":\"Forma\\u00e7\\u00e3o e capacita\\u00e7\\u00e3o do corpo t\\u00e9cnico em processos de TIC\",\"completed\":false}],\"expanded\":true},{\"name\":\"Treinamentos Espec\\u00edficos\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Treinamentos no Sistema e-Social\",\"completed\":false},{\"name\":\"Treinamentos para \\u00e1rea de Seguran\\u00e7a do Trabalho\",\"completed\":false},{\"name\":\"Treinamentos visando \\u00e0 Educa\\u00e7\\u00e3o Ambiental\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:42:48', ''),
+(58, 'Treinamento no software BIM', 'capacitacao', 0.00, '2025-08-08', 'andamento', 'Treinamento no software BIM', '[{\"name\":\"Capacita\\u00e7\\u00e3o Geral\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP nos softwares de edi\\u00e7\\u00e3o de texto e planilhas\",\"completed\":false},{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP no tratamento do arquivamento de documentos\",\"completed\":false},{\"name\":\"Forma\\u00e7\\u00e3o e capacita\\u00e7\\u00e3o do corpo t\\u00e9cnico em processos de TIC\",\"completed\":false}],\"expanded\":true},{\"name\":\"Treinamentos Espec\\u00edficos\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Treinamentos no Sistema e-Social\",\"completed\":false},{\"name\":\"Treinamentos para \\u00e1rea de Seguran\\u00e7a do Trabalho\",\"completed\":false},{\"name\":\"Treinamentos visando \\u00e0 Educa\\u00e7\\u00e3o Ambiental\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:43:05', ''),
+(59, 'Treinamento para adequação à LGPD (Lei Geral de Proteção de Dados)', 'capacitacao', 0.00, '2025-08-07', 'andamento', 'Treinamento para adequação à LGPD (Lei Geral de Proteção de Dados)', '[{\"name\":\"Capacita\\u00e7\\u00e3o Geral\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP nos softwares de edi\\u00e7\\u00e3o de texto e planilhas\",\"completed\":false},{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP no tratamento do arquivamento de documentos\",\"completed\":false},{\"name\":\"Forma\\u00e7\\u00e3o e capacita\\u00e7\\u00e3o do corpo t\\u00e9cnico em processos de TIC\",\"completed\":false}],\"expanded\":true},{\"name\":\"Treinamentos Espec\\u00edficos\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Treinamentos no Sistema e-Social\",\"completed\":false},{\"name\":\"Treinamentos para \\u00e1rea de Seguran\\u00e7a do Trabalho\",\"completed\":false},{\"name\":\"Treinamentos visando \\u00e0 Educa\\u00e7\\u00e3o Ambiental\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:43:18', ''),
+(60, 'Treinamento para qualificação de pessoal em processos de TIC', 'capacitacao', 0.00, '2025-08-09', 'andamento', 'Treinamento para qualificação de pessoal em processos de TIC', '[{\"name\":\"Capacita\\u00e7\\u00e3o Geral\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP nos softwares de edi\\u00e7\\u00e3o de texto e planilhas\",\"completed\":false},{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP no tratamento do arquivamento de documentos\",\"completed\":false},{\"name\":\"Forma\\u00e7\\u00e3o e capacita\\u00e7\\u00e3o do corpo t\\u00e9cnico em processos de TIC\",\"completed\":false}],\"expanded\":true},{\"name\":\"Treinamentos Espec\\u00edficos\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Treinamentos no Sistema e-Social\",\"completed\":false},{\"name\":\"Treinamentos para \\u00e1rea de Seguran\\u00e7a do Trabalho\",\"completed\":false},{\"name\":\"Treinamentos visando \\u00e0 Educa\\u00e7\\u00e3o Ambiental\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:43:34', ''),
+(61, 'Treinamento no sistema do e-Social', 'capacitacao', 0.00, '2025-08-09', 'andamento', 'Treinamento no sistema do e-Social', '[{\"name\":\"Capacita\\u00e7\\u00e3o Geral\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP nos softwares de edi\\u00e7\\u00e3o de texto e planilhas\",\"completed\":false},{\"name\":\"Capacita\\u00e7\\u00e3o dos empregados da GERGEP no tratamento do arquivamento de documentos\",\"completed\":false},{\"name\":\"Forma\\u00e7\\u00e3o e capacita\\u00e7\\u00e3o do corpo t\\u00e9cnico em processos de TIC\",\"completed\":false}],\"expanded\":true},{\"name\":\"Treinamentos Espec\\u00edficos\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Treinamentos no Sistema e-Social\",\"completed\":false},{\"name\":\"Treinamentos para \\u00e1rea de Seguran\\u00e7a do Trabalho\",\"completed\":false},{\"name\":\"Treinamentos visando \\u00e0 Educa\\u00e7\\u00e3o Ambiental\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:45:30', ''),
+(62, 'Controle de todos os bens móveis de posse da CENTRAL, por meio da atualização dos sistemas existentes ou contratação/criação de sistemas', 'patrimonio', 0.00, '2025-08-07', 'planejamento', 'Controle de todos os bens móveis de posse da CENTRAL, por meio da atualização dos sistemas existentes ou contratação/criação de sistemas', '[{\"name\":\"Gest\\u00e3o Documental\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Tratamento e digitaliza\\u00e7\\u00e3o de documenta\\u00e7\\u00e3o administrativa e hist\\u00f3rica\",\"completed\":false}],\"expanded\":true},{\"name\":\"Controle de Bens\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Controle de todos os bens m\\u00f3veis e im\\u00f3veis\",\"completed\":false},{\"name\":\"Identifica\\u00e7\\u00e3o dos bens que integram o acervo patrimonial\",\"completed\":false}],\"expanded\":true}]', '2025-07-23 23:45:43', ''),
+(68, 'Manutenção da Subestação dos Bondes de Santa Teresa', 'operacionalizacao_bonde', 267574.13, '2025-08-09', 'finalizado', '', '[{\"name\":\"PLANEJAMENTO PCA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"DFD (Doc.de Formaliza\\u00e7\\u00e3o de Demanda)\",\"completed\":false},{\"name\":\"Sistema PCA (Plano de Contrata\\u00e7\\u00f5es Anual)\",\"completed\":false}],\"expanded\":true},{\"name\":\"Fase Preparat\\u00f3ria\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Estudo T\\u00e9cnico Preliminar \\/ Matriz de Risco\",\"completed\":false},{\"name\":\"Termo de Refer\\u00eancia\",\"completed\":false},{\"name\":\"Pesquisa de Pre\\u00e7os \\/ Relat\\u00f3rio Anal\\u00edtico\",\"completed\":false},{\"name\":\"Autoriza\\u00e7\\u00e3o do Ordenador de Despesa\",\"completed\":false},{\"name\":\"DDO - Declara\\u00e7\\u00e3o de Dota\\u00e7\\u00e3o Or\\u00e7ament\\u00e1ria\",\"completed\":false},{\"name\":\"Minuta Edital\\/Contrato\",\"completed\":false},{\"name\":\"Parecer Jur\\u00eddico (ASSJUR)\",\"completed\":false},{\"name\":\"Lan\\u00e7amento do Edital no SIGA\",\"completed\":false}],\"expanded\":true},{\"name\":\"Fase Externa\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Publica\\u00e7\\u00e3o do Aviso de Edital\",\"completed\":false},{\"name\":\"Recibo de envio de Edital ao TCE \\/ Lan\\u00e7amento SIGA\",\"completed\":false},{\"name\":\"Abertura do Preg\\u00e3o \\/ Dispensa de Licita\\u00e7\\u00e3o\",\"completed\":false},{\"name\":\"Adjudica\\u00e7\\u00e3o (Declara\\u00e7\\u00e3o do Vencedor)\",\"completed\":false},{\"name\":\"Compliance (Due Diligence - ASSGER)\",\"completed\":false}],\"expanded\":true}]', '2025-08-01 22:56:26', ''),
+(88, 'TE', 'solucoes_tecnologicas', 2.00, '2025-09-04', 'planejamento', 'SDF', '[{\"name\":\"PLANEJAMENTO PCA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Desenvolvimento de novas solu\\u00e7\\u00f5es tecnol\\u00f3gicas\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE PREPARAT\\u00d3RIA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Estudo T\\u00e9cnico Preliminar \\/ Matriz de Risco\",\"completed\":false},{\"name\":\"Termo de Refer\\u00eancia\",\"completed\":false},{\"name\":\"Pesquisa de Pre\\u00e7os \\/ Relat\\u00f3rio Anal\\u00edtico\",\"completed\":false},{\"name\":\"Autoriza\\u00e7\\u00e3o do Ordenador de Despesa\",\"completed\":false},{\"name\":\"DDO - Declara\\u00e7\\u00e3o de Dota\\u00e7\\u00e3o Or\\u00e7ament\\u00e1ria\",\"completed\":false},{\"name\":\"Minuta Edital\\/Contrato\",\"completed\":false},{\"name\":\"Parecer Jur\\u00eddico (ASSJUR)\",\"completed\":false},{\"name\":\"Lan\\u00e7amento do Edital no SIGA\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE EXTERNA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Recibo de envio de Edital ao TCE \\/ Lan\\u00e7amento SIGA\",\"completed\":false},{\"name\":\"Abertura do Preg\\u00e3o \\/ Dispensa de Licita\\u00e7\\u00e3o\",\"completed\":false},{\"name\":\"Adjudica\\u00e7\\u00e3o (Declara\\u00e7\\u00e3o do Vencedor)\",\"completed\":false},{\"name\":\"Compliance (Due Diligence - ASSGER)\",\"completed\":false},{\"name\":\"Homologa\\u00e7\\u00e3o e Publica\\u00e7\\u00e3o no D.O\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE DE CONTRATA\\u00c7\\u00c3O\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Contrata\\u00e7\\u00e3o no SIGA\",\"completed\":false},{\"name\":\"NAD \\/ Nota de Empenho\",\"completed\":false},{\"name\":\"Contrato (Assinatura)\",\"completed\":false},{\"name\":\"Gestores e Fiscais\",\"completed\":false},{\"name\":\"Garantia Contratual\",\"completed\":false}],\"expanded\":true}]', '2025-08-11 23:02:11', 'PE 10.1.1'),
+(89, 'E', 'solucoes_tecnologicas', 324.00, '2025-08-21', 'planejamento', 'ASDF', '[{\"name\":\"PLANEJAMENTO PCA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Desenvolvimento de novas solu\\u00e7\\u00f5es tecnol\\u00f3gicas\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE PREPARAT\\u00d3RIA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Estudo T\\u00e9cnico Preliminar \\/ Matriz de Risco\",\"completed\":false},{\"name\":\"Termo de Refer\\u00eancia\",\"completed\":false},{\"name\":\"Pesquisa de Pre\\u00e7os \\/ Relat\\u00f3rio Anal\\u00edtico\",\"completed\":false},{\"name\":\"Autoriza\\u00e7\\u00e3o do Ordenador de Despesa\",\"completed\":false},{\"name\":\"DDO - Declara\\u00e7\\u00e3o de Dota\\u00e7\\u00e3o Or\\u00e7ament\\u00e1ria\",\"completed\":false},{\"name\":\"Minuta Edital\\/Contrato\",\"completed\":false},{\"name\":\"Parecer Jur\\u00eddico (ASSJUR)\",\"completed\":false},{\"name\":\"Lan\\u00e7amento do Edital no SIGA\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE EXTERNA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Recibo de envio de Edital ao TCE \\/ Lan\\u00e7amento SIGA\",\"completed\":false},{\"name\":\"Abertura do Preg\\u00e3o \\/ Dispensa de Licita\\u00e7\\u00e3o\",\"completed\":false},{\"name\":\"Adjudica\\u00e7\\u00e3o (Declara\\u00e7\\u00e3o do Vencedor)\",\"completed\":false},{\"name\":\"Compliance (Due Diligence - ASSGER)\",\"completed\":false},{\"name\":\"Homologa\\u00e7\\u00e3o e Publica\\u00e7\\u00e3o no D.O\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE DE CONTRATA\\u00c7\\u00c3O\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Contrata\\u00e7\\u00e3o no SIGA\",\"completed\":false},{\"name\":\"NAD \\/ Nota de Empenho\",\"completed\":false},{\"name\":\"Contrato (Assinatura)\",\"completed\":false},{\"name\":\"Gestores e Fiscais\",\"completed\":false},{\"name\":\"Garantia Contratual\",\"completed\":false}],\"expanded\":true}]', '2025-08-11 23:02:24', 'PE 10.1.2'),
+(90, 'R5WE', 'solucoes_tecnologicas', 3.00, '2025-09-05', 'planejamento', 'SDFA', '[{\"name\":\"PLANEJAMENTO PCA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Desenvolvimento de novas solu\\u00e7\\u00f5es tecnol\\u00f3gicas\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE PREPARAT\\u00d3RIA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Estudo T\\u00e9cnico Preliminar \\/ Matriz de Risco\",\"completed\":false},{\"name\":\"Termo de Refer\\u00eancia\",\"completed\":false},{\"name\":\"Pesquisa de Pre\\u00e7os \\/ Relat\\u00f3rio Anal\\u00edtico\",\"completed\":false},{\"name\":\"Autoriza\\u00e7\\u00e3o do Ordenador de Despesa\",\"completed\":false},{\"name\":\"DDO - Declara\\u00e7\\u00e3o de Dota\\u00e7\\u00e3o Or\\u00e7ament\\u00e1ria\",\"completed\":false},{\"name\":\"Minuta Edital\\/Contrato\",\"completed\":false},{\"name\":\"Parecer Jur\\u00eddico (ASSJUR)\",\"completed\":false},{\"name\":\"Lan\\u00e7amento do Edital no SIGA\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE EXTERNA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Recibo de envio de Edital ao TCE \\/ Lan\\u00e7amento SIGA\",\"completed\":false},{\"name\":\"Abertura do Preg\\u00e3o \\/ Dispensa de Licita\\u00e7\\u00e3o\",\"completed\":false},{\"name\":\"Adjudica\\u00e7\\u00e3o (Declara\\u00e7\\u00e3o do Vencedor)\",\"completed\":false},{\"name\":\"Compliance (Due Diligence - ASSGER)\",\"completed\":false},{\"name\":\"Homologa\\u00e7\\u00e3o e Publica\\u00e7\\u00e3o no D.O\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE DE CONTRATA\\u00c7\\u00c3O\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Contrata\\u00e7\\u00e3o no SIGA\",\"completed\":false},{\"name\":\"NAD \\/ Nota de Empenho\",\"completed\":false},{\"name\":\"Contrato (Assinatura)\",\"completed\":false},{\"name\":\"Gestores e Fiscais\",\"completed\":false},{\"name\":\"Garantia Contratual\",\"completed\":false}],\"expanded\":true}]', '2025-08-11 23:02:36', 'PE 10.1.3'),
+(91, 'teste', 'ferrovia', 324.00, '2025-08-29', 'planejamento', 'sadf', '[{\"name\":\"PLANEJAMENTO PCA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Desenvolvimento de novas solu\\u00e7\\u00f5es tecnol\\u00f3gicas\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE PREPARAT\\u00d3RIA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Estudo T\\u00e9cnico Preliminar \\/ Matriz de Risco\",\"completed\":false},{\"name\":\"Termo de Refer\\u00eancia\",\"completed\":false},{\"name\":\"Pesquisa de Pre\\u00e7os \\/ Relat\\u00f3rio Anal\\u00edtico\",\"completed\":false},{\"name\":\"Autoriza\\u00e7\\u00e3o do Ordenador de Despesa\",\"completed\":false},{\"name\":\"DDO - Declara\\u00e7\\u00e3o de Dota\\u00e7\\u00e3o Or\\u00e7ament\\u00e1ria\",\"completed\":false},{\"name\":\"Minuta Edital\\/Contrato\",\"completed\":false},{\"name\":\"Parecer Jur\\u00eddico (ASSJUR)\",\"completed\":false},{\"name\":\"Lan\\u00e7amento do Edital no SIGA\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE EXTERNA\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Recibo de envio de Edital ao TCE \\/ Lan\\u00e7amento SIGA\",\"completed\":false},{\"name\":\"Abertura do Preg\\u00e3o \\/ Dispensa de Licita\\u00e7\\u00e3o\",\"completed\":false},{\"name\":\"Adjudica\\u00e7\\u00e3o (Declara\\u00e7\\u00e3o do Vencedor)\",\"completed\":false},{\"name\":\"Compliance (Due Diligence - ASSGER)\",\"completed\":false},{\"name\":\"Homologa\\u00e7\\u00e3o e Publica\\u00e7\\u00e3o no D.O\",\"completed\":false}],\"expanded\":true},{\"name\":\"FASE DE CONTRATA\\u00c7\\u00c3O\",\"responsible\":\"\",\"etapas\":[{\"name\":\"Contrata\\u00e7\\u00e3o no SIGA\",\"completed\":false},{\"name\":\"NAD \\/ Nota de Empenho\",\"completed\":false},{\"name\":\"Contrato (Assinatura)\",\"completed\":false},{\"name\":\"Gestores e Fiscais\",\"completed\":false},{\"name\":\"Garantia Contratual\",\"completed\":false}],\"expanded\":true}]', '2025-08-12 00:23:28', 'PE 3.1.1');
 
 -- --------------------------------------------------------
 
@@ -1785,6 +2565,32 @@ CREATE TABLE `produtos` (
   `estoque_minimo` int(11) DEFAULT 0,
   `categoria` varchar(220) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `projetos`
+--
+
+CREATE TABLE `projetos` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `prioridade` enum('Alta','Média','Baixa') DEFAULT 'Média',
+  `data_inicio` date DEFAULT NULL,
+  `data_entrega` date DEFAULT NULL,
+  `orcamento` decimal(10,2) DEFAULT 0.00,
+  `progresso` int(11) DEFAULT 0,
+  `status` enum('Em Andamento','Concluído','Pendente') DEFAULT 'Em Andamento'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `projetos`
+--
+
+INSERT INTO `projetos` (`id`, `nome`, `descricao`, `prioridade`, `data_inicio`, `data_entrega`, `orcamento`, `progresso`, `status`) VALUES
+(1, 'MONITOR', 'w', 'Média', '2025-08-20', '2025-08-30', 5150.00, 0, 'Em Andamento'),
+(2, 'NOTEBOOK ', 'test', 'Baixa', '2025-08-28', '2025-09-30', 234.00, 0, 'Em Andamento');
 
 -- --------------------------------------------------------
 
@@ -1850,6 +2656,49 @@ INSERT INTO `setores` (`id`, `nome_setor`) VALUES
 (6, 'ccooperacao'),
 (7, 'sisbonde'),
 (8, 'planejamento');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `subtopicos`
+--
+
+CREATE TABLE `subtopicos` (
+  `id` int(11) NOT NULL,
+  `topico_id` int(11) DEFAULT NULL,
+  `titulo` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `tarefas`
+--
+
+CREATE TABLE `tarefas` (
+  `id` int(11) NOT NULL,
+  `projeto_id` int(11) DEFAULT NULL,
+  `nome` varchar(255) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `prioridade` enum('Alta','Média','Baixa') DEFAULT 'Média',
+  `data` date DEFAULT NULL,
+  `progresso` int(11) DEFAULT 0,
+  `status` enum('Pendente','Em Andamento','Concluído') DEFAULT 'Pendente',
+  `responsavel` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `topicos`
+--
+
+CREATE TABLE `topicos` (
+  `id` int(11) NOT NULL,
+  `bloco_id` int(11) DEFAULT NULL,
+  `titulo` varchar(255) DEFAULT NULL,
+  `descricao` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -2003,6 +2852,13 @@ INSERT INTO `viagens` (`id`, `bonde_id`, `origem`, `destino`, `motorneiro`, `aux
 --
 ALTER TABLE `acidentes`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `blocos`
+--
+ALTER TABLE `blocos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `projeto_id` (`projeto_id`);
 
 --
 -- Índices de tabela `bondes`
@@ -2187,6 +3043,12 @@ ALTER TABLE `produtos`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Índices de tabela `projetos`
+--
+ALTER TABLE `projetos`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Índices de tabela `relatorios_agendados`
 --
 ALTER TABLE `relatorios_agendados`
@@ -2199,6 +3061,27 @@ ALTER TABLE `relatorios_agendados`
 --
 ALTER TABLE `setores`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `subtopicos`
+--
+ALTER TABLE `subtopicos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `topico_id` (`topico_id`);
+
+--
+-- Índices de tabela `tarefas`
+--
+ALTER TABLE `tarefas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `projeto_id` (`projeto_id`);
+
+--
+-- Índices de tabela `topicos`
+--
+ALTER TABLE `topicos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bloco_id` (`bloco_id`);
 
 --
 -- Índices de tabela `transferencias`
@@ -2250,7 +3133,13 @@ ALTER TABLE `viagens`
 -- AUTO_INCREMENT de tabela `acidentes`
 --
 ALTER TABLE `acidentes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT de tabela `blocos`
+--
+ALTER TABLE `blocos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `categorias`
@@ -2340,13 +3229,13 @@ ALTER TABLE `gestao_contratos`
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=861;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=885;
 
 --
 -- AUTO_INCREMENT de tabela `macroetapas`
 --
 ALTER TABLE `macroetapas`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT de tabela `manutencoes`
@@ -2358,7 +3247,7 @@ ALTER TABLE `manutencoes`
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=154;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=764;
 
 --
 -- AUTO_INCREMENT de tabela `ordens_compra`
@@ -2394,7 +3283,7 @@ ALTER TABLE `permissoes`
 -- AUTO_INCREMENT de tabela `planejamento`
 --
 ALTER TABLE `planejamento`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
 
 --
 -- AUTO_INCREMENT de tabela `prestacao_contas`
@@ -2409,6 +3298,12 @@ ALTER TABLE `produtos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `projetos`
+--
+ALTER TABLE `projetos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de tabela `relatorios_agendados`
 --
 ALTER TABLE `relatorios_agendados`
@@ -2419,6 +3314,24 @@ ALTER TABLE `relatorios_agendados`
 --
 ALTER TABLE `setores`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT de tabela `subtopicos`
+--
+ALTER TABLE `subtopicos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `tarefas`
+--
+ALTER TABLE `tarefas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `topicos`
+--
+ALTER TABLE `topicos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `transferencias`
@@ -2455,6 +3368,12 @@ ALTER TABLE `vencimentos_futuros`
 --
 
 --
+-- Restrições para tabelas `blocos`
+--
+ALTER TABLE `blocos`
+  ADD CONSTRAINT `blocos_ibfk_1` FOREIGN KEY (`projeto_id`) REFERENCES `projetos` (`id`);
+
+--
 -- Restrições para tabelas `certidoes`
 --
 ALTER TABLE `certidoes`
@@ -2477,6 +3396,24 @@ ALTER TABLE `contratos_parcelas`
 --
 ALTER TABLE `etapas_contratos`
   ADD CONSTRAINT `etapas_contratos_ibfk_1` FOREIGN KEY (`contract_id`) REFERENCES `gestao_contratos` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `subtopicos`
+--
+ALTER TABLE `subtopicos`
+  ADD CONSTRAINT `subtopicos_ibfk_1` FOREIGN KEY (`topico_id`) REFERENCES `topicos` (`id`);
+
+--
+-- Restrições para tabelas `tarefas`
+--
+ALTER TABLE `tarefas`
+  ADD CONSTRAINT `tarefas_ibfk_1` FOREIGN KEY (`projeto_id`) REFERENCES `projetos` (`id`);
+
+--
+-- Restrições para tabelas `topicos`
+--
+ALTER TABLE `topicos`
+  ADD CONSTRAINT `topicos_ibfk_1` FOREIGN KEY (`bloco_id`) REFERENCES `blocos` (`id`);
 
 --
 -- Restrições para tabelas `vencimentos_futuros`

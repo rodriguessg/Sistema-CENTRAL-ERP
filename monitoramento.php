@@ -15,7 +15,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
         exit;
     }
 
-    $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro FROM acidentes ORDER BY data_registro DESC";
+    $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status 
+            FROM acidentes 
+            ORDER BY data_registro DESC";
     $result = $conn->query($sql);
 
     if (!$result) {
@@ -35,7 +37,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
     exit;
 }
 
-// include 'header.php';
 // Conexão com o banco
 $host = 'localhost';
 $user = 'root';
@@ -56,7 +57,9 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 
 // Consulta acidentes
-$sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro FROM acidentes ORDER BY data_registro DESC";
+$sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status 
+        FROM acidentes 
+        ORDER BY data_registro DESC";
 $result = $conn->query($sql);
 
 if (!$result) {
@@ -283,7 +286,7 @@ $result->data_seek(0);
                         $corClass = str_replace(' ', '-', strtolower($nivel));
                         $severityClass = 'cor-' . str_replace('/', '-', strtolower($row['cor']));
                         $hora = date('H:i', strtotime($row['data_registro']));
-                        $status = (strtotime($row['data_registro']) > strtotime('-1 hour')) ? 'Aberta' : 'Resolvida';
+                        $status = $row['status'] ?? 'Desconhecido';
                         ?>
                         <tr onclick="selectOccurrence(<?= $row['id'] ?>, this)">
                             <td class="nivel-emerg <?= $corClass ?>"><?= htmlspecialchars($nivel) ?></td>
@@ -305,7 +308,7 @@ $result->data_seek(0);
                 <iframe src="https://monitoramento.mobilesat.com.br/locator/index.html?t=4ebee7c35e2e2fbedde92f4b2611c141F0AA094FB415B295867B3BD93520050BB6566DD7" allowfullscreen></iframe>
             </div>
             <div class="details-section" id="occurrence-details">
-                <h3>Detalhes Sobre úiltima Ocorrência </h3>
+                <h3>Detalhes Sobre Última Ocorrência</h3>
                 <p>Nível: N/A</p>
                 <p>Gravidade: N/A</p>
                 <p>Tipo: N/A</p>
@@ -361,7 +364,7 @@ $result->data_seek(0);
                         const corClass = nivel.toLowerCase().replace(' ', '-');
                         const severityClass = 'cor-' + row.cor.toLowerCase().replace('/', '-');
                         const hora = new Date(row.data_registro).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                        const status = (new Date(row.data_registro) > new Date(Date.now() - 60 * 60 * 1000)) ? 'Aberta' : 'Resolvida';
+                        const status = row.status || 'Desconhecido';
 
                         const tr = document.createElement('tr');
                         tr.setAttribute('onclick', `selectOccurrence(${row.id}, this)`);

@@ -1,0 +1,134 @@
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .error { color: #e74c3c; font-weight: bold; margin-top: 10px; }
+        .success { color: #2ecc71; font-weight: bold; margin-top: 10px; }
+        .search-section {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        .search-section input, .search-section select {
+            flex-grow: 1;
+            min-width: 200px;
+        }
+        .accidents-table {
+            margin-top: 20px;
+        }
+        .accidents-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .accidents-table th, .accidents-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .accidents-table th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: bold;
+        }
+        .accidents-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .accidents-table tr:hover {
+            background-color: #e9ecef;
+        }
+        .status-btn {
+            padding: 5px 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .status-btn.resolved {
+            background-color: #2ecc71;
+            cursor: not-allowed;
+        }
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .pagination button {
+            padding: 8px 12px;
+            margin: 0 5px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .pagination button:hover {
+            background-color: #2980b9;
+        }
+        .pagination button.active {
+            background-color: #2980b9;
+            font-weight: bold;
+        }
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #555;
+        }
+        .severity-green { background-color: #d1f5d3; color: #2f855a; }
+        .severity-yellow { background-color: #fff3cd; color: #d97706; }
+        .severity-red { background-color: #f8d7da; color: #991b1b; }
+        .severity-yellow-red { background: linear-gradient(to right, #fff3cd, #f8d7da); color: #fff; }
+        .total-accidents {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }

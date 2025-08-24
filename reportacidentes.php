@@ -1,6 +1,5 @@
 <?php
 session_start();
-include 'header.php';
 
 // Configuração do banco de dados
 $host = 'localhost';
@@ -24,7 +23,6 @@ $sucesso = '';
 
 // Manipular registro de novo acidente
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
-    $data = $_POST['data'] ?? date('Y-m-d');
     $descricao = $_POST['descricao'] ?? '';
     $localizacao = $_POST['localizacao'] ?? '';
     $severidade = $_POST['severidade'] ?? '';
@@ -36,19 +34,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
     } elseif (!in_array($severidade, ['Leve', 'Moderado', 'Grave'])) {
         $erro = "Severidade inválida!";
     } else {
-        $sql = "INSERT INTO acidentes (data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'em andamento')";
+        $sql = "INSERT INTO acidentes (descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status) 
+                VALUES (?, ?, ?, ?, ?, ?, NOW(), 'em andamento')";
         $stmt = $conn->prepare($sql);
 
         if (!$stmt) {
             $erro = "Erro na preparação da query: " . $conn->error;
         } else {
-            $stmt->bind_param("sssssss", $data, $descricao, $localizacao, $username, $severidade, $categoria, $cor);
+            $stmt->bind_param("ssssss", $descricao, $localizacao, $username, $severidade, $categoria, $cor);
             if (!$stmt->execute()) {
                 $erro = "Erro ao registrar o acidente: " . $stmt->error;
             } else {
                 $sucesso = "Acidente registrado com sucesso!";
-                header("Location: reportacidentes.php?success=1");
+                header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=acidente&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
                 exit();
             }
             $stmt->close();
@@ -56,15 +54,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
     }
 }
 
-// Manipular atualização de status
+// Manipular atualização de status e órgãos de emergência
 if (isset($_POST['update_status']) && isset($_POST['id'])) {
     $id = $_POST['id'];
-    $sql = "UPDATE acidentes SET status = 'resolvido' WHERE id = ?";
+    $policia = isset($_POST['policia'][$id]) ? 1 : 0;
+    $bombeiros = isset($_POST['bombeiros'][$id]) ? 1 : 0;
+    $samu = isset($_POST['samu'][$id]) ? 1 : 0;
+
+    $sql = "UPDATE acidentes SET status = 'resolvido', policia = ?, bombeiros = ?, samu = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
     if ($stmt) {
-        $stmt->bind_param("i", $id);
+        $stmt->bind_param("iiii", $policia, $bombeiros, $samu, $id);
         if ($stmt->execute()) {
-            // $sucesso = "Status do acidente atualizado para resolvido!";
+            $sucesso = "Status do acidente atualizado para resolvido!";
         } else {
             $erro = "Erro ao atualizar o status: " . $stmt->error;
         }
@@ -74,12 +76,12 @@ if (isset($_POST['update_status']) && isset($_POST['id'])) {
     }
 }
 
-// Buscar todos os registros (sem LIMIT para paginação no JavaScript)
+// Buscar todos os registros
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-$sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status 
+$sql = "SELECT id, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status, policia, bombeiros, samu 
         FROM acidentes 
         WHERE descricao LIKE ? OR localizacao LIKE ? OR severidade LIKE ? OR categoria LIKE ? 
-        ORDER BY data_registro ";  /**DESC */
+        ORDER BY data_registro";
 $params = ["%$search%", "%$search%", "%$search%", "%$search%"];
 
 $stmt = $conn->prepare($sql);
@@ -124,7 +126,8 @@ function getSeverityClass($cor, $colorClasses) {
     return isset($colorClasses[$cor]) ? $colorClasses[$cor] : '';
 }
 
-// include 'header.php'; // Comentado para evitar sobrescrita de $result
+// Include header.php only after all header() calls
+include 'header.php';
 ?>
 
 <!DOCTYPE html>
@@ -133,8 +136,7 @@ function getSeverityClass($cor, $colorClasses) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Acidente</title>
-     <link rel="stylesheet" href="./src/bonde/style/report.css">
-  
+    <link rel="stylesheet" href="./src/bonde/style/report.css">
 </head>
 <body>
     <div class="header">
@@ -230,7 +232,6 @@ function getSeverityClass($cor, $colorClasses) {
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Data</th>
                             <th>Descrição</th>
                             <th>Localização</th>
                             <th>Usuário</th>
@@ -238,6 +239,9 @@ function getSeverityClass($cor, $colorClasses) {
                             <th>Categoria</th>
                             <th>Cor</th>
                             <th>Data de Registro</th>
+                            <th>Polícia</th>
+                            <th>Bombeiros</th>
+                            <th>SAMU</th>
                             <th>Status</th>
                             <th>Ação</th>
                         </tr>
@@ -267,6 +271,29 @@ function getSeverityClass($cor, $colorClasses) {
             totalAccidents.textContent = `Acidentes Registrados: ${data.length}`;
         }
 
+        // Função para determinar quais órgãos de emergência devem ser pré-marcados
+        function getEmergencyServices(categoria) {
+            const emergencyServices = {
+                "Atropelamento de pedestre": { policia: true, bombeiros: false, samu: true },
+                "Colisão com veículo": { policia: true, bombeiros: false, samu: true },
+                "Colisão com motocicleta/bicicleta": { policia: true, bombeiros: false, samu: true },
+                "Manifestação/bloqueio proposital na via": { policia: true, bombeiros: false, samu: false },
+                "Ato de vandalismo no bonde": { policia: true, bombeiros: false, samu: false },
+                "Agressão entre passageiros": { policia: true, bombeiros: false, samu: false },
+                "Roubo ou tentativa de assalto": { policia: true, bombeiros: false, samu: false },
+                "Ameaça de bomba / suspeita de artefato": { policia: true, bombeiros: false, samu: false },
+                "Descarrilamento com vítimas": { policia: false, bombeiros: true, samu: true },
+                "Alagamento de via": { policia: false, bombeiros: true, samu: false },
+                "Deslizamento de encosta": { policia: false, bombeiros: true, samu: false },
+                "Rompimento de trilho / falha estrutural": { policia: false, bombeiros: true, samu: false },
+                "Incêndio em área próxima à via": { policia: false, bombeiros: true, samu: false },
+                "Queda de árvore sobre a rede elétrica": { policia: false, bombeiros: true, samu: false },
+                "Passageiro passando mal (grave)": { policia: false, bombeiros: false, samu: true },
+                "Acidente interno com vítima grave": { policia: false, bombeiros: false, samu: true }
+            };
+            return emergencyServices[categoria] || { policia: false, bombeiros: false, samu: false };
+        }
+
         // Função para renderizar a tabela
         function renderTable(page, data) {
             const start = (page - 1) * perPage;
@@ -276,7 +303,7 @@ function getSeverityClass($cor, $colorClasses) {
             tbody.innerHTML = '';
 
             if (pageData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" class="no-data">Nenhum acidente encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="13" class="no-data">Nenhum acidente encontrado.</td></tr>';
                 return;
             }
 
@@ -285,10 +312,10 @@ function getSeverityClass($cor, $colorClasses) {
                     console.error('Dados inválidos:', row);
                     return;
                 }
+                const emergencyServices = getEmergencyServices(row.categoria);
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row.id || ''}</td>
-                    <td>${row.data || ''}</td>
                     <td>${row.descricao || ''}</td>
                     <td>${row.localizacao || ''}</td>
                     <td>${row.usuario || ''}</td>
@@ -296,17 +323,35 @@ function getSeverityClass($cor, $colorClasses) {
                     <td>${row.categoria || ''}</td>
                     <td>${row.cor || ''}</td>
                     <td>${row.data_registro || ''}</td>
-                    <td>${row.status || ''}</td>
                     <td>
                         ${row.status === 'em andamento' ? 
                             `<form method="POST" action="">
+                                <input type="checkbox" name="policia[${row.id}]" ${emergencyServices.policia ? 'checked' : ''}>
                                 <input type="hidden" name="id" value="${row.id}">
                                 <input type="hidden" name="update_status" value="1">
-                                <button type="submit" class="status-btn">Marcar como Resolvido</button>
                             </form>` : 
+                            (row.policia ? '✔' : '')}
+                    </td>
+                    <td>
+                        ${row.status === 'em andamento' ? 
+                            `<input type="checkbox" name="bombeiros[${row.id}]" ${emergencyServices.bombeiros ? 'checked' : ''}>` : 
+                            (row.bombeiros ? '✔' : '')}
+                    </td>
+                    <td>
+                        ${row.status === 'em andamento' ? 
+                            `<input type="checkbox" name="samu[${row.id}]" ${emergencyServices.samu ? 'checked' : ''}>` : 
+                            (row.samu ? '✔' : '')}
+                    </td>
+                    <td>${row.status || ''}</td>
+                    <td>
+                        ${row.status === 'em andamento' ? 
+                            `<button type="submit" form="form-${row.id}" class="status-btn">Marcar como Resolvido</button>` : 
                             `<button class="status-btn resolved" disabled>Resolvido</button>`}
                     </td>
                 `;
+                if (row.status === 'em andamento') {
+                    tr.querySelector('form').id = `form-${row.id}`;
+                }
                 tbody.appendChild(tr);
             });
         }
@@ -368,20 +413,17 @@ function getSeverityClass($cor, $colorClasses) {
             const dateEnd = document.getElementById('dateEnd').value;
 
             return acidentes.filter(row => {
-                // Filtro de texto
                 const matchesSearch = !searchTerm || 
                     (row.descricao?.toLowerCase().includes(searchTerm) || false) ||
                     (row.localizacao?.toLowerCase().includes(searchTerm) || false) ||
                     (row.severidade?.toLowerCase().includes(searchTerm) || false) ||
                     (row.categoria?.toLowerCase().includes(searchTerm) || false);
 
-                // Filtro de severidade
                 const matchesSeverity = !severityFilter || row.severidade === severityFilter;
 
-                // Filtro de data
                 let matchesDate = true;
                 if (dateStart) {
-                    const rowDate = new Date(row.data_registro.split(' ')[0]); // Extrai apenas a data (YYYY-MM-DD)
+                    const rowDate = new Date(row.data_registro.split(' ')[0]);
                     const startDate = new Date(dateStart);
                     matchesDate = rowDate >= startDate;
                     if (dateEnd) {

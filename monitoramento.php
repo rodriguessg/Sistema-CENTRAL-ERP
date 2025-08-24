@@ -1,6 +1,37 @@
 <?php
 session_start();
 
+// Handle form submission for updating status and emergency services
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status']) && isset($_POST['id'])) {
+    $host = 'localhost';
+    $user = 'root';
+    $password = '';
+    $dbname = 'gm_sicbd';
+
+    $conn = new mysqli($host, $user, $password, $dbname);
+    if ($conn->connect_error) {
+        die("Erro na conexão com o banco de dados: " . $conn->connect_error);
+    }
+
+    $id = $_POST['id'];
+    $policia = isset($_POST['policia'][$id]) ? 1 : 0;
+    $bombeiros = isset($_POST['bombeiros'][$id]) ? 1 : 0;
+    $samu = isset($_POST['samu'][$id]) ? 1 : 0;
+
+    $sql = "UPDATE acidentes SET status = 'resolvido', policia = ?, bombeiros = ?, samu = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("iiii", $policia, $bombeiros, $samu, $id);
+        if (!$stmt->execute()) {
+            error_log("Erro ao atualizar status: " . $stmt->error);
+        }
+        $stmt->close();
+    }
+    $conn->close();
+    header("Location: monitoramento.php");
+    exit;
+}
+
 // Handle AJAX request for table data
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
     $host = 'localhost';
@@ -15,14 +46,14 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
         exit;
     }
 
-    $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status 
+    $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status, policia, bombeiros, samu 
             FROM acidentes 
             ORDER BY data_registro DESC";
     $result = $conn->query($sql);
 
     if (!$result) {
         http_response_code(500);
-        echo json_encode(['error' => 'Erro na consulta SQL']);
+        echo json_encode(['error' => 'Erro na consulta SQL: ' . $conn->error]);
         exit;
     }
 
@@ -57,7 +88,7 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 
 // Consulta acidentes
-$sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status 
+$sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status, policia, bombeiros, samu 
         FROM acidentes 
         ORDER BY data_registro DESC";
 $result = $conn->query($sql);
@@ -150,7 +181,7 @@ $result->data_seek(0);
         }
         th, td {
             padding: 12px;
-            text-align: left;
+            text-align: center;
             border-bottom: 1px solid #ddd;
         }
         th {
@@ -249,6 +280,9 @@ $result->data_seek(0);
             background-color: #d1e7dd !important;
             font-weight: bold;
         }
+        input[type="checkbox"] {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -274,6 +308,9 @@ $result->data_seek(0);
                         <th>Nível Emerg.</th>
                         <th>Gravidade</th>
                         <th>Tipo</th>
+                        <th>Polícia</th>
+                        <th>SAMU</th>
+                        <th>Bombeiros</th>
                         <th>Local</th>
                         <th>Hora</th>
                         <th>Status</th>
@@ -287,11 +324,41 @@ $result->data_seek(0);
                         $severityClass = 'cor-' . str_replace('/', '-', strtolower($row['cor']));
                         $hora = date('H:i', strtotime($row['data_registro']));
                         $status = $row['status'] ?? 'Desconhecido';
+                        $emergencyServices = [
+                            'policia' => $row['policia'],
+                            'bombeiros' => $row['bombeiros'],
+                            'samu' => $row['samu']
+                        ];
                         ?>
-                        <tr onclick="selectOccurrence(<?= $row['id'] ?>, this)">
+                        <tr onclick="selectOccurrence(<?= $row['id'] ?>, this, <?= json_encode($emergencyServices) ?>)">
                             <td class="nivel-emerg <?= $corClass ?>"><?= htmlspecialchars($nivel) ?></td>
                             <td class="severity-bg <?= $severityClass ?>"><?= htmlspecialchars($row['severidade']) ?></td>
                             <td><?= htmlspecialchars($row['categoria']) ?></td>
+                            <td>
+                                <?php if ($status === 'em andamento'): ?>
+                                    <form method="POST" action="" id="form-<?= $row['id'] ?>">
+                                        <input type="checkbox" name="policia[<?= $row['id'] ?>]" onchange="this.form.submit()">
+                                        <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                                        <input type="hidden" name="update_status" value="1">
+                                    </form>
+                                <?php else: ?>
+                                    <?= $row['policia'] ? '✔' : '' ?>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ($status === 'em andamento'): ?>
+                                    <input type="checkbox" name="samu[<?= $row['id'] ?>]" onchange="this.form.submit()">
+                                <?php else: ?>
+                                    <?= $row['samu'] ? '✔' : '' ?>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ($status === 'em andamento'): ?>
+                                    <input type="checkbox" name="bombeiros[<?= $row['id'] ?>]" onchange="this.form.submit()">
+                                <?php else: ?>
+                                    <?= $row['bombeiros'] ? '✔' : '' ?>
+                                <?php endif; ?>
+                            </td>
                             <td><?= htmlspecialchars($row['localizacao']) ?></td>
                             <td><?= $hora ?></td>
                             <td><?= htmlspecialchars($status) ?></td>
@@ -313,6 +380,9 @@ $result->data_seek(0);
                 <p>Gravidade: N/A</p>
                 <p>Tipo: N/A</p>
                 <p>Local: N/A</p>
+                <p>Polícia: N/A</p>
+                <p>SAMU: N/A</p>
+                <p>Bombeiros: N/A</p>
                 <p>Status: N/A</p>
                 <p>Ações: N/A</p>
             </div>
@@ -346,6 +416,29 @@ $result->data_seek(0);
             'Moderado a Grave': 'Nível II/III'
         };
 
+        // Function to determine which emergency services should be pre-checked
+        function getEmergencyServices(categoria) {
+            const emergencyServices = {
+                "Atropelamento de pedestre": { policia: true, bombeiros: false, samu: true },
+                "Colisão com veículo": { policia: true, bombeiros: false, samu: true },
+                "Colisão com motocicleta/bicicleta": { policia: true, bombeiros: false, samu: true },
+                "Manifestação/bloqueio proposital na via": { policia: true, bombeiros: false, samu: false },
+                "Ato de vandalismo no bonde": { policia: true, bombeiros: false, samu: false },
+                "Agressão entre passageiros": { policia: true, bombeiros: false, samu: false },
+                "Roubo ou tentativa de assalto": { policia: true, bombeiros: false, samu: false },
+                "Ameaça de bomba / suspeita de artefato": { policia: true, bombeiros: false, samu: false },
+                "Descarrilamento com vítimas": { policia: false, bombeiros: true, samu: true },
+                "Alagamento de via": { policia: false, bombeiros: true, samu: false },
+                "Deslizamento de encosta": { policia: false, bombeiros: true, samu: false },
+                "Rompimento de trilho / falha estrutural": { policia: false, bombeiros: true, samu: false },
+                "Incêndio em área próxima à via": { policia: false, bombeiros: true, samu: false },
+                "Queda de árvore sobre a rede elétrica": { policia: false, bombeiros: true, samu: false },
+                "Passageiro passando mal (grave)": { policia: false, bombeiros: false, samu: true },
+                "Acidente interno com vítima grave": { policia: false, bombeiros: false, samu: true }
+            };
+            return emergencyServices[categoria] || { policia: false, bombeiros: false, samu: false };
+        }
+
         // Function to fetch and update table data
         function updateTable() {
             fetch('?ajax=get_table_data')
@@ -361,17 +454,37 @@ $result->data_seek(0);
 
                     data.forEach(row => {
                         const nivel = severityMap[row.severidade] || 'Nível Desconhecido';
-                        const corClass = nivel.toLowerCase().replace(' ', '-');
+                        const corClass = nivel.toLowerCase().replace(' ', '-').replace('/', '-');
                         const severityClass = 'cor-' + row.cor.toLowerCase().replace('/', '-');
                         const hora = new Date(row.data_registro).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                         const status = row.status || 'Desconhecido';
+                        const emergencyServices = getEmergencyServices(row.categoria);
 
                         const tr = document.createElement('tr');
-                        tr.setAttribute('onclick', `selectOccurrence(${row.id}, this)`);
+                        tr.setAttribute('onclick', `selectOccurrence(${row.id}, this, ${JSON.stringify({ policia: row.policia, bombeiros: row.bombeiros, samu: row.samu })})`);
                         tr.innerHTML = `
                             <td class="nivel-emerg ${corClass}">${nivel}</td>
                             <td class="severity-bg ${severityClass}">${row.severidade}</td>
                             <td>${row.categoria}</td>
+                            <td>
+                                ${status === 'em andamento' ? 
+                                    `<form method="POST" action="" id="form-${row.id}">
+                                        <input type="checkbox" name="policia[${row.id}]" ${emergencyServices.policia ? 'checked' : ''} onchange="this.form.submit()">
+                                        <input type="hidden" name="id" value="${row.id}">
+                                        <input type="hidden" name="update_status" value="1">
+                                    </form>` : 
+                                    (row.policia ? '✔' : '')}
+                            </td>
+                            <td>
+                                ${status === 'em andamento' ? 
+                                    `<input type="checkbox" name="samu[${row.id}]" ${emergencyServices.samu ? 'checked' : ''} onchange="this.form.submit()">` : 
+                                    (row.samu ? '✔' : '')}
+                            </td>
+                            <td>
+                                ${status === 'em andamento' ? 
+                                    `<input type="checkbox" name="bombeiros[${row.id}]" ${emergencyServices.bombeiros ? 'checked' : ''} onchange="this.form.submit()">` : 
+                                    (row.bombeiros ? '✔' : '')}
+                            </td>
                             <td>${row.localizacao}</td>
                             <td>${hora}</td>
                             <td>${status}</td>
@@ -388,7 +501,7 @@ $result->data_seek(0);
         // Initial table update
         updateTable();
 
-        function selectOccurrence(id, row) {
+        function selectOccurrence(id, row, emergencyServices) {
             // Remove highlight from all rows
             document.querySelectorAll('#accidents-table tr').forEach(r => r.classList.remove('selected'));
             row.classList.add('selected');
@@ -399,9 +512,12 @@ $result->data_seek(0);
                 nivel: rowData[0].textContent,
                 gravidade: rowData[1].textContent,
                 tipo: rowData[2].textContent,
-                local: rowData[3].textContent,
-                status: rowData[5].textContent,
-                acoes: 'Ações em andamento' // Placeholder
+                local: rowData[6].textContent,
+                policia: emergencyServices.policia ? 'Sim' : 'Não',
+                samu: emergencyServices.samu ? 'Sim' : 'Não',
+                bombeiros: emergencyServices.bombeiros ? 'Sim' : 'Não',
+                status: rowData[8].textContent,
+                acoes: rowData[8].textContent === 'em andamento' ? 'Ações em andamento' : 'Resolvido'
             };
 
             const detailsDiv = document.getElementById('occurrence-details');
@@ -411,6 +527,9 @@ $result->data_seek(0);
                 <p>Gravidade: ${details.gravidade}</p>
                 <p>Tipo: ${details.tipo}</p>
                 <p>Local: ${details.local}</p>
+                <p>Polícia: ${details.policia}</p>
+                <p>SAMU: ${details.samu}</p>
+                <p>Bombeiros: ${details.bombeiros}</p>
                 <p>Status: ${details.status}</p>
                 <p>Ações: ${details.acoes}</p>
             `;

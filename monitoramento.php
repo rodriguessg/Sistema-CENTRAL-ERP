@@ -1,36 +1,10 @@
 <?php
 session_start();
 
-// Handle form submission for updating status and emergency services
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status']) && isset($_POST['id'])) {
-    $host = 'localhost';
-    $user = 'root';
-    $password = '';
-    $dbname = 'gm_sicbd';
-
-    $conn = new mysqli($host, $user, $password, $dbname);
-    if ($conn->connect_error) {
-        die("Erro na conexão com o banco de dados: " . $conn->connect_error);
-    }
-
-    $id = $_POST['id'];
-    $policia = isset($_POST['policia'][$id]) ? 1 : 0;
-    $bombeiros = isset($_POST['bombeiros'][$id]) ? 1 : 0;
-    $samu = isset($_POST['samu'][$id]) ? 1 : 0;
-
-    $sql = "UPDATE acidentes SET status = 'resolvido', policia = ?, bombeiros = ?, samu = ? WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    if ($stmt) {
-        $stmt->bind_param("iiii", $policia, $bombeiros, $samu, $id);
-        if (!$stmt->execute()) {
-            error_log("Erro ao atualizar status: " . $stmt->error);
-        }
-        $stmt->close();
-    }
-    $conn->close();
-    header("Location: monitoramento.php");
-    exit;
-}
+// Ativar exibição de erros para depuração
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 // Handle AJAX request for table data
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
@@ -42,7 +16,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
     $conn = new mysqli($host, $user, $password, $dbname);
     if ($conn->connect_error) {
         http_response_code(500);
-        echo json_encode(['error' => 'Erro na conexão com o banco de dados']);
+        echo json_encode(['error' => 'Erro na conexão com o banco de dados: ' . $conn->connect_error]);
         exit;
     }
 
@@ -280,9 +254,6 @@ $result->data_seek(0);
             background-color: #d1e7dd !important;
             font-weight: bold;
         }
-        input[type="checkbox"] {
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -324,41 +295,14 @@ $result->data_seek(0);
                         $severityClass = 'cor-' . str_replace('/', '-', strtolower($row['cor']));
                         $hora = date('H:i', strtotime($row['data_registro']));
                         $status = $row['status'] ?? 'Desconhecido';
-                        $emergencyServices = [
-                            'policia' => $row['policia'],
-                            'bombeiros' => $row['bombeiros'],
-                            'samu' => $row['samu']
-                        ];
                         ?>
-                        <tr onclick="selectOccurrence(<?= $row['id'] ?>, this, <?= json_encode($emergencyServices) ?>)">
+                        <tr onclick="selectOccurrence(<?= $row['id'] ?>, this, <?= json_encode(['policia' => $row['policia'], 'bombeiros' => $row['bombeiros'], 'samu' => $row['samu']]) ?>)">
                             <td class="nivel-emerg <?= $corClass ?>"><?= htmlspecialchars($nivel) ?></td>
                             <td class="severity-bg <?= $severityClass ?>"><?= htmlspecialchars($row['severidade']) ?></td>
                             <td><?= htmlspecialchars($row['categoria']) ?></td>
-                            <td>
-                                <?php if ($status === 'em andamento'): ?>
-                                    <form method="POST" action="" id="form-<?= $row['id'] ?>">
-                                        <input type="checkbox" name="policia[<?= $row['id'] ?>]" onchange="this.form.submit()">
-                                        <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                                        <input type="hidden" name="update_status" value="1">
-                                    </form>
-                                <?php else: ?>
-                                    <?= $row['policia'] ? '✔' : '' ?>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <?php if ($status === 'em andamento'): ?>
-                                    <input type="checkbox" name="samu[<?= $row['id'] ?>]" onchange="this.form.submit()">
-                                <?php else: ?>
-                                    <?= $row['samu'] ? '✔' : '' ?>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <?php if ($status === 'em andamento'): ?>
-                                    <input type="checkbox" name="bombeiros[<?= $row['id'] ?>]" onchange="this.form.submit()">
-                                <?php else: ?>
-                                    <?= $row['bombeiros'] ? '✔' : '' ?>
-                                <?php endif; ?>
-                            </td>
+                            <td><?= $row['policia'] == 1 ? '✔' : '' ?></td>
+                            <td><?= $row['samu'] == 1 ? '✔' : '' ?></td>
+                            <td><?= $row['bombeiros'] == 1 ? '✔' : '' ?></td>
                             <td><?= htmlspecialchars($row['localizacao']) ?></td>
                             <td><?= $hora ?></td>
                             <td><?= htmlspecialchars($status) ?></td>
@@ -458,7 +402,6 @@ $result->data_seek(0);
                         const severityClass = 'cor-' + row.cor.toLowerCase().replace('/', '-');
                         const hora = new Date(row.data_registro).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                         const status = row.status || 'Desconhecido';
-                        const emergencyServices = getEmergencyServices(row.categoria);
 
                         const tr = document.createElement('tr');
                         tr.setAttribute('onclick', `selectOccurrence(${row.id}, this, ${JSON.stringify({ policia: row.policia, bombeiros: row.bombeiros, samu: row.samu })})`);
@@ -466,25 +409,9 @@ $result->data_seek(0);
                             <td class="nivel-emerg ${corClass}">${nivel}</td>
                             <td class="severity-bg ${severityClass}">${row.severidade}</td>
                             <td>${row.categoria}</td>
-                            <td>
-                                ${status === 'em andamento' ? 
-                                    `<form method="POST" action="" id="form-${row.id}">
-                                        <input type="checkbox" name="policia[${row.id}]" ${emergencyServices.policia ? 'checked' : ''} onchange="this.form.submit()">
-                                        <input type="hidden" name="id" value="${row.id}">
-                                        <input type="hidden" name="update_status" value="1">
-                                    </form>` : 
-                                    (row.policia ? '✔' : '')}
-                            </td>
-                            <td>
-                                ${status === 'em andamento' ? 
-                                    `<input type="checkbox" name="samu[${row.id}]" ${emergencyServices.samu ? 'checked' : ''} onchange="this.form.submit()">` : 
-                                    (row.samu ? '✔' : '')}
-                            </td>
-                            <td>
-                                ${status === 'em andamento' ? 
-                                    `<input type="checkbox" name="bombeiros[${row.id}]" ${emergencyServices.bombeiros ? 'checked' : ''} onchange="this.form.submit()">` : 
-                                    (row.bombeiros ? '✔' : '')}
-                            </td>
+                            <td>${row.policia == 1 ? '✔' : ''}</td>
+                            <td>${row.samu == 1 ? '✔' : ''}</td>
+                            <td>${row.bombeiros == 1 ? '✔' : ''}</td>
                             <td>${row.localizacao}</td>
                             <td>${hora}</td>
                             <td>${status}</td>

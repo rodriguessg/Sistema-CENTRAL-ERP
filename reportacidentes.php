@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
                 $erro = "Erro ao registrar o acidente: " . $stmt->error;
             } else {
                 $sucesso = "Acidente registrado com sucesso!";
-                header("Location: reportacidentes.php?success=1");
+                // header("Location: reportacidentes.php?");
                 exit();
             }
             $stmt->close();
@@ -69,7 +69,7 @@ if (isset($_POST['update_status']) && isset($_POST['id'])) {
             $erro = "Erro ao atualizar o status: " . $stmt->error;
         }
         $stmt->close();
-        header("Location: reportacidentes.php?success=2");
+        // header("Location: reportacidentes.php?success=2");
         exit();
     }
 }

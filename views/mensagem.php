@@ -11,6 +11,7 @@ $mensagens = [
     'Erro_ao_cadastrar_contrato' => 'Erro ao cadastrar o contrato. Verifique os dados e tente novamente.',
     'Contrato_atualizado' => 'O Contrato foi atualizado!',
     'acesso_negado' => 'Você não tem acesso a este perfil.',
+    'acidente' => 'Acidente Registrado',
     'deslogado' => 'Logout realizado com sucesso.',
     'senha_invalida' => 'Usuário ou senha inválida.',
     'usuario_invalido' => 'Usuário não encontrado.',

@@ -391,7 +391,8 @@ try {
         </div>
         <div class="bondes-container">
             <h3>Bondes Ativos</h3>
-<p><em>Cadastre aqui os bondes estão operacionais na atual data: <?php date_default_timezone_set('America/Sao_Paulo'); echo date('H:i d/m/Y'); ?></em></p>            <?php foreach ($bondes as $bonde): ?>
+            <p><em>Cadastre aqui os bondes que estão operacionais na atual data: <?php date_default_timezone_set('America/Sao_Paulo'); echo date('H:i d/m/Y'); ?></em></p>
+            <?php foreach ($bondes as $bonde): ?>
                 <div class="bonde-item">
                     <input type="checkbox" id="bonde_<?php echo $bonde['id']; ?>" 
                            data-id="<?php echo $bonde['id']; ?>" 
@@ -411,28 +412,34 @@ try {
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Adicionar Novo Bonde</h3>
-                <span class="close-modal">&times;</span>
+                <span class="close-modal" onclick="closeAddBondeModal()">&times;</span>
             </div>
-            <form id="add-bonde-form" class="modal-form">
-                <div class="input-group">
-                    <label for="modelo">Modelo</label>
-                    <input type="text" id="modelo" name="modelo" required>
-                </div>
-                <div class="input-group">
-                    <label for="capacidade">Capacidade</label>
-                    <input type="number" id="capacidade" name="capacidade" min="1" required>
-                </div>
-                <div class="input-group">
-                    <label for="ano_fabricacao">Ano de Fabricação</label>
-                    <input type="number" id="ano_fabricacao" name="ano_fabricacao" min="1900" max="2025" required>
-                </div>
-                <div class="input-group">
-                    <label for="descricao">Descrição</label>
-                    <input type="text" id="descricao" name="descricao" required>
+            <form id="add-bonde-form" method="POST" action="add_bonde.php">
+                <div class="modal-form">
+                    <div class="input-group">
+                        <label for="modelo">Modelo</label>
+                        <input type="text" id="modelo" name="modelo" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="capacidade">Capacidade</label>
+                        <input type="number" id="capacidade" name="capacidade" min="1" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="ano_fabricacao">Ano de Fabricação</label>
+                        <input type="number" id="ano_fabricacao" name="ano_fabricacao" min="1900" max="<?php echo date('Y'); ?>" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="descricao">Descrição</label>
+                        <input type="text" id="descricao" name="descricao" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="ativo">Ativo</label>
+                        <input type="checkbox" id="ativo" name="ativo" value="1">
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button type="submit">Salvar</button>
-                    <button type="button" id="cancel-modal-btn">Cancelar</button>
+                    <button type="button" onclick="closeAddBondeModal()">Cancelar</button>
                 </div>
             </form>
         </div>
@@ -445,8 +452,6 @@ try {
             const modelo = checkbox.getAttribute('data-modelo');
             const ativo = checkbox.checked ? 1 : 0;
             const url = new URL('/Sistema-CENTRAL-ERP/update_bonde_status.php', window.location.origin);
-            console.log('URL Completa:', url.href);
-            console.log('Caminho Base:', window.location.origin);
 
             fetch(url.href, {
                 method: 'POST',
@@ -550,57 +555,54 @@ try {
         // Inicializa as opções do <select>
         updateSelectOptions();
 
-        // Controle do Modal
-        const modal = document.getElementById('add-bonde-modal');
+        // Funções para controlar o modal de adicionar bonde
+        const addBondeModal = document.getElementById('add-bonde-modal');
         const addBondeBtn = document.getElementById('add-bonde-btn');
-        const closeModal = document.querySelector('.close-modal');
-        const cancelModalBtn = document.getElementById('cancel-modal-btn');
-        const addBondeForm = document.getElementById('add-bonde-form');
 
         addBondeBtn.addEventListener('click', () => {
-            modal.style.display = 'flex';
+            addBondeModal.style.display = 'flex';
         });
 
-        closeModal.addEventListener('click', () => {
-            modal.style.display = 'none';
+        function closeAddBondeModal() {
+            addBondeModal.style.display = 'none';
+            document.getElementById('add-bonde-form').reset();
+        }
+
+        // Fechar o modal ao clicar fora dele
+        window.addEventListener('click', (event) => {
+            if (event.target === addBondeModal) {
+                closeAddBondeModal();
+            }
         });
 
-        cancelModalBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-            addBondeForm.reset();
-        });
-
-        addBondeForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const modelo = document.getElementById('modelo').value;
-            const capacidade = document.getElementById('capacidade').value;
-            const ano_fabricacao = document.getElementById('ano_fabricacao').value;
-            const descricao = document.getElementById('descricao').value;
+        // Manipular o envio do formulário via AJAX
+        document.getElementById('add-bonde-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const data = {
+                modelo: formData.get('modelo'),
+                capacidade: formData.get('capacidade'),
+                ano_fabricacao: formData.get('ano_fabricacao'),
+                descricao: formData.get('descricao'),
+                ativo: formData.get('ativo') ? 1 : 0
+            };
 
             fetch('/Sistema-CENTRAL-ERP/add_bonde.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    modelo: modelo,
-                    capacidade: parseInt(capacidade),
-                    ano_fabricacao: parseInt(ano_fabricacao),
-                    descricao: descricao
-                })
+                body: JSON.stringify(data)
             })
             .then(response => {
-                if (!response.ok) throw new Error('Erro ao adicionar bonde: ' + response.status);
+                if (!response.ok) throw new Error('Erro na resposta: ' + response.status);
                 return response.json();
             })
             .then(data => {
                 if (data.success) {
                     alert('Bonde adicionado com sucesso!');
-                    modal.style.display = 'none';
-                    addBondeForm.reset();
-                    updateSelectOptions(); // Atualiza o <select> com os novos dados
-                    // Aqui você pode adicionar lógica para atualizar a lista de checkboxes, se necessário
+                    closeAddBondeModal();
+                    location.reload(); // Recarrega a página para atualizar a lista de bondes
                 } else {
                     alert('Erro ao adicionar bonde: ' + data.message);
                 }

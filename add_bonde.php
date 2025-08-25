@@ -1,44 +1,45 @@
 <?php
 header('Content-Type: application/json');
 
-try {
-    $host = 'localhost';
-    $dbname = 'gm_sicbd';
-    $username = 'root';
-    $password = '';
+$host = 'localhost';
+$dbname = 'gm_sicbd';
+$username = 'root';
+$password = '';
 
+try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $input = file_get_contents('php://input');
-        $data = json_decode($input, true);
+    // Get the JSON data from the request
+    $data = json_decode(file_get_contents('php://input'), true);
 
-        if (!isset($data['modelo']) || !isset($data['capacidade']) || !isset($data['ano_fabricacao']) || !isset($data['descricao'])) {
-            echo json_encode(['success' => false, 'message' => 'Dados incompletos']);
-            exit();
-        }
-
-        $modelo = $data['modelo'];
-        $capacidade = $data['capacidade'];
-        $ano_fabricacao = $data['ano_fabricacao'];
-        $descricao = $data['descricao'];
-
-        $stmt = $pdo->prepare("INSERT INTO bondes (modelo, capacidade, ano_fabricacao, descricao, ativo) VALUES (:modelo, :capacidade, :ano_fabricacao, :descricao, 0)");
-        $stmt->execute([
-            ':modelo' => $modelo,
-            ':capacidade' => $capacidade,
-            ':ano_fabricacao' => $ano_fabricacao,
-            ':descricao' => $descricao
-        ]);
-
-        echo json_encode(['success' => true, 'message' => 'Bonde adicionado com sucesso']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Método não permitido']);
+    // Validate input
+    if (!isset($data['modelo']) || !isset($data['capacidade']) || !isset($data['ano_fabricacao']) || !isset($data['descricao'])) {
+        echo json_encode(['success' => false, 'message' => 'Campos obrigatórios não preenchidos']);
+        exit;
     }
+
+    // Check for duplicate modelo
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM bondes WHERE modelo = :modelo");
+    $stmt->execute([':modelo' => $data['modelo']]);
+    if ($stmt->fetchColumn() > 0) {
+        echo json_encode(['success' => false, 'message' => 'Modelo já existe no banco de dados']);
+        exit;
+    }
+
+    // Prepare and execute the insert query
+    $stmt = $pdo->prepare("INSERT INTO bondes (modelo, capacidade, ano_fabricacao, descricao, ativo) VALUES (:modelo, :capacidade, :ano_fabricacao, :descricao, :ativo)");
+    $stmt->execute([
+        ':modelo' => $data['modelo'],
+        ':capacidade' => $data['capacidade'],
+        ':ano_fabricacao' => $data['ano_fabricacao'],
+        ':descricao' => $data['descricao'],
+        ':ativo' => isset($data['ativo']) ? (int)$data['ativo'] : 0
+    ]);
+
+    echo json_encode(['success' => true]);
 } catch (PDOException $e) {
-    http_response_code(500);
+    error_log("Erro ao adicionar bonde: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Erro ao adicionar bonde: ' . $e->getMessage()]);
 }
-exit();
 ?>

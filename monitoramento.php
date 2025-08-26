@@ -316,7 +316,7 @@ $result->data_seek(0);
 
         <div class="map-details">
             <div class="map-section">
-                <iframe src="https://monitoramento.mobilesat.com.br/locator/index.html?t=4ebee7c35e2e2fbedde92f4b2611c141F0AA094FB415B295867B3BD93520050BB6566DD7" allowfullscreen></iframe>
+                <!-- <iframe src="https://monitoramento.mobilesat.com.br/locator/index.html?t=4ebee7c35e2e2fbedde92f4b2611c141F0AA094FB415B295867B3BD93520050BB6566DD7" allowfullscreen></iframe> -->
             </div>
             <div class="details-section" id="occurrence-details">
                 <h3>Detalhes Sobre Última Ocorrência</h3>

@@ -18,6 +18,18 @@ if (!isset($_SESSION['username'])) {
 }
 $username = $_SESSION['username'];
 
+// Buscar modelos da tabela bondes
+$modelos = [];
+$sql_modelos = "SELECT DISTINCT modelo FROM bondes ORDER BY modelo";
+$result_modelos = $conn->query($sql_modelos);
+if ($result_modelos) {
+    while ($row = $result_modelos->fetch_assoc()) {
+        $modelos[] = $row['modelo'];
+    }
+} else {
+    $modelos = [];
+}
+
 $erro = '';
 $sucesso = '';
 
@@ -28,20 +40,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
     $severidade = $_POST['severidade'] ?? '';
     $categoria = $_POST['subcategoria'] ?? '';
     $cor = $_POST['cor'] ?? '';
+    $modelo = $_POST['modelo'] ?? '';
 
-    if (empty($descricao) || empty($severidade) || empty($categoria) || empty($cor)) {
+    if (empty($descricao) || empty($severidade) || empty($categoria) || empty($cor) || empty($modelo)) {
         $erro = "Todos os campos obrigatórios devem ser preenchidos!";
     } elseif (!in_array($severidade, ['Leve', 'Moderado', 'Grave'])) {
         $erro = "Severidade inválida!";
+    } elseif (!in_array($modelo, $modelos)) {
+        $erro = "Modelo de bonde inválido!";
     } else {
-        $sql = "INSERT INTO acidentes (descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status) 
-                VALUES (?, ?, ?, ?, ?, ?, NOW(), 'em andamento')";
+        $sql = "INSERT INTO acidentes (descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'em andamento')";
         $stmt = $conn->prepare($sql);
 
         if (!$stmt) {
             $erro = "Erro na preparação da query: " . $conn->error;
         } else {
-            $stmt->bind_param("ssssss", $descricao, $localizacao, $username, $severidade, $categoria, $cor);
+            $stmt->bind_param("sssssss", $descricao, $localizacao, $username, $severidade, $categoria, $cor, $modelo);
             if (!$stmt->execute()) {
                 $erro = "Erro ao registrar o acidente: " . $stmt->error;
             } else {
@@ -78,7 +93,7 @@ if (isset($_POST['update_status']) && isset($_POST['id'])) {
 
 // Buscar todos os registros
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-$sql = "SELECT id, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status, policia, bombeiros, samu 
+$sql = "SELECT id, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
         FROM acidentes 
         WHERE descricao LIKE ? OR localizacao LIKE ? OR severidade LIKE ? OR categoria LIKE ? 
         ORDER BY data_registro";
@@ -135,22 +150,31 @@ include 'header.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Acidente</title>
+    <title>Registrar Ocorrências</title>
     <link rel="stylesheet" href="./src/bonde/style/report.css">
 </head>
 <body>
     <div class="header">
-        <h1>Registrar Acidente</h1>
+        <h1>Registrar Ocorrências</h1>
     </div>
     <div class="container">
         <?php if ($erro): ?>
             <p class="error"><?php echo htmlspecialchars($erro); ?></p>
         <?php endif; ?>
         <?php if ($sucesso || isset($_GET['success'])): ?>
-            <!-- <p class="success"><?php echo htmlspecialchars($sucesso ?: ($_GET['success'] == 1 ? "Acidente registrado com sucesso!" : "Status do acidente atualizado para resolvido!")); ?></p> -->
+            <!-- <p class="success"><?php echo htmlspecialchars($sucesso ?: ($_GET['success'] == 1 ? "OCORRÊNCIAS registrado com sucesso!" : "Status do acidente atualizado para resolvido!")); ?></p> -->
         <?php endif; ?>
 
         <form method="POST" action="">
+            <div class="form-group">
+                <label for="modelo">Modelo do Bonde:</label>
+                <select id="modelo" name="modelo" required>
+                    <option value="">Selecione o modelo</option>
+                    <?php foreach ($modelos as $modelo): ?>
+                        <option value="<?php echo htmlspecialchars($modelo); ?>"><?php echo htmlspecialchars($modelo); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
             <div class="form-group">
                 <label for="categoria">Categoria:</label>
                 <select id="categoria" name="categoria" required onchange="updateSubcategorias()">
@@ -219,8 +243,8 @@ include 'header.php';
         </div>
 
         <div class="accidents-table">
-            <h2>Histórico de Acidentes</h2>
-            <h3 id="totalAccidents">Total de Acidentes: <?php echo count($result); ?></h3>
+            <!-- <h2>Histórico de Ocorrências</h2> -->
+            <h3 id="totalAccidents">Total de Ocorrências: <?php echo count($result); ?></h3>
             <?php if (!is_array($result)): ?>
                 <p class="error">Erro: Dados inválidos. Valor: <?php echo htmlspecialchars(var_export($result, true)); ?></p>
                 <?php $result = []; ?>
@@ -238,6 +262,7 @@ include 'header.php';
                             <th>Severidade</th>
                             <th>Categoria</th>
                             <th>Cor</th>
+                            <th>Bonde</th>
                             <th>Data de Registro</th>
                             <th>Polícia</th>
                             <th>Bombeiros</th>
@@ -268,7 +293,7 @@ include 'header.php';
         // Função para atualizar o total de acidentes
         function updateTotalAccidents(data) {
             const totalAccidents = document.getElementById('totalAccidents');
-            totalAccidents.textContent = `Acidentes Registrados: ${data.length}`;
+            totalAccidents.textContent = `Ocorrências Registrados: ${data.length}`;
         }
 
         // Função para determinar quais órgãos de emergência devem ser pré-marcados
@@ -303,7 +328,7 @@ include 'header.php';
             tbody.innerHTML = '';
 
             if (pageData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="13" class="no-data">Nenhum acidente encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="14" class="no-data">Nenhum acidente encontrado.</td></tr>';
                 return;
             }
 
@@ -322,6 +347,7 @@ include 'header.php';
                     <td class="${colorClasses[row.cor] || ''}">${row.severidade || ''}</td>
                     <td>${row.categoria || ''}</td>
                     <td>${row.cor || ''}</td>
+                    <td>${row.modelo || ''}</td>
                     <td>${row.data_registro || ''}</td>
                     <td>
                         ${row.status === 'em andamento' ? 

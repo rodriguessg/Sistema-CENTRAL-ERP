@@ -20,7 +20,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
         exit;
     }
 
-    $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status, policia, bombeiros, samu 
+    $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
             FROM acidentes 
             ORDER BY data_registro DESC 
             LIMIT 4";
@@ -100,7 +100,7 @@ if (!isset($_SESSION['username'])) {
 }
 $username = $_SESSION['username'];
 
-$sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, data_registro, status, policia, bombeiros, samu 
+$sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
         FROM acidentes 
         ORDER BY data_registro DESC 
         LIMIT 4";
@@ -110,13 +110,6 @@ if (!$result) {
     die("Erro na consulta SQL: " . $conn->error);
 }
 
-// Map severidade to nível
-$severityMap = [
-    'Leve' => 'Nível I',
-    'Moderado' => 'Nível II',
-    'Grave' => 'Nível III',
-    'Moderado a Grave' => 'Nível II/III'
-];
 $corMap = [
     'Verde' => '#d1f5d3',
     'Amarelo' => '#fff3cd',
@@ -464,35 +457,6 @@ $result->data_seek(0);
             cursor: pointer;
         }
 
-        /* Classes de nível com ícones */
-        .nivel-emerg {
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-weight: bold;
-            text-align: center;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-        }
-
-        .nivel-i { 
-            background: linear-gradient(135deg, #d1f5d3 0%, #a7f3d0 100%); 
-            color: #2f855a; 
-        }
-        .nivel-ii { 
-            background: linear-gradient(135deg, #fff3cd 0%, #fde68a 100%); 
-            color: #d97706; 
-        }
-        .nivel-iii { 
-            background: linear-gradient(135deg, #f8d7da 0%, #fca5a5 100%); 
-            color: #991b1b; 
-        }
-        .nivel-ii-iii { 
-            background: linear-gradient(135deg, #fff3cd 0%, #f8d7da 100%); 
-            color: #fff; 
-        }
-
         .severity-bg {
             padding: 8px 14px;
             border-radius: 20px;
@@ -701,28 +665,27 @@ $result->data_seek(0);
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
                 <div class="stat-number counter" id="grave-occurrences"><?= $counts['Grave'] ?></div>
-                <div class="stat-label">EMERGÊNCIA CRÍTICA</div>
+                <div class="stat-label">OCORRÊNCIAS CRÍTICA</div>
                 <div class="stat-sublabel">Requer ação imediata</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
                 <div class="stat-number counter" id="moderado-occurrences"><?= $counts['Moderado'] ?></div>
-                <div class="stat-label">ALERTA MODERADO</div>
+                <div class="stat-label">OCORRÊNCIAS MODERADO</div>
                 <div class="stat-sublabel">Situação controlada</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-info-circle"></i></div>
                 <div class="stat-number counter" id="leve-occurrences"><?= $counts['Leve'] ?></div>
-                <div class="stat-label">INCIDENTE MENOR</div>
+                <div class="stat-label">OCORRÊNCIAS LEVE</div>
                 <div class="stat-sublabel">Baixo risco operacional</div>
             </div>
         </div>
 
         <!-- Área principal do conteúdo -->
         <div class="content-area">
-
             <div class="main-content">
                 <!-- Nova estrutura: tabela e detalhes na parte superior -->
                 <div class="top-section">
@@ -736,35 +699,33 @@ $result->data_seek(0);
                             <table id="accidents-table">
                                 <thead>
                                     <tr>
-                                        <th><i class="fas fa-exclamation"></i> Nível Emerg.</th>
-                                        <th><i class="fas fa-thermometer-half"></i> Gravidade</th>
+                                         <th><i class="fas fa-bus"></i> Modelo</th>
+                                        <th><i class="fas fa-thermometer-half"></i> Severidade</th>
+                                       
                                         <th><i class="fas fa-tags"></i> Tipo</th>
-                                        <th><i class="fas fa-shield-alt"></i> Polícia</th>
-                                        <th><i class="fas fa-ambulance"></i> SAMU</th>
-                                        <th><i class="fas fa-fire-extinguisher"></i> Bombeiros</th>
+                                       
                                         <th><i class="fas fa-map-marker-alt"></i> Local</th>
                                         <th><i class="fas fa-clock"></i> Hora</th>
-                                        <th><i class="fas fa-info"></i> Status</th>
+                                      
+                                         <th><i class="fas fa-shield-alt"></i> Polícia</th>
+                                        <th><i class="fas fa-ambulance"></i> SAMU</th>
+                                        <th><i class="fas fa-fire-extinguisher"></i> Bombeiros</th>
+                                          <th><i class="fas fa-info"></i> Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
                                     while ($row = $result->fetch_assoc()) {
-                                        $nivel = $severityMap[$row['severidade']] ?? 'Nível Desconhecido';
-                                        $corClass = str_replace(['/', ' '], ['-', '-'], strtolower($nivel));
                                         $severityClass = 'cor-' . str_replace('/', '-', strtolower($row['cor']));
                                         $hora = date('H:i', strtotime($row['data_registro']));
                                         $status = $row['status'] ?? 'Desconhecido';
                                         ?>
-                                        <tr onclick="selectOccurrence(<?= $row['id'] ?>, this, <?= json_encode(['policia' => $row['policia'], 'bombeiros' => $row['bombeiros'], 'samu' => $row['samu']]) ?>)">
-                                            <td class="nivel-emerg <?= $corClass ?>">
-                                                <i class="fas fa-exclamation-triangle"></i>
-                                                <?= htmlspecialchars($nivel) ?>
-                                            </td>
+                                        <tr onclick="selectOccurrence(<?= $row['id'] ?>, this, <?= json_encode(['policia' => $row['policia'], 'bombeiros' => $row['bombeiros'], 'samu' => $row['samu'], 'modelo' => $row['modelo']]) ?>)">
                                             <td class="severity-bg <?= $severityClass ?>">
                                                 <i class="fas fa-thermometer-half"></i>
                                                 <?= htmlspecialchars($row['severidade']) ?>
                                             </td>
+                                            <td><i class="fas fa-bus"></i> <?= htmlspecialchars($row['modelo'] ?? 'N/A') ?></td>
                                             <td><i class="fas fa-tag"></i> <?= htmlspecialchars($row['categoria']) ?></td>
                                             <td><?= $row['policia'] == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>' ?></td>
                                             <td><?= $row['samu'] == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>' ?></td>
@@ -784,13 +745,15 @@ $result->data_seek(0);
                     <!-- Detalhes mais compactos no canto direito -->
                     <div class="details-container" id="occurrence-details">
                         <h3><i class="fas fa-info-circle"></i> Detalhes da Ocorrência Selecionada</h3>
-                        <p><i class="fas fa-exclamation detail-icon"></i> Nível: <span>N/A</span></p>
-                        <p><i class="fas fa-thermometer-half detail-icon"></i> Gravidade: <span>N/A</span></p>
+                         <p><i class="fas fa-bus detail-icon"></i> Modelo: <span>N/A</span></p>
+                        <p><i class="fas fa-thermometer-half detail-icon"></i> Severidade: <span>N/A</span></p>
+                       
                         <p><i class="fas fa-tag detail-icon"></i> Tipo: <span>N/A</span></p>
                         <p><i class="fas fa-map-marker-alt detail-icon"></i> Local: <span>N/A</span></p>
                         <p><i class="fas fa-shield-alt detail-icon"></i> Polícia: <span>N/A</span></p>
                         <p><i class="fas fa-ambulance detail-icon"></i> SAMU: <span>N/A</span></p>
                         <p><i class="fas fa-fire-extinguisher detail-icon"></i> Bombeiros: <span>N/A</span></p>
+                        <p><i class="fas fa-clock detail-icon"></i> Hora: <span>N/A</span></p>
                         <p><i class="fas fa-info-circle detail-icon"></i> Status: <span>N/A</span></p>
                         <p><i class="fas fa-cogs detail-icon"></i> Ações: <span>N/A</span></p>
                     </div>
@@ -800,10 +763,6 @@ $result->data_seek(0);
                 <div class="bottom-section">
                     <!-- Mapa expandido -->
                     <div class="map-container">
-                        <!-- <div class="section-title">
-                            <i class="fas fa-map section-icon"></i>
-                            Visualização em Tempo Real
-                        </div> -->
                         <iframe src="https://monitoramento.mobilesat.com.br/locator/index.html?t=4ebee7c35e2e2fbedde92f4b2611c141F0AA094FB415B295867B3BD93520050BB6566DD7" allowfullscreen></iframe>
                     </div>
 
@@ -854,15 +813,7 @@ $result->data_seek(0);
             });
         }
 
-        // Severity mappings for client-side rendering
-        const severityMap = {
-            'Leve': 'Nível I',
-            'Moderado': 'Nível II',
-            'Grave': 'Nível III',
-            'Moderado a Grave': 'Nível II/III'
-        };
-
-        let blinkingOccurrences = new Map(); // Controla quais ocorrências estão piscando
+        let blinkingOccurrences = new Map();
         let previousOccurrenceIds = [];
 
         function updateStats() {
@@ -874,14 +825,12 @@ $result->data_seek(0);
                         return;
                     }
 
-                    // Atualizar contadores com animação
                     const counters = document.querySelectorAll('.counter');
                     counters[0].textContent = data.total;
                     counters[1].textContent = data.grave;
                     counters[2].textContent = data.moderado;
                     counters[3].textContent = data.leve;
 
-                    // Animar cards quando há mudanças
                     counters.forEach(counter => {
                         counter.style.transform = 'scale(1.1)';
                         setTimeout(() => {
@@ -892,7 +841,6 @@ $result->data_seek(0);
                 .catch(error => console.error('Erro ao atualizar estatísticas:', error));
         }
 
-        // Function to fetch and update table data
         function updateTable() {
             fetch('?ajax=get_table_data')
                 .then(response => response.json())
@@ -903,50 +851,46 @@ $result->data_seek(0);
                     }
 
                     const tbody = document.querySelector('#accidents-table tbody');
-                    tbody.innerHTML = ''; // Clear existing rows
+                    tbody.innerHTML = '';
 
                     const currentIds = data.map(row => row.id);
                     const newOccurrences = currentIds.filter(id => !previousOccurrenceIds.includes(id));
                     
                     data.forEach((row, index) => {
-                        const nivel = severityMap[row.severidade] || 'Nível Desconhecido';
-                        const corClass = nivel.toLowerCase().replace(/[\/\s]/g, '-');
                         const severityClass = 'cor-' + row.cor.toLowerCase().replace('/', '-');
                         const hora = new Date(row.data_registro).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                         const status = row.status || 'em andamento';
 
                         const tr = document.createElement('tr');
-                        tr.setAttribute('onclick', `selectOccurrence(${row.id}, this, ${JSON.stringify({ policia: row.policia, bombeiros: row.bombeiros, samu: row.samu })})`);
+                        tr.setAttribute('onclick', `selectOccurrence(${row.id}, this, ${JSON.stringify({ policia: row.policia, bombeiros: row.bombeiros, samu: row.samu, modelo: row.modelo })})`);
                         
                         const isNewOccurrence = newOccurrences.includes(row.id);
                         const shouldBlink = isNewOccurrence || (blinkingOccurrences.has(row.id) && status !== 'resolvido');
                         
                         if (isNewOccurrence && status !== 'resolvido') {
-                            // Nova ocorrência não resolvida - iniciar piscar por 1 hora
                             blinkingOccurrences.set(row.id, setTimeout(() => {
                                 blinkingOccurrences.delete(row.id);
-                            }, 3600000)); // 1 hora
+                            }, 3600000));
                         } else if (status === 'resolvido' && blinkingOccurrences.has(row.id)) {
-                            // Status mudou para resolvido - parar de piscar
                             clearTimeout(blinkingOccurrences.get(row.id));
                             blinkingOccurrences.delete(row.id);
                         }
 
-                        tr.innerHTML = `
-                            <td class="nivel-emerg ${corClass}">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                ${nivel}
-                            </td>
+                        tr.innerHTML = 
+                        `
+                          <td><i class="fas fa-bus"></i> ${row.modelo || 'N/A'}</td>
                             <td class="severity-bg ${severityClass}">
                                 <i class="fas fa-thermometer-half"></i>
                                 ${row.severidade}
                             </td>
+                          
                             <td><i class="fas fa-tag"></i> ${row.categoria}</td>
-                            <td>${row.policia == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}</td>
+                          <td><i class="fas fa-map-marker-alt"></i> ${row.localizacao}</td>
+                            <td class="time-cell ${shouldBlink && status !== 'resolvido' ? 'time-blink' : ''}"><i class="fas fa-clock"></i> ${hora}</td>
+                            
+                              <td>${row.policia == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}</td>
                             <td>${row.samu == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}</td>
                             <td>${row.bombeiros == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}</td>
-                            <td><i class="fas fa-map-marker-alt"></i> ${row.localizacao}</td>
-                            <td class="time-cell ${shouldBlink && status !== 'resolvido' ? 'time-blink' : ''}"><i class="fas fa-clock"></i> ${hora}</td>
                             <td><i class="fas fa-info-circle"></i> ${status}</td>
                         `;
                         
@@ -965,7 +909,6 @@ $result->data_seek(0);
         setInterval(updateTable, 2000);
         setInterval(updateStats, 2000);
 
-        // Initial setup
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
             animateCounters();
@@ -974,14 +917,13 @@ $result->data_seek(0);
         });
 
         function selectOccurrence(id, row, emergencyServices) {
-            // Remove highlight from all rows
             document.querySelectorAll('#accidents-table tr').forEach(r => r.classList.remove('selected'));
             row.classList.add('selected');
 
             const rowData = row.cells;
             const details = {
-                nivel: rowData[0].textContent.trim(),
-                gravidade: rowData[1].textContent.trim(),
+                severidade: rowData[0].textContent.trim(),
+                modelo: rowData[1].textContent.trim(),
                 tipo: rowData[2].textContent.trim(),
                 policia: emergencyServices.policia ? 'Sim' : 'Não',
                 samu: emergencyServices.samu ? 'Sim' : 'Não',
@@ -995,8 +937,8 @@ $result->data_seek(0);
             const detailsDiv = document.getElementById('occurrence-details');
             detailsDiv.innerHTML = `
                 <h3><i class="fas fa-info-circle"></i> Detalhes da Ocorrência Selecionada</h3>
-                <p><i class="fas fa-exclamation detail-icon"></i> Nível: <span>${details.nivel}</span></p>
-                <p><i class="fas fa-thermometer-half detail-icon"></i> Gravidade: <span>${details.gravidade}</span></p>
+                <p><i class="fas fa-thermometer-half detail-icon"></i> Severidade: <span>${details.severidade}</span></p>
+                <p><i class="fas fa-bus detail-icon"></i> Modelo: <span>${details.modelo}</span></p>
                 <p><i class="fas fa-tag detail-icon"></i> Tipo: <span>${details.tipo}</span></p>
                 <p><i class="fas fa-map-marker-alt detail-icon"></i> Local: <span>${details.local}</span></p>
                 <p><i class="fas fa-shield-alt detail-icon"></i> Polícia: <span>${details.policia}</span></p>

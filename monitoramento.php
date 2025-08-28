@@ -265,6 +265,24 @@ $result->data_seek(0);
             margin-bottom: 8px;
             color: #dc2626;
             animation: pulse 2s infinite;
+        } 
+        .stat-icon2 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #9c9a05ff;
+            animation: pulse 2s infinite;
+        }
+         .stat-icon3 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #3cf117ff;
+            animation: pulse 2s infinite;
+        }
+         .stat-icon4 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #1763f1ff;
+            animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
@@ -656,7 +674,7 @@ $result->data_seek(0);
         <!-- Sidebar esquerda com estatísticas -->
         <div class="sidebar">
             <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-icon4"><i class="fas fa-chart-line"></i></div>
                 <div class="stat-number counter" id="total-occurrences"><?= $totalOcorrencias ?></div>
                 <div class="stat-label">OCORRÊNCIAS ATIVAS</div>
                 <div class="stat-sublabel">Monitoramento em tempo real</div>
@@ -670,14 +688,14 @@ $result->data_seek(0);
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="stat-icon2"><i class="fas fa-exclamation-circle"></i></div>
                 <div class="stat-number counter" id="moderado-occurrences"><?= $counts['Moderado'] ?></div>
                 <div class="stat-label">OCORRÊNCIAS MODERADO</div>
                 <div class="stat-sublabel">Situação controlada</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-info-circle"></i></div>
+                <div class="stat-icon3"><i class="fas fa-info-circle"></i></div>
                 <div class="stat-number counter" id="leve-occurrences"><?= $counts['Leve'] ?></div>
                 <div class="stat-label">OCORRÊNCIAS LEVE</div>
                 <div class="stat-sublabel">Baixo risco operacional</div>

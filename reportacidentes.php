@@ -81,22 +81,22 @@ if (isset($_POST['update_status']) && isset($_POST['id'])) {
     if ($stmt) {
         $stmt->bind_param("iiii", $policia, $bombeiros, $samu, $id);
         if ($stmt->execute()) {
-            $sucesso = "Status do acidente atualizado para resolvido!";
+            // $sucesso = "Status do acidente atualizado para resolvido!";
         } else {
             $erro = "Erro ao atualizar o status: " . $stmt->error;
         }
         $stmt->close();
-        header("Location: reportacidentes.php?success=2");
+        header("Location: reportacidentes.php");
         exit();
     }
 }
 
-// Buscar todos os registros
+// Buscar todos os registros - ORDENAR POR DATA MAIS RECENTE PRIMEIRO
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 $sql = "SELECT id, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
         FROM acidentes 
         WHERE descricao LIKE ? OR localizacao LIKE ? OR severidade LIKE ? OR categoria LIKE ? 
-        ORDER BY data_registro";
+        ORDER BY data_registro DESC";
 $params = ["%$search%", "%$search%", "%$search%", "%$search%"];
 
 $stmt = $conn->prepare($sql);
@@ -126,7 +126,7 @@ if (!$fetchSuccess) {
 }
 
 // Converter $result para JSON para uso no JavaScript
-$resultJson = json_encode($result);
+$resultJson = json_encode($result, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG);
 
 // Mapear cores para classes CSS
 $colorClasses = [
@@ -151,134 +151,290 @@ include 'header.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Ocorrências</title>
-    <link rel="stylesheet" href="./src/bonde/style/report.css">
+    <link rel="stylesheet" href="./src/bonde/style/acidente.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
 </head>
 <body>
-    <div class="header">
-        <h1>Registrar Ocorrências</h1>
-    </div>
-    <div class="container">
-        <?php if ($erro): ?>
-            <p class="error"><?php echo htmlspecialchars($erro); ?></p>
-        <?php endif; ?>
-        <?php if ($sucesso || isset($_GET['success'])): ?>
-            <!-- <p class="success"><?php echo htmlspecialchars($sucesso ?: ($_GET['success'] == 1 ? "OCORRÊNCIAS registrado com sucesso!" : "Status do acidente atualizado para resolvido!")); ?></p> -->
-        <?php endif; ?>
-
-        <form method="POST" action="">
-            <div class="form-group">
-                <label for="modelo">Modelo do Bonde:</label>
-                <select id="modelo" name="modelo" required>
-                    <option value="">Selecione o modelo</option>
-                    <?php foreach ($modelos as $modelo): ?>
-                        <option value="<?php echo htmlspecialchars($modelo); ?>"><?php echo htmlspecialchars($modelo); ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="categoria">Categoria:</label>
-                <select id="categoria" name="categoria" required onchange="updateSubcategorias()">
-                    <option value="">Selecione a categoria</option>
-                    <option value="Operacionais">Operacionais</option>
-                    <option value="Via permanente / infraestrutura">Via permanente / infraestrutura</option>
-                    <option value="Relacionadas a terceiros">Relacionadas a terceiros</option>
-                    <option value="Emergências médicas">Emergências médicas</option>
-                    <option value="Segurança">Segurança</option>
-                    <option value="Eventos externos">Eventos externos</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="subcategoria">Subcategoria:</label>
-                <select id="subcategoria" name="subcategoria" required onchange="updateSeveridadeECor()">
-                    <option value="">Selecione a subcategoria</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="severidade">Severidade:</label>
-                <select id="severidade" name="severidade">
-                    <option value="">Selecione a severidade</option>
-                    <option value="Leve">Leve</option>
-                    <option value="Moderado">Moderado</option>
-                    <option value="Grave">Grave</option>
-                </select>
-                <input type="hidden" id="cor" name="cor">
-            </div>
-            <div class="form-group">
-                <label for="localizacao">Localização:</label>
-                <input type="text" id="localizacao" name="localizacao" placeholder="Ex: Largo do Curvel, Copacabana, Carioca, próximo ao poste 13 ...">
-            </div>
-            <div class="form-group">
-                <label for="data">Data do Acidente:</label>
-                <input type="date" id="data" name="data" value="<?php echo date('Y-m-d'); ?>" required>
-            </div>
-            <div class="form-group">
-                <label for="descricao">Descrição do Acidente:</label>
-                <textarea id="descricao" name="descricao" rows="4" required placeholder="Descreva o acidente, danos, envolvidos, e ações tomadas"></textarea>
-            </div>
-            <button type="submit">Salvar Registro</button>
-        </form>
-
-        <div class="search-section">
-            <div class="form-group">
-                <label for="search">Pesquisar:</label>
-                <input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Pesquisar por descrição, localização, severidade ou categoria">
-            </div>
-            <div class="form-group">
-                <label for="severityFilter">Filtrar por Severidade:</label>
-                <select id="severityFilter" name="severityFilter">
-                    <option value="">Todas</option>
-                    <option value="Leve">Leve</option>
-                    <option value="Moderado">Moderado</option>
-                    <option value="Grave">Grave</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="dateStart">Data de Registro (Início):</label>
-                <input type="date" id="dateStart" name="dateStart">
-            </div>
-            <div class="form-group">
-                <label for="dateEnd">Data de Registro (Fim):</label>
-                <input type="date" id="dateEnd" name="dateEnd">
+    <div class="caderno">
+        <!-- Cabeçalho Principal -->
+        <div class="form-container">
+            <div class="section-header">
+                <div class="header-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="header-content">
+                    <h1>Registrar Ocorrências</h1>
+                    <p>Sistema de registro e acompanhamento de acidentes e ocorrências</p>
+                </div>
             </div>
         </div>
 
-        <div class="accidents-table">
-            <!-- <h2>Histórico de Ocorrências</h2> -->
-            <h3 id="totalAccidents">Total de Ocorrências: <?php echo count($result); ?></h3>
+        <!-- Mensagens de Erro/Sucesso -->
+        <?php if ($erro): ?>
+            <div class="message-container error">
+                <i class="fas fa-exclamation-circle"></i>
+                <?php echo htmlspecialchars($erro); ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if ($sucesso || isset($_GET['success'])): ?>
+            <div class="message-container success">
+                <i class="fas fa-check-circle"></i>
+                <?php echo htmlspecialchars($sucesso ?: ($_GET['success'] == 1 ? "OCORRÊNCIAS registrado com sucesso!" : "Status do acidente atualizado para resolvido!")); ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- Formulário de Registro -->
+        <div class="form-container">
+            <div class="section-header">
+                <div class="header-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <div class="header-content">
+                    <h2>Novo Registro de Ocorrência</h2>
+                    <p>Preencha os dados da ocorrência</p>
+                </div>
+            </div>
+            
+            <form method="POST" action="">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="modelo">
+                                <i class="fas fa-train"></i>
+                                Modelo do Bonde:
+                            </label>
+                            <select id="modelo" name="modelo" required>
+                                <option value="">Selecione o modelo</option>
+                                <?php foreach ($modelos as $modelo): ?>
+                                    <option value="<?php echo htmlspecialchars($modelo); ?>"><?php echo htmlspecialchars($modelo); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="categoria">
+                                <i class="fas fa-tags"></i>
+                                Categoria:
+                            </label>
+                            <select id="categoria" name="categoria" required onchange="updateSubcategorias()">
+                                <option value="">Selecione a categoria</option>
+                                <option value="Operacionais">Operacionais</option>
+                                <option value="Via permanente / infraestrutura">Via permanente / infraestrutura</option>
+                                <option value="Relacionadas a terceiros">Relacionadas a terceiros</option>
+                                <option value="Emergências médicas">Emergências médicas</option>
+                                <option value="Segurança">Segurança</option>
+                                <option value="Eventos externos">Eventos externos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="subcategoria">
+                                <i class="fas fa-list"></i>
+                                Subcategoria:
+                            </label>
+                            <select id="subcategoria" name="subcategoria" required onchange="updateSeveridadeECor()">
+                                <option value="">Selecione a subcategoria</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="severidade">
+                                <i class="fas fa-thermometer-half"></i>
+                                Severidade:
+                            </label>
+                            <select id="severidade" name="severidade">
+                                <option value="">Selecione a severidade</option>
+                                <option value="Leve">Leve</option>
+                                <option value="Moderado">Moderado</option>
+                                <option value="Grave">Grave</option>
+                            </select>
+                            <input type="hidden" id="cor" name="cor">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="localizacao">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Localização:
+                            </label>
+                            <input type="text" id="localizacao" name="localizacao" placeholder="Ex: Largo do Curvel, Copacabana, Carioca, próximo ao poste 13 ...">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="data">
+                                <i class="fas fa-calendar-alt"></i>
+                                Data do Acidente:
+                            </label>
+                            <input type="date" id="data" name="data" value="<?php echo date('Y-m-d'); ?>" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descricao">
+                            <i class="fas fa-file-alt"></i>
+                            Descrição do Acidente:
+                        </label>
+                        <textarea id="descricao" name="descricao" rows="4" required placeholder="Descreva o acidente, danos, envolvidos, e ações tomadas"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit">
+                        <i class="fas fa-save"></i>
+                        Salvar Registro
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Seção de Pesquisa -->
+        <div class="search-section">
+            <div class="section-header">
+                <div class="header-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="header-content">
+                    <h3>Filtros de Pesquisa</h3>
+                    <p>Utilize os filtros para encontrar ocorrências específicas</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="search">
+                            <i class="fas fa-search"></i>
+                            Pesquisar:
+                        </label>
+                        <input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Pesquisar por descrição, localização, severidade ou categoria">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="severityFilter">
+                            <i class="fas fa-filter"></i>
+                            Filtrar por Severidade:
+                        </label>
+                        <select id="severityFilter" name="severityFilter">
+                            <option value="">Todas</option>
+                            <option value="Leve">Leve</option>
+                            <option value="Moderado">Moderado</option>
+                            <option value="Grave">Grave</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateStart">
+                            <i class="fas fa-calendar"></i>
+                            Data de Registro (Início):
+                        </label>
+                        <input type="date" id="dateStart" name="dateStart">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateEnd">
+                            <i class="fas fa-calendar"></i>
+                            Data de Registro (Fim):
+                        </label>
+                        <input type="date" id="dateEnd" name="dateEnd">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Histórico -->
+        <div class="table-section">
+            <div class="table-header">
+                <h3>
+                    <i class="fas fa-history"></i>
+                    Histórico de Ocorrências
+                </h3>
+                <div class="table-info">
+                    <div class="record-count" id="totalAccidents">
+                        <i class="fas fa-list-ol"></i>
+                        Total de Ocorrências: <?php echo count($result); ?>
+                    </div>
+                </div>
+            </div>
+
             <?php if (!is_array($result)): ?>
-                <p class="error">Erro: Dados inválidos. Valor: <?php echo htmlspecialchars(var_export($result, true)); ?></p>
+                <div class="message-container error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Erro: Dados inválidos. Valor: <?php echo htmlspecialchars(var_export($result, true)); ?>
+                </div>
                 <?php $result = []; ?>
             <?php endif; ?>
+
             <?php if (empty($result)): ?>
-                <div class="no-data">Nenhum acidente registrado.</div>
+                <div class="no-data">
+                    <i class="fas fa-inbox"></i>
+                    <span>Nenhum acidente registrado.</span>
+                </div>
             <?php else: ?>
-                <table id="accidentsTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Descrição</th>
-                            <th>Localização</th>
-                            <th>Usuário</th>
-                            <th>Severidade</th>
-                            <th>Categoria</th>
-                            <th>Cor</th>
-                            <th>Bonde</th>
-                            <th>Data de Registro</th>
-                            <th>Polícia</th>
-                            <th>Bombeiros</th>
-                            <th>SAMU</th>
-                            <th>Status</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="accidentsTableBody">
-                        <!-- Conteúdo gerado por JavaScript -->
-                    </tbody>
-                </table>
+                <div class="table-container">
+                    <table class="data-table" id="accidentsTable">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i>ID</th>
+                                <th><i class="fas fa-file-alt"></i>Descrição</th>
+                                <th><i class="fas fa-map-marker-alt"></i>Localização</th>
+                                <th><i class="fas fa-user"></i>Usuário</th>
+                                <th><i class="fas fa-thermometer-half"></i>Severidade</th>
+                                <th><i class="fas fa-tags"></i>Categoria</th>
+                                <th><i class="fas fa-palette"></i>Cor</th>
+                                <th><i class="fas fa-train"></i>Bonde</th>
+                                <th><i class="fas fa-calendar"></i>Data de Registro</th>
+                                <th><i class="fas fa-shield-alt"></i>Polícia</th>
+                                <th><i class="fas fa-fire-extinguisher"></i>Bombeiros</th>
+                                <th><i class="fas fa-ambulance"></i>SAMU</th>
+                                <th><i class="fas fa-info-circle"></i>Status</th>
+                                <th><i class="fas fa-cogs"></i>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accidentsTableBody">
+                            <!-- Conteúdo gerado por JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
                 <div class="pagination" id="pagination">
                     <!-- Botões de paginação gerados por JavaScript -->
                 </div>
             <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Modal de Descrição -->
+    <div class="modal-overlay" id="descriptionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <div class="modal-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div>
+                        <h3 class="modal-title">Descrição da Ocorrência</h3>
+                        <p class="modal-subtitle" id="modalSubtitle">Detalhes completos do incidente</p>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeDescriptionModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="description-content" id="modalDescription">
+                    <!-- Conteúdo da descrição será inserido aqui -->
+                </div>
+                <div class="description-meta" id="modalMeta">
+                    <!-- Metadados serão inseridos aqui -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -290,10 +446,155 @@ include 'header.php';
         let currentPage = 1;
         let filteredData = acidentes;
 
+        // Função para criar célula de descrição clicável usando data attributes
+        function createDescriptionCell(description, rowIndex) {
+            const maxLength = 50;
+            const truncated = description.length > maxLength ? 
+                description.substring(0, maxLength) + '...' : description;
+            
+            return `
+                <div class="description-cell" data-row-index="${rowIndex}">
+                    <div class="description-preview">
+                        <i class="fas fa-eye"></i>
+                        <span>${escapeHtml(truncated)}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Função para escapar HTML de forma mais robusta
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Função para abrir modal de descrição
+        function openDescriptionModal(description, rowData) {
+            try {
+                const modal = document.getElementById('descriptionModal');
+                const modalDescription = document.getElementById('modalDescription');
+                const modalSubtitle = document.getElementById('modalSubtitle');
+                const modalMeta = document.getElementById('modalMeta');
+
+                // Verificar se os dados são válidos
+                if (!description || !rowData) {
+                    console.error('Dados inválidos para o modal:', { description, rowData });
+                    return;
+                }
+
+                // Atualizar conteúdo do modal
+                modalDescription.textContent = description;
+                modalSubtitle.textContent = `Ocorrência #${rowData.id} - ${rowData.categoria || 'Categoria não informada'}`;
+
+                // Criar metadados
+                modalMeta.innerHTML = `
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-hashtag"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">ID da Ocorrência</div>
+                            <div class="meta-value">#${rowData.id || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Localização</div>
+                            <div class="meta-value">${rowData.localizacao || 'Não informado'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Usuário</div>
+                            <div class="meta-value">${rowData.usuario || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-thermometer-half"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Severidade</div>
+                            <div class="meta-value">${rowData.severidade || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-train"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Modelo do Bonde</div>
+                            <div class="meta-value">${rowData.modelo || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Data de Registro</div>
+                            <div class="meta-value">${rowData.data_registro || 'N/A'}</div>
+                        </div>
+                    </div>
+                `;
+
+                // Mostrar modal
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } catch (error) {
+                console.error('Erro ao abrir modal:', error);
+                alert('Erro ao exibir a descrição. Tente novamente.');
+            }
+        }
+
+        // Função para fechar modal de descrição
+        function closeDescriptionModal() {
+            const modal = document.getElementById('descriptionModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Event delegation para cliques nas células de descrição
+        document.addEventListener('click', function(e) {
+            const descriptionCell = e.target.closest('.description-cell');
+            if (descriptionCell) {
+                const rowIndex = parseInt(descriptionCell.dataset.rowIndex);
+                if (!isNaN(rowIndex) && filteredData[rowIndex]) {
+                    const rowData = filteredData[rowIndex];
+                    const description = rowData.descricao || '';
+                    openDescriptionModal(description, rowData);
+                } else {
+                    console.error('Dados da linha não encontrados:', rowIndex);
+                }
+            }
+        });
+
+        // Fechar modal ao clicar fora
+        document.getElementById('descriptionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDescriptionModal();
+            }
+        });
+
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDescriptionModal();
+            }
+        });
+
         // Função para atualizar o total de acidentes
         function updateTotalAccidents(data) {
             const totalAccidents = document.getElementById('totalAccidents');
-            totalAccidents.textContent = `Ocorrências Registrados: ${data.length}`;
+            totalAccidents.innerHTML = `<i class="fas fa-list-ol"></i> Ocorrências Registradas: ${data.length}`;
         }
 
         // Função para determinar quais órgãos de emergência devem ser pré-marcados
@@ -332,23 +633,25 @@ include 'header.php';
                 return;
             }
 
-            pageData.forEach(row => {
+            pageData.forEach((row, index) => {
                 if (typeof row !== 'object' || row === null) {
                     console.error('Dados inválidos:', row);
                     return;
                 }
+                
+                const globalIndex = start + index; // Índice global para acessar os dados corretos
                 const emergencyServices = getEmergencyServices(row.categoria);
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${row.id || ''}</td>
-                    <td>${row.descricao || ''}</td>
+                    <td><span class="id-badge">${row.id || ''}</span></td>
+                    <td>${createDescriptionCell(row.descricao || '', globalIndex)}</td>
                     <td>${row.localizacao || ''}</td>
                     <td>${row.usuario || ''}</td>
-                    <td class="${colorClasses[row.cor] || ''}">${row.severidade || ''}</td>
+                    <td><span class="${colorClasses[row.cor] || ''}">${row.severidade || ''}</span></td>
                     <td>${row.categoria || ''}</td>
                     <td>${row.cor || ''}</td>
                     <td>${row.modelo || ''}</td>
-                    <td>${row.data_registro || ''}</td>
+                    <td class="date">${row.data_registro || ''}</td>
                     <td>
                         ${row.status === 'em andamento' ? 
                             `<form method="POST" action="" id="form-${row.id}">
@@ -356,23 +659,29 @@ include 'header.php';
                                 <input type="hidden" name="id" value="${row.id}">
                                 <input type="hidden" name="update_status" value="1">
                             </form>` : 
-                            (row.policia == 1 ? '✔' : '')}
+                            (row.policia == 1 ? '<i class="fas fa-check" style="color: var(--success-color);"></i>' : '')}
                     </td>
                     <td>
                         ${row.status === 'em andamento' ? 
                             `<input type="checkbox" name="bombeiros[${row.id}]" form="form-${row.id}" ${emergencyServices.bombeiros ? 'checked' : ''}>` : 
-                            (row.bombeiros == 1 ? '✔' : '')}
+                            (row.bombeiros == 1 ? '<i class="fas fa-check" style="color: var(--success-color);"></i>' : '')}
                     </td>
                     <td>
                         ${row.status === 'em andamento' ? 
                             `<input type="checkbox" name="samu[${row.id}]" form="form-${row.id}" ${emergencyServices.samu ? 'checked' : ''}>` : 
-                            (row.samu == 1 ? '✔' : '')}
+                            (row.samu == 1 ? '<i class="fas fa-check" style="color: var(--success-color);"></i>' : '')}
                     </td>
                     <td>${row.status || ''}</td>
                     <td>
                         ${row.status === 'em andamento' ? 
-                            `<button type="submit" form="form-${row.id}" class="status-btn">Marcar como Resolvido</button>` : 
-                            `<button class="status-btn resolved" disabled>Resolvido</button>`}
+                            `<button type="submit" form="form-${row.id}" class="status-btn">
+                                <i class="fas fa-check"></i>
+                                Resolver
+                            </button>` : 
+                            `<button class="status-btn resolved" disabled>
+                                <i class="fas fa-check-circle"></i>
+                                Resolvido
+                            </button>`}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -390,7 +699,7 @@ include 'header.php';
 
             // Botão "Anterior"
             const prevButton = document.createElement('button');
-            prevButton.textContent = 'Anterior';
+            prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
             prevButton.disabled = currentPage === 1;
             prevButton.onclick = () => {
                 if (currentPage > 1) {
@@ -416,7 +725,7 @@ include 'header.php';
 
             // Botão "Próximo"
             const nextButton = document.createElement('button');
-            nextButton.textContent = 'Próximo';
+            nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
             nextButton.disabled = currentPage === totalPages || totalPages === 0;
             nextButton.onclick = () => {
                 if (currentPage < totalPages) {

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Emissor de Relatório (Web)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Lib p/ exportar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+  <script src="app.js" type="module" defer></script>
+</head>
+
+<STYLE>
+    :root{
+  --bg:#f3f4f6; --card:#fff; --ink:#111827;
+  --muted:#6b7280; --accent:#111; --accent-ink:#fff;
+  --border:#e5e7eb;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+h1,h2,h3{margin:.2rem 0 .6rem}
+.app{max-width:1200px;margin:24px auto;padding:0 16px}
+.card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; padding:16px; box-shadow:0 4px 10px rgba(0,0,0,.05);
+}
+.grid{display:grid; gap:12px; grid-template-columns:repeat(3,minmax(0,1fr))}
+label{display:flex; flex-direction:column; gap:6px; font-weight:600}
+input,select{
+  border:1px solid var(--border); border-radius:12px; padding:10px; font:inherit;
+  background:#fff;
+}
+.actions{display:flex; gap:8px; margin-top:10px}
+.btn{
+  border:1px solid var(--border); background:#fff; color:var(--ink);
+  padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600;
+}
+.btn.primary{background:var(--accent); color:var(--accent-ink)}
+.btn:hover{filter:brightness(.95)}
+
+.impressao{margin-top:24px}
+.section{margin-top:24px}
+.section h3{margin:0 0 8px}
+
+.imp-header{
+  display:grid; grid-template-rows:repeat(6,1fr);
+  background:#000; color:#fff; text-align:center;
+  border:2px solid #000; border-radius:8px; padding:16px; gap:6px;
+}
+.imp-header .h1,.imp-header .h2,.imp-header .h4,.imp-header .h5,.imp-header .h6{
+  font-weight:800;
+}
+.imp-header .h1,.imp-header .h2{font-size:32px}
+.imp-header .h4,.imp-header .h5,.imp-header .h6{font-size:28px}
+.imp-header .spacer{height:4px}
+
+.tbl{
+  width:100%; border-collapse:collapse; table-layout:fixed; font-size:18px;
+}
+.tbl.small{width:auto; min-width:420px}
+.tbl th,.tbl td{
+  border:1px solid #000; padding:6px 8px; text-align:center; vertical-align:middle;
+}
+.tbl th{background:#111; color:#fff; font-weight:800}
+.tbl .red{color:#c00; font-weight:700}
+
+.badge{display:inline-block; padding:2px 8px; border-radius:999px; background:#111; color:#fff; font-size:12px}
+
+.hidden{display:none}
+
+@media print{
+  body{background:#fff}
+  .card,.actions{display:none !important}
+  .app{max-width:100%; margin:0; padding:0}
+  .imp-header .h1,.imp-header .h2{font-size:35px}
+  .imp-header .h4,.imp-header .h5,.imp-header .h6{font-size:35px}
+  .tbl{font-size:30px}
+}
+
+</STYLE>
+<body>
+  <div class="app">
+    <!-- Cabeçalho de entrada (equivalente às InputBox do VBA) -->
+    <form id="filtros" class="card">
+      <div class="grid">
+        <label>
+          <span>Nome completo</span>
+          <input id="nomeCompleto" required />
+        </label>
+        <label>
+          <span>Matrícula</span>
+          <input id="matricula" required />
+        </label>
+        <label>
+          <span>Bonde (ou TODOS)</span>
+          <input id="bonde" placeholder="TODOS" />
+        </label>
+        <label>
+          <span>Aba</span>
+          <select id="aba">
+            <option value="todos">Todos</option>
+            <option value="saida">Saida</option>
+            <option value="retorno">Retorno</option>
+          </select>
+        </label>
+        <label>
+          <span>Data início</span>
+          <input type="date" id="dataIni" required />
+        </label>
+        <label>
+          <span>Data fim</span>
+          <input type="date" id="dataFim" required />
+        </label>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn primary">Gerar relatório</button>
+        <button type="button" id="btnPdf" class="btn">Exportar PDF</button>
+      </div>
+    </form>
+
+    <!-- Área “Impressao” (tudo daqui vai para o PDF) -->
+    <section id="Impressao" class="impressao">
+      <!-- Header (equivalente às células B1:N6 com merge/fundo preto e fonte branca) -->
+      <header id="headerImpressao" class="imp-header">
+        <div class="h1">Secretaria de Estado de Transporte</div>
+        <div class="h2">e Mobilidade Urbana</div>
+        <div class="spacer"></div>
+        <div class="h4" id="rel-elaborado">Relatório Elaborado por: —</div>
+        <div class="h5" id="rel-matricula">Matrícula: —</div>
+        <div class="h6" id="rel-data">Data do relatório: —</div>
+      </header>
+
+      <!-- Tabela principal (equivalente a A8:...) -->
+      <div id="tabelaWrapper" class="section">
+        <h3>Registros</h3>
+        <div id="tabelaContainer"></div>
+      </div>
+
+      <!-- Totais Gerais -->
+      <div id="totaisGerais" class="section">
+        <h3>Totais Gerais</h3>
+        <table class="tbl small" id="tblTotaisGerais"></table>
+      </div>
+
+      <!-- Totais por Bonde -->
+      <div id="totaisPorBonde" class="section">
+        <h3>Totais por Bonde</h3>
+        <div id="totaisBondesContainer"></div>
+      </div>
+
+      <!-- Totais por Rota (todas as combinações do VBA) -->
+      <div id="totaisPorRota" class="section">
+        <h3>Totais por Rota</h3>
+        <table class="tbl" id="tblRotas"></table>
+      </div>
+
+      <!-- Relatório por Hora (8:00–18:00) Subindo/Descendo para Carioca -->
+      <div id="relatorioHora" class="section">
+        <h3>Passageiros por Hora (Carioca)</h3>
+        <table class="tbl" id="tblHora"></table>
+      </div>
+
+      <!-- Justificativas (opcional — se existir justificativa.json) -->
+      <div id="justificativas" class="section hidden">
+        <h3>Justificativas</h3>
+        <table class="tbl" id="tblJust"></table>
+      </div>
+    </section>
+  </div>
+  <script>
+    // ======= CONFIG =======
+const ROTAS = [
+  "D.Irmãos", "França", "Vista Alegre", "Guimarães",
+  "Curvelo", "Silvestre", "Paula Mattos"
+];
+const HORA_INICIO = 8, HORA_FIM = 18; // 8:00–18:00
+
+// ======= HELPERS =======
+const $ = sel => document.querySelector(sel);
+const fmt = n => Number(n ?? 0);
+const parseHora = h => {
+  // aceita "08:05" -> Date hoje com horas/min
+  const [hh, mm] = String(h).split(":").map(Number);
+  const d = new Date(); d.setHours(hh||0, mm||0, 0, 0);
+  return d;
+};
+const parseISO = s => new Date(s + (s.length===10 ? "T00:00:00" : ""));
+
+function rankAux(r){
+  // =SE(D="Carioca";2;SE(C="Carioca";1;3))  (VBA)
+  if(String(r.Retorno).trim() === "Carioca") return 2;
+  if(String(r.Saida).trim()   === "Carioca") return 1;
+  return 3;
+}
+
+function between(date, a, b){
+  const t = date.setHours(0,0,0,0);
+  return t >= a.setHours(0,0,0,0) && t <= b.setHours(0,0,0,0);
+}
+
+function td(v, cls=""){ return `<td class="${cls}">${v}</td>`; }
+function th(v){ return `<th>${v}</th>`; }
+
+// Carrega um JSON opcional (para justificativas). Se não existir, retorna []
+async function tryFetchJSON(url){
+  try{
+    const r = await fetch(url);
+    if(!r.ok) return [];
+    return await r.json();
+  }catch{ return []; }
+}
+
+// ======= RENDER =======
+function renderTabela(regs, host){
+  const head = `
+    <tr>
+      ${th("Bondes")}${th("Saida")}${th("Retorno")}${th("Maquinista")}
+      ${th("Agente")}${th("Viagem")}${th("Hora")}${th("Pagantes")}
+      ${th("at./PCD/IDO")}${th("Morador")}${th("Gratuito")}
+      ${th("Passageiros")}${th("Data")}
+    </tr>`;
+
+  const rows = regs.map(r=>{
+    const red = String(r.Retorno).trim()==="Carioca" ? "red" : "";
+    return `<tr>
+      ${td(r.Bondes)}${td(r.Saida)}${td(r.Retorno, red)}${td(r.Maquinista)}
+      ${td(r.Agente)}${td(r.Viagem)}${td(r.Hora)}${td(r.Pagantes)}
+      ${td(r.PCD_IDO)}${td(r.Morador)}${td(r.Gratuito)}
+      ${td(r.Passageiros)}${td(r.DataBR)}
+    </tr>`;
+  }).join("");
+
+  host.innerHTML = `<table class="tbl"><thead>${head}</thead><tbody>${rows||""}</tbody></table>`;
+}
+
+function renderTotaisGerais(regs){
+  const sum = (key)=> regs.reduce((a,r)=> a + fmt(r[key]), 0);
+  const totalPag = sum("Pagantes");
+  const totalGra = sum("Gratuito");
+  const totalViag= sum("Viagem");
+  const totalEst = sum("PCD_IDO"); // no VBA estava em J (apelidado de Estudante/PCD/Idoso)
+  const totalMor = sum("Morador");
+  const totalPas = sum("Passageiros");
+
+  const tbl = $("#tblTotaisGerais");
+  tbl.innerHTML = `
+    <tr><th>Total Pagantes</th><td>${totalPag}</td></tr>
+    <tr><th>Total Gratuitos</th><td>${totalGra}</td></tr>
+    <tr><th>Total Viagens</th><td>${totalViag}</td></tr>
+    <tr><th>PCD/IDOSO</th><td>${totalEst}</td></tr>
+    <tr><th>Total Morador</th><td>${totalMor}</td></tr>
+    <tr><th>Total Passageiros</th><td class="red"><strong>${totalPas}</strong></td></tr>
+  `;
+}
+
+function renderTotaisPorBonde(regs){
+  const byBonde = new Map();
+  regs.forEach(r=>{
+    const k = r.Bondes;
+    if(!byBonde.has(k)) byBonde.set(k, {Pagantes:0, Gratuito:0, Passageiros:0, Viagem:0});
+    const o = byBonde.get(k);
+    o.Pagantes += fmt(r.Pagantes);
+    o.Gratuito += fmt(r.Gratuito);
+    o.Passageiros += fmt(r.Passageiros);
+    o.Viagem += fmt(r.Viagem);
+  });
+
+  const container = $("#totaisBondesContainer");
+  const blocks = [...byBonde.entries()].map(([bonde, v])=>{
+    return `
+      <table class="tbl small">
+        <tr><th colspan="3">${bonde}</th></tr>
+        <tr><th>Pagantes</th><td>${v.Pagantes}</td></tr>
+        <tr><th>Gratuitos</th><td>${v.Gratuito}</td></tr>
+        <tr><th>Passageiros</th><td>${v.Passageiros}</td></tr>
+        <tr><th>Viagens</th><td>${v.Viagem}</td></tr>
+      </table>`;
+  }).join("");
+
+  container.innerHTML = blocks || `<span class="badge">Sem dados</span>`;
+}
+
+function renderTotaisPorRota(regs){
+  // Gera linhas para cada rota ida/volta (exatamente como no VBA)
+  const linhas = [];
+  function linha(titulo, filtro){
+    const pag = regs.filter(filtro).reduce((a,r)=>a+fmt(r.Pagantes),0);
+    const gra = regs.filter(filtro).reduce((a,r)=>a+fmt(r.Gratuito),0);
+    const via = regs.filter(filtro).reduce((a,r)=>a+fmt(r.Viagem),0);
+    const pas = regs.filter(filtro).reduce((a,r)=>a+fmt(r.Passageiros),0);
+    linhas.push([titulo,"Pagantes:",pag,"Gratuitos:",gra,"Viagens:",via,"Passageiros:",pas]);
+  }
+
+  ROTAS.forEach(dest=>{
+    linha(`Carioca x ${dest}`, r=> r.Saida==="Carioca" && r.Retorno===dest);
+    linha(`${dest} x Carioca`, r=> r.Saida===dest && r.Retorno==="Carioca");
+  });
+
+  const head = `
+    <tr>
+      ${th("Rota")}${th("")}${th("")}${th("")}${th("")}${th("")}${th("")}${th("")}${th("")}
+    </tr>`;
+  const rows = linhas.map(l => `
+    <tr>
+      ${td(l[0])}${td(l[1])}${td(l[2])}${td(l[3])}${td(l[4])}${td(l[5])}${td(l[6])}${td(l[7])}${td(l[8])}
+    </tr>`).join("");
+
+  $("#tblRotas").innerHTML = `<thead>${head}</thead><tbody>${rows}</tbody>`;
+}
+
+function renderHora(regs){
+  const rows = [];
+  for(let h=HORA_INICIO; h<=HORA_FIM; h++){
+    const sub = regs.filter(r=> r.Saida==="Carioca" && parseHora(r.Hora).getHours()===h)
+                    .reduce((a,r)=> a+fmt(r.Passageiros),0);
+    const des = regs.filter(r=> r.Retorno==="Carioca" && parseHora(r.Hora).getHours()===h)
+                    .reduce((a,r)=> a+fmt(r.Passageiros),0);
+    rows.push([`${String(h).padStart(2,"0")}:00 - ${String(h).padStart(2,"0")}:59`, sub, des]);
+  }
+  const head = `<tr>${th("T.Passageiro Hora")}${th("Subindo")}${th("Descendo")}</tr>`;
+  const body = rows.map(r=> `<tr>${td(r[0])}${td(r[1])}${td(r[2])}</tr>`).join("");
+  $("#tblHora").innerHTML = `<thead>${head}</thead><tbody>${body}</tbody>`;
+}
+
+function renderJustificativas(just){
+  if(!just.length){ $("#justificativas").classList.add("hidden"); return; }
+  const head = `<tr>${th("Código")}${th("Descrição")}${th("Data")}</tr>`;
+  const body = just.map(j=> `<tr>${td(j.Codigo)}${td(j.Descricao)}${td(j.Data)}</tr>`).join("");
+  $("#tblJust").innerHTML = `<thead>${head}</thead><tbody>${body}</tbody>`;
+  $("#justificativas").classList.remove("hidden");
+}
+
+// ======= PIPELINE =======
+async function gerarRelatorio(formVals){
+  // Carrega dados
+  const dados = await (await fetch("dados.json")).json();
+  const justificativas = await tryFetchJSON("justificativa.json");
+
+  // Normaliza e enriquece
+  const dataIni = parseISO(formVals.dataIni);
+  const dataFim = parseISO(formVals.dataFim);
+  const bondeFiltro = (formVals.bonde||"").trim().toUpperCase();
+  const aba = formVals.aba; // "saida" | "retorno" | "todos"
+
+  let regs = dados.map(r=>{
+    const d = parseISO(r.dataISO);
+    return {
+      Bondes: r.bonde, Saida: r.saida, Retorno: r.retorno,
+      Maquinista: r.maquinista, Agente: r.agente, Viagem: fmt(r.viagem),
+      Hora: r.hora, Pagantes: fmt(r.pagantes), PCD_IDO: fmt(r.pcd_ido),
+      Morador: fmt(r.morador), Gratuito: fmt(r.gratuito),
+      Passageiros: fmt(r.passageiros), Data: d, DataBR: r.dataBR
+    };
+  });
+
+  // Filtros (Bonde, Aba, Datas)
+  regs = regs.filter(r=>{
+    const okBonde = !bondeFiltro || bondeFiltro==="TODOS" || String(r.Bondes||"").toUpperCase()===bondeFiltro;
+    const okAba = aba==="todos" || (aba==="saida" && r.Saida==="Carioca") || (aba==="retorno" && r.Retorno==="Carioca");
+    const okData = between(new Date(r.Data), new Date(dataIni), new Date(dataFim));
+    return okBonde && okAba && okData;
+  });
+
+  // Ordenação por coluna auxiliar (rankAux asc)
+  regs.sort((a,b)=> rankAux(a) - rankAux(b));
+
+  // Render
+  renderTabela(regs, $("#tabelaContainer"));
+  renderTotaisGerais(regs);
+  renderTotaisPorBonde(regs);
+  renderTotaisPorRota(regs);
+  renderHora(regs);
+
+  // Justificativas (opcional) — filtra por datas presentes no relatório
+  const datasSet = [...new Set(regs.map(r=> r.DataBR))];
+  const justFiltradas = justificativas.filter(j=> datasSet.includes(j.Data));
+  renderJustificativas(justFiltradas);
+}
+
+// ======= UI =======
+window.addEventListener("DOMContentLoaded", ()=>{
+  const f = $("#filtros");
+  const now = new Date();
+  const iso = d => d.toISOString().slice(0,10);
+
+  // datas padrão (mês atual)
+  const ini = new Date(now.getFullYear(), now.getMonth(), 1);
+  const fim = new Date(now.getFullYear(), now.getMonth()+1, 0);
+  $("#dataIni").value = iso(ini);
+  $("#dataFim").value = iso(fim);
+
+  f.addEventListener("submit", (e)=>{
+    e.preventDefault();
+    const nome = $("#nomeCompleto").value.trim();
+    const mat = $("#matricula").value.trim();
+    const bonde = ($("#bonde").value||"").trim();
+    const aba = $("#aba").value;
+    const dataIni = $("#dataIni").value;
+    const dataFim = $("#dataFim").value;
+
+    if(!nome || !mat) return;
+
+    // Preenche header
+    $("#rel-elaborado").textContent = `Relatório Elaborado por: ${nome}`;
+    $("#rel-matricula").textContent = `Matrícula: ${mat}`;
+    const hojeBR = new Date().toLocaleDateString("pt-BR");
+    $("#rel-data").textContent = `Data do relatório: ${hojeBR}`;
+
+    gerarRelatorio({nome,mat,bonde,aba,dataIni,dataFim});
+  });
+
+  // Exportar PDF (equivalente ao ExportAsFixedFormat)
+  $("#btnPdf").addEventListener("click", ()=>{
+    const area = $("#Impressao");
+    const opt = {
+      margin:       [10,10,10,10],
+      filename:     `Relatorio_${new Date().toLocaleDateString("pt-BR").replace(/\//g,"")}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().from(area).set(opt).save();
+  });
+});
+
+  </script>
+</body>
+</html>

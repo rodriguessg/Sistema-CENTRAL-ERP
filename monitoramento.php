@@ -6,13 +6,14 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Handle AJAX request for table data
-if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
-    $host = 'localhost';
-    $user = 'root';
-    $password = '';
-    $dbname = 'gm_sicbd';
+// Database connection parameters
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$dbname = 'gm_sicbd';
 
+// Handle AJAX request for table data (accidents)
+if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
     $conn = new mysqli($host, $user, $password, $dbname);
     if ($conn->connect_error) {
         http_response_code(500);
@@ -43,13 +44,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
     exit;
 }
 
-// Handle AJAX request for statistics data
+// Handle AJAX request for statistics data (accidents)
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_stats') {
-    $host = 'localhost';
-    $user = 'root';
-    $password = '';
-    $dbname = 'gm_sicbd';
-
     $conn = new mysqli($host, $user, $password, $dbname);
     if ($conn->connect_error) {
         http_response_code(500);
@@ -57,7 +53,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_stats') {
         exit;
     }
 
-    // Buscar contagem por severidade
     $countSql = "SELECT severidade, COUNT(*) as count FROM acidentes WHERE status != 'resolvido' GROUP BY severidade";
     $countResult = $conn->query($countSql);
     $counts = ['Grave' => 0, 'Moderado' => 0, 'Leve' => 0, 'Moderado a Grave' => 0];
@@ -81,12 +76,38 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_stats') {
     exit;
 }
 
-// Conexão com o banco
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$dbname = 'gm_sicbd';
+// Handle AJAX request for viagens data
+if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_viagens') {
+    $conn = new mysqli($host, $user, $password, $dbname);
+    if ($conn->connect_error) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Erro na conexão com o banco de dados: ' . $conn->connect_error]);
+        exit;
+    }
 
+    $sql = "SELECT bonde, pagantes, moradores, gratuidade, passageiros 
+            FROM viagens 
+            ORDER BY created_at DESC";
+    $result = $conn->query($sql);
+
+    if (!$result) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Erro na consulta SQL: ' . $conn->error]);
+        exit;
+    }
+
+    $rows = [];
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
+    }
+
+    $conn->close();
+    header('Content-Type: application/json');
+    echo json_encode($rows);
+    exit;
+}
+
+// Conexão com o banco
 $conn = new mysqli($host, $user, $password, $dbname);
 
 // Verifica conexão
@@ -145,6 +166,10 @@ $result->data_seek(0);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitoramento - Bonde de Santa Teresa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -272,13 +297,13 @@ $result->data_seek(0);
             color: #9c9a05ff;
             animation: pulse 2s infinite;
         }
-         .stat-icon3 {
+        .stat-icon3 {
             font-size: 28px;
             margin-bottom: 8px;
             color: #3cf117ff;
             animation: pulse 2s infinite;
         }
-         .stat-icon4 {
+        .stat-icon4 {
             font-size: 28px;
             margin-bottom: 8px;
             color: #1763f1ff;
@@ -353,7 +378,6 @@ $result->data_seek(0);
             100% { left: 100%; }
         }
 
-        /* Aumentando tamanho da fonte do header */
         .header h1 {
             font-size: 28px;
             margin: 0;
@@ -404,7 +428,6 @@ $result->data_seek(0);
             flex-direction: column;
         }
 
-        /* Aumentando tamanho da fonte dos títulos das seções */
         .section-title {
             display: flex;
             align-items: center;
@@ -415,7 +438,6 @@ $result->data_seek(0);
             color: #333;
         }
 
-        /* Ícones das seções agora em vermelho para destaque */
         .section-icon {
             font-size: 24px;
             color: #dc2626;
@@ -445,7 +467,6 @@ $result->data_seek(0);
             background: transparent;
         }
 
-        /* Aumentando tamanho das fontes da tabela e melhorando legibilidade */
         th, td {
             padding: 15px 10px;
             text-align: center;
@@ -454,7 +475,6 @@ $result->data_seek(0);
             font-weight: 500;
         }
 
-        /* Header da tabela com cor única e uniforme */
         th {
             background: linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%);
             color: white;
@@ -465,7 +485,6 @@ $result->data_seek(0);
             font-size: 15px;
         }
 
-        /* Removendo movimento no hover para evitar deslocamento */
         tr {
             transition: background-color 0.3s ease;
         }
@@ -503,7 +522,6 @@ $result->data_seek(0);
             color: #fff; 
         }
 
-        /* Detalhes agora no canto direito, mais compacto */
         .details-container {
             flex: 1;
             background: #e0e5ec;
@@ -517,7 +535,6 @@ $result->data_seek(0);
             min-width: 280px;
         }
 
-        /* Aumentando tamanho da fonte dos detalhes */
         .details-container h3 {
             font-size: 16px;
             margin-bottom: 15px;
@@ -535,13 +552,12 @@ $result->data_seek(0);
             color: #555;
         }
 
-        /* Ícones de detalhes agora em vermelho */
         .detail-icon {
             width: 18px;
             color: #dc2626;
         }
 
-        /* Nova seção inferior com mapa e container adicional lado a lado */
+        /* Nova seção inferior com mapa e dashboard */
         .bottom-section {
             display: flex;
             gap: 20px;
@@ -549,7 +565,6 @@ $result->data_seek(0);
             min-height: 0;
         }
 
-        /* Mapa agora ocupa 70% da largura inferior */
         .map-container {
             flex: 2;
             background: #e0e5ec;
@@ -571,8 +586,8 @@ $result->data_seek(0);
                 inset -6px -6px 12px rgba(255, 255, 255, 0.7);
         }
 
-        /* Novo container adicional para conteúdo futuro */
-        .future-content-container {
+        /* Estilização do dashboard */
+        .dashboard-container {
             flex: 1;
             background: #e0e5ec;
             border-radius: 20px;
@@ -583,28 +598,29 @@ $result->data_seek(0);
             height: 480px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #666;
         }
 
-        .future-content-container i {
-            font-size: 48px;
-            color: #dc2626;
-            margin-bottom: 15px;
-            animation: pulse 2s infinite;
+        .dashboard-table th {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%);
+            color: white;
+            cursor: pointer;
         }
 
-        .future-content-container h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #333;
+        .dashboard-table th:hover {
+            background: linear-gradient(135deg, #2b4cb3 0%, #2b4cb3 100%);
         }
 
-        .future-content-container p {
-            font-size: 14px;
-            text-align: center;
-            color: #666;
+        .sort-icon::after {
+            content: '↕';
+            margin-left: 5px;
+        }
+
+        .sort-asc::after {
+            content: '↑';
+        }
+
+        .sort-desc::after {
+            content: '↓';
         }
 
         /* Responsividade para telas menores */
@@ -613,9 +629,9 @@ $result->data_seek(0);
             .top-section { flex-direction: column; }
             .bottom-section { flex-direction: column; }
             .details-container { max-width: none; }
+            .dashboard-container { height: auto; }
         }
 
-        /* Seleção de linha */
         .selected {
             background: linear-gradient(135deg, #d1e7dd 0%, #a3d9a5 100%) !important;
             font-weight: bold;
@@ -624,12 +640,10 @@ $result->data_seek(0);
                 inset -3px -3px 6px rgba(255, 255, 255, 0.8);
         }
 
-        /* Animação de nova ocorrência piscante por 1 hora */
         .new-occurrence {
             animation: blink-red 1s infinite;
         }
 
-        /* Animação específica para campo de tempo piscante */
         .time-blink {
             animation: time-blink-red 1s infinite;
         }
@@ -644,7 +658,6 @@ $result->data_seek(0);
             51%, 100% { color: inherit; font-weight: normal; }
         }
 
-        /* Contadores animados */
         .counter {
             display: inline-block;
             animation: countUp 2s ease-out;
@@ -655,7 +668,6 @@ $result->data_seek(0);
             to { transform: scale(1); opacity: 1; }
         }
 
-        /* Efeitos de hover melhorados */
         .stat-card:hover .stat-icon {
             animation: spin 0.5s ease-in-out;
         }
@@ -705,9 +717,8 @@ $result->data_seek(0);
         <!-- Área principal do conteúdo -->
         <div class="content-area">
             <div class="main-content">
-                <!-- Nova estrutura: tabela e detalhes na parte superior -->
+                <!-- Tabela e detalhes na parte superior -->
                 <div class="top-section">
-                    <!-- Seção da tabela - agora maior -->
                     <div class="table-section">
                         <div class="section-title">
                             <i class="fas fa-table section-icon"></i>
@@ -717,18 +728,15 @@ $result->data_seek(0);
                             <table id="accidents-table">
                                 <thead>
                                     <tr>
-                                         <th><i class="fas fa-bus"></i> Modelo</th>
                                         <th><i class="fas fa-thermometer-half"></i> Severidade</th>
-                                       
+                                        <th><i class="fas fa-bus"></i> Modelo</th>
                                         <th><i class="fas fa-tags"></i> Tipo</th>
-                                       
-                                        <th><i class="fas fa-map-marker-alt"></i> Local</th>
-                                        <th><i class="fas fa-clock"></i> Hora</th>
-                                      
-                                         <th><i class="fas fa-shield-alt"></i> Polícia</th>
+                                        <th><i class="fas fa-shield-alt"></i> Polícia</th>
                                         <th><i class="fas fa-ambulance"></i> SAMU</th>
                                         <th><i class="fas fa-fire-extinguisher"></i> Bombeiros</th>
-                                          <th><i class="fas fa-info"></i> Status</th>
+                                        <th><i class="fas fa-map-marker-alt"></i> Local</th>
+                                        <th><i class="fas fa-clock"></i> Hora</th>
+                                        <th><i class="fas fa-info"></i> Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -760,12 +768,10 @@ $result->data_seek(0);
                         </div>
                     </div>
 
-                    <!-- Detalhes mais compactos no canto direito -->
                     <div class="details-container" id="occurrence-details">
                         <h3><i class="fas fa-info-circle"></i> Detalhes da Ocorrência Selecionada</h3>
-                         <p><i class="fas fa-bus detail-icon"></i> Modelo: <span>N/A</span></p>
                         <p><i class="fas fa-thermometer-half detail-icon"></i> Severidade: <span>N/A</span></p>
-                       
+                        <p><i class="fas fa-bus detail-icon"></i> Modelo: <span>N/A</span></p>
                         <p><i class="fas fa-tag detail-icon"></i> Tipo: <span>N/A</span></p>
                         <p><i class="fas fa-map-marker-alt detail-icon"></i> Local: <span>N/A</span></p>
                         <p><i class="fas fa-shield-alt detail-icon"></i> Polícia: <span>N/A</span></p>
@@ -777,18 +783,38 @@ $result->data_seek(0);
                     </div>
                 </div>
 
-                <!-- Nova seção inferior com mapa e container adicional lado a lado -->
+                <!-- Seção inferior com mapa e dashboard -->
                 <div class="bottom-section">
-                    <!-- Mapa expandido -->
                     <div class="map-container">
                         <iframe src="https://monitoramento.mobilesat.com.br/locator/index.html?t=4ebee7c35e2e2fbedde92f4b2611c141F0AA094FB415B295867B3BD93520050BB6566DD7" allowfullscreen></iframe>
                     </div>
 
-                    <!-- Container adicional para conteúdo futuro -->
-                    <div class="future-content-container">
-                        <i class="fas fa-cogs"></i>
-                        <h3>Área em Desenvolvimento</h3>
-                        <p>Este espaço será utilizado para futuras funcionalidades e recursos adicionais do sistema de monitoramento.</p>
+                    <!-- Dashboard de passageiros por bonde -->
+                    <div class="dashboard-container">
+                        <div class="section-title">
+                            <i class="fas fa-chart-bar section-icon"></i>
+                            Passageiros por Bonde
+                        </div>
+                        <div class="mb-4">
+                            <input type="text" id="bonde-filter" placeholder="Filtrar por Bonde" class="w-full p-2 border border-gray-300 rounded neomorphic-inset">
+                        </div>
+                        <div class=" neomorphic-inset">
+                            <table class="dashboard-table w-full border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th class="p-2" data-sort="bonde"><i class="fas fa-bus"></i> Bonde <span class="sort-icon"></span></th>
+                                        <th class="p-2" data-sort="pagantes">Pagantes <span class="sort-icon"></span></th>
+                                        <th class="p-2" data-sort="moradores">Moradores <span class="sort-icon"></span></th>
+                                        <th class="p-2" data-sort="gratuidade">Gratuidade <span class="sort-icon"></span></th>
+                                        <th class="p-2" data-sort="passageiros">Passageiros <span class="sort-icon"></span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-table-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4" style="height: 200px;">
+                            <!-- <canvas id="passenger-chart"></canvas> -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -896,19 +922,17 @@ $result->data_seek(0);
 
                         tr.innerHTML = 
                         `
-                          <td><i class="fas fa-bus"></i> ${row.modelo || 'N/A'}</td>
                             <td class="severity-bg ${severityClass}">
                                 <i class="fas fa-thermometer-half"></i>
                                 ${row.severidade}
                             </td>
-                          
+                            <td><i class="fas fa-bus"></i> ${row.modelo || 'N/A'}</td>
                             <td><i class="fas fa-tag"></i> ${row.categoria}</td>
-                          <td><i class="fas fa-map-marker-alt"></i> ${row.localizacao}</td>
-                            <td class="time-cell ${shouldBlink && status !== 'resolvido' ? 'time-blink' : ''}"><i class="fas fa-clock"></i> ${hora}</td>
-                            
-                              <td>${row.policia == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}</td>
+                            <td>${row.policia == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}</td>
                             <td>${row.samu == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}</td>
                             <td>${row.bombeiros == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}</td>
+                            <td><i class="fas fa-map-marker-alt"></i> ${row.localizacao}</td>
+                            <td class="time-cell ${shouldBlink && status !== 'resolvido' ? 'time-blink' : ''}"><i class="fas fa-clock"></i> ${hora}</td>
                             <td><i class="fas fa-info-circle"></i> ${status}</td>
                         `;
                         
@@ -924,15 +948,178 @@ $result->data_seek(0);
                 .catch(error => console.error('Erro ao atualizar tabela:', error));
         }
 
-        setInterval(updateTable, 2000);
-        setInterval(updateStats, 2000);
+        // Dashboard functionality
+        let viagensData = [];
+        let sortColumn = 'bonde';
+        let sortDirection = 'asc';
+        let passengerChart = null;
+
+        function aggregatePassengerData() {
+            const bondeData = {};
+            viagensData.forEach(t => {
+                if (!bondeData[t.bonde]) {
+                    bondeData[t.bonde] = {
+                        pagantes: 0,
+                        moradores: 0,
+                        gratuidade: 0,
+                        passageiros: 0
+                    };
+                }
+                bondeData[t.bonde].pagantes += parseInt(t.pagantes) || 0;
+                bondeData[t.bonde].moradores += parseInt(t.moradores) || 0;
+                bondeData[t.bonde].gratuidade += parseInt(t.gratuidade) || 0;
+                bondeData[t.bonde].passageiros += parseInt(t.passageiros) || 0;
+            });
+            return Object.entries(bondeData).map(([bonde, data]) => ({
+                bonde,
+                ...data
+            }));
+        }
+
+        function sortData(data, column, direction) {
+            return data.sort((a, b) => {
+                const valA = a[column];
+                const valB = b[column];
+                if (typeof valA === 'string') {
+                    return direction === 'asc'
+                        ? valA.localeCompare(valB)
+                        : valB.localeCompare(valA);
+                }
+                return direction === 'asc'
+                    ? valA - valB
+                    : valB - valA;
+            });
+        }
+
+        function renderPassengerChart(data) {
+            if (passengerChart) {
+                passengerChart.destroy();
+            }
+            const ctx = document.getElementById('passenger-chart').getContext('2d');
+            passengerChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.bonde),
+                    datasets: [
+                        {
+                            label: 'Pagantes',
+                            data: data.map(item => item.pagantes),
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Moradores',
+                            data: data.map(item => item.moradores),
+                            backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Gratuidade',
+                            data: data.map(item => item.gratuidade),
+                            backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Bonde' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Quantidade' },
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top' }
+                    }
+                }
+            });
+        }
+
+        function updatePassengerDashboard() {
+            const filterBonde = document.getElementById('bonde-filter').value.trim().toLowerCase();
+            const tbody = document.getElementById('dashboard-table-body');
+            tbody.innerHTML = '';
+
+            let bondeData = aggregatePassengerData();
+            
+            if (filterBonde) {
+                bondeData = bondeData.filter(item => item.bonde.toLowerCase().includes(filterBonde));
+            }
+            
+            bondeData = sortData(bondeData, sortColumn, sortDirection);
+            
+            if (bondeData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-2">Nenhum dado encontrado.</td></tr>`;
+            } else {
+                bondeData.forEach(item => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td class="p-2"><i class="fas fa-bus"></i> ${item.bonde}</td>
+                        <td class="p-2">${item.pagantes}</td>
+                        <td class="p-2">${item.moradores}</td>
+                        <td class="p-2">${item.gratuidade}</td>
+                        <td class="p-2">${item.passageiros}</td>
+                    `;
+                });
+            }
+            
+            renderPassengerChart(bondeData);
+        }
+
+        function fetchViagensData() {
+            fetch('?ajax=get_viagens')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Erro ao atualizar dados de viagens:', data.error);
+                        return;
+                    }
+                    viagensData = Array.isArray(data) ? data : [];
+                    updatePassengerDashboard();
+                })
+                .catch(error => console.error('Erro ao buscar dados de viagens:', error));
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
             animateCounters();
             updateTable();
             updateStats();
+            fetchViagensData();
+
+            // Initialize dashboard sorting
+            document.querySelectorAll('.dashboard-table th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    const column = th.getAttribute('data-sort');
+                    if (sortColumn === column) {
+                        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        sortColumn = column;
+                        sortDirection = 'asc';
+                    }
+                    document.querySelectorAll('.dashboard-table th').forEach(header => {
+                        header.querySelector('.sort-icon').classList.remove('sort-asc', 'sort-desc');
+                    });
+                    th.querySelector('.sort-icon').classList.add(sortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+                    updatePassengerDashboard();
+                });
+            });
+
+            // Initialize dashboard filter
+            document.getElementById('bonde-filter').addEventListener('input', updatePassengerDashboard);
         });
+
+        setInterval(updateTable, 2000);
+        setInterval(updateStats, 2000);
+        setInterval(fetchViagensData, 2000);
 
         function selectOccurrence(id, row, emergencyServices) {
             document.querySelectorAll('#accidents-table tr').forEach(r => r.classList.remove('selected'));

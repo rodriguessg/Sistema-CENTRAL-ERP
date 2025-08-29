@@ -445,7 +445,7 @@ try {
         </div>
     </div>
 
-    <script src="./src/bonde/js/bonde.js"></script>
+   <script src="./bonde.js"></script>
     <script>
         function updateBondeStatus(checkbox) {
             const bondeId = checkbox.getAttribute('data-id');

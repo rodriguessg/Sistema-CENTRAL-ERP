@@ -82,7 +82,7 @@
           border-radius: var(--radius-lg);
           box-shadow: var(--shadow-lg);
           border: 1px solid var(--border-color);
-          margin: 0.75rem 0;
+          margin: 0.5rem 0;
           overflow: hidden;
           transition: var(--transition-normal);
         }
@@ -757,6 +757,7 @@
           color: white;
           background: var(--success-gradient);
           box-shadow: var(--shadow-sm);
+          gap: 5px;
         }
 
         .status-btn:hover {
@@ -768,12 +769,14 @@
           background: var(--success-gradient);
           cursor: not-allowed;
           opacity: 0.8;
+          gap: 5px;
         }
 
         .status-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
           transform: none;
+          gap: 5px;
         }
 
         /* ===== ESTADOS ESPECIAIS ===== */
@@ -1009,4 +1012,6 @@
         .font-semibold {
           font-weight: 600;
         }
+
+        
    

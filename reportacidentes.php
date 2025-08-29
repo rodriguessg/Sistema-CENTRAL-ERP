@@ -128,7 +128,7 @@ if (!$fetchSuccess) {
 // Converter $result para JSON para uso no JavaScript
 $resultJson = json_encode($result, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG);
 
-// Mapear cores para classes CSS
+// Mapear cores para classes CSS (mantido para severidade)
 $colorClasses = [
     'Verde' => 'severity-green',
     'Amarelo' => 'severity-yellow',
@@ -153,11 +153,75 @@ include 'header.php';
     <title>Registrar Ocorrências</title>
     <link rel="stylesheet" href="./src/bonde/style/acidente.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <style>
+        /* Estilos específicos para a tabela */
+        .data-table td {
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .data-table th {
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        /* Estilo para nomes dos bondes em azul */
+        .bonde-name {
+            color: #2563eb;
+            font-weight: bold;
+        }
+        
+        /* Ajustar tamanho da fonte da tabela */
+        .data-table {
+            font-size: 0.9rem;
+        }
+
+        /* Estilos para severidade com cores */
+        .severity-green {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 0.125rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            font-size: 0.75rem;
+        }
+
+        .severity-yellow {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            padding: 0.125rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            font-size: 0.75rem;
+        }
+
+        .severity-red {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            padding: 0.125rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            font-size: 0.75rem;
+        }
+
+        .severity-yellow-red {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
+            color: #ef4444;
+            padding: 0.125rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            font-size: 0.75rem;
+        }
+    </style>
 </head>
 <body>
     <div class="caderno">
-        <!-- Cabeçalho Principal -->
         <div class="form-container">
             <div class="section-header">
                 <div class="header-icon">
@@ -170,7 +234,6 @@ include 'header.php';
             </div>
         </div>
 
-        <!-- Mensagens de Erro/Sucesso -->
         <?php if ($erro): ?>
             <div class="message-container error">
                 <i class="fas fa-exclamation-circle"></i>
@@ -185,7 +248,7 @@ include 'header.php';
             </div>
         <?php endif; ?>
 
-        <!-- Formulário de Registro -->
+        
         <div class="form-container">
             <div class="section-header">
                 <div class="header-icon">
@@ -292,7 +355,6 @@ include 'header.php';
             </form>
         </div>
 
-        <!-- Seção de Pesquisa -->
         <div class="search-section">
             <div class="section-header">
                 <div class="header-icon">
@@ -348,7 +410,7 @@ include 'header.php';
             </div>
         </div>
 
-        <!-- Tabela de Histórico -->
+         
         <div class="table-section">
             <div class="table-header">
                 <h3>
@@ -387,7 +449,6 @@ include 'header.php';
                                 <th><i class="fas fa-user"></i>Usuário</th>
                                 <th><i class="fas fa-thermometer-half"></i>Severidade</th>
                                 <th><i class="fas fa-tags"></i>Categoria</th>
-                                <th><i class="fas fa-palette"></i>Cor</th>
                                 <th><i class="fas fa-train"></i>Bonde</th>
                                 <th><i class="fas fa-calendar"></i>Data de Registro</th>
                                 <th><i class="fas fa-shield-alt"></i>Polícia</th>
@@ -398,19 +459,18 @@ include 'header.php';
                             </tr>
                         </thead>
                         <tbody id="accidentsTableBody">
-                            <!-- Conteúdo gerado por JavaScript -->
                         </tbody>
                     </table>
                 </div>
                 
                 <div class="pagination" id="pagination">
-                    <!-- Botões de paginação gerados por JavaScript -->
+                     Botões de paginação gerados por JavaScript 
                 </div>
             <?php endif; ?>
         </div>
     </div>
 
-    <!-- Modal de Descrição -->
+     Modal de Descrição 
     <div class="modal-overlay" id="descriptionModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -429,10 +489,10 @@ include 'header.php';
             </div>
             <div class="modal-body">
                 <div class="description-content" id="modalDescription">
-                    <!-- Conteúdo da descrição será inserido aqui -->
+                     Conteúdo da descrição será inserido aqui 
                 </div>
                 <div class="description-meta" id="modalMeta">
-                    <!-- Metadados serão inseridos aqui -->
+                     Metadados serão inseridos aqui 
                 </div>
             </div>
         </div>
@@ -629,7 +689,7 @@ include 'header.php';
             tbody.innerHTML = '';
 
             if (pageData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="14" class="no-data">Nenhum acidente encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="13" class="no-data">Nenhum acidente encontrado.</td></tr>';
                 return;
             }
 
@@ -649,8 +709,7 @@ include 'header.php';
                     <td>${row.usuario || ''}</td>
                     <td><span class="${colorClasses[row.cor] || ''}">${row.severidade || ''}</span></td>
                     <td>${row.categoria || ''}</td>
-                    <td>${row.cor || ''}</td>
-                    <td>${row.modelo || ''}</td>
+                    <td><span class="bonde-name">${row.modelo || ''}</span></td>
                     <td class="date">${row.data_registro || ''}</td>
                     <td>
                         ${row.status === 'em andamento' ? 
@@ -659,17 +718,17 @@ include 'header.php';
                                 <input type="hidden" name="id" value="${row.id}">
                                 <input type="hidden" name="update_status" value="1">
                             </form>` : 
-                            (row.policia == 1 ? '<i class="fas fa-check" style="color: var(--success-color);"></i>' : '')}
+                            (row.policia == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '')}
                     </td>
                     <td>
                         ${row.status === 'em andamento' ? 
                             `<input type="checkbox" name="bombeiros[${row.id}]" form="form-${row.id}" ${emergencyServices.bombeiros ? 'checked' : ''}>` : 
-                            (row.bombeiros == 1 ? '<i class="fas fa-check" style="color: var(--success-color);"></i>' : '')}
+                            (row.bombeiros == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '')}
                     </td>
                     <td>
                         ${row.status === 'em andamento' ? 
                             `<input type="checkbox" name="samu[${row.id}]" form="form-${row.id}" ${emergencyServices.samu ? 'checked' : ''}>` : 
-                            (row.samu == 1 ? '<i class="fas fa-check" style="color: var(--success-color);"></i>' : '')}
+                            (row.samu == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '')}
                     </td>
                     <td>${row.status || ''}</td>
                     <td>
@@ -786,7 +845,7 @@ include 'header.php';
         renderTable(currentPage, filteredData);
         renderPagination(filteredData);
 
-        // Funções para formulário
+        // Funções para formulário (mantendo as cores para severidade)
         const subcategorias = {
             "Operacionais": [
                 { value: "Pane elétrica", text: "Pane elétrica", severidade: "Moderado", cor: "Amarelo" },

@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Handle AJAX request for table data
+// Handle AJAX request for table data (accidents)
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
     $host = 'localhost';
     $user = 'root';
@@ -20,7 +20,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
         exit;
     }
 
-    // Correção da ordenação - sempre manter ordem por data mais recente
     $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
             FROM acidentes 
             ORDER BY data_registro DESC, id DESC 
@@ -44,7 +43,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
     exit;
 }
 
-// Handle AJAX request for statistics data
+// Handle AJAX request for statistics data (accidents)
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_stats') {
     $host = 'localhost';
     $user = 'root';
@@ -58,7 +57,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_stats') {
         exit;
     }
 
-    // Buscar contagem por severidade
     $countSql = "SELECT severidade, COUNT(*) as count FROM acidentes WHERE status != 'resolvido' GROUP BY severidade";
     $countResult = $conn->query($countSql);
     $counts = ['Grave' => 0, 'Moderado' => 0, 'Leve' => 0, 'Moderado a Grave' => 0];
@@ -82,6 +80,42 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_stats') {
     exit;
 }
 
+// Handle AJAX request for viagens data
+if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_viagens') {
+    $host = 'localhost';
+    $user = 'root';
+    $password = '';
+    $dbname = 'gm_sicbd';
+
+    $conn = new mysqli($host, $user, $password, $dbname);
+    if ($conn->connect_error) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Erro na conexão com o banco de dados: ' . $conn->connect_error]);
+        exit;
+    }
+
+    $sql = "SELECT bonde, pagantes, moradores, gratuidade, passageiros 
+            FROM viagens 
+            ORDER BY created_at DESC";
+    $result = $conn->query($sql);
+
+    if (!$result) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Erro na consulta SQL: ' . $conn->error]);
+        exit;
+    }
+
+    $rows = [];
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
+    }
+
+    $conn->close();
+    header('Content-Type: application/json');
+    echo json_encode($rows);
+    exit;
+}
+
 // Conexão com o banco
 $host = 'localhost';
 $user = 'root';
@@ -101,7 +135,6 @@ if (!isset($_SESSION['username'])) {
 }
 $username = $_SESSION['username'];
 
-// Query com ordenação consistente
 $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
         FROM acidentes 
         ORDER BY data_registro DESC, id DESC 
@@ -140,6 +173,8 @@ $result->data_seek(0);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitoramento - Bonde de Santa Teresa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -245,20 +280,21 @@ $result->data_seek(0);
             color: #333;
             margin-bottom: 2px;
         }
-.stat-label {
-    font-size: 14px; /* Aumenta o tamanho da fonte */
-    color: #666;
-    font-weight: bold; /* Negrito */
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
 
-.stat-sublabel {
-    font-size: 12px; /* Aumenta o tamanho da fonte */
-    color: #999;
-    font-weight: bold; /* Negrito */
-    margin-top: 1px;
-}
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .stat-sublabel {
+            font-size: 12px;
+            color: #999;
+            font-weight: bold;
+            margin-top: 1px;
+        }
 
         /* Área principal do conteúdo */
         .content-area {
@@ -276,7 +312,6 @@ $result->data_seek(0);
             flex-direction: column;
             gap: 15px;
             flex: 1;
-            /* overflow: hidden; */
         }
 
         /* Seção superior - tabela e detalhes */
@@ -287,7 +322,7 @@ $result->data_seek(0);
             min-height: 350px;
         }
 
-        /* Seção da tabela - proporção equilibrada */
+        /* Seção da tabela */
         .table-section {
             flex: 2.5;
             background: #e0e5ec;
@@ -340,12 +375,12 @@ $result->data_seek(0);
             font-size: 12px;
             font-weight: 500;
         }
-.borda-header {
-              background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+
+        .borda-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
         }
 
         th {
-           
             color: white;
             font-weight: bold;
             position: sticky;
@@ -393,7 +428,6 @@ $result->data_seek(0);
             color: #fff; 
         }
 
-        /* Destaque para bonde e local */
         .tram-highlight {
             background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
             color: #3730a3;
@@ -410,7 +444,6 @@ $result->data_seek(0);
             font-weight: 600;
         }
 
-        /* Detalhes compactos */
         .details-container {
             flex: 1;
             background: #e0e5ec;
@@ -432,30 +465,23 @@ $result->data_seek(0);
             gap: 6px;
         }
 
-       .details-container p {
-    font-size: 14px; /* Aumenta o tamanho da fonte */
-    font-weight: bold; /* Deixa em negrito */
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.details-container p .detail-icon {
-    color: #007bff; /* Cor azul para os ícones */
-}
-
-.details-container p span {
-    color: #555; /* Cor diferente para valores */
-}
-
-
-        .detail-icon {
-            width: 14px;
-            color: #3b82f6;
+        .details-container p {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        /* Seção inferior - mapa dominante */
+        .details-container p .detail-icon {
+            color: #007bff;
+        }
+
+        .details-container p span {
+            color: #555;
+        }
+
         .bottom-section {
             display: flex;
             gap: 15px;
@@ -463,7 +489,6 @@ $result->data_seek(0);
             height: 65%;
         }
 
-        /* Mapa com destaque máximo */
         .map-container {
             flex: 2.5;
             background: #e0e5ec;
@@ -484,8 +509,8 @@ $result->data_seek(0);
                 inset -4px -4px 8px rgba(255, 255, 255, 0.7);
         }
 
-        /* Container de estatísticas compacto */
-        .stats-container {
+        /* Dashboard styling */
+        .dashboard-container {
             flex: 1;
             background: #e0e5ec;
             border-radius: 15px;
@@ -495,36 +520,115 @@ $result->data_seek(0);
                 -6px -6px 12px rgba(255, 255, 255, 0.7);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #666;
         }
 
-        .stats-container i {
-            font-size: 32px;
-            color: #3b82f6;
-            margin-bottom: 10px;
+        .dashboard-table th {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            cursor: pointer;
+            font-size: 11px;
+            padding: 8px;
         }
 
-        .stats-container h3 {
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: #333;
+        .dashboard-table th:hover {
+            background: linear-gradient(135deg, #2b4cb3 0%, #2b4cb3 100%);
         }
 
-        .stats-container p {
+        .dashboard-table td {
             font-size: 12px;
-            text-align: center;
-            color: #666;
+            padding: 8px;
         }
 
-        /* Seleção de linha */
+        .sort-icon::after {
+            content: '↕';
+            margin-left: 4px;
+            font-size: 10px;
+        }
+
+        .sort-asc::after {
+            content: '↑';
+        }
+
+        .sort-desc::after {
+            content: '↓';
+        }
+
+        .bonde-filter {
+            padding: 8px;
+            font-size: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #e0e5ec;
+            box-shadow: 
+                inset 4px 4px 8px rgba(163, 177, 198, 0.4),
+                inset -4px -4px 8px rgba(255, 255, 255, 0.7);
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .bonde-filter:focus {
+            outline: none;
+            box-shadow: 
+                inset 2px 2px 4px rgba(163, 177, 198, 0.6),
+                inset -2px -2px 4px rgba(255, 255, 255, 0.9);
+        }
+
+        /* Responsividade */
+        @media (max-width: 1200px) {
+            .sidebar { width: 140px; }
+            .top-section { 
+                flex-direction: column; 
+                height: auto;
+                min-height: 250px;
+            }
+            .bottom-section { 
+                flex-direction: column; 
+                height: auto;
+            }
+            .details-container { max-width: none; }
+            .dashboard-container { height: 400px; }
+        }
+
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; }
+            .sidebar { 
+                width: 100%; 
+                flex-direction: row; 
+                padding: 10px;
+                gap: 8px;
+                overflow-x: auto;
+            }
+            .stat-card { min-width: 120px; }
+            .content-area { padding: 10px; }
+            .top-section { height: auto; min-height: 200px; }
+            .bottom-section { height: 400px; }
+            .map-container { flex: 1; }
+            .dashboard-container { display: block; height: 400px; }
+            .particles .particle { display: none; }
+            .dashboard-table th, .dashboard-table td { font-size: 10px; padding: 6px; }
+            .bonde-filter { font-size: 10px; padding: 6px; }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar { gap: 5px; }
+            .stat-card { 
+                min-width: 100px; 
+                padding: 8px 6px;
+                min-height: 50px;
+            }
+            .stat-number { font-size: 18px; }
+            .stat-label { font-size: 8px; }
+            .stat-sublabel { display: none; }
+            th, td { padding: 6px 4px; font-size: 10px; }
+            .severity-bg { font-size: 8px; padding: 2px 4px; }
+            .dashboard-table th, .dashboard-table td { font-size: 8px; padding: 4px; }
+        }
+
         .selected {
             background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
             font-weight: bold;
         }
 
-        /* Animações */
         .new-occurrence {
             animation: blink-blue 1s infinite;
         }
@@ -551,56 +655,6 @@ $result->data_seek(0);
         @keyframes countUp {
             from { transform: scale(0); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
-        }
-
-        /* Responsividade */
-        @media (max-width: 1200px) {
-            .sidebar { width: 140px; }
-            .top-section { 
-                flex-direction: column; 
-                height: auto;
-                min-height: 250px;
-            }
-            .bottom-section { 
-                flex-direction: column; 
-                height: auto;
-            }
-            .details-container { max-width: none; }
-        }
-
-        @media (max-width: 768px) {
-            .main-container { flex-direction: column; }
-            .sidebar { 
-                width: 100%; 
-                flex-direction: row; 
-                padding: 10px;
-                gap: 8px;
-                overflow-x: auto;
-            }
-            .stat-card { min-width: 120px; }
-            .content-area { padding: 10px; }
-            .top-section { height: auto; min-height: 200px; }
-            .bottom-section { height: 400px; }
-            .map-container { flex: 1; }
-            .stats-container { display: none; }
-            
-            .particles .particle {
-                display: none;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .sidebar { gap: 5px; }
-            .stat-card { 
-                min-width: 100px; 
-                padding: 8px 6px;
-                min-height: 50px;
-            }
-            .stat-number { font-size: 18px; }
-            .stat-label { font-size: 8px; }
-            .stat-sublabel { display: none; }
-            th, td { padding: 6px 4px; font-size: 10px; }
-            .severity-bg { font-size: 8px; padding: 2px 4px; }
         }
     </style>
 </head>
@@ -708,7 +762,7 @@ $result->data_seek(0);
                     </div>
                 </div>
 
-                <!-- Seção inferior: mapa dominante -->
+                <!-- Seção inferior: mapa e dashboard -->
                 <div class="bottom-section">
                     <div class="map-container">
                         <div class="section-title">
@@ -718,10 +772,30 @@ $result->data_seek(0);
                         <iframe src="https://monitoramento.mobilesat.com.br/locator/index.html?t=4ebee7c35e2e2fbedde92f4b2611c141F0AA094FB415B295867B3BD93520050BB6566DD7" allowfullscreen></iframe>
                     </div>
 
-                    <div class="stats-container">
-                        <i class="fas fa-chart-bar"></i>
-                        <h3>Estatísticas</h3>
-                        <p>Análises e gráficos das ocorrências em desenvolvimento.</p>
+                    <!-- Dashboard de passageiros por bonde -->
+                    <div class="dashboard-container">
+                        <div class="section-title">
+                            <i class="fas fa-chart-bar section-icon"></i>
+                            Passageiros por Bonde
+                        </div>
+                        <input type="text" id="bonde-filter" placeholder="Filtrar por Bonde" class="bonde-filter">
+                        <div class="flex-1 overflow-auto">
+                            <table class="dashboard-table">
+                                <thead>
+                                    <tr>
+                                        <th data-sort="bonde"><i class="fas fa-bus"></i> Bonde <span class="sort-icon"></span></th>
+                                        <th data-sort="pagantes">Pagantes <span class="sort-icon"></span></th>
+                                        <th data-sort="moradores">Moradores <span class="sort-icon"></span></th>
+                                        <th data-sort="gratuidade">Gratuidade <span class="sort-icon"></span></th>
+                                        <th data-sort="passageiros">Passageiros <span class="sort-icon"></span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-table-body"></tbody>
+                            </table>
+                        </div>
+                        <div style="height: 150px; margin-top: 12px;">
+                            <canvas id="passenger-chart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -863,15 +937,181 @@ $result->data_seek(0);
                 .catch(error => console.error('Erro ao atualizar tabela:', error));
         }
 
-        setInterval(updateTable, 2000);
-        setInterval(updateStats, 2000);
+        // Dashboard functionality
+        let viagensData = [];
+        let sortColumn = 'bonde';
+        let sortDirection = 'asc';
+        let passengerChart = null;
+
+        function aggregatePassengerData() {
+            const bondeData = {};
+            viagensData.forEach(t => {
+                if (!bondeData[t.bonde]) {
+                    bondeData[t.bonde] = {
+                        pagantes: 0,
+                        moradores: 0,
+                        gratuidade: 0,
+                        passageiros: 0
+                    };
+                }
+                bondeData[t.bonde].pagantes += parseInt(t.pagantes) || 0;
+                bondeData[t.bonde].moradores += parseInt(t.moradores) || 0;
+                bondeData[t.bonde].gratuidade += parseInt(t.gratuidade) || 0;
+                bondeData[t.bonde].passageiros += parseInt(t.passageiros) || 0;
+            });
+            return Object.entries(bondeData).map(([bonde, data]) => ({
+                bonde,
+                ...data
+            }));
+        }
+
+        function sortData(data, column, direction) {
+            return data.sort((a, b) => {
+                const valA = a[column];
+                const valB = b[column];
+                if (typeof valA === 'string') {
+                    return direction === 'asc'
+                        ? valA.localeCompare(valB)
+                        : valB.localeCompare(valA);
+                }
+                return direction === 'asc'
+                    ? valA - valB
+                    : valB - valA;
+            });
+        }
+
+        function renderPassengerChart(data) {
+            if (passengerChart) {
+                passengerChart.destroy();
+            }
+            const ctx = document.getElementById('passenger-chart').getContext('2d');
+            passengerChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.bonde),
+                    datasets: [
+                        {
+                            label: 'Pagantes',
+                            data: data.map(item => item.pagantes),
+                            backgroundColor: '#10b981',
+                            borderColor: '#059669',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Moradores',
+                            data: data.map(item => item.moradores),
+                            backgroundColor: '#f59e0b',
+                            borderColor: '#d97706',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Gratuidade',
+                            data: data.map(item => item.gratuidade),
+                            backgroundColor: '#3b82f6',
+                            borderColor: '#1e40af',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Bonde', color: '#333', font: { size: 12 } }
+                        },
+                        y: {
+                            title: { display: true, text: 'Quantidade', color: '#333', font: { size: 12 } },
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            position: 'top',
+                            labels: { font: { size: 10 }, color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePassengerDashboard() {
+            const filterBonde = document.getElementById('bonde-filter').value.trim().toLowerCase();
+            const tbody = document.getElementById('dashboard-table-body');
+            tbody.innerHTML = '';
+
+            let bondeData = aggregatePassengerData();
+            
+            if (filterBonde) {
+                bondeData = bondeData.filter(item => item.bonde.toLowerCase().includes(filterBonde));
+            }
+            
+            bondeData = sortData(bondeData, sortColumn, sortDirection);
+            
+            if (bondeData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center">Nenhum dado encontrado.</td></tr>`;
+            } else {
+                bondeData.forEach(item => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td><i class="fas fa-bus"></i> ${item.bonde}</td>
+                        <td>${item.pagantes}</td>
+                        <td>${item.moradores}</td>
+                        <td>${item.gratuidade}</td>
+                        <td>${item.passageiros}</td>
+                    `;
+                });
+            }
+            
+            renderPassengerChart(bondeData);
+        }
+
+        function fetchViagensData() {
+            fetch('?ajax=get_viagens')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Erro ao atualizar dados de viagens:', data.error);
+                        return;
+                    }
+                    viagensData = Array.isArray(data) ? data : [];
+                    updatePassengerDashboard();
+                })
+                .catch(error => console.error('Erro ao buscar dados de viagens:', error));
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
             animateCounters();
             updateTable();
             updateStats();
+            fetchViagensData();
+
+            // Initialize dashboard sorting
+            document.querySelectorAll('.dashboard-table th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    const column = th.getAttribute('data-sort');
+                    if (sortColumn === column) {
+                        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        sortColumn = column;
+                        sortDirection = 'asc';
+                    }
+                    document.querySelectorAll('.dashboard-table th').forEach(header => {
+                        header.querySelector('.sort-icon').classList.remove('sort-asc', 'sort-desc');
+                    });
+                    th.querySelector('.sort-icon').classList.add(sortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+                    updatePassengerDashboard();
+                });
+            });
+
+            // Initialize dashboard filter
+            document.getElementById('bonde-filter').addEventListener('input', updatePassengerDashboard);
         });
+
+        setInterval(updateTable, 2000);
+        setInterval(updateStats, 2000);
+        setInterval(fetchViagensData, 2000);
 
         function selectOccurrence(id, row, emergencyServices) {
             document.querySelectorAll('#accidents-table tr').forEach(r => r.classList.remove('selected'));

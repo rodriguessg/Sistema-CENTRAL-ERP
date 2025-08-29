@@ -20,10 +20,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
         exit;
     }
 
+    // Correção da ordenação - sempre manter ordem por data mais recente
     $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
             FROM acidentes 
-            ORDER BY data_registro DESC 
-            LIMIT 4";
+            ORDER BY data_registro DESC, id DESC 
+            LIMIT 6";
     $result = $conn->query($sql);
 
     if (!$result) {
@@ -100,10 +101,11 @@ if (!isset($_SESSION['username'])) {
 }
 $username = $_SESSION['username'];
 
+// Query com ordenação consistente
 $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
         FROM acidentes 
-        ORDER BY data_registro DESC 
-        LIMIT 4";
+        ORDER BY data_registro DESC, id DESC 
+        LIMIT 6";
 $result = $conn->query($sql);
 
 if (!$result) {
@@ -117,7 +119,7 @@ $corMap = [
     'Amarelo/Vermelho' => 'linear-gradient(to right, #fff3cd, #f8d7da)'
 ];
 
-$countSql = "SELECT severidade, COUNT(*) as count FROM acidentes GROUP BY severidade";
+$countSql = "SELECT severidade, COUNT(*) as count FROM acidentes WHERE status != 'resolvido' GROUP BY severidade";
 $countResult = $conn->query($countSql);
 $counts = ['Grave' => 0, 'Moderado' => 0, 'Leve' => 0, 'Moderado a Grave' => 0];
 while ($countRow = $countResult->fetch_assoc()) {
@@ -126,13 +128,6 @@ while ($countRow = $countResult->fetch_assoc()) {
     }
 }
 $totalOcorrencias = array_sum($counts);
-
-// Simulação de dados para viagens do bonde
-$viagens = [
-    ['id' => 1, 'direcao' => 'Subindo', 'ultima_atualizacao' => '12:15'],
-    ['id' => 2, 'direcao' => 'Descendo', 'ultima_atualizacao' => '12:10'],
-    ['id' => 3, 'direcao' => 'Subindo', 'ultima_atualizacao' => '12:05']
-];
 
 // Reiniciar ponteiro do resultado
 $result->data_seek(0);
@@ -183,24 +178,7 @@ $result->data_seek(0);
             50% { transform: translateY(-20px) rotate(180deg); }
         }
 
-        /* Efeitos neumórficos */
-        .neomorphic {
-            background: #e0e5ec;
-            border-radius: 20px;
-            box-shadow: 
-                9px 9px 16px rgba(163, 177, 198, 0.6),
-                -9px -9px 16px rgba(255, 255, 255, 0.5);
-        }
-
-        .neomorphic-inset {
-            background: #e0e5ec;
-            border-radius: 15px;
-            box-shadow: 
-                inset 6px 6px 12px rgba(163, 177, 198, 0.4),
-                inset -6px -6px 12px rgba(255, 255, 255, 0.7);
-        }
-
-        /* Layout principal adaptado para TV */
+        /* Layout principal adaptado */
         .main-container {
             display: flex;
             height: 100vh;
@@ -208,235 +186,145 @@ $result->data_seek(0);
             z-index: 2;
         }
 
-        /* Sidebar esquerda com estatísticas verticais */
+        /* Sidebar compacta */
         .sidebar {
-            width: 280px;
-            padding: 20px;
+            width: 160px;
+            padding: 15px 10px;
             background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
         .stat-card {
             background: #e0e5ec;
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 12px 8px;
             text-align: center;
             box-shadow: 
-                6px 6px 12px rgba(163, 177, 198, 0.4),
-                -6px -6px 12px rgba(255, 255, 255, 0.7);
+                4px 4px 8px rgba(163, 177, 198, 0.4),
+                -4px -4px 8px rgba(255, 255, 255, 0.7);
             transition: all 0.3s ease;
-            min-height: 80px;
+            min-height: 65px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transform: rotate(45deg);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         .stat-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
             box-shadow: 
-                8px 8px 16px rgba(163, 177, 198, 0.5),
-                -8px -8px 16px rgba(255, 255, 255, 0.8);
+                6px 6px 12px rgba(163, 177, 198, 0.5),
+                -6px -6px 12px rgba(255, 255, 255, 0.8);
         }
 
-        /* Ícones das estatísticas agora em vermelho para destaque */
         .stat-icon {
-            font-size: 28px;
-            margin-bottom: 8px;
+            font-size: 20px;
+            margin-bottom: 4px;
             color: #dc2626;
-            animation: pulse 2s infinite;
         } 
         .stat-icon2 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            color: #9c9a05ff;
-            animation: pulse 2s infinite;
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: #f59e0b;
         }
-         .stat-icon3 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            color: #3cf117ff;
-            animation: pulse 2s infinite;
+        .stat-icon3 {
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: #10b981;
         }
-         .stat-icon4 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            color: #1763f1ff;
-            animation: pulse 2s infinite;
+        .stat-icon4 {
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: #3b82f6;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        /* Aumentando tamanho das fontes para melhor legibilidade */
         .stat-number {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
+.stat-label {
+    font-size: 14px; /* Aumenta o tamanho da fonte */
+    color: #666;
+    font-weight: bold; /* Negrito */
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
 
-        .stat-label {
-            font-size: 14px;
-            color: #666;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-sublabel {
-            font-size: 12px;
-            color: #999;
-            margin-top: 2px;
-            font-style: italic;
-        }
+.stat-sublabel {
+    font-size: 12px; /* Aumenta o tamanho da fonte */
+    color: #999;
+    font-weight: bold; /* Negrito */
+    margin-top: 1px;
+}
 
         /* Área principal do conteúdo */
         .content-area {
             flex: 1;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            overflow: hidden;
-        }
-
-        /* Cabeçalho com ícones */
-        .header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 
-                9px 9px 16px rgba(163, 177, 198, 0.6),
-                -9px -9px 16px rgba(255, 255, 255, 0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: slide 3s infinite;
-        }
-
-        @keyframes slide {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* Aumentando tamanho da fonte do header */
-        .header h1 {
-            font-size: 28px;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             gap: 15px;
-            font-weight: bold;
-        }
-
-        .header-icon {
-            font-size: 32px;
-            animation: rotate 4s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            overflow: hidden;
         }
 
         /* Layout da área principal */
         .main-content {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             flex: 1;
-            overflow: hidden;
+            /* overflow: hidden; */
         }
 
-        /* Reorganizando layout - tabela ocupa mais espaço na parte superior */
+        /* Seção superior - tabela e detalhes */
         .top-section {
             display: flex;
-            gap: 20px;
-            min-height: 0;
+            gap: 15px;
+            height: 35%;
+            min-height: 350px;
         }
 
-        /* Seção da tabela - agora maior */
+        /* Seção da tabela - proporção equilibrada */
         .table-section {
-            flex: 3;
+            flex: 2.5;
             background: #e0e5ec;
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 15px;
+            padding: 15px;
             box-shadow: 
-                9px 9px 16px rgba(163, 177, 198, 0.6),
-                -9px -9px 16px rgba(255, 255, 255, 0.5);
+                6px 6px 12px rgba(163, 177, 198, 0.4),
+                -6px -6px 12px rgba(255, 255, 255, 0.7);
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        /* Aumentando tamanho da fonte dos títulos das seções */
         .section-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            font-size: 20px;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 16px;
             font-weight: bold;
             color: #333;
         }
 
-        /* Ícones das seções agora em vermelho para destaque */
         .section-icon {
-            font-size: 24px;
-            color: #dc2626;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
+            font-size: 18px;
+            color: #3b82f6;
         }
 
         /* Tabela com design neumórfico */
         .table-container {
             flex: 1;
             overflow: auto;
-            border-radius: 15px;
+            border-radius: 12px;
             background: #e0e5ec;
             box-shadow: 
-                inset 6px 6px 12px rgba(163, 177, 198, 0.4),
-                inset -6px -6px 12px rgba(255, 255, 255, 0.7);
+                inset 4px 4px 8px rgba(163, 177, 198, 0.4),
+                inset -4px -4px 8px rgba(255, 255, 255, 0.7);
         }
 
         table {
@@ -445,27 +333,27 @@ $result->data_seek(0);
             background: transparent;
         }
 
-        /* Aumentando tamanho das fontes da tabela e melhorando legibilidade */
         th, td {
-            padding: 15px 10px;
+            padding: 10px 8px;
             text-align: center;
             border: none;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
         }
+.borda-header {
+              background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
 
-        /* Header da tabela com cor única e uniforme */
         th {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%);
+           
             color: white;
             font-weight: bold;
             position: sticky;
             top: 0;
             z-index: 10;
-            font-size: 15px;
+            font-size: 11px;
         }
 
-        /* Removendo movimento no hover para evitar deslocamento */
         tr {
             transition: background-color 0.3s ease;
         }
@@ -476,14 +364,16 @@ $result->data_seek(0);
         }
 
         .severity-bg {
-            padding: 8px 14px;
-            border-radius: 20px;
+            padding: 4px 8px;
+            border-radius: 15px;
             font-weight: bold;
             text-align: center;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-size: 13px;
+            justify-content: center;
+            gap: 4px;
+            font-size: 10px;
+            white-space: nowrap;
         }
 
         .cor-verde { 
@@ -503,84 +393,106 @@ $result->data_seek(0);
             color: #fff; 
         }
 
-        /* Detalhes agora no canto direito, mais compacto */
+        /* Destaque para bonde e local */
+        .tram-highlight {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            color: #3730a3;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .location-highlight {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        /* Detalhes compactos */
         .details-container {
             flex: 1;
             background: #e0e5ec;
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 15px;
             box-shadow: 
-                9px 9px 16px rgba(163, 177, 198, 0.6),
-                -9px -9px 16px rgba(255, 255, 255, 0.5);
+                6px 6px 12px rgba(163, 177, 198, 0.4),
+                -6px -6px 12px rgba(255, 255, 255, 0.7);
             overflow: auto;
-            max-width: 300px;
-            min-width: 280px;
+            border-top: 3px solid #3b82f6;
         }
 
-        /* Aumentando tamanho da fonte dos detalhes */
         .details-container h3 {
-            font-size: 16px;
-            margin-bottom: 15px;
-            color: #333;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 8px;
-        }
-
-        .details-container p {
             font-size: 14px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            color: #333;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: #555;
+            gap: 6px;
         }
 
-        /* Ícones de detalhes agora em vermelho */
+       .details-container p {
+    font-size: 14px; /* Aumenta o tamanho da fonte */
+    font-weight: bold; /* Deixa em negrito */
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.details-container p .detail-icon {
+    color: #007bff; /* Cor azul para os ícones */
+}
+
+.details-container p span {
+    color: #555; /* Cor diferente para valores */
+}
+
+
         .detail-icon {
-            width: 18px;
-            color: #dc2626;
+            width: 14px;
+            color: #3b82f6;
         }
 
-        /* Nova seção inferior com mapa e container adicional lado a lado */
+        /* Seção inferior - mapa dominante */
         .bottom-section {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             flex: 1;
-            min-height: 0;
+            height: 65%;
         }
 
-        /* Mapa agora ocupa 70% da largura inferior */
+        /* Mapa com destaque máximo */
         .map-container {
-            flex: 2;
+            flex: 2.5;
             background: #e0e5ec;
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 15px;
             box-shadow: 
-                9px 9px 16px rgba(163, 177, 198, 0.6),
-                -9px -9px 16px rgba(255, 255, 255, 0.5);
-            height: 480px;
+                6px 6px 12px rgba(163, 177, 198, 0.4),
+                -6px -6px 12px rgba(255, 255, 255, 0.7);
         }
 
         .map-container iframe {
             width: 100%;
-            height: calc(100% - 0px);
+            height: calc(100% - 40px);
             border: none;
-            border-radius: 15px;
+            border-radius: 12px;
             box-shadow: 
-                inset 6px 6px 12px rgba(163, 177, 198, 0.4),
-                inset -6px -6px 12px rgba(255, 255, 255, 0.7);
+                inset 4px 4px 8px rgba(163, 177, 198, 0.4),
+                inset -4px -4px 8px rgba(255, 255, 255, 0.7);
         }
 
-        /* Novo container adicional para conteúdo futuro */
-        .future-content-container {
+        /* Container de estatísticas compacto */
+        .stats-container {
             flex: 1;
             background: #e0e5ec;
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 15px;
             box-shadow: 
-                9px 9px 16px rgba(163, 177, 198, 0.6),
-                -9px -9px 16px rgba(255, 255, 255, 0.5);
-            height: 480px;
+                6px 6px 12px rgba(163, 177, 198, 0.4),
+                -6px -6px 12px rgba(255, 255, 255, 0.7);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -588,63 +500,49 @@ $result->data_seek(0);
             color: #666;
         }
 
-        .future-content-container i {
-            font-size: 48px;
-            color: #dc2626;
-            margin-bottom: 15px;
-            animation: pulse 2s infinite;
+        .stats-container i {
+            font-size: 32px;
+            color: #3b82f6;
+            margin-bottom: 10px;
         }
 
-        .future-content-container h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
+        .stats-container h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
             color: #333;
         }
 
-        .future-content-container p {
-            font-size: 14px;
+        .stats-container p {
+            font-size: 12px;
             text-align: center;
             color: #666;
         }
 
-        /* Responsividade para telas menores */
-        @media (max-width: 1200px) {
-            .sidebar { width: 220px; }
-            .top-section { flex-direction: column; }
-            .bottom-section { flex-direction: column; }
-            .details-container { max-width: none; }
-        }
-
         /* Seleção de linha */
         .selected {
-            background: linear-gradient(135deg, #d1e7dd 0%, #a3d9a5 100%) !important;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
             font-weight: bold;
-            box-shadow: 
-                inset 3px 3px 6px rgba(163, 177, 198, 0.3),
-                inset -3px -3px 6px rgba(255, 255, 255, 0.8);
         }
 
-        /* Animação de nova ocorrência piscante por 1 hora */
+        /* Animações */
         .new-occurrence {
-            animation: blink-red 1s infinite;
+            animation: blink-blue 1s infinite;
         }
 
-        /* Animação específica para campo de tempo piscante */
         .time-blink {
-            animation: time-blink-red 1s infinite;
+            animation: time-blink-blue 1s infinite;
         }
 
-        @keyframes blink-red {
-            0%, 50% { background-color: rgba(220, 38, 38, 0.3); }
+        @keyframes blink-blue {
+            0%, 50% { background-color: rgba(59, 130, 246, 0.3); }
             51%, 100% { background-color: transparent; }
         }
 
-        @keyframes time-blink-red {
-            0%, 50% { color: #dc2626; font-weight: bold; }
+        @keyframes time-blink-blue {
+            0%, 50% { color: #3b82f6; font-weight: bold; }
             51%, 100% { color: inherit; font-weight: normal; }
         }
 
-        /* Contadores animados */
         .counter {
             display: inline-block;
             animation: countUp 2s ease-out;
@@ -655,14 +553,54 @@ $result->data_seek(0);
             to { transform: scale(1); opacity: 1; }
         }
 
-        /* Efeitos de hover melhorados */
-        .stat-card:hover .stat-icon {
-            animation: spin 0.5s ease-in-out;
+        /* Responsividade */
+        @media (max-width: 1200px) {
+            .sidebar { width: 140px; }
+            .top-section { 
+                flex-direction: column; 
+                height: auto;
+                min-height: 250px;
+            }
+            .bottom-section { 
+                flex-direction: column; 
+                height: auto;
+            }
+            .details-container { max-width: none; }
         }
 
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; }
+            .sidebar { 
+                width: 100%; 
+                flex-direction: row; 
+                padding: 10px;
+                gap: 8px;
+                overflow-x: auto;
+            }
+            .stat-card { min-width: 120px; }
+            .content-area { padding: 10px; }
+            .top-section { height: auto; min-height: 200px; }
+            .bottom-section { height: 400px; }
+            .map-container { flex: 1; }
+            .stats-container { display: none; }
+            
+            .particles .particle {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar { gap: 5px; }
+            .stat-card { 
+                min-width: 100px; 
+                padding: 8px 6px;
+                min-height: 50px;
+            }
+            .stat-number { font-size: 18px; }
+            .stat-label { font-size: 8px; }
+            .stat-sublabel { display: none; }
+            th, td { padding: 6px 4px; font-size: 10px; }
+            .severity-bg { font-size: 8px; padding: 2px 4px; }
         }
     </style>
 </head>
@@ -671,64 +609,61 @@ $result->data_seek(0);
     <div class="particles" id="particles"></div>
 
     <div class="main-container">
-        <!-- Sidebar esquerda com estatísticas -->
+        <!-- Sidebar compacta -->
         <div class="sidebar">
             <div class="stat-card">
                 <div class="stat-icon4"><i class="fas fa-chart-line"></i></div>
                 <div class="stat-number counter" id="total-occurrences"><?= $totalOcorrencias ?></div>
-                <div class="stat-label">OCORRÊNCIAS ATIVAS</div>
-                <div class="stat-sublabel">Monitoramento em tempo real</div>
+                <div class="stat-label">ATIVAS</div>
+                <div class="stat-sublabel">Tempo real</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
                 <div class="stat-number counter" id="grave-occurrences"><?= $counts['Grave'] ?></div>
-                <div class="stat-label">OCORRÊNCIAS CRÍTICA</div>
-                <div class="stat-sublabel">Requer ação imediata</div>
+                <div class="stat-label">CRÍTICAS</div>
+                <div class="stat-sublabel">Urgente</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon2"><i class="fas fa-exclamation-circle"></i></div>
                 <div class="stat-number counter" id="moderado-occurrences"><?= $counts['Moderado'] ?></div>
-                <div class="stat-label">OCORRÊNCIAS MODERADO</div>
-                <div class="stat-sublabel">Situação controlada</div>
+                <div class="stat-label">MODERADAS</div>
+                <div class="stat-sublabel">Atenção</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon3"><i class="fas fa-info-circle"></i></div>
                 <div class="stat-number counter" id="leve-occurrences"><?= $counts['Leve'] ?></div>
-                <div class="stat-label">OCORRÊNCIAS LEVE</div>
-                <div class="stat-sublabel">Baixo risco operacional</div>
+                <div class="stat-label">LEVES</div>
+                <div class="stat-sublabel">Baixo risco</div>
             </div>
         </div>
 
         <!-- Área principal do conteúdo -->
         <div class="content-area">
             <div class="main-content">
-                <!-- Nova estrutura: tabela e detalhes na parte superior -->
+                <!-- Seção superior: tabela e detalhes -->
                 <div class="top-section">
-                    <!-- Seção da tabela - agora maior -->
+                    <!-- Seção da tabela -->
                     <div class="table-section">
                         <div class="section-title">
                             <i class="fas fa-table section-icon"></i>
-                            Últimas Ocorrências em Tempo Real
+                            Últimas Ocorrências
                         </div>
                         <div class="table-container">
                             <table id="accidents-table">
-                                <thead>
+                                <thead class="borda-header">
                                     <tr>
-                                         <th><i class="fas fa-bus"></i> Modelo</th>
                                         <th><i class="fas fa-thermometer-half"></i> Severidade</th>
-                                       
+                                        <th><i class="fas fa-bus"></i> Bonde</th>
                                         <th><i class="fas fa-tags"></i> Tipo</th>
-                                       
                                         <th><i class="fas fa-map-marker-alt"></i> Local</th>
                                         <th><i class="fas fa-clock"></i> Hora</th>
-                                      
-                                         <th><i class="fas fa-shield-alt"></i> Polícia</th>
+                                        <th><i class="fas fa-shield-alt"></i> Polícia</th>
                                         <th><i class="fas fa-ambulance"></i> SAMU</th>
                                         <th><i class="fas fa-fire-extinguisher"></i> Bombeiros</th>
-                                          <th><i class="fas fa-info"></i> Status</th>
+                                        <th><i class="fas fa-info"></i> Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -736,20 +671,17 @@ $result->data_seek(0);
                                     while ($row = $result->fetch_assoc()) {
                                         $severityClass = 'cor-' . str_replace('/', '-', strtolower($row['cor']));
                                         $hora = date('H:i', strtotime($row['data_registro']));
-                                        $status = $row['status'] ?? 'Desconhecido';
+                                        $status = $row['status'] ?? 'em andamento';
                                         ?>
-                                        <tr onclick="selectOccurrence(<?= $row['id'] ?>, this, <?= json_encode(['policia' => $row['policia'], 'bombeiros' => $row['bombeiros'], 'samu' => $row['samu'], 'modelo' => $row['modelo']]) ?>)">
-                                            <td class="severity-bg <?= $severityClass ?>">
-                                                <i class="fas fa-thermometer-half"></i>
-                                                <?= htmlspecialchars($row['severidade']) ?>
-                                            </td>
-                                            <td><i class="fas fa-bus"></i> <?= htmlspecialchars($row['modelo'] ?? 'N/A') ?></td>
+                                        <tr onclick="selectOccurrence(<?= $row['id'] ?>, this, <?= json_encode(['policia' => $row['policia'], 'bombeiros' => $row['bombeiros'], 'samu' => $row['samu'], 'modelo' => $row['modelo'], 'categoria' => $row['categoria'], 'localizacao' => $row['localizacao'], 'severidade' => $row['severidade'], 'status' => $status, 'hora' => $hora]) ?>)">
+                                            <td><span class="severity-bg <?= $severityClass ?>"><i class="fas fa-thermometer-half"></i> <?= htmlspecialchars($row['severidade']) ?></span></td>
+                                            <td><span class="tram-highlight"><i class="fas fa-bus"></i> <?= htmlspecialchars($row['modelo'] ?? 'N/A') ?></span></td>
                                             <td><i class="fas fa-tag"></i> <?= htmlspecialchars($row['categoria']) ?></td>
-                                            <td><?= $row['policia'] == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>' ?></td>
-                                            <td><?= $row['samu'] == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>' ?></td>
-                                            <td><?= $row['bombeiros'] == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>' ?></td>
-                                            <td><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($row['localizacao']) ?></td>
+                                            <td><span class="location-highlight"><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($row['localizacao']) ?></span></td>
                                             <td class="time-cell"><i class="fas fa-clock"></i> <?= $hora ?></td>
+                                            <td><?= $row['policia'] == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>' ?></td>
+                                            <td><?= $row['samu'] == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>' ?></td>
+                                            <td><?= $row['bombeiros'] == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>' ?></td>
                                             <td><i class="fas fa-info-circle"></i> <?= htmlspecialchars($status) ?></td>
                                         </tr>
                                         <?php
@@ -760,35 +692,36 @@ $result->data_seek(0);
                         </div>
                     </div>
 
-                    <!-- Detalhes mais compactos no canto direito -->
+                    <!-- Detalhes compactos -->
                     <div class="details-container" id="occurrence-details">
-                        <h3><i class="fas fa-info-circle"></i> Detalhes da Ocorrência Selecionada</h3>
-                         <p><i class="fas fa-bus detail-icon"></i> Modelo: <span>N/A</span></p>
-                        <p><i class="fas fa-thermometer-half detail-icon"></i> Severidade: <span>N/A</span></p>
-                       
-                        <p><i class="fas fa-tag detail-icon"></i> Tipo: <span>N/A</span></p>
-                        <p><i class="fas fa-map-marker-alt detail-icon"></i> Local: <span>N/A</span></p>
-                        <p><i class="fas fa-shield-alt detail-icon"></i> Polícia: <span>N/A</span></p>
-                        <p><i class="fas fa-ambulance detail-icon"></i> SAMU: <span>N/A</span></p>
-                        <p><i class="fas fa-fire-extinguisher detail-icon"></i> Bombeiros: <span>N/A</span></p>
-                        <p><i class="fas fa-clock detail-icon"></i> Hora: <span>N/A</span></p>
-                        <p><i class="fas fa-info-circle detail-icon"></i> Status: <span>N/A</span></p>
-                        <p><i class="fas fa-cogs detail-icon"></i> Ações: <span>N/A</span></p>
+                        <h3><i class="fas fa-info-circle"></i> Detalhes da Ocorrência</h3>
+                        <p><i class="fas fa-thermometer-half detail-icon"></i> Severidade: <span>Selecione uma ocorrência</span></p>
+                        <p><i class="fas fa-bus detail-icon"></i> Bonde: <span>-</span></p>
+                        <p><i class="fas fa-tag detail-icon"></i> Tipo: <span>-</span></p>
+                        <p><i class="fas fa-map-marker-alt detail-icon"></i> Local: <span>-</span></p>
+                        <p><i class="fas fa-clock detail-icon"></i> Hora: <span>-</span></p>
+                        <p><i class="fas fa-shield-alt detail-icon"></i> Polícia: <span>-</span></p>
+                        <p><i class="fas fa-ambulance detail-icon"></i> SAMU: <span>-</span></p>
+                        <p><i class="fas fa-fire-extinguisher detail-icon"></i> Bombeiros: <span>-</span></p>
+                        <p><i class="fas fa-info-circle detail-icon"></i> Status: <span>-</span></p>
+                        <p><i class="fas fa-user detail-icon"></i> Responsável: <span>Sistema Automático</span></p>
                     </div>
                 </div>
 
-                <!-- Nova seção inferior com mapa e container adicional lado a lado -->
+                <!-- Seção inferior: mapa dominante -->
                 <div class="bottom-section">
-                    <!-- Mapa expandido -->
                     <div class="map-container">
+                        <div class="section-title">
+                            <i class="fas fa-map-marked-alt section-icon"></i>
+                            Locator
+                        </div>
                         <iframe src="https://monitoramento.mobilesat.com.br/locator/index.html?t=4ebee7c35e2e2fbedde92f4b2611c141F0AA094FB415B295867B3BD93520050BB6566DD7" allowfullscreen></iframe>
                     </div>
 
-                    <!-- Container adicional para conteúdo futuro -->
-                    <div class="future-content-container">
-                        <i class="fas fa-cogs"></i>
-                        <h3>Área em Desenvolvimento</h3>
-                        <p>Este espaço será utilizado para futuras funcionalidades e recursos adicionais do sistema de monitoramento.</p>
+                    <div class="stats-container">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Estatísticas</h3>
+                        <p>Análises e gráficos das ocorrências em desenvolvimento.</p>
                     </div>
                 </div>
             </div>
@@ -798,14 +731,14 @@ $result->data_seek(0);
     <script>
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
-            const particleCount = 50;
+            const particleCount = window.innerWidth < 768 ? 15 : window.innerWidth < 1200 ? 25 : 35;
 
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
                 particle.style.left = Math.random() * 100 + '%';
                 particle.style.top = Math.random() * 100 + '%';
-                particle.style.width = Math.random() * 4 + 2 + 'px';
+                particle.style.width = Math.random() * 3 + 1 + 'px';
                 particle.style.height = particle.style.width;
                 particle.style.animationDelay = Math.random() * 6 + 's';
                 particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
@@ -880,7 +813,19 @@ $result->data_seek(0);
                         const status = row.status || 'em andamento';
 
                         const tr = document.createElement('tr');
-                        tr.setAttribute('onclick', `selectOccurrence(${row.id}, this, ${JSON.stringify({ policia: row.policia, bombeiros: row.bombeiros, samu: row.samu, modelo: row.modelo })})`);
+                        const emergencyData = {
+                            policia: row.policia,
+                            bombeiros: row.bombeiros,
+                            samu: row.samu,
+                            modelo: row.modelo,
+                            categoria: row.categoria,
+                            localizacao: row.localizacao,
+                            severidade: row.severidade,
+                            status: status,
+                            hora: hora
+                        };
+                        
+                        tr.setAttribute('onclick', `selectOccurrence(${row.id}, this, ${JSON.stringify(emergencyData)})`);
                         
                         const isNewOccurrence = newOccurrences.includes(row.id);
                         const shouldBlink = isNewOccurrence || (blinkingOccurrences.has(row.id) && status !== 'resolvido');
@@ -894,21 +839,15 @@ $result->data_seek(0);
                             blinkingOccurrences.delete(row.id);
                         }
 
-                        tr.innerHTML = 
-                        `
-                          <td><i class="fas fa-bus"></i> ${row.modelo || 'N/A'}</td>
-                            <td class="severity-bg ${severityClass}">
-                                <i class="fas fa-thermometer-half"></i>
-                                ${row.severidade}
-                            </td>
-                          
+                        tr.innerHTML = `
+                            <td><span class="severity-bg ${severityClass}"><i class="fas fa-thermometer-half"></i> ${row.severidade}</span></td>
+                            <td><span class="tram-highlight"><i class="fas fa-bus"></i> ${row.modelo || 'N/A'}</span></td>
                             <td><i class="fas fa-tag"></i> ${row.categoria}</td>
-                          <td><i class="fas fa-map-marker-alt"></i> ${row.localizacao}</td>
+                            <td><span class="location-highlight"><i class="fas fa-map-marker-alt"></i> ${row.localizacao}</span></td>
                             <td class="time-cell ${shouldBlink && status !== 'resolvido' ? 'time-blink' : ''}"><i class="fas fa-clock"></i> ${hora}</td>
-                            
-                              <td>${row.policia == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}</td>
-                            <td>${row.samu == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}</td>
-                            <td>${row.bombeiros == 1 ? '<i class="fas fa-check" style="color: green;"></i>' : '<i class="fas fa-times" style="color: red;"></i>'}</td>
+                            <td>${row.policia == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>'}</td>
+                            <td>${row.samu == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>'}</td>
+                            <td>${row.bombeiros == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>'}</td>
                             <td><i class="fas fa-info-circle"></i> ${status}</td>
                         `;
                         
@@ -938,33 +877,31 @@ $result->data_seek(0);
             document.querySelectorAll('#accidents-table tr').forEach(r => r.classList.remove('selected'));
             row.classList.add('selected');
 
-            const rowData = row.cells;
             const details = {
-                severidade: rowData[0].textContent.trim(),
-                modelo: rowData[1].textContent.trim(),
-                tipo: rowData[2].textContent.trim(),
-                policia: emergencyServices.policia ? 'Sim' : 'Não',
-                samu: emergencyServices.samu ? 'Sim' : 'Não',
-                bombeiros: emergencyServices.bombeiros ? 'Sim' : 'Não',
-                local: rowData[6].textContent.trim(),
-                hora: rowData[7].textContent.trim(),
-                status: rowData[8].textContent.trim(),
-                acoes: rowData[8].textContent.trim() === 'em andamento' ? 'Ações em andamento' : 'Resolvido'
+                severidade: emergencyServices.severidade || 'N/A',
+                modelo: emergencyServices.modelo || 'N/A',
+                tipo: emergencyServices.categoria || 'N/A',
+                local: emergencyServices.localizacao || 'N/A',
+                hora: emergencyServices.hora || 'N/A',
+                policia: emergencyServices.policia ? 'Acionada' : 'Não acionada',
+                samu: emergencyServices.samu ? 'Acionado' : 'Não acionado',
+                bombeiros: emergencyServices.bombeiros ? 'Acionados' : 'Não acionados',
+                status: emergencyServices.status || 'N/A'
             };
 
             const detailsDiv = document.getElementById('occurrence-details');
             detailsDiv.innerHTML = `
-                <h3><i class="fas fa-info-circle"></i> Detalhes da Ocorrência Selecionada</h3>
+                <h3><i class="fas fa-info-circle"></i> Detalhes da Ocorrência #${id}</h3>
                 <p><i class="fas fa-thermometer-half detail-icon"></i> Severidade: <span>${details.severidade}</span></p>
-                <p><i class="fas fa-bus detail-icon"></i> Modelo: <span>${details.modelo}</span></p>
+                <p><i class="fas fa-bus detail-icon"></i> Bonde: <span>${details.modelo}</span></p>
                 <p><i class="fas fa-tag detail-icon"></i> Tipo: <span>${details.tipo}</span></p>
                 <p><i class="fas fa-map-marker-alt detail-icon"></i> Local: <span>${details.local}</span></p>
+                <p><i class="fas fa-clock detail-icon"></i> Hora: <span>${details.hora}</span></p>
                 <p><i class="fas fa-shield-alt detail-icon"></i> Polícia: <span>${details.policia}</span></p>
                 <p><i class="fas fa-ambulance detail-icon"></i> SAMU: <span>${details.samu}</span></p>
                 <p><i class="fas fa-fire-extinguisher detail-icon"></i> Bombeiros: <span>${details.bombeiros}</span></p>
-                <p><i class="fas fa-clock detail-icon"></i> Hora: <span>${details.hora}</span></p>
                 <p><i class="fas fa-info-circle detail-icon"></i> Status: <span>${details.status}</span></p>
-                <p><i class="fas fa-cogs detail-icon"></i> Ações: <span>${details.acoes}</span></p>
+                <p><i class="fas fa-user detail-icon"></i> Responsável: <span>Sistema Automático</span></p>
             `;
         }
     </script>

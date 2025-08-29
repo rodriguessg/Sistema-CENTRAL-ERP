@@ -172,6 +172,12 @@ include 'header.php';
             color: #2563eb;
             font-weight: bold;
         }
+
+        /* Estilo para nomes dos bondes em azul */
+        .localizacao-name {
+            color: red;
+            font-weight: bold;
+        }
         
         /* Ajustar tamanho da fonte da tabela */
         .data-table {
@@ -444,12 +450,13 @@ include 'header.php';
                         <thead>
                             <tr>
                                 <th><i class="fas fa-hashtag"></i>ID</th>
-                                <th><i class="fas fa-file-alt"></i>Descrição</th>
+                              <th><i class="fas fa-train"></i>Bonde</th>
                                 <th><i class="fas fa-map-marker-alt"></i>Localização</th>
                                 <th><i class="fas fa-user"></i>Usuário</th>
                                 <th><i class="fas fa-thermometer-half"></i>Severidade</th>
                                 <th><i class="fas fa-tags"></i>Categoria</th>
-                                <th><i class="fas fa-train"></i>Bonde</th>
+                                
+                                  <th><i class="fas fa-file-alt"></i>Descrição</th>
                                 <th><i class="fas fa-calendar"></i>Data de Registro</th>
                                 <th><i class="fas fa-shield-alt"></i>Polícia</th>
                                 <th><i class="fas fa-fire-extinguisher"></i>Bombeiros</th>
@@ -464,13 +471,13 @@ include 'header.php';
                 </div>
                 
                 <div class="pagination" id="pagination">
-                     Botões de paginação gerados por JavaScript 
+                    
                 </div>
             <?php endif; ?>
         </div>
     </div>
 
-     Modal de Descrição 
+    
     <div class="modal-overlay" id="descriptionModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -704,12 +711,13 @@ include 'header.php';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><span class="id-badge">${row.id || ''}</span></td>
-                    <td>${createDescriptionCell(row.descricao || '', globalIndex)}</td>
-                    <td>${row.localizacao || ''}</td>
+                     <td><span class="bonde-name">${row.modelo || ''}</span></td>
+                    
+                    <td><span class="localizacao-name">${row.localizacao || ''}</td>
                     <td>${row.usuario || ''}</td>
                     <td><span class="${colorClasses[row.cor] || ''}">${row.severidade || ''}</span></td>
                     <td>${row.categoria || ''}</td>
-                    <td><span class="bonde-name">${row.modelo || ''}</span></td>
+                   <td>${createDescriptionCell(row.descricao || '', globalIndex)}</td>
                     <td class="date">${row.data_registro || ''}</td>
                     <td>
                         ${row.status === 'em andamento' ? 

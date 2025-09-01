@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
                             // Server settings
                             $mail->isSMTP();
-                            $mail->Host = 'smtps2.webmail.rj.gov.br';
+                            $mail->Host = '10.11.28.5';
                             $mail->SMTPAuth = true;
                             $mail->Username = 'impressora@central.rj.gov.br';
                             $mail->Password = 'central@123';

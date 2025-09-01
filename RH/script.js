@@ -94,7 +94,7 @@ function createDownloadElement(name, sector, sector1, tel, room) {
   <div class="group-middle">
     <div class="company-download strong">CENTRAL RJ</div>
     <div class="info-download-line">
-      <span>Av. Nossa Senhora de Copacabana,</span>
+      <span>Av. Nossa Senhora de Copacabana, 493</span>
       <span>Sala: ${room}</span>
     </div>
     <div class="info-download">Copacabana, Rio de Janeiro - RJ CEP: 22031-000</div>

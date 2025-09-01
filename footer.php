@@ -185,7 +185,7 @@
             <h2 id="companyModalTitle">Sobre a ERP CENTRAL</h2>
             <p><strong>ERP CENTRAL</strong> é um sistema integrado de gestão pública desenvolvido para otimizar os processos administrativos do Governo do Estado do Rio de Janeiro. Nossa missão é promover eficiência, transparência e inovação na administração pública, em alinhamento com as diretrizes do portal oficial do governo (<a href="https://www.rj.gov.br" target="_blank">www.rj.gov.br</a>).</p>
             <p><strong>Fundação:</strong> 2024</p>
-            <p><strong>Sede:</strong> Palácio Guanabara, Rio de Janeiro, RJ</p>
+            <p><strong>Sede:</strong>Av. Nossa Senhora de Copacabana, 493, Rio de Janeiro-RJ CEP: 22031-000</p>
             <p><strong>Missão:</strong> Simplificar a gestão pública com tecnologia avançada e dados abertos.</p>
             <p><strong>Contato:</strong> <a href="mailto:contato@erpcentral.rj.gov.br">contato@erpcentral.rj.gov.br</a></p>
             <button onclick="openContactForm()" role="button" aria-label="Abrir formulário de contato">Entre em Contato</button>

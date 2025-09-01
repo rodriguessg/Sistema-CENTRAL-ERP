@@ -129,11 +129,11 @@ if ($conn->connect_error) {
     die("Erro na conexão com o banco de dados: " . $conn->connect_error);
 }
 
-// Verifica sessão
-if (!isset($_SESSION['username'])) {
-    die("Erro: Usuário não autenticado ou sessão expirada!");
-}
-$username = $_SESSION['username'];
+// // Verifica sessão
+// if (!isset($_SESSION['username'])) {
+//     die("Erro: Usuário não autenticado ou sessão expirada!");
+// }
+// $username = $_SESSION['username'];
 
 $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
         FROM acidentes 

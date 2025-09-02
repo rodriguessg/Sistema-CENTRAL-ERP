@@ -1469,7 +1469,6 @@ try {
                             </tr>
                         </thead>
                         <tbody id="transactions-table-body">
-                             Data will be populated here by JavaScript 
                         </tbody>
                     </table>
                 </div>

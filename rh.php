@@ -1,7 +1,4 @@
-<?php
-include './banco.php';
-include './header.php';
-?>
+<!--  -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -41,7 +38,7 @@ include './header.php';
           <option value="ASSPRIN">ASSPRIN</option>
           <option value="ASSTAD">ASSTAD</option>
           <option value="AUD">AUD</option>
-          <option value="CEHAB">CHEGAB</option>
+          <option value="CHEGAB">CHEGAB</option>
           <option value="COMAUD">COMAUD</option>
           <option value="COMEL">COMEL</option>
           <option value="CONFIS">CONFIS</option>

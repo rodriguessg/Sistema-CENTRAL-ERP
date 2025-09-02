@@ -1,6 +1,17 @@
 <?php
 session_start();
 
+// Definir fuso horário de São Paulo (BRT, UTC-3)
+date_default_timezone_set('America/Sao_Paulo');
+
+// Include PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src/Exception.php';
+require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src/PHPMailer.php';
+require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src/SMTP.php';
+
 // Configuração do banco de dados
 $host = 'localhost';
 $user = 'root';
@@ -30,6 +41,21 @@ if ($result_modelos) {
     $modelos = [];
 }
 
+// Buscar localizações (saída x retorno) da tabela viagens
+$localizacoes = [];
+$sql_localizacoes = "SELECT DISTINCT saida, retorno FROM viagens ORDER BY saida, retorno";
+$result_localizacoes = $conn->query($sql_localizacoes);
+if ($result_localizacoes) {
+    while ($row = $result_localizacoes->fetch_assoc()) {
+        $localizacoes[] = [
+            'value' => "{$row['saida']} x {$row['retorno']}",
+            'text' => "{$row['saida']} x {$row['retorno']}"
+        ];
+    }
+} else {
+    $localizacoes = [];
+}
+
 $erro = '';
 $sucesso = '';
 
@@ -41,28 +67,112 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
     $categoria = $_POST['subcategoria'] ?? '';
     $cor = $_POST['cor'] ?? '';
     $modelo = $_POST['modelo'] ?? '';
+    $maquinistas = $_POST['maquinistas'] ?? '';
+    $agentes = $_POST['agentes'] ?? '';
+    $data = $_POST['data'] ?? date('Y-m-d H:i:s'); // Usar data/hora atuais se não enviado
 
-    if (empty($descricao) || empty($severidade) || empty($categoria) || empty($cor) || empty($modelo)) {
+    // Converter data do formato datetime-local (YYYY-MM-DDThh:mm) para DATETIME (YYYY-MM-DD HH:mm:ss)
+    if (!empty($data)) {
+        $data = str_replace('T', ' ', $data) . ':00'; // Adiciona segundos para formato DATETIME
+    }
+
+    // Lista de maquinistas, agentes e localizações válidos para validação
+    $valid_maquinistas = ['Sergio Lima', 'Adriano', 'Helio', 'M. Celestino', 'Leonardo', 'Andre'];
+    $valid_agentes = ['Samir', 'Vinicius', 'P. Nascimento', 'Oliveira', 'Carlos'];
+    $valid_localizacoes = array_column($localizacoes, 'value');
+
+    // Validação rigorosa
+    if (empty($descricao) || empty($severidade) || empty($categoria) || empty($cor) || empty($modelo) || empty($maquinistas) || empty($agentes) || empty($localizacao) || empty($data)) {
         $erro = "Todos os campos obrigatórios devem ser preenchidos!";
     } elseif (!in_array($severidade, ['Leve', 'Moderado', 'Grave'])) {
         $erro = "Severidade inválida!";
     } elseif (!in_array($modelo, $modelos)) {
         $erro = "Modelo de bonde inválido!";
+    } elseif (!in_array($maquinistas, $valid_maquinistas)) {
+        $erro = "Maquinista inválido!";
+    } elseif (!in_array($agentes, $valid_agentes)) {
+        $erro = "Agente inválido!";
+    } elseif (!in_array($localizacao, $valid_localizacoes)) {
+        $erro = "Localização inválida!";
+    } elseif (!DateTime::createFromFormat('Y-m-d H:i:s', $data)) {
+        $erro = "Data e hora inválidas!";
     } else {
-        $sql = "INSERT INTO acidentes (descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'em andamento')";
+        $sql = "INSERT INTO acidentes (descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'em andamento')";
         $stmt = $conn->prepare($sql);
 
         if (!$stmt) {
             $erro = "Erro na preparação da query: " . $conn->error;
         } else {
-            $stmt->bind_param("sssssss", $descricao, $localizacao, $username, $severidade, $categoria, $cor, $modelo);
-            if (!$stmt->execute()) {
-                $erro = "Erro ao registrar o acidente: " . $stmt->error;
-            } else {
+            $stmt->bind_param("ssssssssss", $descricao, $localizacao, $username, $severidade, $categoria, $cor, $modelo, $maquinistas, $agentes, $data);
+            if ($stmt->execute()) {
+                $acidente_id = $conn->insert_id; // Obter o ID do acidente inserido
                 $sucesso = "Acidente registrado com sucesso!";
+
+                // Enviar e-mail de notificação com timeout de 5 segundos
+                $mail = new PHPMailer(true);
+                try {
+                    // Configuração do servidor SMTP
+                    $mail->isSMTP();
+                    $mail->Host = 'smtps2.ebmail.rj.gov.br';
+                    $mail->SMTPAuth = true;
+                    $mail->Username = 'impressora@central.rj.gov.br';
+                    $mail->Password = 'central@123';
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Usar SSL para porta 465
+                    $mail->Port = 465;
+                     $mail->Timeout = 5; // Timeout de 5 segundos
+                    $mail->CharSet = 'UTF-8'; // Garantir UTF-8 no e-mail
+
+                    // Definir o remetente
+                    $mail->setFrom('impressora@central.rj.gov.br', 'Notificacoes de Ocorrencias');
+
+                    // Adicionar destinatários
+                    $mail->addAddress('grodrigues@central.rj.gov.br');
+                    $mail->addAddress('alexandrerocha@central.rj.gov.br');
+
+                    // Configurar o formato do e-mail como HTML
+                    $mail->isHTML(true);
+                    $mail->Subject = "Novo Acidente Registrado - ID $acidente_id";
+                    $mail->Body = "
+                        <h2>Novo Acidente Registrado</h2>
+                        <p>Um novo acidente foi registrado no sistema. Detalhes abaixo:</p>
+                        <table border='1' style='border-collapse: collapse; width: 100%;'>
+                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>ID</th><td style='padding: 8px;'>$acidente_id</td></tr>
+                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Descrição</th><td style='padding: 8px;'>" . htmlspecialchars($descricao) . "</td></tr>
+                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Localização</th><td style='padding: 8px;'>" . htmlspecialchars($localizacao) . "</td></tr>
+                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Usuário</th><td style='padding: 8px;'>" . htmlspecialchars($username) . "</td></tr>
+                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Severidade</th><td style='padding: 8px;'>" . htmlspecialchars($severidade) . "</td></tr>
+                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Categoria</th><td style='padding: 8px;'>" . htmlspecialchars($categoria) . "</td></tr>
+                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Modelo do Bonde</th><td style='padding: 8px;'>" . htmlspecialchars($modelo) . "</td></tr>
+                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Maquinistas</th><td style='padding: 8px;'>" . htmlspecialchars($maquinistas) . "</td></tr>
+                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Agentes</th><td style='padding: 8px;'>" . htmlspecialchars($agentes) . "</td></tr>
+                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Data e Hora de Registro</th><td style='padding: 8px;'>" . date('d/m/Y H:i', strtotime($data)) . "</td></tr>
+                        </table>
+                        <p>Por favor, verifique o sistema para mais detalhes ou ações necessárias.</p>
+                    ";
+                    $mail->AltBody = "Novo Acidente Registrado - ID: $acidente_id\nDescrição: $descricao\nLocalização: $localizacao\nUsuário: $username\nSeveridade: $severidade\nCategoria: $categoria\nModelo: $modelo\nMaquinistas: $maquinistas\nAgentes: $agentes\nData e Hora: " . date('d/m/Y H:i', strtotime($data));
+
+                    // Enviar e-mail com controle de timeout
+                    $start_time = microtime(true);
+                    try {
+                        $mail->send();
+                    } catch (Exception $e) {
+                        $elapsed_time = microtime(true) - $start_time;
+                        if ($elapsed_time >= 5) {
+                            $erro .= "Erro: O envio do e-mail excedeu o tempo limite de 5 segundos. Detalhes: " . $mail->ErrorInfo;
+                        } else {
+                            $erro .= "Erro ao enviar e-mail de notificação: " . $mail->ErrorInfo;
+                        }
+                    }
+                } catch (Exception $e) {
+                    $erro .= "Erro na configuração do e-mail: " . $mail->ErrorInfo;
+                }
+
+                // Redirecionar mesmo que o e-mail falhe
                 header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=acidente&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
                 exit();
+            } else {
+                $erro = "Erro ao registrar o acidente: " . $stmt->error;
             }
             $stmt->close();
         }
@@ -93,7 +203,7 @@ if (isset($_POST['update_status']) && isset($_POST['id'])) {
 
 // Buscar todos os registros - ORDENAR POR DATA MAIS RECENTE PRIMEIRO
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-$sql = "SELECT id, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
+$sql = "SELECT id, descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status, policia, bombeiros, samu 
         FROM acidentes 
         WHERE descricao LIKE ? OR localizacao LIKE ? OR severidade LIKE ? OR categoria LIKE ? 
         ORDER BY data_registro DESC";
@@ -173,7 +283,7 @@ include 'header.php';
             font-weight: bold;
         }
 
-        /* Estilo para nomes dos bondes em azul */
+        /* Estilo para localização em vermelho */
         .localizacao-name {
             color: red;
             font-weight: bold;
@@ -254,7 +364,6 @@ include 'header.php';
             </div>
         <?php endif; ?>
 
-        
         <div class="form-container">
             <div class="section-header">
                 <div class="header-icon">
@@ -331,15 +440,52 @@ include 'header.php';
                                 <i class="fas fa-map-marker-alt"></i>
                                 Localização:
                             </label>
-                            <input type="text" id="localizacao" name="localizacao" placeholder="Ex: Largo do Curvel, Copacabana, Carioca, próximo ao poste 13 ...">
+                            <select id="localizacao" name="localizacao" required>
+                                <option value="">Selecione</option>
+                                <?php foreach ($localizacoes as $loc): ?>
+                                    <option value="<?php echo htmlspecialchars($loc['value']); ?>"><?php echo htmlspecialchars($loc['text']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
 
                         <div class="form-group">
                             <label for="data">
                                 <i class="fas fa-calendar-alt"></i>
-                                Data do Acidente:
+                                Data e Hora do Acidente:
                             </label>
-                            <input type="date" id="data" name="data" value="<?php echo date('Y-m-d'); ?>" required>
+                            <input type="datetime-local" id="data" name="data" value="<?php echo date('Y-m-d\TH:i', strtotime('now')); ?>" required >
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="maquinistas">
+                                <i class="fas fa-user-tie"></i>
+                                Maquinistas:
+                            </label>
+                            <select id="maquinistas" name="maquinistas" required>
+                                <option value="">Selecione</option>
+                                <option value="Sergio Lima">Sergio Lima</option>
+                                <option value="Adriano">Adriano</option>
+                                <option value="Helio">Helio</option>
+                                <option value="M. Celestino">M. Celestino</option>
+                                <option value="Leonardo">Leonardo</option>
+                                <option value="Andre">Andre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="agentes">
+                                <i class="fas fa-user-shield"></i>
+                                Agentes:
+                            </label>
+                            <select id="agentes" name="agentes" required>
+                                <option value="">Selecione</option>
+                                <option value="Samir">Samir</option>
+                                <option value="Vinicius">Vinicius</option>
+                                <option value="P. Nascimento">P. Nascimento</option>
+                                <option value="Oliveira">Oliveira</option>
+                                <option value="Carlos">Carlos</option>
+                            </select>
                         </div>
                     </div>
 
@@ -400,23 +546,22 @@ include 'header.php';
                     <div class="form-group">
                         <label for="dateStart">
                             <i class="fas fa-calendar"></i>
-                            Data de Registro (Início):
+                            Data e Hora de Registro (Início):
                         </label>
-                        <input type="date" id="dateStart" name="dateStart">
+                        <input type="datetime-local" id="dateStart" name="dateStart">
                     </div>
 
                     <div class="form-group">
                         <label for="dateEnd">
                             <i class="fas fa-calendar"></i>
-                            Data de Registro (Fim):
+                            Data e Hora de Registro (Fim):
                         </label>
-                        <input type="date" id="dateEnd" name="dateEnd">
+                        <input type="datetime-local" id="dateEnd" name="dateEnd">
                     </div>
                 </div>
             </div>
         </div>
 
-         
         <div class="table-section">
             <div class="table-header">
                 <h3>
@@ -450,14 +595,15 @@ include 'header.php';
                         <thead>
                             <tr>
                                 <th><i class="fas fa-hashtag"></i>ID</th>
-                              <th><i class="fas fa-train"></i>Bonde</th>
+                                <th><i class="fas fa-train"></i>Bonde</th>
                                 <th><i class="fas fa-map-marker-alt"></i>Localização</th>
                                 <th><i class="fas fa-user"></i>Usuário</th>
+                                <th><i class="fas fa-user-tie"></i>Maquinista</th>
+                                <th><i class="fas fa-user-shield"></i>Agente</th>
                                 <th><i class="fas fa-thermometer-half"></i>Severidade</th>
                                 <th><i class="fas fa-tags"></i>Categoria</th>
-                                
-                                  <th><i class="fas fa-file-alt"></i>Descrição</th>
-                                <th><i class="fas fa-calendar"></i>Data de Registro</th>
+                                <th><i class="fas fa-file-alt"></i>Descrição</th>
+                                <th><i class="fas fa-calendar"></i>Data e Hora de Registro</th>
                                 <th><i class="fas fa-shield-alt"></i>Polícia</th>
                                 <th><i class="fas fa-fire-extinguisher"></i>Bombeiros</th>
                                 <th><i class="fas fa-ambulance"></i>SAMU</th>
@@ -471,13 +617,11 @@ include 'header.php';
                 </div>
                 
                 <div class="pagination" id="pagination">
-                    
                 </div>
             <?php endif; ?>
         </div>
     </div>
 
-    
     <div class="modal-overlay" id="descriptionModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -496,10 +640,10 @@ include 'header.php';
             </div>
             <div class="modal-body">
                 <div class="description-content" id="modalDescription">
-                     Conteúdo da descrição será inserido aqui 
+                    Conteúdo da descrição será inserido aqui 
                 </div>
                 <div class="description-meta" id="modalMeta">
-                     Metadados serão inseridos aqui 
+                    Metadados serão inseridos aqui 
                 </div>
             </div>
         </div>
@@ -512,6 +656,20 @@ include 'header.php';
         const perPage = 5;
         let currentPage = 1;
         let filteredData = acidentes;
+
+        // Função para formatar data e hora para exibição no formato brasileiro
+        function formatDateTime(dateTimeStr) {
+            if (!dateTimeStr) return 'N/A';
+            const date = new Date(dateTimeStr);
+            return date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
 
         // Função para criar célula de descrição clicável usando data attributes
         function createDescriptionCell(description, rowIndex) {
@@ -586,6 +744,24 @@ include 'header.php';
                     </div>
                     <div class="meta-item">
                         <div class="meta-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Maquinista</div>
+                            <div class="meta-value">${rowData.maquinistas || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Agente</div>
+                            <div class="meta-value">${rowData.agentes || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
                             <i class="fas fa-thermometer-half"></i>
                         </div>
                         <div class="meta-content">
@@ -607,8 +783,8 @@ include 'header.php';
                             <i class="fas fa-calendar"></i>
                         </div>
                         <div class="meta-content">
-                            <div class="meta-label">Data de Registro</div>
-                            <div class="meta-value">${rowData.data_registro || 'N/A'}</div>
+                            <div class="meta-label">Data e Hora de Registro</div>
+                            <div class="meta-value">${formatDateTime(rowData.data_registro)}</div>
                         </div>
                     </div>
                 `;
@@ -696,7 +872,7 @@ include 'header.php';
             tbody.innerHTML = '';
 
             if (pageData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="13" class="no-data">Nenhum acidente encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="15" class="no-data">Nenhum acidente encontrado.</td></tr>';
                 return;
             }
 
@@ -711,14 +887,15 @@ include 'header.php';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><span class="id-badge">${row.id || ''}</span></td>
-                     <td><span class="bonde-name">${row.modelo || ''}</span></td>
-                    
+                    <td><span class="bonde-name">${row.modelo || ''}</span></td>
                     <td><span class="localizacao-name">${row.localizacao || ''}</td>
                     <td>${row.usuario || ''}</td>
+                    <td>${row.maquinistas || ''}</td>
+                    <td>${row.agentes || ''}</td>
                     <td><span class="${colorClasses[row.cor] || ''}">${row.severidade || ''}</span></td>
                     <td>${row.categoria || ''}</td>
-                   <td>${createDescriptionCell(row.descricao || '', globalIndex)}</td>
-                    <td class="date">${row.data_registro || ''}</td>
+                    <td>${createDescriptionCell(row.descricao || '', globalIndex)}</td>
+                    <td class="date">${formatDateTime(row.data_registro)}</td>
                     <td>
                         ${row.status === 'em andamento' ? 
                             `<form method="POST" action="" id="form-${row.id}">
@@ -816,13 +993,15 @@ include 'header.php';
                     (row.descricao?.toLowerCase().includes(searchTerm) || false) ||
                     (row.localizacao?.toLowerCase().includes(searchTerm) || false) ||
                     (row.severidade?.toLowerCase().includes(searchTerm) || false) ||
-                    (row.categoria?.toLowerCase().includes(searchTerm) || false);
+                    (row.categoria?.toLowerCase().includes(searchTerm) || false) ||
+                    (row.maquinistas?.toLowerCase().includes(searchTerm) || false) ||
+                    (row.agentes?.toLowerCase().includes(searchTerm) || false);
 
                 const matchesSeverity = !severityFilter || row.severidade === severityFilter;
 
                 let matchesDate = true;
                 if (dateStart) {
-                    const rowDate = new Date(row.data_registro.split(' ')[0]);
+                    const rowDate = new Date(row.data_registro);
                     const startDate = new Date(dateStart);
                     matchesDate = rowDate >= startDate;
                     if (dateEnd) {

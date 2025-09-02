@@ -479,11 +479,17 @@ clearTransactionsBtn.addEventListener('click', async () => {
     if (!confirm('Tem certeza que deseja limpar TODAS as transações? Esta ação não pode ser desfeita.')) return;
 
     try {
-        const response = await fetch('./clear_viagens.php', { method: 'POST' });
-        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+        const response = await fetch('./clear_viagem.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
+        }
         const result = await response.json();
         if (result.success) {
-            alert('Todas as transações foram limpas!');
+            alert(result.message);
             await loadTransactions();
             currentPage = 1;
             await renderTransactions();
@@ -496,7 +502,6 @@ clearTransactionsBtn.addEventListener('click', async () => {
         alert('Erro na conexão com o servidor: ' + error.message);
     }
 });
-
 idFilterInput.addEventListener('input', () => {
     currentPage = 1;
     renderTransactions();

@@ -485,7 +485,7 @@ clearTransactionsBtn.addEventListener('click', async () => {
         });
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
+            throw new Error(`Erro HTTP: ${response.status} - ${errorText.substring(0, 100)}...`);
         }
         const result = await response.json();
         if (result.success) {

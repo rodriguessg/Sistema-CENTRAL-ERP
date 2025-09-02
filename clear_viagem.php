@@ -1,5 +1,6 @@
 <?php
 // clear_viagem.php
+ob_start(); // Iniciar buffer de saída para evitar saída acidental
 session_start();
 
 // Definir fuso horário de São Paulo (BRT, UTC-3)
@@ -16,6 +17,7 @@ try {
     $pdo = new PDO('mysql:host=localhost;dbname=gm_sicbd', 'root', '');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
+    ob_end_clean();
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Erro de conexão com o banco de dados: ' . htmlspecialchars($e->getMessage())]);
     exit();
@@ -43,6 +45,7 @@ try {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
     $pdo->exec($sqlCreateTable);
 } catch (PDOException $e) {
+    ob_end_clean();
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Erro ao criar a tabela historico_viagens: ' . htmlspecialchars($e->getMessage())]);
     exit();
@@ -72,29 +75,16 @@ try {
     // Confirmar transação
     $pdo->commit();
 
-    // Enviar e-mail de notificação para grodrigues@central.rj.gov.br
-    $to = 'grodrigues@central.rj.gov.br';
-    $subject = 'Limpeza da Tabela Viagens Realizada';
-    $message = "
-        <h2>Notificação: Limpeza da Tabela Viagens</h2>
-        <p>A tabela 'viagens' foi limpa com sucesso.</p>
-        <p>Os dados foram copiados para a tabela 'historico_viagens' antes da limpeza.</p>
-        <p><strong>Usuário:</strong> " . htmlspecialchars($_SESSION['username']) . "</p>
-        <p><strong>Data e Hora:</strong> " . date('d/m/Y H:i:s') . "</p>
-    ";
-    $headers = "MIME-Version: 1.0" . "\r\n" .
-               "Content-type: text/html; charset=UTF-8" . "\r\n" .
-               "From: impressora@central.rj.gov.br" . "\r\n" .
-               "Reply-To: impressora@central.rj.gov.br" . "\r\n";
-
-    if (mail($to, $subject, $message, $headers)) {
-        echo json_encode(['success' => true, 'message' => 'Tabela limpa com sucesso e e-mail enviado!']);
-    } else {
-        echo json_encode(['success' => true, 'message' => 'Tabela limpa com sucesso, mas erro ao enviar e-mail.']);
-    }
+    // Retornar resposta JSON
+    ob_end_clean();
+    echo json_encode(['success' => true, 'message' => 'Tabela limpa com sucesso e dados copiados para o histórico!']);
 } catch (PDOException $e) {
     // Reverter transação em caso de erro
     $pdo->rollBack();
+    ob_end_clean();
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Erro ao copiar dados ou limpar a tabela: ' . htmlspecialchars($e->getMessage())]);
 }
+
+exit(); // Garantir que nenhuma saída adicional seja gerada
+?>

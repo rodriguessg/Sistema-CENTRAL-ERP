@@ -61,13 +61,13 @@ if ($result === false) {
 }
 
 $viagens_hoje = 0;
-$result = $conn->query("SELECT COUNT(*) as total FROM viagens WHERE DATE(data_ida) = CURDATE() OR DATE(data_volta) = CURDATE()");
-if ($result === false) {
-    die("Erro na consulta de viagens hoje: " . $conn->error);
-} elseif ($result) {
-    $row = $result->fetch_assoc();
-    $viagens_hoje = $row['total'];
-}
+// $result = $conn->query("SELECT COUNT(*) as total FROM viagens WHERE DATE(data_ida) = CURDATE() OR DATE(data_volta) = CURDATE()");
+// if ($result === false) {
+//     die("Erro na consulta de viagens hoje: " . $conn->error);
+// } elseif ($result) {
+//     $row = $result->fetch_assoc();
+//     $viagens_hoje = $row['total'];
+// }
 
 include 'header.php';
 ?>

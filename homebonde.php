@@ -1,9 +1,5 @@
 <?php
-session_start();
 include 'header.php';
-
-// Definir fuso horário de São Paulo (BRT, UTC-3)
-date_default_timezone_set('America/Sao_Paulo');
 
 // Database configuration
 $host = 'localhost';
@@ -14,18 +10,6 @@ $password = '';
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Verificar se existe algum acidente com status 'em andamento'
-    $stmt_check = $pdo->query("SELECT COUNT(*) as total FROM acidentes WHERE status = 'em andamento'");
-    $row = $stmt_check->fetch(PDO::FETCH_ASSOC);
-    if ($row['total'] > 0) {
-        // Bloquear acesso à página
-        echo "<div style='text-align: center; padding: 20px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #ddd; margin: 20px auto; max-width: 600px;'>";
-        echo "<h2>Operação Indisponível</h2>";
-        echo "<p>Não é possível realizar novas operações devido a uma ocorrência em andamento. Por favor, resolva a ocorrência pendente em <a href='reportacidentes.php'>Registrar Ocorrências</a>.</p>";
-        echo "</div>";
-        exit();
-    }
 
     // Query to fetch all bondes from the 'bondes' table
     $stmt = $pdo->query("SELECT id, modelo, capacidade, ativo, ano_fabricacao, descricao FROM bondes ORDER BY modelo ASC");
@@ -42,45 +26,6 @@ try {
     ];
 }
 ?>
-<?php
-
-
-// Definir fuso horário de São Paulo (BRT, UTC-3)
-date_default_timezone_set('America/Sao_Paulo');
-
-// Database configuration
-$host = 'localhost';
-$dbname = 'gm_sicbd';
-$username = 'root';
-$password = '';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Verificar se existe algum acidente com status 'em andamento'
-    $stmt_check = $pdo->query("SELECT COUNT(*) as total FROM acidentes WHERE status = 'em andamento'");
-    $row = $stmt_check->fetch(PDO::FETCH_ASSOC);
-    if ($row['total'] > 0) {
-        // Bloquear acesso à página
-        echo "<div style='text-align: center; padding: 20px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #ddd; margin: 20px auto; max-width: 600px;'>";
-        echo "<h2>Operação Indisponível</h2>";
-        echo "<p>Não é possível realizar novas operações devido a uma ocorrência em andamento. Por favor, resolva a ocorrência pendente em <a href='reportacidentes.php'>Registrar Ocorrências</a>.</p>";
-        echo "</div>";
-        exit();
-    }
-
-    // Query to fetch all bondes from the 'bondes' table
-    $stmt = $pdo->query("SELECT id, modelo, capacidade, ativo, ano_fabricacao, descricao FROM bondes ORDER BY modelo ASC");
-    $bondes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    error_log("Database connection failed: " . $e->getMessage());
-   
-}
-?>
-
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1295,7 +1240,7 @@ try {
             color: white;
         }
 
-        .status-badge.retorno {
+        .status-badge.chegada {
             background: var(--danger-gradient);
             color: white;
         }
@@ -1321,7 +1266,7 @@ try {
             color: white;
         }
 
-        .status-icon.retorno {
+        .status-icon.chegada {
             background: var(--danger-color);
             color: white;
         }
@@ -1919,14 +1864,14 @@ try {
                     } else {
                         // IDA COM RETORNO = VERDE
                         row.classList.add('transaction-row', 'ida');
-                        updateCellWithIcon(tipoViagemCell, '<span class="status-badge ida"><i class="fas fa-arrow-up"></i> Ida</span>');
-                        console.log('🟢 Aplicado: IDA');
+                        updateCellWithIcon(tipoViagemCell, '<span class="status-badge ida"><i class="fas fa-arrow-up"></i> Partida</span>');
+                        console.log('🟢 Aplicado: PARTIDA');
                     }
                 } else if (tipoViagem === 'retorno') {
                     // RETORNO = VERMELHO
                     row.classList.add('transaction-row', 'retorno');
-                    updateCellWithIcon(tipoViagemCell, '<span class="status-badge retorno"><i class="fas fa-arrow-down"></i> Retorno</span>');
-                    console.log('🔴 Aplicado: RETORNO');
+                    updateCellWithIcon(tipoViagemCell, '<span class="status-badge chegada"><i class="fas fa-arrow-down"></i> chegada</span>');
+                    console.log('🔴 Aplicado: chegada');
                 }
 
                 // Adicionar ícones nas colunas preservando event listeners
@@ -2009,7 +1954,7 @@ try {
                 const entry = transactionMap.get(key);
                 if (tipoViagem.includes('ida') || tipoViagem.includes('pendente')) {
                     entry.ida = row;
-                } else if (tipoViagem.includes('retorno')) {
+                } else if (tipoViagem.includes('chegada')) {
                     entry.retorno = row;
                 }
             });

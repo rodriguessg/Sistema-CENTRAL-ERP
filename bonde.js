@@ -382,7 +382,7 @@ alterBtn.addEventListener('click', () => {
     const transaction = transactions.find(t => t.id === selectedRowId);
     if (!transaction) return;
 
-    const hasReturn = transactions.some(t => t.tipo_viagem === 'retorno' && t.subida_id === transaction.id);
+    const hasReturn = transactions.some(t => t.tipo_viagem === 'chegada' && t.subida_id === transaction.id);
 
     if (transaction.tipo_viagem === 'ida' && !hasReturn) {
         formMode = 'registerReturn';
@@ -439,13 +439,13 @@ if (returnButton) {
         }
 
         const transaction = transactions.find(t => t.id === selectedRowId);
-        if (!transaction || transaction.tipo_viagem !== 'ida') {
+        if (!transaction || transaction.tipo_viagem !== 'Subida') {
             alert('Selecione uma viagem de ida para registrar o retorno.');
             return;
         }
 
         if (transactions.some(t => t.tipo_viagem === 'retorno' && t.subida_id === transaction.id)) {
-            alert('Esta viagem de ida já possui um retorno registrado.');
+            alert('Esta viagem de partida já possui um retorno registrado.');
             return;
         }
 

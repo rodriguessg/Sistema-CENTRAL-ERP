@@ -19,7 +19,7 @@ try {
     $bondes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Query para buscar os dados da tabela viagens
-    $sql = "SELECT data, bonde, saida, retorno, hora, pagantes, moradores, gratuidade AS gratPcdIdoso FROM viagens";
+    $sql = "SELECT data, bonde, saida, retorno, hora, pagantes, moradores, gratuidade AS gratPcdIdoso FROM historico_viagens";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $viagens = $stmt->fetchAll(PDO::FETCH_ASSOC);

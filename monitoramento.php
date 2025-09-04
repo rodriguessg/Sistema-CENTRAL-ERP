@@ -6,127 +6,88 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Configuração do banco de dados
+$host = 'localhost';
+$dbname = 'gm_sicbd';
+$username = 'root';
+$password = '';
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Erro na conexão com o banco de dados: ' . $e->getMessage()]);
+    exit;
+}
+
 // Handle AJAX request for table data (accidents)
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_table_data') {
-    $host = 'localhost';
-    $user = 'root';
-    $password = '';
-    $dbname = 'gm_sicbd';
+    try {
+        $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu, vitima 
+                FROM acidentes 
+                ORDER BY data_registro DESC, id DESC 
+                LIMIT 6";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $conn = new mysqli($host, $user, $password, $dbname);
-    if ($conn->connect_error) {
+        header('Content-Type: application/json');
+        echo json_encode($rows);
+    } catch (PDOException $e) {
         http_response_code(500);
-        echo json_encode(['error' => 'Erro na conexão com o banco de dados: ' . $conn->connect_error]);
-        exit;
+        echo json_encode(['error' => 'Erro na consulta SQL: ' . $e->getMessage()]);
     }
-
-    $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
-            FROM acidentes 
-            ORDER BY data_registro DESC, id DESC 
-            LIMIT 6";
-    $result = $conn->query($sql);
-
-    if (!$result) {
-        http_response_code(500);
-        echo json_encode(['error' => 'Erro na consulta SQL: ' . $conn->error]);
-        exit;
-    }
-
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
-    }
-
-    $conn->close();
-    header('Content-Type: application/json');
-    echo json_encode($rows);
     exit;
 }
 
 // Handle AJAX request for statistics data (accidents)
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_stats') {
-    $host = 'localhost';
-    $user = 'root';
-    $password = '';
-    $dbname = 'gm_sicbd';
+    try {
+        $sql = "SELECT severidade, COUNT(*) as count FROM acidentes WHERE status != 'resolvido' GROUP BY severidade";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $countResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $conn = new mysqli($host, $user, $password, $dbname);
-    if ($conn->connect_error) {
-        http_response_code(500);
-        echo json_encode(['error' => 'Erro na conexão com o banco de dados: ' . $conn->connect_error]);
-        exit;
-    }
-
-    $countSql = "SELECT severidade, COUNT(*) as count FROM acidentes WHERE status != 'resolvido' GROUP BY severidade";
-    $countResult = $conn->query($countSql);
-    $counts = ['Grave' => 0, 'Moderado' => 0, 'Leve' => 0, 'Moderado a Grave' => 0];
-    
-    while ($countRow = $countResult->fetch_assoc()) {
-        if (isset($counts[$countRow['severidade']])) {
-            $counts[$countRow['severidade']] = $countRow['count'];
+        $counts = ['Grave' => 0, 'Moderado' => 0, 'Leve' => 0, 'Moderado a Grave' => 0];
+        foreach ($countResult as $countRow) {
+            if (isset($counts[$countRow['severidade']])) {
+                $counts[$countRow['severidade']] = $countRow['count'];
+            }
         }
+        $totalOcorrencias = array_sum($counts);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'total' => $totalOcorrencias,
+            'grave' => $counts['Grave'],
+            'moderado' => $counts['Moderado'],
+            'leve' => $counts['Leve']
+        ]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Erro na consulta SQL: ' . $e->getMessage()]);
     }
-    
-    $totalOcorrencias = array_sum($counts);
-    
-    $conn->close();
-    header('Content-Type: application/json');
-    echo json_encode([
-        'total' => $totalOcorrencias,
-        'grave' => $counts['Grave'],
-        'moderado' => $counts['Moderado'],
-        'leve' => $counts['Leve']
-    ]);
     exit;
 }
 
 // Handle AJAX request for viagens data
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_viagens') {
-    $host = 'localhost';
-    $user = 'root';
-    $password = '';
-    $dbname = 'gm_sicbd';
+    try {
+        $sql = "SELECT bonde, pagantes, moradores, gratuidade, passageiros 
+                FROM viagens 
+                ORDER BY created_at DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $conn = new mysqli($host, $user, $password, $dbname);
-    if ($conn->connect_error) {
+        header('Content-Type: application/json');
+        echo json_encode($rows);
+    } catch (PDOException $e) {
         http_response_code(500);
-        echo json_encode(['error' => 'Erro na conexão com o banco de dados: ' . $conn->connect_error]);
-        exit;
+        echo json_encode(['error' => 'Erro na consulta SQL: ' . $e->getMessage()]);
     }
-
-    $sql = "SELECT bonde, pagantes, moradores, gratuidade, passageiros 
-            FROM viagens 
-            ORDER BY created_at DESC";
-    $result = $conn->query($sql);
-
-    if (!$result) {
-        http_response_code(500);
-        echo json_encode(['error' => 'Erro na consulta SQL: ' . $conn->error]);
-        exit;
-    }
-
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
-    }
-
-    $conn->close();
-    header('Content-Type: application/json');
-    echo json_encode($rows);
     exit;
-}
-
-// Conexão com o banco
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$dbname = 'gm_sicbd';
-
-$conn = new mysqli($host, $user, $password, $dbname);
-
-// Verifica conexão
-if ($conn->connect_error) {
-    die("Erro na conexão com o banco de dados: " . $conn->connect_error);
 }
 
 // Verifica sessão
@@ -135,14 +96,35 @@ if (!isset($_SESSION['username'])) {
 }
 $username = $_SESSION['username'];
 
-$sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu 
-        FROM acidentes 
-        ORDER BY data_registro DESC, id DESC 
-        LIMIT 6";
-$result = $conn->query($sql);
+// Buscar dados iniciais para a tabela
+try {
+    $sql = "SELECT id, data, descricao, localizacao, usuario, severidade, categoria, cor, modelo, data_registro, status, policia, bombeiros, samu, vitima 
+            FROM acidentes 
+            ORDER BY data_registro DESC, id DESC 
+            LIMIT 6";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erro na consulta SQL: " . $e->getMessage());
+}
 
-if (!$result) {
-    die("Erro na consulta SQL: " . $conn->error);
+// Buscar dados de estatísticas
+try {
+    $sql = "SELECT severidade, COUNT(*) as count FROM acidentes WHERE status != 'resolvido' GROUP BY severidade";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $countResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $counts = ['Grave' => 0, 'Moderado' => 0, 'Leve' => 0, 'Moderado a Grave' => 0];
+    foreach ($countResult as $countRow) {
+        if (isset($counts[$countRow['severidade']])) {
+            $counts[$countRow['severidade']] = $countRow['count'];
+        }
+    }
+    $totalOcorrencias = array_sum($counts);
+} catch (PDOException $e) {
+    die("Erro na consulta SQL: " . $e->getMessage());
 }
 
 $corMap = [
@@ -151,19 +133,6 @@ $corMap = [
     'Vermelho' => '#f8d7da',
     'Amarelo/Vermelho' => 'linear-gradient(to right, #fff3cd, #f8d7da)'
 ];
-
-$countSql = "SELECT severidade, COUNT(*) as count FROM acidentes WHERE status != 'resolvido' GROUP BY severidade";
-$countResult = $conn->query($countSql);
-$counts = ['Grave' => 0, 'Moderado' => 0, 'Leve' => 0, 'Moderado a Grave' => 0];
-while ($countRow = $countResult->fetch_assoc()) {
-    if (isset($counts[$countRow['severidade']])) {
-        $counts[$countRow['severidade']] = $countRow['count'];
-    }
-}
-$totalOcorrencias = array_sum($counts);
-
-// Reiniciar ponteiro do resultado
-$result->data_seek(0);
 ?>
 
 <!DOCTYPE html>
@@ -714,6 +683,7 @@ $result->data_seek(0);
                                         <th><i class="fas fa-tags"></i> Tipo</th>
                                         <th><i class="fas fa-map-marker-alt"></i> Local</th>
                                         <th><i class="fas fa-clock"></i> Hora</th>
+                                        <th><i class="fas fa-user-injured"></i> Vítima</th>
                                         <th><i class="fas fa-shield-alt"></i> Polícia</th>
                                         <th><i class="fas fa-ambulance"></i> SAMU</th>
                                         <th><i class="fas fa-fire-extinguisher"></i> Bombeiros</th>
@@ -722,17 +692,18 @@ $result->data_seek(0);
                                 </thead>
                                 <tbody>
                                     <?php
-                                    while ($row = $result->fetch_assoc()) {
+                                    foreach ($result as $row) {
                                         $severityClass = 'cor-' . str_replace('/', '-', strtolower($row['cor']));
                                         $hora = date('H:i', strtotime($row['data_registro']));
                                         $status = $row['status'] ?? 'em andamento';
                                         ?>
-                                        <tr onclick="selectOccurrence(<?= $row['id'] ?>, this, <?= json_encode(['policia' => $row['policia'], 'bombeiros' => $row['bombeiros'], 'samu' => $row['samu'], 'modelo' => $row['modelo'], 'categoria' => $row['categoria'], 'localizacao' => $row['localizacao'], 'severidade' => $row['severidade'], 'status' => $status, 'hora' => $hora]) ?>)">
+                                        <tr onclick="selectOccurrence(<?= $row['id'] ?>, this, <?= json_encode(['policia' => $row['policia'], 'bombeiros' => $row['bombeiros'], 'samu' => $row['samu'], 'modelo' => $row['modelo'], 'categoria' => $row['categoria'], 'localizacao' => $row['localizacao'], 'severidade' => $row['severidade'], 'status' => $status, 'hora' => $hora, 'vitima' => $row['vitima']]) ?>)">
                                             <td><span class="severity-bg <?= $severityClass ?>"><i class="fas fa-thermometer-half"></i> <?= htmlspecialchars($row['severidade']) ?></span></td>
                                             <td><span class="tram-highlight"><i class="fas fa-bus"></i> <?= htmlspecialchars($row['modelo'] ?? 'N/A') ?></span></td>
                                             <td><i class="fas fa-tag"></i> <?= htmlspecialchars($row['categoria']) ?></td>
                                             <td><span class="location-highlight"><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($row['localizacao']) ?></span></td>
                                             <td class="time-cell"><i class="fas fa-clock"></i> <?= $hora ?></td>
+                                            <td><?= htmlspecialchars($row['vitima'] ?? 'Não') ?></td>
                                             <td><?= $row['policia'] == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>' ?></td>
                                             <td><?= $row['samu'] == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>' ?></td>
                                             <td><?= $row['bombeiros'] == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>' ?></td>
@@ -754,6 +725,7 @@ $result->data_seek(0);
                         <p><i class="fas fa-tag detail-icon"></i> Tipo: <span>-</span></p>
                         <p><i class="fas fa-map-marker-alt detail-icon"></i> Local: <span>-</span></p>
                         <p><i class="fas fa-clock detail-icon"></i> Hora: <span>-</span></p>
+                        <p><i class="fas fa-user-injured detail-icon"></i> Vítima: <span>-</span></p>
                         <p><i class="fas fa-shield-alt detail-icon"></i> Polícia: <span>-</span></p>
                         <p><i class="fas fa-ambulance detail-icon"></i> SAMU: <span>-</span></p>
                         <p><i class="fas fa-fire-extinguisher detail-icon"></i> Bombeiros: <span>-</span></p>
@@ -769,7 +741,7 @@ $result->data_seek(0);
                             <i class="fas fa-map-marked-alt section-icon"></i>
                             Locator
                         </div>
-                        <iframe src="https://monitoramento.mobilesat.com.br/locator/index.html?t=4ebee7c35e2e2fbedde92f4b2611c141F0AA094FB415B295867B3BD93520050BB6566DD7" allowfullscreen></iframe>
+                        <iframe src="https://hosting.wialon.us/locator/index.html?t=4ebee7c35e2e2fbedde92f4b2611c141F0AA094FB415B295867B3BD93520050BB6566DD7" allowfullscreen></iframe>
                     </div>
 
                     <!-- Dashboard de passageiros por bonde -->
@@ -896,7 +868,8 @@ $result->data_seek(0);
                             localizacao: row.localizacao,
                             severidade: row.severidade,
                             status: status,
-                            hora: hora
+                            hora: hora,
+                            vitima: row.vitima || 'Não'
                         };
                         
                         tr.setAttribute('onclick', `selectOccurrence(${row.id}, this, ${JSON.stringify(emergencyData)})`);
@@ -919,6 +892,7 @@ $result->data_seek(0);
                             <td><i class="fas fa-tag"></i> ${row.categoria}</td>
                             <td><span class="location-highlight"><i class="fas fa-map-marker-alt"></i> ${row.localizacao}</span></td>
                             <td class="time-cell ${shouldBlink && status !== 'resolvido' ? 'time-blink' : ''}"><i class="fas fa-clock"></i> ${hora}</td>
+                            <td>${row.vitima || 'Não'}</td>
                             <td>${row.policia == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>'}</td>
                             <td>${row.samu == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>'}</td>
                             <td>${row.bombeiros == 1 ? '<i class="fas fa-check" style="color: #10b981;"></i>' : '<i class="fas fa-times" style="color: #ef4444;"></i>'}</td>
@@ -1123,6 +1097,7 @@ $result->data_seek(0);
                 tipo: emergencyServices.categoria || 'N/A',
                 local: emergencyServices.localizacao || 'N/A',
                 hora: emergencyServices.hora || 'N/A',
+                vitima: emergencyServices.vitima || 'Não',
                 policia: emergencyServices.policia ? 'Acionada' : 'Não acionada',
                 samu: emergencyServices.samu ? 'Acionado' : 'Não acionado',
                 bombeiros: emergencyServices.bombeiros ? 'Acionados' : 'Não acionados',
@@ -1137,6 +1112,7 @@ $result->data_seek(0);
                 <p><i class="fas fa-tag detail-icon"></i> Tipo: <span>${details.tipo}</span></p>
                 <p><i class="fas fa-map-marker-alt detail-icon"></i> Local: <span>${details.local}</span></p>
                 <p><i class="fas fa-clock detail-icon"></i> Hora: <span>${details.hora}</span></p>
+                <p><i class="fas fa-user-injured detail-icon"></i> Vítima: <span>${details.vitima}</span></p>
                 <p><i class="fas fa-shield-alt detail-icon"></i> Polícia: <span>${details.policia}</span></p>
                 <p><i class="fas fa-ambulance detail-icon"></i> SAMU: <span>${details.samu}</span></p>
                 <p><i class="fas fa-fire-extinguisher detail-icon"></i> Bombeiros: <span>${details.bombeiros}</span></p>
@@ -1145,7 +1121,5 @@ $result->data_seek(0);
             `;
         }
     </script>
-
-    <?php $conn->close(); ?>
 </body>
 </html>

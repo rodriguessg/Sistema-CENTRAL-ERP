@@ -14,45 +14,45 @@ require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src/SMTP
 
 // Configuração do banco de dados
 $host = 'localhost';
-$user = 'root';
-$password = '';
 $dbname = 'gm_sicbd';
+$username = 'root';
+$password = '';
 
-$conn = new mysqli($host, $user, $password, $dbname);
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-if ($conn->connect_error) {
-    die("Erro na conexão com o banco de dados: " . $conn->connect_error);
+    // Adicionar coluna 'vitima' à tabela acidentes, se ainda não existir
+    $pdo->exec("ALTER TABLE acidentes ADD COLUMN IF NOT EXISTS vitima VARCHAR(3) DEFAULT 'Não'");
+} catch (PDOException $e) {
+    die("Erro na conexão com o banco de dados: " . $e->getMessage());
 }
 
 if (!isset($_SESSION['username'])) {
     die("Erro: Usuário não autenticado ou sessão expirada!");
 }
-$username = $_SESSION['username'];
+$user = $_SESSION['username'];
 
 // Buscar modelos da tabela bondes
 $modelos = [];
-$sql_modelos = "SELECT DISTINCT modelo FROM bondes ORDER BY modelo";
-$result_modelos = $conn->query($sql_modelos);
-if ($result_modelos) {
-    while ($row = $result_modelos->fetch_assoc()) {
-        $modelos[] = $row['modelo'];
-    }
-} else {
+try {
+    $stmt = $pdo->query("SELECT DISTINCT modelo FROM bondes ORDER BY modelo");
+    $modelos = $stmt->fetchAll(PDO::FETCH_COLUMN);
+} catch (PDOException $e) {
+    error_log("Erro ao buscar modelos: " . $e->getMessage());
     $modelos = [];
 }
 
 // Buscar localizações (saída x retorno) da tabela viagens
 $localizacoes = [];
-$sql_localizacoes = "SELECT DISTINCT saida, retorno FROM viagens ORDER BY saida, retorno";
-$result_localizacoes = $conn->query($sql_localizacoes);
-if ($result_localizacoes) {
-    while ($row = $result_localizacoes->fetch_assoc()) {
-        $localizacoes[] = [
-            'value' => "{$row['saida']} x {$row['retorno']}",
-            'text' => "{$row['saida']} x {$row['retorno']}"
-        ];
+try {
+    $stmt = $pdo->query("SELECT DISTINCT saida, retorno FROM viagens ORDER BY saida, retorno");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $value = "{$row['saida']} x {$row['retorno']}";
+        $localizacoes[] = ['value' => $value, 'text' => $value];
     }
-} else {
+} catch (PDOException $e) {
+    error_log("Erro ao buscar localizações: " . $e->getMessage());
     $localizacoes = [];
 }
 
@@ -69,19 +69,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
     $modelo = $_POST['modelo'] ?? '';
     $maquinistas = $_POST['maquinistas'] ?? '';
     $agentes = $_POST['agentes'] ?? '';
-    $data = $_POST['data'] ?? date('Y-m-d H:i:s'); // Usar data/hora atuais se não enviado
+    $data = $_POST['data'] ?? date('Y-m-d H:i:s');
+    $vitima = isset($_POST['vitima']) ? 'Sim' : 'Não';
 
-    // Converter data do formato datetime-local (YYYY-MM-DDThh:mm) para DATETIME (YYYY-MM-DD HH:mm:ss)
     if (!empty($data)) {
-        $data = str_replace('T', ' ', $data) . ':00'; // Adiciona segundos para formato DATETIME
+        $data = str_replace('T', ' ', $data) . ':00';
     }
 
-    // Lista de maquinistas, agentes e localizações válidos para validação
     $valid_maquinistas = ['Sergio Lima', 'Adriano', 'Helio', 'M. Celestino', 'Leonardo', 'Andre'];
     $valid_agentes = ['Samir', 'Vinicius', 'P. Nascimento', 'Oliveira', 'Carlos'];
     $valid_localizacoes = array_column($localizacoes, 'value');
 
-    // Validação rigorosa
     if (empty($descricao) || empty($severidade) || empty($categoria) || empty($cor) || empty($modelo) || empty($maquinistas) || empty($agentes) || empty($localizacao) || empty($data)) {
         $erro = "Todos os campos obrigatórios devem ser preenchidos!";
     } elseif (!in_array($severidade, ['Leve', 'Moderado', 'Grave'])) {
@@ -97,84 +95,116 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
     } elseif (!DateTime::createFromFormat('Y-m-d H:i:s', $data)) {
         $erro = "Data e hora inválidas!";
     } else {
-        $sql = "INSERT INTO acidentes (descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'em andamento')";
-        $stmt = $conn->prepare($sql);
+        try {
+            $pdo->beginTransaction();
 
-        if (!$stmt) {
-            $erro = "Erro na preparação da query: " . $conn->error;
-        } else {
-            $stmt->bind_param("ssssssssss", $descricao, $localizacao, $username, $severidade, $categoria, $cor, $modelo, $maquinistas, $agentes, $data);
-            if ($stmt->execute()) {
-                $acidente_id = $conn->insert_id; // Obter o ID do acidente inserido
-                $sucesso = "Acidente registrado com sucesso!";
+            // Inserir registro na tabela acidentes
+            $sql = "INSERT INTO acidentes (descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status, vitima) 
+                    VALUES (:descricao, :localizacao, :usuario, :severidade, :categoria, :cor, :modelo, :maquinistas, :agentes, :data_registro, 'em andamento', :vitima)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                'descricao' => $descricao,
+                'localizacao' => $localizacao,
+                'usuario' => $user,
+                'severidade' => $severidade,
+                'categoria' => $categoria,
+                'cor' => $cor,
+                'modelo' => $modelo,
+                'maquinistas' => $maquinistas,
+                'agentes' => $agentes,
+                'data_registro' => $data,
+                'vitima' => $vitima
+            ]);
+            $acidente_id = $pdo->lastInsertId();
 
-                // Enviar e-mail de notificação com timeout de 5 segundos
-                $mail = new PHPMailer(true);
+            // Inserir registro na tabela viagens
+            $sql_viagem = "INSERT INTO viagens (bonde, saida, retorno, maquinista, agente, hora, tipo_viagem, data, created_at) 
+                           VALUES (:bonde, :saida, :retorno, :maquinista, :agente, :hora, :tipo_viagem, :data, :created_at)";
+            $stmt_viagem = $pdo->prepare($sql_viagem);
+            $saida_retorno = explode(' x ', $localizacao);
+            $saida = $saida_retorno[0] ?? '';
+            $retorno = $saida_retorno[1] ?? '';
+            $tipo_viagem = 'operação paralizada por motivo de uma nova ocorrência';
+            $hora = date('H:i:s', strtotime($data));
+            $data_viagem = date('Y-m-d', strtotime($data));
+            $created_at = date('Y-m-d H:i:s');
+
+            $stmt_viagem->execute([
+                'bonde' => $modelo,
+                'saida' => $saida,
+                'retorno' => $retorno,
+                'maquinista' => $maquinistas,
+                'agente' => $agentes,
+                'hora' => $hora,
+                'tipo_viagem' => $tipo_viagem,
+                'data' => $data_viagem,
+                'created_at' => $created_at
+            ]);
+
+            // Commit da transação
+            $pdo->commit();
+
+            $sucesso = "Acidente registrado com sucesso!";
+
+            // Enviar e-mail de notificação
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = 'smtps2.ebmail.rj.gov.br';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'impressora@central.rj.gov.br';
+                $mail->Password = 'central@123';
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                $mail->Port = 465;
+                $mail->Timeout = 5;
+                $mail->CharSet = 'UTF-8';
+
+                $mail->setFrom('impressora@central.rj.gov.br', 'Notificacoes de Ocorrencias');
+                $mail->addAddress('grodrigues@central.rj.gov.br');
+                $mail->addAddress('alexandrerocha@central.rj.gov.br');
+
+                $mail->isHTML(true);
+                $mail->Subject = "Novo Acidente Registrado - ID $acidente_id";
+                $mail->Body = "
+                    <h2>Novo Acidente Registrado</h2>
+                    <p>Um novo acidente foi registrado no sistema. Detalhes abaixo:</p>
+                    <table border='1' style='border-collapse: collapse; width: 100%;'>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>ID</th><td style='padding: 8px;'>$acidente_id</td></tr>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Descrição</th><td style='padding: 8px;'>" . htmlspecialchars($descricao) . "</td></tr>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Localização</th><td style='padding: 8px;'>" . htmlspecialchars($localizacao) . "</td></tr>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Usuário</th><td style='padding: 8px;'>" . htmlspecialchars($user) . "</td></tr>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Severidade</th><td style='padding: 8px;'>" . htmlspecialchars($severidade) . "</td></tr>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Categoria</th><td style='padding: 8px;'>" . htmlspecialchars($categoria) . "</td></tr>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Modelo do Bonde</th><td style='padding: 8px;'>" . htmlspecialchars($modelo) . "</td></tr>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Maquinistas</th><td style='padding: 8px;'>" . htmlspecialchars($maquinistas) . "</td></tr>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Agentes</th><td style='padding: 8px;'>" . htmlspecialchars($agentes) . "</td></tr>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Data e Hora de Registro</th><td style='padding: 8px;'>" . date('d/m/Y H:i', strtotime($data)) . "</td></tr>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Houve Vítima?</th><td style='padding: 8px;'>$vitima</td></tr>
+                    </table>
+                    <p>Por favor, verifique o sistema para mais detalhes ou ações necessárias.</p>
+                ";
+                $mail->AltBody = "Novo Acidente Registrado - ID: $acidente_id\nDescrição: $descricao\nLocalização: $localizacao\nUsuário: $user\nSeveridade: $severidade\nCategoria: $categoria\nModelo: $modelo\nMaquinistas: $maquinistas\nAgentes: $agentes\nData e Hora: " . date('d/m/Y H:i', strtotime($data)) . "\nHouve Vítima? $vitima";
+
+                $start_time = microtime(true);
                 try {
-                    // Configuração do servidor SMTP
-                    $mail->isSMTP();
-                    $mail->Host = 'smtps2.ebmail.rj.gov.br';
-                    $mail->SMTPAuth = true;
-                    $mail->Username = 'impressora@central.rj.gov.br';
-                    $mail->Password = 'central@123';
-                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Usar SSL para porta 465
-                    $mail->Port = 465;
-                     $mail->Timeout = 5; // Timeout de 5 segundos
-                    $mail->CharSet = 'UTF-8'; // Garantir UTF-8 no e-mail
-
-                    // Definir o remetente
-                    $mail->setFrom('impressora@central.rj.gov.br', 'Notificacoes de Ocorrencias');
-
-                    // Adicionar destinatários
-                    $mail->addAddress('grodrigues@central.rj.gov.br');
-                    $mail->addAddress('alexandrerocha@central.rj.gov.br');
-
-                    // Configurar o formato do e-mail como HTML
-                    $mail->isHTML(true);
-                    $mail->Subject = "Novo Acidente Registrado - ID $acidente_id";
-                    $mail->Body = "
-                        <h2>Novo Acidente Registrado</h2>
-                        <p>Um novo acidente foi registrado no sistema. Detalhes abaixo:</p>
-                        <table border='1' style='border-collapse: collapse; width: 100%;'>
-                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>ID</th><td style='padding: 8px;'>$acidente_id</td></tr>
-                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Descrição</th><td style='padding: 8px;'>" . htmlspecialchars($descricao) . "</td></tr>
-                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Localização</th><td style='padding: 8px;'>" . htmlspecialchars($localizacao) . "</td></tr>
-                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Usuário</th><td style='padding: 8px;'>" . htmlspecialchars($username) . "</td></tr>
-                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Severidade</th><td style='padding: 8px;'>" . htmlspecialchars($severidade) . "</td></tr>
-                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Categoria</th><td style='padding: 8px;'>" . htmlspecialchars($categoria) . "</td></tr>
-                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Modelo do Bonde</th><td style='padding: 8px;'>" . htmlspecialchars($modelo) . "</td></tr>
-                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Maquinistas</th><td style='padding: 8px;'>" . htmlspecialchars($maquinistas) . "</td></tr>
-                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Agentes</th><td style='padding: 8px;'>" . htmlspecialchars($agentes) . "</td></tr>
-                            <tr><th style='padding: 8px; background-color: #f2f2f2;'>Data e Hora de Registro</th><td style='padding: 8px;'>" . date('d/m/Y H:i', strtotime($data)) . "</td></tr>
-                        </table>
-                        <p>Por favor, verifique o sistema para mais detalhes ou ações necessárias.</p>
-                    ";
-                    $mail->AltBody = "Novo Acidente Registrado - ID: $acidente_id\nDescrição: $descricao\nLocalização: $localizacao\nUsuário: $username\nSeveridade: $severidade\nCategoria: $categoria\nModelo: $modelo\nMaquinistas: $maquinistas\nAgentes: $agentes\nData e Hora: " . date('d/m/Y H:i', strtotime($data));
-
-                    // Enviar e-mail com controle de timeout
-                    $start_time = microtime(true);
-                    try {
-                        $mail->send();
-                    } catch (Exception $e) {
-                        $elapsed_time = microtime(true) - $start_time;
-                        if ($elapsed_time >= 5) {
-                            $erro .= "Erro: O envio do e-mail excedeu o tempo limite de 5 segundos. Detalhes: " . $mail->ErrorInfo;
-                        } else {
-                            $erro .= "Erro ao enviar e-mail de notificação: " . $mail->ErrorInfo;
-                        }
-                    }
+                    $mail->send();
                 } catch (Exception $e) {
-                    $erro .= "Erro na configuração do e-mail: " . $mail->ErrorInfo;
+                    $elapsed_time = microtime(true) - $start_time;
+                    if ($elapsed_time >= 5) {
+                        $erro .= "Erro: O envio do e-mail excedeu o tempo limite de 5 segundos. Detalhes: " . $mail->ErrorInfo;
+                    } else {
+                        $erro .= "Erro ao enviar e-mail de notificação: " . $mail->ErrorInfo;
+                    }
                 }
-
-                // Redirecionar mesmo que o e-mail falhe
-                header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=acidente&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
-                exit();
-            } else {
-                $erro = "Erro ao registrar o acidente: " . $stmt->error;
+            } catch (Exception $e) {
+                $erro .= "Erro na configuração do e-mail: " . $mail->ErrorInfo;
             }
-            $stmt->close();
+
+            header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=acidente&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
+            exit();
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            $erro = "Erro ao registrar o acidente: " . $e->getMessage();
         }
     }
 }
@@ -186,50 +216,77 @@ if (isset($_POST['update_status']) && isset($_POST['id'])) {
     $bombeiros = isset($_POST['bombeiros'][$id]) ? 1 : 0;
     $samu = isset($_POST['samu'][$id]) ? 1 : 0;
 
-    $sql = "UPDATE acidentes SET status = 'resolvido', policia = ?, bombeiros = ?, samu = ? WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    if ($stmt) {
-        $stmt->bind_param("iiii", $policia, $bombeiros, $samu, $id);
-        if ($stmt->execute()) {
-            // $sucesso = "Status do acidente atualizado para resolvido!";
-        } else {
-            $erro = "Erro ao atualizar o status: " . $stmt->error;
+    try {
+        $pdo->beginTransaction();
+
+        // Atualizar o status do acidente
+        $sql = "UPDATE acidentes SET status = 'resolvido', policia = :policia, bombeiros = :bombeiros, samu = :samu WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'policia' => $policia,
+            'bombeiros' => $bombeiros,
+            'samu' => $samu,
+            'id' => $id
+        ]);
+
+        // Buscar informações do acidente para obter o bonde e localização
+        $sql_acidente = "SELECT modelo, localizacao, maquinistas, agentes FROM acidentes WHERE id = :id";
+        $stmt_acidente = $pdo->prepare($sql_acidente);
+        $stmt_acidente->execute(['id' => $id]);
+        $acidente = $stmt_acidente->fetch(PDO::FETCH_ASSOC);
+
+        if ($acidente) {
+            // Inserir registro na tabela viagens indicando retomada da operação
+            $sql_viagem = "INSERT INTO viagens (bonde, saida, retorno, maquinista, agente, hora, tipo_viagem, data, created_at) 
+                           VALUES (:bonde, :saida, :retorno, :maquinista, :agente, :hora, :tipo_viagem, :data, :created_at)";
+            $stmt_viagem = $pdo->prepare($sql_viagem);
+            $saida_retorno = explode(' x ', $acidente['localizacao']);
+            $saida = $saida_retorno[0] ?? '';
+            $retorno = $saida_retorno[1] ?? '';
+            $tipo_viagem = 'operação retomada após resolução de ocorrência';
+            $hora = date('H:i:s');
+            $data_viagem = date('Y-m-d');
+            $created_at = date('Y-m-d H:i:s');
+
+            $stmt_viagem->execute([
+                'bonde' => $acidente['modelo'],
+                'saida' => $saida,
+                'retorno' => $retorno,
+                'maquinista' => $acidente['maquinistas'],
+                'agente' => $acidente['agentes'],
+                'hora' => $hora,
+                'tipo_viagem' => $tipo_viagem,
+                'data' => $data_viagem,
+                'created_at' => $created_at
+            ]);
         }
-        $stmt->close();
-        header("Location: reportacidentes.php");
+
+        // Commit da transação
+        $pdo->commit();
+        header("Location: reportacidentes.php?success=2");
         exit();
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        $erro = "Erro ao atualizar o status: " . $e->getMessage();
     }
 }
 
 // Buscar todos os registros - ORDENAR POR DATA MAIS RECENTE PRIMEIRO
-$search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-$sql = "SELECT id, descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status, policia, bombeiros, samu 
-        FROM acidentes 
-        WHERE descricao LIKE ? OR localizacao LIKE ? OR severidade LIKE ? OR categoria LIKE ? 
-        ORDER BY data_registro DESC";
-$params = ["%$search%", "%$search%", "%$search%", "%$search%"];
-
-$stmt = $conn->prepare($sql);
-if (!$stmt) {
-    die("Erro na preparação da query: " . $conn->error);
-}
-$stmt->bind_param("ssss", ...$params);
-if (!$stmt->execute()) {
-    die("Erro na execução da query: " . $stmt->error);
-}
-
-// Buscar resultados
-$result = [];
-$queryResult = $stmt->get_result();
-if ($queryResult) {
-    while ($row = $queryResult->fetch_assoc()) {
-        $result[] = $row;
-    }
+$search = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : '%';
+try {
+    $sql = "SELECT id, descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status, policia, bombeiros, samu, vitima 
+            FROM acidentes 
+            WHERE descricao LIKE :search OR localizacao LIKE :search OR severidade LIKE :search OR categoria LIKE :search 
+            ORDER BY data_registro DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['search' => $search]);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $fetchSuccess = !empty($result);
-} else {
-    $erro = "Erro ao obter resultados: " . $conn->error;
+} catch (PDOException $e) {
+    $erro = "Erro ao obter resultados: " . $e->getMessage();
+    $result = [];
+    $fetchSuccess = false;
 }
-$stmt->close();
 
 if (!$fetchSuccess) {
     $erro = "Nenhum dado foi recuperado. Verifique a query ou os dados na tabela 'acidentes'.";
@@ -238,18 +295,13 @@ if (!$fetchSuccess) {
 // Converter $result para JSON para uso no JavaScript
 $resultJson = json_encode($result, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG);
 
-// Mapear cores para classes CSS (mantido para severidade)
+// Mapear cores para classes CSS
 $colorClasses = [
     'Verde' => 'severity-green',
     'Amarelo' => 'severity-yellow',
     'Vermelho' => 'severity-red',
     'Amarelo/Vermelho' => 'severity-yellow-red'
 ];
-
-// Função para obter a classe CSS com base na cor
-function getSeverityClass($cor, $colorClasses) {
-    return isset($colorClasses[$cor]) ? $colorClasses[$cor] : '';
-}
 
 // Include header.php only after all header() calls
 include 'header.php';
@@ -264,7 +316,6 @@ include 'header.php';
     <link rel="stylesheet" href="./src/bonde/style/acidente.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilos específicos para a tabela */
         .data-table td {
             font-weight: bold;
             font-size: 0.9rem;
@@ -277,24 +328,20 @@ include 'header.php';
             text-align: center;
         }
         
-        /* Estilo para nomes dos bondes em azul */
         .bonde-name {
             color: #2563eb;
             font-weight: bold;
         }
 
-        /* Estilo para localização em vermelho */
         .localizacao-name {
             color: red;
             font-weight: bold;
         }
         
-        /* Ajustar tamanho da fonte da tabela */
         .data-table {
             font-size: 0.9rem;
         }
 
-        /* Estilos para severidade com cores */
         .severity-green {
             background: rgba(16, 185, 129, 0.1);
             color: #10b981;
@@ -333,6 +380,113 @@ include 'header.php';
             font-weight: 600;
             border: 1px solid rgba(239, 68, 68, 0.2);
             font-size: 0.75rem;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            padding: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-icon {
+            font-size: 1.5rem;
+            color: #1e90ff;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-subtitle {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .modal-close:hover {
+            color: #000;
+        }
+
+        .modal-body {
+            padding: 10px;
+        }
+
+        .report-content {
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+        }
+
+        .report-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .meta-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .meta-icon {
+            font-size: 1.2rem;
+            color: #1e90ff;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .meta-value {
+            color: #6b7280;
         }
     </style>
 </head>
@@ -453,7 +607,7 @@ include 'header.php';
                                 <i class="fas fa-calendar-alt"></i>
                                 Data e Hora do Acidente:
                             </label>
-                            <input type="datetime-local" id="data" name="data" value="<?php echo date('Y-m-d\TH:i', strtotime('now')); ?>" required >
+                            <input type="datetime-local" id="data" name="data" value="<?php echo date('Y-m-d\TH:i', strtotime('now')); ?>" required>
                         </div>
                     </div>
 
@@ -487,6 +641,14 @@ include 'header.php';
                                 <option value="Carlos">Carlos</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vitima">
+                            <i class="fas fa-user-injured"></i>
+                            Houve Vítima?
+                        </label>
+                        <input type="checkbox" id="vitima" name="vitima">
                     </div>
 
                     <div class="form-group">
@@ -604,6 +766,7 @@ include 'header.php';
                                 <th><i class="fas fa-tags"></i>Categoria</th>
                                 <th><i class="fas fa-file-alt"></i>Descrição</th>
                                 <th><i class="fas fa-calendar"></i>Data e Hora de Registro</th>
+                                <th><i class="fas fa-user-injured"></i>Vítima</th>
                                 <th><i class="fas fa-shield-alt"></i>Polícia</th>
                                 <th><i class="fas fa-fire-extinguisher"></i>Bombeiros</th>
                                 <th><i class="fas fa-ambulance"></i>SAMU</th>
@@ -649,15 +812,44 @@ include 'header.php';
         </div>
     </div>
 
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <div class="modal-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div>
+                        <h3 class="modal-title">Relatório da Ocorrência</h3>
+                        <p class="modal-subtitle" id="reportModalSubtitle">Detalhes completos do incidente</p>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeReportModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="report-content" id="reportModalContent">
+                    Conteúdo do relatório será inserido aqui
+                </div>
+                <div class="report-meta" id="reportModalMeta">
+                    Metadados do relatório serão inseridos aqui
+                </div>
+                <button class="create-form-btn" onclick="createForm()">
+                    <i class="fas fa-file-export"></i>
+                    Criar Formulário
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Dados do PHP convertidos para JavaScript
         const acidentes = <?php echo $resultJson; ?>;
         const colorClasses = <?php echo json_encode($colorClasses); ?>;
         const perPage = 5;
         let currentPage = 1;
         let filteredData = acidentes;
 
-        // Função para formatar data e hora para exibição no formato brasileiro
         function formatDateTime(dateTimeStr) {
             if (!dateTimeStr) return 'N/A';
             const date = new Date(dateTimeStr);
@@ -671,7 +863,6 @@ include 'header.php';
             });
         }
 
-        // Função para criar célula de descrição clicável usando data attributes
         function createDescriptionCell(description, rowIndex) {
             const maxLength = 50;
             const truncated = description.length > maxLength ? 
@@ -687,7 +878,6 @@ include 'header.php';
             `;
         }
 
-        // Função para escapar HTML de forma mais robusta
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
@@ -695,7 +885,6 @@ include 'header.php';
             return div.innerHTML;
         }
 
-        // Função para abrir modal de descrição
         function openDescriptionModal(description, rowData) {
             try {
                 const modal = document.getElementById('descriptionModal');
@@ -703,17 +892,14 @@ include 'header.php';
                 const modalSubtitle = document.getElementById('modalSubtitle');
                 const modalMeta = document.getElementById('modalMeta');
 
-                // Verificar se os dados são válidos
                 if (!description || !rowData) {
                     console.error('Dados inválidos para o modal:', { description, rowData });
                     return;
                 }
 
-                // Atualizar conteúdo do modal
                 modalDescription.textContent = description;
                 modalSubtitle.textContent = `Ocorrência #${rowData.id} - ${rowData.categoria || 'Categoria não informada'}`;
 
-                // Criar metadados
                 modalMeta.innerHTML = `
                     <div class="meta-item">
                         <div class="meta-icon">
@@ -787,9 +973,17 @@ include 'header.php';
                             <div class="meta-value">${formatDateTime(rowData.data_registro)}</div>
                         </div>
                     </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-user-injured"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Houve Vítima?</div>
+                            <div class="meta-value">${rowData.vitima || 'Não'}</div>
+                        </div>
+                    </div>
                 `;
 
-                // Mostrar modal
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
             } catch (error) {
@@ -798,16 +992,144 @@ include 'header.php';
             }
         }
 
-        // Função para fechar modal de descrição
         function closeDescriptionModal() {
             const modal = document.getElementById('descriptionModal');
             modal.classList.remove('active');
             document.body.style.overflow = 'auto';
         }
 
-        // Event delegation para cliques nas células de descrição
+        function openReportModal(rowData) {
+            try {
+                const modal = document.getElementById('reportModal');
+                const modalContent = document.getElementById('reportModalContent');
+                const modalSubtitle = document.getElementById('reportModalSubtitle');
+                const modalMeta = document.getElementById('reportModalMeta');
+
+                if (!rowData) {
+                    console.error('Dados inválidos para o modal de relatório:', rowData);
+                    return;
+                }
+
+                modalContent.innerHTML = `
+                    <h4>Relatório da Ocorrência #${rowData.id}</h4>
+                    <p><strong>Descrição:</strong> ${escapeHtml(rowData.descricao || 'Não informado')}</p>
+                    <p><strong>Resumo:</strong> Ocorrência registrada com severidade ${rowData.severidade || 'N/A'} na localização ${rowData.localizacao || 'Não informado'}.</p>
+                    <p><strong>Órgãos de Emergência:</strong></p>
+                    <ul>
+                        <li>Polícia: ${rowData.policia == 1 ? 'Acionada' : 'Não acionada'}</li>
+                        <li>Bombeiros: ${rowData.bombeiros == 1 ? 'Acionados' : 'Não acionados'}</li>
+                        <li>SAMU: ${rowData.samu == 1 ? 'Acionado' : 'Não acionado'}</li>
+                    </ul>
+                    <p><strong>Houve Vítima?:</strong> ${rowData.vitima || 'Não'}</p>
+                    <p><strong>Status Atual:</strong> ${rowData.status || 'N/A'}</p>
+                `;
+                modalSubtitle.textContent = `Ocorrência #${rowData.id} - ${rowData.categoria || 'Categoria não informada'}`;
+
+                modalMeta.innerHTML = `
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-hashtag"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">ID da Ocorrência</div>
+                            <div class="meta-value">#${rowData.id || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Localização</div>
+                            <div class="meta-value">${rowData.localizacao || 'Não informado'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Usuário</div>
+                            <div class="meta-value">${rowData.usuario || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Maquinista</div>
+                            <div class="meta-value">${rowData.maquinistas || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Agente</div>
+                            <div class="meta-value">${rowData.agentes || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-thermometer-half"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Severidade</div>
+                            <div class="meta-value">${rowData.severidade || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-train"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Modelo do Bonde</div>
+                            <div class="meta-value">${rowData.modelo || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Data e Hora de Registro</div>
+                            <div class="meta-value">${formatDateTime(rowData.data_registro)}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-user-injured"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Houve Vítima?</div>
+                            <div class="meta-value">${rowData.vitima || 'Não'}</div>
+                        </div>
+                    </div>
+                `;
+
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } catch (error) {
+                console.error('Erro ao abrir modal de relatório:', error);
+                alert('Erro ao exibir o relatório. Tente novamente.');
+            }
+        }
+
+        function closeReportModal() {
+            const modal = document.getElementById('reportModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function createForm() {
+            alert('Funcionalidade de criação de formulário será implementada aqui.');
+        }
+
         document.addEventListener('click', function(e) {
             const descriptionCell = e.target.closest('.description-cell');
+            const reportBtn = e.target.closest('.report-btn');
             if (descriptionCell) {
                 const rowIndex = parseInt(descriptionCell.dataset.rowIndex);
                 if (!isNaN(rowIndex) && filteredData[rowIndex]) {
@@ -817,30 +1139,41 @@ include 'header.php';
                 } else {
                     console.error('Dados da linha não encontrados:', rowIndex);
                 }
+            } else if (reportBtn) {
+                const rowIndex = parseInt(reportBtn.dataset.rowIndex);
+                if (!isNaN(rowIndex) && filteredData[rowIndex]) {
+                    const rowData = filteredData[rowIndex];
+                    openReportModal(rowData);
+                } else {
+                    console.error('Dados da linha não encontrados:', rowIndex);
+                }
             }
         });
 
-        // Fechar modal ao clicar fora
         document.getElementById('descriptionModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeDescriptionModal();
             }
         });
 
-        // Fechar modal com ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeDescriptionModal();
+        document.getElementById('reportModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeReportModal();
             }
         });
 
-        // Função para atualizar o total de acidentes
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDescriptionModal();
+                closeReportModal();
+            }
+        });
+
         function updateTotalAccidents(data) {
             const totalAccidents = document.getElementById('totalAccidents');
             totalAccidents.innerHTML = `<i class="fas fa-list-ol"></i> Ocorrências Registradas: ${data.length}`;
         }
 
-        // Função para determinar quais órgãos de emergência devem ser pré-marcados
         function getEmergencyServices(categoria) {
             const emergencyServices = {
                 "Atropelamento de pedestre": { policia: true, bombeiros: false, samu: true },
@@ -863,7 +1196,6 @@ include 'header.php';
             return emergencyServices[categoria] || { policia: false, bombeiros: false, samu: false };
         }
 
-        // Função para renderizar a tabela
         function renderTable(page, data) {
             const start = (page - 1) * perPage;
             const end = start + perPage;
@@ -872,7 +1204,7 @@ include 'header.php';
             tbody.innerHTML = '';
 
             if (pageData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="15" class="no-data">Nenhum acidente encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="16" class="no-data">Nenhum acidente encontrado.</td></tr>';
                 return;
             }
 
@@ -882,7 +1214,7 @@ include 'header.php';
                     return;
                 }
                 
-                const globalIndex = start + index; // Índice global para acessar os dados corretos
+                const globalIndex = start + index;
                 const emergencyServices = getEmergencyServices(row.categoria);
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -896,6 +1228,7 @@ include 'header.php';
                     <td>${row.categoria || ''}</td>
                     <td>${createDescriptionCell(row.descricao || '', globalIndex)}</td>
                     <td class="date">${formatDateTime(row.data_registro)}</td>
+                    <td>${row.vitima || 'Não'}</td>
                     <td>
                         ${row.status === 'em andamento' ? 
                             `<form method="POST" action="" id="form-${row.id}">
@@ -925,6 +1258,10 @@ include 'header.php';
                             `<button class="status-btn resolved" disabled>
                                 <i class="fas fa-check-circle"></i>
                                 Resolvido
+                            </button>
+                            <button class="report-btn" data-row-index="${globalIndex}">
+                                <i class="fas fa-file-alt"></i>
+                                Gerar Relatório
                             </button>`}
                     </td>
                 `;
@@ -932,16 +1269,13 @@ include 'header.php';
             });
         }
 
-        // Função para renderizar botões de paginação
         function renderPagination(data) {
             const totalPages = Math.ceil(data.length / perPage);
             const pagination = document.getElementById('pagination');
             pagination.innerHTML = '';
 
-            // Atualizar total de acidentes
             updateTotalAccidents(data);
 
-            // Botão "Anterior"
             const prevButton = document.createElement('button');
             prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
             prevButton.disabled = currentPage === 1;
@@ -954,7 +1288,6 @@ include 'header.php';
             };
             pagination.appendChild(prevButton);
 
-            // Botões de página
             for (let i = 1; i <= totalPages; i++) {
                 const pageButton = document.createElement('button');
                 pageButton.textContent = i;
@@ -967,7 +1300,6 @@ include 'header.php';
                 pagination.appendChild(pageButton);
             }
 
-            // Botão "Próximo"
             const nextButton = document.createElement('button');
             nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
             nextButton.disabled = currentPage === totalPages || totalPages === 0;
@@ -981,7 +1313,6 @@ include 'header.php';
             pagination.appendChild(nextButton);
         }
 
-        // Função para filtrar dados com base nos filtros
         function filterData() {
             const searchTerm = document.getElementById('search').value.toLowerCase().trim();
             const severityFilter = document.getElementById('severityFilter').value;
@@ -995,7 +1326,8 @@ include 'header.php';
                     (row.severidade?.toLowerCase().includes(searchTerm) || false) ||
                     (row.categoria?.toLowerCase().includes(searchTerm) || false) ||
                     (row.maquinistas?.toLowerCase().includes(searchTerm) || false) ||
-                    (row.agentes?.toLowerCase().includes(searchTerm) || false);
+                    (row.agentes?.toLowerCase().includes(searchTerm) || false) ||
+                    (row.vitima?.toLowerCase().includes(searchTerm) || false);
 
                 const matchesSeverity = !severityFilter || row.severidade === severityFilter;
 
@@ -1014,7 +1346,6 @@ include 'header.php';
             });
         }
 
-        // Manipular filtros
         function applyFilters() {
             currentPage = 1;
             filteredData = filterData();
@@ -1022,17 +1353,14 @@ include 'header.php';
             renderPagination(filteredData);
         }
 
-        // Adicionar eventos aos filtros
         document.getElementById('search').addEventListener('input', applyFilters);
         document.getElementById('severityFilter').addEventListener('change', applyFilters);
         document.getElementById('dateStart').addEventListener('change', applyFilters);
         document.getElementById('dateEnd').addEventListener('change', applyFilters);
 
-        // Inicializar tabela e paginação
         renderTable(currentPage, filteredData);
         renderPagination(filteredData);
 
-        // Funções para formulário (mantendo as cores para severidade)
         const subcategorias = {
             "Operacionais": [
                 { value: "Pane elétrica", text: "Pane elétrica", severidade: "Moderado", cor: "Amarelo" },

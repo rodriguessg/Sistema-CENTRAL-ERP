@@ -24,6 +24,8 @@ try {
 
     // Adicionar coluna 'vitima' à tabela acidentes, se ainda não existir
     $pdo->exec("ALTER TABLE acidentes ADD COLUMN IF NOT EXISTS vitima VARCHAR(3) DEFAULT 'Não'");
+    // Adicionar coluna 'paralizar_sistema' à tabela acidentes, se ainda não existir
+    $pdo->exec("ALTER TABLE acidentes ADD COLUMN IF NOT EXISTS paralizar_sistema VARCHAR(3) DEFAULT 'Não'");
 } catch (PDOException $e) {
     die("Erro na conexão com o banco de dados: " . $e->getMessage());
 }
@@ -71,6 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
     $agentes = $_POST['agentes'] ?? '';
     $data = $_POST['data'] ?? date('Y-m-d H:i:s');
     $vitima = isset($_POST['vitima']) ? 'Sim' : 'Não';
+    $paralizar_sistema = isset($_POST['paralizar_sistema']) ? 'Sim' : 'Não';
 
     if (!empty($data)) {
         $data = str_replace('T', ' ', $data) . ':00';
@@ -99,8 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
             $pdo->beginTransaction();
 
             // Inserir registro na tabela acidentes
-            $sql = "INSERT INTO acidentes (descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status, vitima) 
-                    VALUES (:descricao, :localizacao, :usuario, :severidade, :categoria, :cor, :modelo, :maquinistas, :agentes, :data_registro, 'em andamento', :vitima)";
+            $sql = "INSERT INTO acidentes (descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status, vitima, paralizar_sistema) 
+                    VALUES (:descricao, :localizacao, :usuario, :severidade, :categoria, :cor, :modelo, :maquinistas, :agentes, :data_registro, 'em andamento', :vitima, :paralizar_sistema)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 'descricao' => $descricao,
@@ -113,7 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
                 'maquinistas' => $maquinistas,
                 'agentes' => $agentes,
                 'data_registro' => $data,
-                'vitima' => $vitima
+                'vitima' => $vitima,
+                'paralizar_sistema' => $paralizar_sistema
             ]);
             $acidente_id = $pdo->lastInsertId();
 
@@ -124,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
             $saida_retorno = explode(' x ', $localizacao);
             $saida = $saida_retorno[0] ?? '';
             $retorno = $saida_retorno[1] ?? '';
-            $tipo_viagem = 'operação paralizada por motivo de uma nova ocorrência';
+            $tipo_viagem = $paralizar_sistema === 'Sim' ? 'operação paralizada por motivo de uma nova ocorrência' : 'operação mantida apesar da ocorrência';
             $hora = date('H:i:s', strtotime($data));
             $data_viagem = date('Y-m-d', strtotime($data));
             $created_at = date('Y-m-d H:i:s');
@@ -159,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
                 $mail->Timeout = 5;
                 $mail->CharSet = 'UTF-8';
 
-                $mail->setFrom('impressora@central.rj.gov.br', 'Notificacoes de Ocorrencias');
+                $mail->setFrom('impressora@central.rj.gov.br', 'Notificações de Ocorrências');
                 $mail->addAddress('grodrigues@central.rj.gov.br');
                 $mail->addAddress('alexandrerocha@central.rj.gov.br');
 
@@ -180,10 +184,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
                         <tr><th style='padding: 8px; background-color: #f2f2f2;'>Agentes</th><td style='padding: 8px;'>" . htmlspecialchars($agentes) . "</td></tr>
                         <tr><th style='padding: 8px; background-color: #f2f2f2;'>Data e Hora de Registro</th><td style='padding: 8px;'>" . date('d/m/Y H:i', strtotime($data)) . "</td></tr>
                         <tr><th style='padding: 8px; background-color: #f2f2f2;'>Houve Vítima?</th><td style='padding: 8px;'>$vitima</td></tr>
+                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Paralizar Sistema?</th><td style='padding: 8px;'>$paralizar_sistema</td></tr>
                     </table>
                     <p>Por favor, verifique o sistema para mais detalhes ou ações necessárias.</p>
                 ";
-                $mail->AltBody = "Novo Acidente Registrado - ID: $acidente_id\nDescrição: $descricao\nLocalização: $localizacao\nUsuário: $user\nSeveridade: $severidade\nCategoria: $categoria\nModelo: $modelo\nMaquinistas: $maquinistas\nAgentes: $agentes\nData e Hora: " . date('d/m/Y H:i', strtotime($data)) . "\nHouve Vítima? $vitima";
+                $mail->AltBody = "Novo Acidente Registrado - ID: $acidente_id\nDescrição: $descricao\nLocalização: $localizacao\nUsuário: $user\nSeveridade: $severidade\nCategoria: $categoria\nModelo: $modelo\nMaquinistas: $maquinistas\nAgentes: $agentes\nData e Hora: " . date('d/m/Y H:i', strtotime($data)) . "\nHouve Vítima? $vitima\nParalizar Sistema? $paralizar_sistema";
 
                 $start_time = microtime(true);
                 try {
@@ -230,36 +235,12 @@ if (isset($_POST['update_status']) && isset($_POST['id'])) {
         ]);
 
         // Buscar informações do acidente para obter o bonde e localização
-        $sql_acidente = "SELECT modelo, localizacao, maquinistas, agentes FROM acidentes WHERE id = :id";
+        $sql_acidente = "SELECT modelo, localizacao, maquinistas, agentes, paralizar_sistema FROM acidentes WHERE id = :id";
         $stmt_acidente = $pdo->prepare($sql_acidente);
         $stmt_acidente->execute(['id' => $id]);
         $acidente = $stmt_acidente->fetch(PDO::FETCH_ASSOC);
 
-        if ($acidente) {
-            // Inserir registro na tabela viagens indicando retomada da operação
-            $sql_viagem = "INSERT INTO viagens (bonde, saida, retorno, maquinista, agente, hora, tipo_viagem, data, created_at) 
-                           VALUES (:bonde, :saida, :retorno, :maquinista, :agente, :hora, :tipo_viagem, :data, :created_at)";
-            $stmt_viagem = $pdo->prepare($sql_viagem);
-            $saida_retorno = explode(' x ', $acidente['localizacao']);
-            $saida = $saida_retorno[0] ?? '';
-            $retorno = $saida_retorno[1] ?? '';
-            $tipo_viagem = 'operação retomada após resolução de ocorrência';
-            $hora = date('H:i:s');
-            $data_viagem = date('Y-m-d');
-            $created_at = date('Y-m-d H:i:s');
-
-            $stmt_viagem->execute([
-                'bonde' => $acidente['modelo'],
-                'saida' => $saida,
-                'retorno' => $retorno,
-                'maquinista' => $acidente['maquinistas'],
-                'agente' => $acidente['agentes'],
-                'hora' => $hora,
-                'tipo_viagem' => $tipo_viagem,
-                'data' => $data_viagem,
-                'created_at' => $created_at
-            ]);
-        }
+      
 
         // Commit da transação
         $pdo->commit();
@@ -274,7 +255,7 @@ if (isset($_POST['update_status']) && isset($_POST['id'])) {
 // Buscar todos os registros - ORDENAR POR DATA MAIS RECENTE PRIMEIRO
 $search = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : '%';
 try {
-    $sql = "SELECT id, descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status, policia, bombeiros, samu, vitima 
+    $sql = "SELECT id, descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status, policia, bombeiros, samu, vitima, paralizar_sistema 
             FROM acidentes 
             WHERE descricao LIKE :search OR localizacao LIKE :search OR severidade LIKE :search OR categoria LIKE :search 
             ORDER BY data_registro DESC";
@@ -643,12 +624,21 @@ include 'header.php';
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="vitima">
-                            <i class="fas fa-user-injured"></i>
-                            Houve Vítima?
-                        </label>
-                        <input type="checkbox" id="vitima" name="vitima">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="vitima">
+                                <i class="fas fa-user-injured"></i>
+                                Houve Vítima?
+                            </label>
+                            <input type="checkbox" id="vitima" name="vitima">
+                        </div>
+                        <div class="form-group">
+                            <label for="paralizar_sistema">
+                                <i class="fas fa-pause-circle"></i>
+                                Precisa paralizar o sistema?
+                            </label>
+                            <input type="checkbox" id="paralizar_sistema" name="paralizar_sistema">
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -767,6 +757,7 @@ include 'header.php';
                                 <th><i class="fas fa-file-alt"></i>Descrição</th>
                                 <th><i class="fas fa-calendar"></i>Data e Hora de Registro</th>
                                 <th><i class="fas fa-user-injured"></i>Vítima</th>
+                                <th><i class="fas fa-pause-circle"></i>Paralizar Sistema</th>
                                 <th><i class="fas fa-shield-alt"></i>Polícia</th>
                                 <th><i class="fas fa-fire-extinguisher"></i>Bombeiros</th>
                                 <th><i class="fas fa-ambulance"></i>SAMU</th>
@@ -982,6 +973,15 @@ include 'header.php';
                             <div class="meta-value">${rowData.vitima || 'Não'}</div>
                         </div>
                     </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-pause-circle"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Paralizar Sistema?</div>
+                            <div class="meta-value">${rowData.paralizar_sistema || 'Não'}</div>
+                        </div>
+                    </div>
                 `;
 
                 modal.classList.add('active');
@@ -1021,6 +1021,7 @@ include 'header.php';
                         <li>SAMU: ${rowData.samu == 1 ? 'Acionado' : 'Não acionado'}</li>
                     </ul>
                     <p><strong>Houve Vítima?:</strong> ${rowData.vitima || 'Não'}</p>
+                    <p><strong>Paralizar Sistema?:</strong> ${rowData.paralizar_sistema || 'Não'}</p>
                     <p><strong>Status Atual:</strong> ${rowData.status || 'N/A'}</p>
                 `;
                 modalSubtitle.textContent = `Ocorrência #${rowData.id} - ${rowData.categoria || 'Categoria não informada'}`;
@@ -1105,6 +1106,15 @@ include 'header.php';
                         <div class="meta-content">
                             <div class="meta-label">Houve Vítima?</div>
                             <div class="meta-value">${rowData.vitima || 'Não'}</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-pause-circle"></i>
+                        </div>
+                        <div class="meta-content">
+                            <div class="meta-label">Paralizar Sistema?</div>
+                            <div class="meta-value">${rowData.paralizar_sistema || 'Não'}</div>
                         </div>
                     </div>
                 `;
@@ -1204,7 +1214,7 @@ include 'header.php';
             tbody.innerHTML = '';
 
             if (pageData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="16" class="no-data">Nenhum acidente encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="17" class="no-data">Nenhum acidente encontrado.</td></tr>';
                 return;
             }
 
@@ -1229,6 +1239,7 @@ include 'header.php';
                     <td>${createDescriptionCell(row.descricao || '', globalIndex)}</td>
                     <td class="date">${formatDateTime(row.data_registro)}</td>
                     <td>${row.vitima || 'Não'}</td>
+                    <td>${row.paralizar_sistema || 'Não'}</td>
                     <td>
                         ${row.status === 'em andamento' ? 
                             `<form method="POST" action="" id="form-${row.id}">
@@ -1327,7 +1338,8 @@ include 'header.php';
                     (row.categoria?.toLowerCase().includes(searchTerm) || false) ||
                     (row.maquinistas?.toLowerCase().includes(searchTerm) || false) ||
                     (row.agentes?.toLowerCase().includes(searchTerm) || false) ||
-                    (row.vitima?.toLowerCase().includes(searchTerm) || false);
+                    (row.vitima?.toLowerCase().includes(searchTerm) || false) ||
+                    (row.paralizar_sistema?.toLowerCase().includes(searchTerm) || false);
 
                 const matchesSeverity = !severityFilter || row.severidade === severityFilter;
 

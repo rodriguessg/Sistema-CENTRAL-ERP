@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 25/08/2025 às 21:44
+-- Tempo de geração: 05/09/2025 às 18:05
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.0.28
 
@@ -31,6 +31,8 @@ CREATE TABLE `acidentes` (
   `id` int(11) NOT NULL,
   `data` date NOT NULL,
   `descricao` text NOT NULL,
+  `maquinistas` varchar(50) NOT NULL,
+  `agentes` varchar(50) NOT NULL,
   `localizacao` varchar(255) DEFAULT NULL,
   `usuario` varchar(100) NOT NULL,
   `severidade` varchar(50) NOT NULL,
@@ -40,32 +42,39 @@ CREATE TABLE `acidentes` (
   `status` varchar(20) NOT NULL DEFAULT 'em andamento',
   `policia` varchar(220) NOT NULL,
   `bombeiros` varchar(50) NOT NULL,
-  `samu` varchar(110) NOT NULL
+  `samu` varchar(110) NOT NULL,
+  `modelo` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `acidentes`
 --
 
-INSERT INTO `acidentes` (`id`, `data`, `descricao`, `localizacao`, `usuario`, `severidade`, `categoria`, `data_registro`, `cor`, `status`, `policia`, `bombeiros`, `samu`) VALUES
-(1, '2025-06-23', 'teste', 'SALA 501', 'controle', 'Leve', 'Outros', '2025-06-23 12:29:39', '', 'resolvido', '1', '0', '0'),
-(2, '2025-06-23', 'teste 2 ', 'sala 703', 'controle', 'Moderado', 'Descarrilamento', '2025-06-23 13:50:39', '', 'resolvido', '0', '0', '0'),
-(3, '2025-08-20', 'asdf', 'SALA 501', 'master', 'Leve', 'Colisão', '2025-08-20 15:29:29', '', 'resolvido', '0', '0', '0'),
-(4, '2025-08-20', 'sdfg', 'sdfg', 'master', 'Leve', 'Obstrução na via', '2025-08-20 15:31:10', 'Verde', 'resolvido', '0', '0', '0'),
-(5, '2025-08-20', 'asdf', 'sala 703', 'master', 'Moderado', 'Carro estacionado no trilho', '2025-08-20 15:31:32', 'Amarelo', 'resolvido', '1', '0', '0'),
-(6, '2025-08-20', 'teste', 'TESTE', 'master', 'Grave', 'Agressão entre passageiros', '2025-08-20 15:32:48', 'Vermelho', 'resolvido', '', '', ''),
-(7, '2025-08-21', 'Descarrilamento', 'Rua Almirante Alexandrino', 'admin', 'Grave', 'Descarrilamento', '2025-08-21 14:00:00', 'Vermelho', 'em andamento', '', '', ''),
-(8, '2025-08-21', 'sf', 'teste 23', 'master', 'Grave', 'Descarrilamento sem vítimas', '2025-08-21 15:36:38', 'Vermelho', 'em andamento', '', '', ''),
-(9, '2025-08-22', 'hgc', 'h', 'master', 'Moderado', 'Pane elétrica', '2025-08-21 19:07:46', 'Amarelo', 'em andamento', '', '', ''),
-(10, '2025-08-22', 'xcvgb', 'SALA 501', 'master', 'Moderado', 'Ato de vandalismo no bonde', '2025-08-22 11:03:44', 'Amarelo', 'em andamento', '', '', ''),
-(11, '2025-08-22', 'teste', '1', 'master', 'Grave', 'Incêndio em área próxima à via', '2025-08-22 11:11:33', 'Vermelho', 'em andamento', '', '', ''),
-(12, '2025-08-22', 'eteseeeeeee', 'testeeee', 'master', 'Leve', 'Obstrução na via', '2025-08-22 11:15:05', 'Verde', 'em andamento', '', '', ''),
-(13, '2025-08-22', 'asdfadfasdf', 'sdaf', 'master', 'Grave', 'Colisão com veículo', '2025-08-22 11:15:31', 'Vermelho', 'em andamento', '', '', ''),
-(14, '2025-08-22', 'jklhjkhkjghjkhjkhjk', 'santa', 'master', 'Moderado', 'Carro estacionado no trilho', '2025-08-22 11:17:27', 'Amarelo', 'resolvido', '', '', ''),
-(15, '2025-08-22', 'asdf', 'asdf', 'master', 'Grave', 'Passageiro passando mal (grave)', '2025-08-22 16:53:23', 'Vermelho', 'resolvido', '0', '0', '0'),
-(16, '2025-08-22', 'asdf', 'asdf', 'master', 'Grave', 'Passageiro passando mal (grave)', '2025-08-22 16:54:02', 'Vermelho', 'resolvido', '0', '0', '0'),
-(17, '2025-08-22', 'asdf', 'sadf', 'master', 'Grave', 'Acidente interno com vítima grave', '2025-08-22 16:54:26', 'Vermelho', 'resolvido', '0', '0', '0'),
-(18, '2025-08-22', 'asdf', 'sadf', 'master', 'Grave', 'Acidente interno com vítima grave', '2025-08-22 16:54:55', 'Vermelho', 'resolvido', '', '', '');
+INSERT INTO `acidentes` (`id`, `data`, `descricao`, `maquinistas`, `agentes`, `localizacao`, `usuario`, `severidade`, `categoria`, `data_registro`, `cor`, `status`, `policia`, `bombeiros`, `samu`, `modelo`) VALUES
+(1, '2025-06-23', 'teste', '', '', 'SALA 501', 'controle', 'Leve', 'Outros', '2025-06-23 12:29:39', '', 'resolvido', '1', '0', '0', ''),
+(2, '2025-06-23', 'teste 2 ', '', '', 'sala 703', 'controle', 'Moderado', 'Descarrilamento', '2025-06-23 13:50:39', '', 'resolvido', '0', '0', '0', ''),
+(3, '2025-08-20', 'asdf', '', '', 'SALA 501', 'master', 'Leve', 'Colisão', '2025-08-20 15:29:29', '', 'resolvido', '0', '0', '0', ''),
+(4, '2025-08-20', 'sdfg', '', '', 'sdfg', 'master', 'Leve', 'Obstrução na via', '2025-08-20 15:31:10', 'Verde', 'resolvido', '0', '0', '0', ''),
+(5, '2025-08-20', 'asdf', '', '', 'sala 703', 'master', 'Moderado', 'Carro estacionado no trilho', '2025-08-20 15:31:32', 'Amarelo', 'resolvido', '1', '0', '0', ''),
+(6, '2025-08-20', 'teste', '', '', 'TESTE', 'master', 'Grave', 'Agressão entre passageiros', '2025-08-20 15:32:48', 'Vermelho', 'resolvido', '', '', '', ''),
+(7, '2025-08-21', 'Descarrilamento', '', '', 'Rua Almirante Alexandrino', 'admin', 'Grave', 'Descarrilamento', '2025-08-21 14:00:00', 'Vermelho', 'resolvido', '0', '0', '0', ''),
+(8, '2025-08-21', 'sf', '', '', 'teste 23', 'master', 'Grave', 'Descarrilamento sem vítimas', '2025-08-21 15:36:38', 'Vermelho', 'resolvido', '0', '1', '0', ''),
+(9, '2025-08-22', 'hgc', '', '', 'h', 'master', 'Moderado', 'Pane elétrica', '2025-08-21 19:07:46', 'Amarelo', 'resolvido', '0', '0', '0', ''),
+(10, '2025-08-22', 'xcvgb', '', '', 'SALA 501', 'master', 'Moderado', 'Ato de vandalismo no bonde', '2025-08-22 11:03:44', 'Amarelo', 'resolvido', '1', '0', '0', ''),
+(11, '2025-08-22', 'teste', '', '', '1', 'master', 'Grave', 'Incêndio em área próxima à via', '2025-08-22 11:11:33', 'Vermelho', 'resolvido', '0', '0', '0', ''),
+(12, '2025-08-22', 'eteseeeeeee', '', '', 'testeeee', 'master', 'Leve', 'Obstrução na via', '2025-08-22 11:15:05', 'Verde', 'resolvido', '0', '0', '0', ''),
+(13, '2025-08-22', 'asdfadfasdf', '', '', 'sdaf', 'master', 'Grave', 'Colisão com veículo', '2025-08-22 11:15:31', 'Vermelho', 'resolvido', '1', '0', '0', ''),
+(14, '2025-08-22', 'jklhjkhkjghjkhjkhjk', '', '', 'santa', 'master', 'Moderado', 'Carro estacionado no trilho', '2025-08-22 11:17:27', 'Amarelo', 'resolvido', '', '', '', ''),
+(15, '2025-08-22', 'asdf', '', '', 'asdf', 'master', 'Grave', 'Passageiro passando mal (grave)', '2025-08-22 16:53:23', 'Vermelho', 'resolvido', '0', '0', '0', ''),
+(16, '2025-08-22', 'asdf', '', '', 'asdf', 'master', 'Grave', 'Passageiro passando mal (grave)', '2025-08-22 16:54:02', 'Vermelho', 'resolvido', '0', '0', '0', ''),
+(17, '2025-08-22', 'asdf', '', '', 'sadf', 'master', 'Grave', 'Acidente interno com vítima grave', '2025-08-22 16:54:26', 'Vermelho', 'resolvido', '0', '0', '0', ''),
+(18, '2025-08-22', 'asdf', '', '', 'sadf', 'master', 'Grave', 'Acidente interno com vítima grave', '2025-08-22 16:54:55', 'Vermelho', 'resolvido', '', '', '', ''),
+(19, '0000-00-00', 's', '', '', 'sala 703', 'master', 'Grave', 'Acidente interno com vítima grave', '2025-08-25 21:46:03', 'Vermelho', 'resolvido', '0', '0', '0', ''),
+(20, '0000-00-00', 'te', '', '', 'sala 703', 'master', 'Moderado', 'Carro estacionado no trilho', '2025-08-28 10:51:31', 'Amarelo', 'resolvido', '0', '0', '1', 'BONDE 22'),
+(21, '0000-00-00', 'f', '', '', 'fdfa', 'master', 'Moderado', 'Falha mecânica', '2025-08-28 13:54:07', 'Amarelo/Vermelho', 'resolvido', '0', '0', '1', 'BONDE 10'),
+(22, '0000-00-00', 'fd', '', '', 'Dois Irmão', 'master', 'Moderado', 'Carro estacionado no trilho', '2025-08-28 13:58:34', 'Amarelo', 'resolvido', '0', '0', '1', 'BONDE 10'),
+(23, '0000-00-00', 'lpç', 'Adriano', 'Samir', 'Carioca x Paula Mattos', 'master', 'Grave', 'Colisão com veículo', '2025-09-01 15:27:00', 'Vermelho', 'resolvido', '1', '0', '1', 'BONDE 10'),
+(24, '0000-00-00', 'fgh', 'Helio', 'Vinicius', 'Carioca x Oficina', 'master', 'Grave', 'Deslizamento de encosta', '2025-09-01 16:03:00', 'Vermelho', 'resolvido', '0', '1', '0', 'BONDE 16');
 
 -- --------------------------------------------------------
 
@@ -103,7 +112,8 @@ CREATE TABLE `bondes` (
 INSERT INTO `bondes` (`id`, `ativo`, `modelo`, `capacidade`, `ano_fabricacao`, `descricao`) VALUES
 (1, 1, 'BONDE 10', 32, 2023, 'dell'),
 (2, 1, 'BONDE 17', 32, 2025, 'TURISMO'),
-(3, 1, 'BONDE 22', 32, 1900, 'TURISMO');
+(3, 1, 'BONDE 22', 32, 1900, 'TURISMO'),
+(4, 1, 'BONDE 16', 32, 1900, 'Computador para uso geral');
 
 -- --------------------------------------------------------
 
@@ -494,7 +504,8 @@ INSERT INTO `eventos` (`id`, `username`, `titulo`, `descricao`, `data`, `hora`, 
 (107, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a December/2025. Valor: R$ 36.072,42', '2025-11-28', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
 (108, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a January/2026. Valor: R$ 36.072,42', '2025-12-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
 (109, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a February/2026. Valor: R$ 36.072,42', '2026-01-29', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
-(110, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a March/2026. Valor: R$ 36.072,42', '2026-02-26', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0);
+(110, '', 'Vencimento de Parcela: OI S/A', 'Parcela referente a March/2026. Valor: R$ 36.072,42', '2026-02-26', '09:00:00', 'Pagamento', '#FF9900', '2025-06-12 15:52:11', 0),
+(111, '', 'teste', '', '2025-09-01', '16:07:00', 'Geral', '#ff0000', '2025-09-02 00:07:50', 0);
 
 -- --------------------------------------------------------
 
@@ -735,6 +746,30 @@ INSERT INTO `gestao_contratos` (`id`, `titulo`, `SEI`, `objeto`, `gestor`, `gest
 (75, 'HARPIA EMBALAGENS (BILHETE ÚNICO)', '100006/000001/2023', 'Prestação de Serviços gráficos: confeção de 240.000(duzentos e quarenta ) mil bilhetes personalizados', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'SEM GESTOR ', 'FÁBIO CORRÊA BARBOSA   99.000.559 - SUPTRA   / CLAUDIO LUIZ LOPES DO NASCIMENTO 94.027.229 - SUPTRA', '2023-03-27', 'corrente nº', '230', '2023-03-27', '2023-03-27', '26.785.0469.6099', 'Sem Despesas', 'Não', 'servico1', 0.00, 33600.00, NULL, NULL, '.', 'Inativo', '2025-07-01 17:13:50', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
 (76, 'SANTA CABRINI ina', '100006/001335/2021', 'Prestação de serviços de gerenciamento de mão de obra de 06 (seis) internos, para a realização de serviços gerais no prédio da CENTRAL.', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'SEM GESTOR ', 'RITA DE CÁSSIA CUSTÓDIO DA SILVA  //LUCIMAR STRAUB //', '2021-11-22', 'corrente nº', '100', '2021-11-22', '2021-11-22', '3390.39', 'Sem Despesas', 'Não', 'servico1', 0.00, 135748.80, NULL, NULL, '.', 'Inativo', '2025-07-01 18:09:17', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'servico', 0.00, NULL, NULL),
 (77, 'CENTRO DE INTEGRAÇÃO EMPRESA ESCOLA DO ESTADO DO RIO DE JANEIRO', '100006/001572/2021', 'Estagiários', 'DAVI VIANNA DE MACEDO OLIVEIRA', 'SEM GESTOR ', 'Ana Caroline de Matos Cezario  - Graziela Spósito -', '2022-01-28', 'BRADESCO  c', '100', '2022-02-01', '2022-02-01', '3390', 'Sem Despesas', 'Não', 'servico1', 0.00, 1545600.00, NULL, NULL, '.', 'Inativo', '2025-07-01 18:33:41', 'contratos', 'Não', NULL, NULL, NULL, NULL, 'Criação do Contrato', 'obra', 0.00, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `historico_viagens`
+--
+
+CREATE TABLE `historico_viagens` (
+  `id` int(11) NOT NULL,
+  `bonde` varchar(50) NOT NULL,
+  `saida` varchar(50) NOT NULL,
+  `retorno` varchar(50) DEFAULT NULL,
+  `maquinista` varchar(50) NOT NULL,
+  `agente` varchar(50) NOT NULL,
+  `hora` time NOT NULL,
+  `pagantes` int(11) DEFAULT 0,
+  `gratuidade` int(11) DEFAULT 0,
+  `moradores` int(11) DEFAULT 0,
+  `passageiros` int(11) DEFAULT 0,
+  `tipo_viagem` enum('ida','retorno','chegada') NOT NULL,
+  `data` date NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `subida_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1293,7 +1328,21 @@ INSERT INTO `log_eventos` (`id`, `matricula`, `tipo_operacao`, `data_operacao`) 
 (889, 'contratos@central.rj.gov.br', 'Login falhou: Usuário não encontrado', '2025-08-22 17:43:04'),
 (890, 'contratos', 'Login bem-sucedido', '2025-08-22 17:43:26'),
 (891, 'master', 'Login bem-sucedido', '2025-08-22 18:38:05'),
-(892, 'master', 'Login bem-sucedido', '2025-08-25 12:26:41');
+(892, 'master', 'Login bem-sucedido', '2025-08-25 12:26:41'),
+(893, 'master', 'Login bem-sucedido', '2025-08-26 00:22:48'),
+(894, 'controle', 'Login falhou: Senha inválida', '2025-08-27 13:12:56'),
+(895, 'controle', 'Login bem-sucedido', '2025-08-27 13:13:10'),
+(896, 'master', 'Login bem-sucedido', '2025-08-28 13:37:30'),
+(897, 'master', 'Login bem-sucedido', '2025-08-28 16:53:33'),
+(898, 'hrhryry', 'Login falhou: Usuário não encontrado', '2025-08-28 17:30:25'),
+(899, 'eryy', 'Login falhou: Usuário não encontrado', '2025-08-28 17:30:32'),
+(900, 'eryreyre', 'Login falhou: Usuário não encontrado', '2025-08-28 17:30:40'),
+(901, 'y5y5y54', 'Login falhou: Usuário não encontrado', '2025-08-28 17:30:48'),
+(902, 'ewyreyre', 'Login falhou: Usuário não encontrado', '2025-08-28 17:30:54'),
+(903, 'alexandrerocha@cenral.rj.fov.br', 'Login falhou: Usuário não encontrado', '2025-08-28 17:31:17'),
+(904, 'alexandrerocha@central.rj.gov.br', 'Login falhou: Usuário não encontrado', '2025-08-28 17:31:25'),
+(905, 'MASTER', 'Login bem-sucedido', '2025-09-01 12:47:12'),
+(906, 'MASTER', 'Login bem-sucedido', '2025-09-02 19:31:25');
 
 -- --------------------------------------------------------
 
@@ -2246,7 +2295,8 @@ INSERT INTO `notificacoes` (`id`, `username`, `setor`, `mensagem`, `situacao`, `
 (760, 'N/A', 'ferrovia', 'Homologação e Publicação no D.O', 'nao lida', '2025-08-11 22:23:28', 0),
 (761, 'N/A', 'ferrovia', 'Recibo de envio de Edital ao TCE / Lançamento SIGA', 'nao lida', '2025-08-11 22:23:28', 0),
 (762, 'N/A', 'ferrovia', 'Lançamento do Edital no SIGA', 'nao lida', '2025-08-11 22:23:28', 0),
-(763, 'N/A', 'ferrovia', 'Garantia Contratual', 'nao lida', '2025-08-11 22:23:28', 0);
+(763, 'N/A', 'ferrovia', 'Garantia Contratual', 'nao lida', '2025-08-11 22:23:28', 0),
+(764, 'master', 'contratos', 'Novo evento criado: teste', 'nao lida', '2025-09-02 00:07:50', 0);
 
 -- --------------------------------------------------------
 
@@ -2847,24 +2897,30 @@ CREATE TABLE `viagens` (
   `maquinista` varchar(50) NOT NULL,
   `agente` varchar(50) NOT NULL,
   `hora` time NOT NULL,
-  `pagantes` int(11) NOT NULL DEFAULT 0,
-  `gratuidade` int(11) NOT NULL DEFAULT 0,
-  `moradores` int(11) NOT NULL DEFAULT 0,
-  `passageiros` int(11) NOT NULL DEFAULT 0,
-  `tipo_viagem` varchar(20) NOT NULL,
+  `pagantes` int(11) DEFAULT 0,
+  `gratuidade` int(11) DEFAULT 0,
+  `moradores` int(11) DEFAULT 0,
+  `passageiros` int(11) DEFAULT 0,
+  `tipo_viagem` enum('ida','retorno') NOT NULL,
   `data` date NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` datetime DEFAULT current_timestamp(),
+  `subida_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `viagens`
 --
 
-INSERT INTO `viagens` (`id`, `bonde`, `saida`, `retorno`, `maquinista`, `agente`, `hora`, `pagantes`, `gratuidade`, `moradores`, `passageiros`, `tipo_viagem`, `data`, `created_at`) VALUES
-(1, 'BONDE 17', 'Carioca', '', 'Adriano', 'Vinicius', '11:52:05', 17, 3, 12, 32, 'Ida', '2025-08-25', '2025-08-25 14:52:31'),
-(2, 'BO2', 'Carioca', '', 'M. Celestino', 'P. Nascimento', '11:53:47', 20, 0, 12, 32, 'Ida', '2025-08-25', '2025-08-25 14:54:29'),
-(3, 'BO2', 'Carioca', '', 'M. Celestino', 'P. Nascimento', '11:53:47', 20, 0, 12, 32, 'Ida', '2025-08-25', '2025-08-25 14:54:36'),
-(4, 'BO2', 'Carioca', '', 'M. Celestino', 'P. Nascimento', '11:53:47', 20, 0, 12, 32, 'Ida', '2025-08-25', '2025-08-25 14:55:08');
+INSERT INTO `viagens` (`id`, `bonde`, `saida`, `retorno`, `maquinista`, `agente`, `hora`, `pagantes`, `gratuidade`, `moradores`, `passageiros`, `tipo_viagem`, `data`, `created_at`, `subida_id`) VALUES
+(1, 'BONDE 22', 'Carioca', 'D.Irmãos', 'Helio', 'Vinicius', '09:38:00', 6, 5, 8, 19, 'ida', '2025-09-01', '2025-09-01 09:41:12', NULL),
+(2, 'BONDE 22', 'D.Irmãos', 'Carioca', 'Helio', 'Vinicius', '09:43:21', 20, 10, 15, 45, 'retorno', '2025-09-01', '2025-09-01 09:43:38', 1),
+(3, 'BONDE 17', 'Carioca', 'Oficina', 'Sergio Lima', 'Samir', '09:48:01', 0, 0, 0, 0, 'ida', '2025-09-01', '2025-09-01 09:48:05', NULL),
+(4, 'BONDE 10', 'Carioca', 'Paula Mattos', 'Adriano', 'Vinicius', '09:48:14', 15, 9, 8, 32, 'ida', '2025-09-01', '2025-09-01 09:48:33', NULL),
+(5, 'BONDE 10', 'Paula Mattos', 'Carioca', 'Adriano', 'Vinicius', '09:49:00', 8, 1, 6, 15, 'retorno', '2025-09-01', '2025-09-01 09:49:06', 4),
+(6, 'BONDE 17', '', 'Carioca', 'Sergio Lima', 'Samir', '09:49:30', 10, 3, 8, 21, 'retorno', '2025-09-01', '2025-09-01 09:49:44', 3),
+(7, 'BONDE 22', 'Silvestre', 'Oficina', 'Adriano', 'Vinicius', '09:49:54', 9, 0, 0, 9, 'ida', '2025-09-01', '2025-09-01 09:50:12', NULL),
+(8, 'BONDE 16', 'Carioca', 'Paula Mattos', 'Adriano', 'Vinicius', '09:51:19', 7, 3, 8, 18, 'ida', '2025-09-01', '2025-09-01 09:51:21', NULL),
+(9, 'BONDE 16', 'Paula Mattos', 'Carioca', 'Adriano', 'Vinicius', '13:01:20', 0, 0, 7, 7, 'retorno', '2025-09-05', '2025-09-05 13:01:30', 8);
 
 --
 -- Índices para tabelas despejadas
@@ -3146,7 +3202,8 @@ ALTER TABLE `vencimentos_futuros`
 -- Índices de tabela `viagens`
 --
 ALTER TABLE `viagens`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `subida_id` (`subida_id`);
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
@@ -3156,7 +3213,7 @@ ALTER TABLE `viagens`
 -- AUTO_INCREMENT de tabela `acidentes`
 --
 ALTER TABLE `acidentes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de tabela `blocos`
@@ -3168,7 +3225,7 @@ ALTER TABLE `blocos`
 -- AUTO_INCREMENT de tabela `bondes`
 --
 ALTER TABLE `bondes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `categorias`
@@ -3234,7 +3291,7 @@ ALTER TABLE `etapas_contratos`
 -- AUTO_INCREMENT de tabela `eventos`
 --
 ALTER TABLE `eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
 
 --
 -- AUTO_INCREMENT de tabela `fechamento`
@@ -3258,7 +3315,7 @@ ALTER TABLE `gestao_contratos`
 -- AUTO_INCREMENT de tabela `log_eventos`
 --
 ALTER TABLE `log_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=893;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=907;
 
 --
 -- AUTO_INCREMENT de tabela `macroetapas`
@@ -3276,7 +3333,7 @@ ALTER TABLE `manutencoes`
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=764;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=765;
 
 --
 -- AUTO_INCREMENT de tabela `ordens_compra`
@@ -3396,7 +3453,7 @@ ALTER TABLE `vencimentos_futuros`
 -- AUTO_INCREMENT de tabela `viagens`
 --
 ALTER TABLE `viagens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Restrições para tabelas despejadas
@@ -3455,6 +3512,12 @@ ALTER TABLE `topicos`
 --
 ALTER TABLE `vencimentos_futuros`
   ADD CONSTRAINT `vencimentos_futuros_ibfk_1` FOREIGN KEY (`contrato_titulo`) REFERENCES `gestao_contratos` (`titulo`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `viagens`
+--
+ALTER TABLE `viagens`
+  ADD CONSTRAINT `viagens_ibfk_1` FOREIGN KEY (`subida_id`) REFERENCES `viagens` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

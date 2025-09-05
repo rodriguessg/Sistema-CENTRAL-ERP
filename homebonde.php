@@ -1,5 +1,9 @@
 <?php
+session_start();
 include 'header.php';
+
+// Definir fuso horário de São Paulo (BRT, UTC-3)
+date_default_timezone_set('America/Sao_Paulo');
 
 // Database configuration
 $host = 'localhost';
@@ -10,6 +14,18 @@ $password = '';
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Verificar se existe algum acidente com status 'em andamento'
+    $stmt_check = $pdo->query("SELECT COUNT(*) as total FROM acidentes WHERE status = 'em andamento'");
+    $row = $stmt_check->fetch(PDO::FETCH_ASSOC);
+    if ($row['total'] > 0) {
+        // Bloquear acesso à página
+        echo "<div style='text-align: center; padding: 20px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #ddd; margin: 20px auto; max-width: 600px;'>";
+        echo "<h2>Operação Indisponível</h2>";
+        echo "<p>Não é possível realizar novas operações devido a uma ocorrência em andamento. Por favor, resolva a ocorrência pendente em <a href='reportacidentes.php'>Registrar Ocorrências</a>.</p>";
+        echo "</div>";
+        exit();
+    }
 
     // Query to fetch all bondes from the 'bondes' table
     $stmt = $pdo->query("SELECT id, modelo, capacidade, ativo, ano_fabricacao, descricao FROM bondes ORDER BY modelo ASC");
@@ -26,6 +42,45 @@ try {
     ];
 }
 ?>
+<?php
+
+
+// Definir fuso horário de São Paulo (BRT, UTC-3)
+date_default_timezone_set('America/Sao_Paulo');
+
+// Database configuration
+$host = 'localhost';
+$dbname = 'gm_sicbd';
+$username = 'root';
+$password = '';
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Verificar se existe algum acidente com status 'em andamento'
+    $stmt_check = $pdo->query("SELECT COUNT(*) as total FROM acidentes WHERE status = 'em andamento'");
+    $row = $stmt_check->fetch(PDO::FETCH_ASSOC);
+    if ($row['total'] > 0) {
+        // Bloquear acesso à página
+        echo "<div style='text-align: center; padding: 20px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #ddd; margin: 20px auto; max-width: 600px;'>";
+        echo "<h2>Operação Indisponível</h2>";
+        echo "<p>Não é possível realizar novas operações devido a uma ocorrência em andamento. Por favor, resolva a ocorrência pendente em <a href='reportacidentes.php'>Registrar Ocorrências</a>.</p>";
+        echo "</div>";
+        exit();
+    }
+
+    // Query to fetch all bondes from the 'bondes' table
+    $stmt = $pdo->query("SELECT id, modelo, capacidade, ativo, ano_fabricacao, descricao FROM bondes ORDER BY modelo ASC");
+    $bondes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log("Database connection failed: " . $e->getMessage());
+   
+}
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1271,7 +1326,7 @@ try {
             color: white;
         }
 
-        .status-icon.retorno-pendente {
+        .status-icon.chegada-pendente {
             background: var(--warning-color);
             color: white;
         }
@@ -1313,7 +1368,7 @@ try {
                         </select>
                     </div>
                     <div class="input-item">
-                        <label for="saida"><i class="fas fa-arrow-up"></i> SAÍDA</label>
+                        <label for="saida"><i class="fas fa-arrow-up"></i> PARTIDA</label>
                         <select id="saida" name="saida" required>
                             <option value="Carioca">Carioca</option>
                             <option value="D.Irmãos">D.Irmãos</option>
@@ -1322,9 +1377,9 @@ try {
                         </select>
                     </div>
                     <div class="input-item">
-                        <label for="retorno"><i class="fas fa-arrow-down"></i> RETORNO</label>
+                        <label for="retorno"><i class="fas fa-arrow-down"></i> CHEGADA</label>
                         <select id="retorno" name="retorno">
-                            <option value="">Selecione (para retorno)</option>
+                            <option value="">Selecione (para chegada)</option>
                             <option value="Carioca">Carioca</option>
                             <option value="D.Irmãos">D.Irmãos</option>
                             <option value="Paula Mattos">Paula Mattos</option>
@@ -1412,7 +1467,7 @@ try {
                     <button type="button" id="clear-form-btn" class="btn-secondary"><i class="fas fa-times"></i> Cancelar</button>
                     <button type="button" id="delete-btn" disabled><i class="fas fa-trash"></i> Excluir</button>
                     <button type="button" id="alter-btn" disabled><i class="fas fa-edit"></i> Alterar</button>
-                    <button type="button" id="return-btn" style="display: none;"><i class="fas fa-undo"></i> Registrar Retorno</button>
+                    <button type="button" id="return-btn" style="display: none;"><i class="fas fa-undo"></i> Registrar Chegada</button>
                     <button type="button" id="clear-transactions-btn"><i class="fas fa-broom"></i> Limpar Transações</button>
                     <button type="button" id="add-bonde-btn"><i class="fas fa-plus-circle"></i> Adicionar Bonde</button>
                     <div class="id-input-container">
@@ -1424,20 +1479,20 @@ try {
             
             <div class="counts-section">
                 <div class="total-box">
-                    <div class="section-title"><i class="fas fa-arrow-up"></i> TOTAL BONDES SUBINDO</div>
+                    <div class="section-title"><i class="fas fa-arrow-up"></i> TOTAL DE PARTIDA</div>
                     <div class="total-item"><span>Pagantes</span><span id="total-subindo-pagantes">0</span></div>
                     <div class="total-item"><span>Gratuitos</span><span id="total-subindo-gratuitos">0</span></div>
                     <div class="total-item"><span>Moradores</span><span id="total-subindo-moradores">0</span></div>
                     <div class="total-item"><span>Passageiros</span><span id="total-subindo-passageiros">0</span></div>
-                    <div class="total-item"><span>Bondes Saída</span><span id="total-bondes-saida">0</span></div>
+                    <div class="total-item"><span>Bondes Partida</span><span id="total-bondes-saida">0</span></div>
                 </div>
                 <div class="total-box">
-                    <div class="section-title"><i class="fas fa-arrow-down"></i> TOTAL BONDES RETORNO</div>
+                    <div class="section-title"><i class="fas fa-arrow-down"></i> TOTAL DE CHEGADA</div>
                     <div class="total-item"><span>Pagantes</span><span id="total-retorno-pagantes">0</span></div>
                     <div class="total-item"><span>Gratuitos</span><span id="total-retorno-gratuitos">0</span></div>
                     <div class="total-item"><span>Moradores</span><span id="total-retorno-moradores">0</span></div>
                     <div class="total-item"><span>Passageiros</span><span id="total-retorno-passageiros">0</span></div>
-                    <div class="total-item"><span>Bondes Retorno</span><span id="total-bondes-retorno">0</span></div>
+                    <div class="total-item"><span>Bondes Chegada</span><span id="total-bondes-retorno">0</span></div>
                 </div>
             </div>
             
@@ -1455,8 +1510,8 @@ try {
                             <tr>
                                 <th><i class="fas fa-hashtag"></i> ID-M</th>
                                 <th><i class="fas fa-train"></i> Bondes</th>
-                                <th><i class="fas fa-arrow-up"></i> Saída</th>
-                                <th><i class="fas fa-arrow-down"></i> Retorno</th>
+                                <th><i class="fas fa-arrow-up"></i> Partida</th>
+                                <th><i class="fas fa-arrow-down"></i> Chegada</th>
                                 <th><i class="fas fa-user-tie"></i> Maquinista</th>
                                 <th><i class="fas fa-user"></i> Agente</th>
                                 <th><i class="fas fa-clock"></i> Hora</th>
@@ -1506,7 +1561,7 @@ try {
         </div>
     </div>
 
-     Modal para Adicionar Bonde 
+     <!-- Modal para Adicionar Bonde  -->
     <div id="add-bonde-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1556,7 +1611,7 @@ try {
         </div>
     </div>
 
-     Modal para Gerenciar Bondes 
+     <!-- Modal para Gerenciar Bondes  -->
     <div id="manage-bondes-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1849,10 +1904,10 @@ try {
                 const tipoViagem = tipoViagemCell.textContent.trim().toLowerCase();
                 const retornoText = retornoCell ? retornoCell.textContent.trim() : '';
 
-                console.log(`📝 Tipo: ${tipoViagem}, Retorno: "${retornoText}"`);
+                console.log(`📝 Tipo: ${tipoViagem}, chegada: "${retornoText}"`);
 
                 // Remover classes anteriores
-                row.classList.remove('transaction-row', 'ida', 'retorno', 'retorno-pendente');
+                row.classList.remove('transaction-row', 'ida', 'chegada', 'retorno-pendente');
 
                 // Aplicar regras de cores
                 if (tipoViagem === 'ida') {
@@ -1865,13 +1920,14 @@ try {
                         // IDA COM RETORNO = VERDE
                         row.classList.add('transaction-row', 'ida');
                         updateCellWithIcon(tipoViagemCell, '<span class="status-badge ida"><i class="fas fa-arrow-up"></i> Partida</span>');
-                        console.log('🟢 Aplicado: PARTIDA');
+                        console.log('🟢 Aplicado: Partida');
                     }
-                } else if (tipoViagem === 'retorno') {
+                } else if (tipoViagem === 'chegada') {
                     // RETORNO = VERMELHO
-                    row.classList.add('transaction-row', 'retorno');
-                    updateCellWithIcon(tipoViagemCell, '<span class="status-badge chegada"><i class="fas fa-arrow-down"></i> chegada</span>');
-                    console.log('🔴 Aplicado: chegada');
+                    row.classList.add('transaction-row', 'chegada');
+                       updateCellWithIcon(tipoViagemCell, '<span class="status-badge chegada"><i class="fas fa-arrow-down"></i> chegada</span>');
+    console.log('🔴 Aplicado: chegada');
+
                 }
 
                 // Adicionar ícones nas colunas preservando event listeners

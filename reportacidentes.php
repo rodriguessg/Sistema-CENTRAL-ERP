@@ -121,30 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
             ]);
             $acidente_id = $pdo->lastInsertId();
 
-            // Inserir registro na tabela viagens
-            $sql_viagem = "INSERT INTO viagens (bonde, saida, retorno, maquinista, agente, hora, tipo_viagem, data, created_at) 
-                           VALUES (:bonde, :saida, :retorno, :maquinista, :agente, :hora, :tipo_viagem, :data, :created_at)";
-            $stmt_viagem = $pdo->prepare($sql_viagem);
-            $saida_retorno = explode(' x ', $localizacao);
-            $saida = $saida_retorno[0] ?? '';
-            $retorno = $saida_retorno[1] ?? '';
-            $tipo_viagem = $paralizar_sistema === 'Sim' ? 'operação paralizada por motivo de uma nova ocorrência' : 'operação mantida apesar da ocorrência';
-            $hora = date('H:i:s', strtotime($data));
-            $data_viagem = date('Y-m-d', strtotime($data));
-            $created_at = date('Y-m-d H:i:s');
-
-            $stmt_viagem->execute([
-                'bonde' => $modelo,
-                'saida' => $saida,
-                'retorno' => $retorno,
-                'maquinista' => $maquinistas,
-                'agente' => $agentes,
-                'hora' => $hora,
-                'tipo_viagem' => $tipo_viagem,
-                'data' => $data_viagem,
-                'created_at' => $created_at
-            ]);
-
+          
             // Commit da transação
             $pdo->commit();
 

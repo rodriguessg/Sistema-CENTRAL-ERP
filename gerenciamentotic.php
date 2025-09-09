@@ -53,43 +53,39 @@ function checkPrinterStatus($ip) {
         return "Disponível (SNMP não disponível)"; // Fallback se SNMP não estiver habilitado
     }
 
-    // Configuração SNMP baseada na imagem
-    $community = "public"; // Confirmado na configuração da impressora
-    $general_status_oid = "1"; // Status geral do dispositivo
-    $job_status_oid = ".1"; // Status do trabalho atual
-    $printer_status_oid = "1"; // Status da bandeja
+    // Configuração SNMP
+    $community = "public";
+    $hrPrinterStatus_oid = ".1.3.6.1.2.1.25.3.5.1.1.1"; // OID padrão para status da impressora (HOST-RESOURCES-MIB::hrPrinterStatus)
+    $prtMarkerStatus_oid = ".1.3.6.1.2.1.43.11.1.1.8.1.1"; // OID para status do marcador (Printer-MIB, pode indicar atividade de impressão)
 
-    // Tenta obter o status geral
-    $general_status = @snmpget($ip, $community, $general_status_oid);
-    if ($general_status === false) {
-        return "Com Falha";
-    }
-
-    // Tenta obter o status do trabalho atual
-    $job_status = @snmpget($ip, $community, $job_status_oid);
-    if ($job_status !== false) {
-        $job_value = trim($job_status);
-        if (stripos($job_value, "printing") !== false || stripos($job_value, "processing") !== false) {
-            return "Imprimindo";
+    // Tenta obter o status da impressora (hrPrinterStatus)
+    $hr_status = @snmpget($ip, $community, $hrPrinterStatus_oid);
+    if ($hr_status !== false) {
+        $hr_value = trim(preg_replace('/.*: /', '', $hr_status)); // Extrai o valor numérico ou string
+        switch ($hr_value) {
+            case '3': // idle
+                return "Disponível";
+            case '4': // printing
+                return "Imprimindo";
+            case '5': // warmup
+                return "Aquecendo";
+            default:
+                return "Com Falha"; // other, unknown, etc.
         }
     }
 
-    // Verifica status da bandeja como alternativa
-    $printer_status = @snmpget($ip, $community, $printer_status_oid);
-    if ($printer_status !== false) {
-        $printer_value = trim($printer_status);
-        if (stripos($printer_value, "printing") !== false) {
+    // Alternativa: Status do marcador
+    $marker_status = @snmpget($ip, $community, $prtMarkerStatus_oid);
+    if ($marker_status !== false) {
+        $marker_value = trim(preg_replace('/.*: /', '', $marker_status));
+        if (stripos($marker_value, "printing") !== false || $marker_value == '4') {
             return "Imprimindo";
+        } else if ($marker_value == '3') {
+            return "Disponível";
         }
     }
 
-    // Interpretação do status geral
-    $status_value = trim($general_status);
-    if (stripos($status_value, "running") !== false) {
-        return "Disponível";
-    } else {
-        return "Com Falha";
-    }
+    return "Com Falha"; // Se falhar as consultas
 }
 ?>
 

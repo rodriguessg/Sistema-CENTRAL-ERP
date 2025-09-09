@@ -122,6 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
             $acidente_id = $pdo->lastInsertId();
 
           
+
             // Commit da transação
             $pdo->commit();
 
@@ -614,7 +615,8 @@ include 'header.php';
                                 <i class="fas fa-pause-circle"></i>
                                 Precisa paralizar o sistema?
                             </label>
-                            <input type="checkbox" id="paralizar_sistema" name="paralizar_sistema">
+                            <label for=""> Sim
+                            <input type="checkbox" id="paralizar_sistema" name="paralizar_sistema"></label>
                         </div>
                     </div>
 

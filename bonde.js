@@ -134,50 +134,47 @@ function updateProgressBar() {
         // Adiciona a classe 'warning' para indicar alta ocupação (ex.: estilo amarelo).
     }
 }
-
 function updateTotals() {
-    // Define uma função para calcular e exibir os totais de viagens de ida e retorno.
+            // Define uma função para calcular e exibir os totais de viagens de ida e retorno.
     let totalSubindo = { pagantes: 0, gratuitos: 0, moradores: 0, passageiros: 0, bondes: new Set() };
     // Inicializa um objeto para rastrear totais de viagens de ida, com um Set para bondes únicos.
     let totalRetorno = { pagantes: 0, gratuitos: 0, moradores: 0, passageiros: 0, bondes: new Set() };
     // Inicializa um objeto para rastrear totais de viagens de retorno, com um Set para bondes únicos.
+    
+    // Verifica se transactions está definido e é um array
+    if (!Array.isArray(transactions)) {
+        console.error('Erro: transactions não está definido ou não é um array');
+        return;
+    }
+
     transactions.forEach(t => {
         // Itera sobre cada transação no array transactions.
-        const target = t.tipo_viagem === 'ida' ? totalSubindo : totalRetorno;
-        // Seleciona o objeto de totais apropriado com base no tipo de viagem ('ida' ou 'retorno').
-        target.pagantes += t.pagantes;
-        // Soma o número de passageiros pagantes ao objeto correspondente.
-        target.gratuitos += t.gratuidade;
-        // Soma o número de passageiros com gratuidade ao objeto correspondente.
-        target.moradores += t.moradores;
-        // Soma o número de passageiros moradores ao objeto correspondente.
-        target.passageiros += t.passageiros;
-        // Soma o total de passageiros ao objeto correspondente.
-        target.bondes.add(t.bonde);
-        // Adiciona o modelo do bonde ao Set de bondes únicos do objeto.
+        const target = t.tipo_viagem.toLowerCase().includes('ida') || t.tipo_viagem.toLowerCase().includes('pendente') 
+            ? totalSubindo 
+            : totalRetorno;
+        // Seleciona o objeto de totais apropriado com base no tipo de viagem ('ida', 'pendente' ou 'retorno').
+        
+        // Converte valores para números e trata valores undefined ou inválidos
+        target.pagantes += Number(t.pagantes) || 0;
+        target.gratuitos += Number(t.gratuidade) || 0;
+        target.moradores += Number(t.moradores) || 0;
+        target.passageiros += Number(t.passageiros) || 0;
+        target.bondes.add(t.bonde || 'Desconhecido');
+        // Adiciona o modelo do bonde ao Set de bondes únicos, com valor padrão se undefined.
     });
-    document.getElementById('total-subindo-pagantes').textContent = totalSubindo.pagantes;
-    // Atualiza o elemento DOM com o total de passageiros pagantes para viagens de ida.
-    document.getElementById('total-subindo-gratuitos').textContent = totalSubindo.gratuitos;
-    // Atualiza o elemento DOM com o total de passageiros com gratuidade para viagens de ida.
-    document.getElementById('total-subindo-moradores').textContent = totalSubindo.moradores;
-    // Atualiza o elemento DOM com o total de passageiros moradores para viagens de ida.
-    document.getElementById('total-subindo-passageiros').textContent = totalSubindo.passageiros;
-    // Atualiza o elemento DOM com o total de passageiros para viagens de ida.
-    document.getElementById('total-bondes-saida').textContent = totalSubindo.bondes.size;
-    // Atualiza o elemento DOM com o número de bondes únicos usados em viagens de ida.
-    document.getElementById('total-retorno-pagantes').textContent = totalRetorno.pagantes;
-    // Atualiza o elemento DOM com o total de passageiros pagantes para viagens de retorno.
-    document.getElementById('total-retorno-gratuitos').textContent = totalRetorno.gratuitos;
-    // Atualiza o elemento DOM com o total de passageiros com gratuidade para viagens de retorno.
-    document.getElementById('total-retorno-moradores').textContent = totalRetorno.moradores;
-    // Atualiza o elemento DOM com o total de passageiros moradores para viagens de retorno.
-    document.getElementById('total-retorno-passageiros').textContent = totalRetorno.passageiros;
-    // Atualiza o elemento DOM com o total de passageiros para viagens de retorno.
-    document.getElementById('total-bondes-retorno').textContent = totalRetorno.bondes.size;
-    // Atualiza o elemento DOM com o número de bondes únicos usados em viagens de retorno.
-}
 
+    // Atualiza os elementos DOM com os totais calculados
+    document.getElementById('total-subindo-pagantes').textContent = totalSubindo.pagantes;
+    document.getElementById('total-subindo-gratuitos').textContent = totalSubindo.gratuitos;
+    document.getElementById('total-subindo-moradores').textContent = totalSubindo.moradores;
+    document.getElementById('total-subindo-passageiros').textContent = totalSubindo.passageiros;
+    document.getElementById('total-bondes-saida').textContent = totalSubindo.bondes.size;
+    document.getElementById('total-retorno-pagantes').textContent = totalRetorno.pagantes;
+    document.getElementById('total-retorno-gratuitos').textContent = totalRetorno.gratuitos;
+    document.getElementById('total-retorno-moradores').textContent = totalRetorno.moradores;
+    document.getElementById('total-retorno-passageiros').textContent = totalRetorno.passageiros;
+    document.getElementById('total-bondes-retorno').textContent = totalRetorno.bondes.size;
+}
 function populateRetornoOptions(options, selectedValue = '') {
     // Define uma função para preencher o dropdown de destinos de retorno com opções.
     retornoInput.innerHTML = '';

@@ -15,10 +15,16 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Verificar se existe algum acidente com status 'em andamento'
-    $stmt_check = $pdo->query("SELECT COUNT(*) as total FROM acidentes WHERE status = 'em andamento'");
-    $row = $stmt_check->fetch(PDO::FETCH_ASSOC);
-    if ($row['total'] > 0) {
+    // Verificar apenas o último acidente registrado
+    $stmt_check = $pdo->query("
+        SELECT paralizar_sistema, status 
+        FROM acidentes 
+        ORDER BY id DESC 
+        LIMIT 1
+    ");
+    $ultimo = $stmt_check->fetch(PDO::FETCH_ASSOC);
+
+    if ($ultimo && $ultimo['paralizar_sistema'] === 'Sim' && strtolower($ultimo['status']) === 'em andamento') {
         // Bloquear acesso à página
         echo "<div style='text-align: center; padding: 20px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #ddd; margin: 20px auto; max-width: 600px;'>";
         echo "<h2>Operação Indisponível</h2>";
@@ -27,9 +33,10 @@ try {
         exit();
     }
 
-    // Query to fetch all bondes from the 'bondes' table
+    // Buscar todos os bondes da tabela
     $stmt = $pdo->query("SELECT id, modelo, capacidade, ativo, ano_fabricacao, descricao FROM bondes ORDER BY modelo ASC");
     $bondes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 } catch (PDOException $e) {
     error_log("Database connection failed: " . $e->getMessage());
     $bondes = [
@@ -42,44 +49,6 @@ try {
     ];
 }
 ?>
-<?php
-
-
-// Definir fuso horário de São Paulo (BRT, UTC-3)
-date_default_timezone_set('America/Sao_Paulo');
-
-// Database configuration
-$host = 'localhost';
-$dbname = 'gm_sicbd';
-$username = 'root';
-$password = '';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Verificar se existe algum acidente com status 'em andamento'
-    $stmt_check = $pdo->query("SELECT COUNT(*) as total FROM acidentes WHERE status = 'em andamento'");
-    $row = $stmt_check->fetch(PDO::FETCH_ASSOC);
-    if ($row['total'] > 0) {
-        // Bloquear acesso à página
-        echo "<div style='text-align: center; padding: 20px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #ddd; margin: 20px auto; max-width: 600px;'>";
-        echo "<h2>Operação Indisponível</h2>";
-        echo "<p>Não é possível realizar novas operações devido a uma ocorrência em andamento. Por favor, resolva a ocorrência pendente em <a href='reportacidentes.php'>Registrar Ocorrências</a>.</p>";
-        echo "</div>";
-        exit();
-    }
-
-    // Query to fetch all bondes from the 'bondes' table
-    $stmt = $pdo->query("SELECT id, modelo, capacidade, ativo, ano_fabricacao, descricao FROM bondes ORDER BY modelo ASC");
-    $bondes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    error_log("Database connection failed: " . $e->getMessage());
-   
-}
-?>
-
-
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -1326,7 +1295,7 @@ try {
             color: white;
         }
 
-        .status-icon.chegada-pendente {
+        .status-icon.retorno-pendente {
             background: var(--warning-color);
             color: white;
         }
@@ -1467,9 +1436,10 @@ try {
                     <button type="button" id="clear-form-btn" class="btn-secondary"><i class="fas fa-times"></i> Cancelar</button>
                     <button type="button" id="delete-btn" disabled><i class="fas fa-trash"></i> Excluir</button>
                     <button type="button" id="alter-btn" disabled><i class="fas fa-edit"></i> Alterar</button>
-                    <button type="button" id="return-btn" style="display: none;"><i class="fas fa-undo"></i> Registrar Chegada</button>
+                    <button type="button" id="return-btn" style="display: none;"><i class="fas fa-undo"></i> Registrar Retorno</button>
                     <button type="button" id="clear-transactions-btn"><i class="fas fa-broom"></i> Limpar Transações</button>
                     <button type="button" id="add-bonde-btn"><i class="fas fa-plus-circle"></i> Adicionar Bonde</button>
+                    <button type="button" id="add-staff-btn"><i class="fas fa-user-plus"></i> Adicionar Maquinistas ou Agentes</button>
                     <div class="id-input-container">
                         <label for="id-filter">ID:</label>
                         <input type="text" id="id-filter" placeholder="Filtrar por ID">
@@ -1479,7 +1449,7 @@ try {
             
             <div class="counts-section">
                 <div class="total-box">
-                    <div class="section-title"><i class="fas fa-arrow-up"></i> TOTAL DE PARTIDA</div>
+                    <div class="section-title"><i class="fas fa-arrow-up"></i> TOTAL DE PARTIDA </div>
                     <div class="total-item"><span>Pagantes</span><span id="total-subindo-pagantes">0</span></div>
                     <div class="total-item"><span>Gratuitos</span><span id="total-subindo-gratuitos">0</span></div>
                     <div class="total-item"><span>Moradores</span><span id="total-subindo-moradores">0</span></div>
@@ -1561,7 +1531,7 @@ try {
         </div>
     </div>
 
-     <!-- Modal para Adicionar Bonde  -->
+    <!-- Modal para Adicionar Bonde -->
     <div id="add-bonde-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1611,7 +1581,7 @@ try {
         </div>
     </div>
 
-     <!-- Modal para Gerenciar Bondes  -->
+    <!-- Modal para Gerenciar Bondes -->
     <div id="manage-bondes-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1651,7 +1621,47 @@ try {
         </div>
     </div>
 
-   <script src="./bonde.js"></script>
+    <!-- Modal para Adicionar Funcionário -->
+    <div id="add-staff-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <div class="modal-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div>
+                        <h3 class="modal-title">Adicionar Maquinistas ou Agentes</h3>
+                        <p class="modal-subtitle">Cadastre um novo maquinista ou agente no sistema</p>
+                    </div>
+                </div>
+                <span class="close-modal" onclick="closeAddStaffModal()">
+                    <i class="fas fa-times"></i>
+                </span>
+            </div>
+            <form id="add-staff-form" method="POST" action="add_staff.php">
+                <div class="modal-form">
+                    <div class="input-group">
+                        <label for="staff-nome"><i class="fas fa-user"></i> Nome</label>
+                        <input type="text" id="staff-nome" name="nome" required placeholder="Nome do funcionário">
+                    </div>
+                    <div class="input-group">
+                        <label for="staff-tipo"><i class="fas fa-briefcase"></i> Tipo</label>
+                        <select id="staff-tipo" name="tipo" required>
+                            <option value="">Selecione</option>
+                            <option value="maquinista">Maquinista</option>
+                            <option value="agente">Agente</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit"><i class="fas fa-save"></i> Salvar</button>
+                    <button type="button" onclick="closeAddStaffModal()"><i class="fas fa-times"></i> Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="./bonde.js"></script>
     <script>
         function updateBondeStatus(checkbox) {
             const bondeId = checkbox.getAttribute('data-id');
@@ -1811,6 +1821,23 @@ try {
             }, 300);
         }
 
+        // Funções para controlar o modal de adicionar funcionário
+        const addStaffModal = document.getElementById('add-staff-modal');
+        const addStaffBtn = document.getElementById('add-staff-btn');
+
+        addStaffBtn.addEventListener('click', () => {
+            addStaffModal.style.display = 'flex';
+            addStaffModal.classList.add('active');
+        });
+
+        function closeAddStaffModal() {
+            addStaffModal.classList.remove('active');
+            setTimeout(() => {
+                addStaffModal.style.display = 'none';
+            }, 300);
+            document.getElementById('add-staff-form').reset();
+        }
+
         // Fechar os modais ao clicar fora deles
         window.addEventListener('click', (event) => {
             if (event.target === addBondeModal) {
@@ -1819,9 +1846,12 @@ try {
             if (event.target === manageBondesModal) {
                 closeManageBondesModal();
             }
+            if (event.target === addStaffModal) {
+                closeAddStaffModal();
+            }
         });
 
-        // Manipular o envio do formulário via AJAX
+        // Manipular o envio do formulário de adicionar bonde via AJAX
         document.getElementById('add-bonde-form').addEventListener('submit', function(event) {
             event.preventDefault();
             const formData = new FormData(this);
@@ -1859,17 +1889,93 @@ try {
             });
         });
 
+        // Manipular o envio do formulário de adicionar funcionário via AJAX
+        document.getElementById('add-staff-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const data = {
+                nome: formData.get('nome'),
+                tipo: formData.get('tipo')
+            };
+
+            fetch('/Sistema-CENTRAL-ERP/add_staff.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro na resposta: ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert('Funcionário adicionado com sucesso!');
+                    closeAddStaffModal();
+                    updateStaffSelects();
+                    //location.reload(); // Recarrega a página para atualizar as listas de funcionários
+                } else {
+                    alert('Erro ao adicionar funcionário: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro na conexão com o servidor.');
+            });
+        });
+
+        // Função para atualizar as listas de maquinistas e agentes
+        function updateStaffSelects() {
+            const maquinistaSelect = document.getElementById('maquinistas');
+            const agenteSelect = document.getElementById('agentes');
+
+            fetch('/Sistema-CENTRAL-ERP/get_staff.php', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao carregar funcionários: ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                // Atualizar select de maquinistas
+                maquinistaSelect.innerHTML = '<option value="">Selecione</option>';
+                data.maquinistas.forEach(maquinista => {
+                    const option = document.createElement('option');
+                    option.value = maquinista.nome;
+                    option.textContent = maquinista.nome;
+                    maquinistaSelect.appendChild(option);
+                });
+
+                // Atualizar select de agentes
+                agenteSelect.innerHTML = '<option value="">Selecione</option>';
+                data.agentes.forEach(agente => {
+                    const option = document.createElement('option');
+                    option.value = agente.nome;
+                    option.textContent = agente.nome;
+                    agenteSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar listas de funcionários:', error);
+                alert('Erro ao carregar a lista de funcionários.');
+            });
+        }
+
         // Definir data atual por padrão
         document.getElementById('data').valueAsDate = new Date();
 
         // ===== SISTEMA DE CORES E ORGANIZAÇÃO DE TRANSAÇÕES ===== 
 
         function applyTransactionRules() {
-            console.log('🎨 Aplicando regras de cores e organização...');
+           // console.log('🎨 Aplicando regras de cores e organização...');
             
             const tableBody = document.getElementById('transactions-table-body');
             if (!tableBody) {
-                console.log('❌ Tabela não encontrada');
+            //    console.log('❌ Tabela não encontrada');
                 return;
             }
 
@@ -1877,7 +1983,7 @@ try {
             console.log(`📊 Encontradas ${rows.length} linhas na tabela`);
 
             if (rows.length === 0) {
-                console.log('⚠️ Nenhuma linha encontrada na tabela');
+           //     console.log('⚠️ Nenhuma linha encontrada na tabela');
                 return;
             }
 
@@ -1893,7 +1999,7 @@ try {
                 const cells = row.querySelectorAll('td');
                 if (cells.length === 0) return;
 
-                console.log(`🔍 Processando linha ${index + 1}`);
+               // console.log(`🔍 Processando linha ${index + 1}`);
 
                 // Identificar colunas (baseado na estrutura da tabela)
                 const retornoCell = cells[3]; // Coluna "Retorno"
@@ -1904,10 +2010,10 @@ try {
                 const tipoViagem = tipoViagemCell.textContent.trim().toLowerCase();
                 const retornoText = retornoCell ? retornoCell.textContent.trim() : '';
 
-                console.log(`📝 Tipo: ${tipoViagem}, chegada: "${retornoText}"`);
+                console.log(`📝 Tipo: ${tipoViagem}, Retorno: "${retornoText}"`);
 
                 // Remover classes anteriores
-                row.classList.remove('transaction-row', 'ida', 'chegada', 'retorno-pendente');
+                row.classList.remove('transaction-row', 'ida', 'retorno', 'retorno-pendente');
 
                 // Aplicar regras de cores
                 if (tipoViagem === 'ida') {
@@ -1915,19 +2021,18 @@ try {
                         // IDA SEM RETORNO = AMARELO (Pendente)
                         row.classList.add('transaction-row', 'retorno-pendente');
                         updateCellWithIcon(tipoViagemCell, '<span class="status-badge retorno-pendente"><i class="fas fa-clock"></i> Pendente</span>');
-                        console.log('🟡 Aplicado: PENDENTE');
+                  //      console.log('🟡 Aplicado: PENDENTE');
                     } else {
                         // IDA COM RETORNO = VERDE
                         row.classList.add('transaction-row', 'ida');
                         updateCellWithIcon(tipoViagemCell, '<span class="status-badge ida"><i class="fas fa-arrow-up"></i> Partida</span>');
-                        console.log('🟢 Aplicado: Partida');
+                //        console.log('🟢 Aplicado: PARTIDA');
                     }
-                } else if (tipoViagem === 'chegada') {
+                } else if (tipoViagem === 'retorno') {
                     // RETORNO = VERMELHO
-                    row.classList.add('transaction-row', 'chegada');
-                       updateCellWithIcon(tipoViagemCell, '<span class="status-badge chegada"><i class="fas fa-arrow-down"></i> chegada</span>');
-    console.log('🔴 Aplicado: chegada');
-
+                    row.classList.add('transaction-row', 'retorno');
+                    updateCellWithIcon(tipoViagemCell, '<span class="status-badge chegada"><i class="fas fa-arrow-down"></i> chegada</span>');
+               //     console.log('🔴 Aplicado: chegada');
                 }
 
                 // Adicionar ícones nas colunas preservando event listeners
@@ -1980,7 +2085,7 @@ try {
         }
 
         function organizeTransactionPairs() {
-            console.log('🔄 Organizando pares ida/retorno...');
+           // console.log('🔄 Organizando pares ida/retorno...');
             
             const tableBody = document.getElementById('transactions-table-body');
             const rows = Array.from(tableBody.querySelectorAll('tr'));
@@ -2024,7 +2129,7 @@ try {
                     if (entry.retorno && !processedIds.has(entry.retorno.querySelector('td').textContent.trim())) {
                         organizedRows.push(entry.retorno);
                         processedIds.add(entry.retorno.querySelector('td').textContent.trim());
-                        console.log(`✅ Par organizado: ${key}`);
+               //         console.log(`✅ Par organizado: ${key}`);
                     }
                 }
             });
@@ -2044,7 +2149,7 @@ try {
             tableBody.innerHTML = '';
             tableBody.appendChild(fragment);
             
-            console.log(`✅ Tabela reorganizada com ${organizedRows.length} linhas`);
+         //   console.log(`✅ Tabela reorganizada com ${organizedRows.length} linhas`);
         }
 
         let updateTimeout;
@@ -2061,7 +2166,7 @@ try {
             if (shouldUpdate) {
                 clearTimeout(updateTimeout);
                 updateTimeout = setTimeout(() => {
-                    console.log('🔄 Mudança detectada na tabela, aplicando regras...');
+              //      console.log('🔄 Mudança detectada na tabela, aplicando regras...');
                     applyTransactionRules();
                 }, 300); // Debounce to prevent rapid updates
             }
@@ -2074,14 +2179,14 @@ try {
                 childList: true,
                 subtree: true
             });
-            console.log('👁️ Observer da tabela inicializado');
+           // console.log('👁️ Observer da tabela inicializado');
         }
 
         // Interceptar função de atualização da tabela se existir
         if (typeof window.updateTransactionsTable === 'function') {
             const originalUpdate = window.updateTransactionsTable;
             window.updateTransactionsTable = function() {
-                console.log('🔄 Interceptando updateTransactionsTable...');
+            //    console.log('🔄 Interceptando updateTransactionsTable...');
                 originalUpdate.apply(this, arguments);
                 clearTimeout(updateTimeout);
                 updateTimeout = setTimeout(applyTransactionRules, 200);
@@ -2090,7 +2195,7 @@ try {
 
         // Aplicar regras quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📄 DOM carregado, aguardando dados...');
+       //     console.log('📄 DOM carregado, aguardando dados...');
             setTimeout(applyTransactionRules, 1000);
         });
 
@@ -2102,13 +2207,13 @@ try {
                 );
                 
                 if (hasUntreatedRows) {
-                    console.log('🔄 Linhas não tratadas encontradas, aplicando regras...');
+                  //  console.log('🔄 Linhas não tratadas encontradas, aplicando regras...');
                     applyTransactionRules();
                 }
             }
         }, 5000); // Increased interval to reduce interference
 
-        console.log('🚀 Sistema de cores e organização inicializado!');
+        // console.log('🚀 Sistema de cores e organização inicializado!');
     </script>
 </body>
 </html>

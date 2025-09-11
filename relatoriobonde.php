@@ -19,7 +19,7 @@ try {
     $bondes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Query para buscar os dados da tabela viagens
-    $sql = "SELECT data, bonde, saida, retorno, maquinista, agente, hora, pagantes, moradores, gratuidade AS gratPcdIdoso FROM viagens";
+    $sql = "SELECT data, bonde, saida, retorno, maquinista, agente, hora, pagantes, moradores, gratuidade AS gratPcdIdoso, tipo_viagem FROM viagens";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $viagens = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -70,6 +70,7 @@ try {
                     </label>
                     <input type="text" id="user-registration" placeholder="Digite sua matrícula" value="">
                 </div>
+            <div class="filters-section">
                 <div class="input-item">
                     <label for="report-type">
                         <i data-lucide="calendar" class="icon"></i>
@@ -80,6 +81,7 @@ try {
                         <option value="semanal">Semanal</option>
                         <option value="mensal">Mensal</option>
                         <option value="anual">Anual</option>
+                        <option value="periodo">Período Personalizado</option>
                     </select>
                 </div>
                 <div class="input-item" id="date-input-container">
@@ -88,6 +90,20 @@ try {
                         Data
                     </label>
                     <input type="date" id="report-date" value="2025-07-02">
+                </div>
+                <div class="input-item" id="date-start-container" style="display: none;">
+                    <label for="date-start">
+                        <i data-lucide="calendar-days" class="icon"></i>
+                        Data Inicial
+                    </label>
+                    <input type="date" id="date-start" value="2025-07-01">
+                </div>
+                <div class="input-item" id="date-end-container" style="display: none;">
+                    <label for="date-end">
+                        <i data-lucide="calendar-days" class="icon"></i>
+                        Data Final
+                    </label>
+                    <input type="date" id="date-end" value="2025-07-31">
                 </div>
                 <div class="input-item" id="month-input-container" style="display: none;">
                     <label for="report-month">
@@ -176,6 +192,9 @@ try {
                         <th>Moradores</th>
                         <th>Gratuitos</th>
                         <th>Total Passageiros</th>
+                        <th>Total Viagens</th>
+                        <th>Viagens Ida</th>
+                        <th>Viagens Retorno</th>
                     </tr>
                 </thead>
                 <tbody id="bonde-total-table-body"></tbody>
@@ -196,6 +215,7 @@ try {
                         <th>Moradores</th>
                         <th>Gratuitos</th>
                         <th>Total Passageiros</th>
+                        <th>Total Viagens</th>
                     </tr>
                 </thead>
                 <tbody id="route-total-table-body"></tbody>
@@ -211,14 +231,28 @@ try {
                 <thead>
                     <tr>
                         <th>Hora</th>
-                        <th>Pagantes</th>
-                        <th>Moradores</th>
-                        <th>Gratuitos</th>
-                        <th>Total Passageiros</th>
+                        <th>Subida</th>
+                        <th>Retorno</th>
                     </tr>
                 </thead>
                 <tbody id="hourly-carioca-table-body"></tbody>
             </table>
+        </div>
+
+        <div class="general-totals-section" id="general-totals-section" style="display: none;">
+            <h3>
+                <i data-lucide="align-justify" class="icon"></i>
+                Totais Gerais
+            </h3>
+            <div id="general-totals-content">
+                <div class="summary-item"><span>Total Pagantes</span><span id="totalPagantes">0</span></div>
+                <div class="summary-item"><span>Total Moradores</span><span id="totalMoradores">0</span></div>
+                <div class="summary-item"><span>Total Gratuitos</span><span id="totalGratuitos">0</span></div>
+                <div class="summary-item"><span>Total Passageiros</span><span id="totalPassageiros">0</span></div>
+                <div class="summary-item"><span>Total Viagens</span><span id="totalViagens">0</span></div>
+                <div class="summary-item"><span>Viagens Ida</span><span id="viagensIda">0</span></div>
+                <div class="summary-item"><span>Viagens Retorno</span><span id="viagensRetorno">0</span></div>
+            </div>
         </div>
     </div>
 
@@ -349,6 +383,7 @@ try {
         const routeTotalTableBody = document.getElementById('route-total-table-body');
         const hourlyCariocaSection = document.getElementById('hourly-carioca-section');
         const hourlyCariocaTableBody = document.getElementById('hourly-carioca-table-body');
+        const generalTotalsSection = document.getElementById('general-totals-section');
 
         let viagens = <?php echo json_encode($viagens); ?>;
         let currentReportData = null;
@@ -357,6 +392,9 @@ try {
             const reportType = reportTypeInput.value;
             dateInputContainer.innerHTML = '';
             monthInputContainer.style.display = 'none';
+            document.getElementById('date-start-container').style.display = 'none';
+            document.getElementById('date-end-container').style.display = 'none';
+            
             let input;
             if (reportType === 'diario') {
                 input = document.createElement('input');
@@ -367,6 +405,10 @@ try {
                 dateInputContainer.innerHTML = '<label for="report-date"><i data-lucide="calendar-days" class="icon"></i>Data</label>';
                 lucide.createIcons();
                 dateInputContainer.appendChild(input);
+            } else if (reportType === 'periodo') {
+                dateInputContainer.style.display = 'none';
+                document.getElementById('date-start-container').style.display = 'block';
+                document.getElementById('date-end-container').style.display = 'block';
             } else if (reportType === 'semanal') {
                 input = document.createElement('input');
                 input.type = 'week';
@@ -412,22 +454,49 @@ try {
 
         function generateReport() {
             const reportType = reportTypeInput.value;
-            const dateValue = document.getElementById('report-date')?.value;
-            const monthValue = reportType === 'mensal' ? reportMonthInput.value : null;
-            const bonde = bondeInput.value;
-            let filteredViagens = viagens;
+            const dateValue = reportTypeInput.value === 'periodo' ? null : document.getElementById('report-date')?.value;
+            const dateStart = document.getElementById('date-start')?.value;
+            const dateEnd = document.getElementById('date-end')?.value;
+            const monthValue = reportMonthInput?.value;
+            const bondeValue = bondeInput.value;
 
-            if (!dateValue) {
-                alert('Por favor, selecione uma data, semana ou ano.');
-                return;
-            }
-            if (reportType === 'mensal' && !monthValue) {
-                alert('Por favor, selecione um mês.');
-                return;
-            }
+            let filteredViagens = viagens.filter(t => !bondeValue || t.bonde === bondeValue);
 
-            if (bonde) {
-                filteredViagens = viagens.filter(t => t.bonde === bonde);
+            if (reportType === 'diario') {
+                // Direct string comparison for daily reports
+                filteredViagens = filteredViagens.filter(t => t.data === dateValue);
+            } else if (reportType === 'periodo') {
+                if (dateStart && dateEnd) {
+                    filteredViagens = filteredViagens.filter(t => {
+                        // Ensure consistent date format comparison
+                        const tData = t.data.toString();
+                        return tData >= dateStart && tData <= dateEnd;
+                    });
+                }
+            } else if (reportType === 'semanal') {
+                const { start, end } = getWeekStartEnd(dateValue);
+                const startStr = start.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+                const endStr = end.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+                filteredViagens = filteredViagens.filter(t => {
+                    return t.data >= startStr && t.data <= endStr;
+                });
+            } else if (reportType === 'mensal') {
+                const year = parseInt(dateValue);
+                const month = parseInt(monthValue);
+                // Create start and end date strings in YYYY-MM-DD format
+                const startOfMonth = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const endOfMonth = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+                filteredViagens = filteredViagens.filter(t => {
+                    return t.data >= startOfMonth && t.data <= endOfMonth;
+                });
+            } else if (reportType === 'anual') {
+                const year = parseInt(dateValue);
+                const startOfYear = `${year}-01-01`;
+                const endOfYear = `${year}-12-31`;
+                filteredViagens = filteredViagens.filter(t => {
+                    return t.data >= startOfYear && t.data <= endOfYear;
+                });
             }
 
             reportTableSection.style.display = 'block';
@@ -448,33 +517,39 @@ try {
             const rotas = [...new Set(viagens.map(t => JSON.stringify({ saida: t.saida, retorno: t.retorno })))].map(JSON.parse);
             const horas = [...new Set(viagens.map(t => t.hora))].sort();
 
-            // Calculate totals per bonde
+            const generalTotals = {
+                totalPagantes: filteredViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0),
+                totalMoradores: filteredViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0),
+                totalGratuitos: filteredViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0),
+                totalViagens: filteredViagens.length,
+                viagensIda: filteredViagens.filter(t => t.tipo_viagem === 'ida').length,
+                viagensRetorno: filteredViagens.filter(t => t.tipo_viagem === 'retorno').length
+            };
+            generalTotals.totalPassageiros = generalTotals.totalPagantes + generalTotals.totalMoradores + generalTotals.totalGratuitos;
+
             const bondeTotals = bondes.map(bonde => {
                 let bondeViagens = filteredViagens.filter(t => t.bonde === bonde);
-                if (reportType === 'diario') {
-                    bondeViagens = bondeViagens.filter(t => t.data === dateValue);
-                } else if (reportType === 'semanal') {
-                    const { start, end } = getWeekStartEnd(dateValue);
-                filteredViagens = bondeViagens.filter(t => {
-                    const transactionDate = new Date(t.data);
-                    return transactionDate >= start && transactionDate <= end;
-                });
-                } else if (reportType === 'mensal') {
-                    const year = parseInt(dateValue);
-                    const month = parseInt(monthValue);
-                    bondeViagens = bondeViagens.filter(t => {
-                        const transactionDate = new Date(t.data);
-                        return transactionDate.getFullYear() === year && transactionDate.getMonth() === month;
-                    });
-                } else if (reportType === 'anual') {
-                    const year = parseInt(dateValue);
-                    bondeViagens = bondeViagens.filter(t => new Date(t.data).getFullYear() === year);
-                }
+                // No need to re-filter by date since filteredViagens already contains the correct date range
+                
                 const totalPagantes = bondeViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0);
                 const totalMoradores = bondeViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0);
                 const totalGratuitos = bondeViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0);
                 const total = totalPagantes + totalMoradores + totalGratuitos;
-                return { bonde, totalPagantes, totalMoradores, totalGratuitos, total };
+                
+                const totalViagens = bondeViagens.length;
+                const viagensIda = bondeViagens.filter(t => t.tipo_viagem === 'ida').length;
+                const viagensRetorno = bondeViagens.filter(t => t.tipo_viagem === 'retorno').length;
+                
+                return { 
+                    bonde, 
+                    totalPagantes, 
+                    totalMoradores, 
+                    totalGratuitos, 
+                    total, 
+                    totalViagens,
+                    viagensIda,
+                    viagensRetorno
+                };
             }).filter(row => row.total > 0);
 
             // Render bonde totals table
@@ -486,38 +561,32 @@ try {
                     <td>${row.totalMoradores}</td>
                     <td>${row.totalGratuitos}</td>
                     <td>${row.total}</td>
+                    <td>${row.totalViagens}</td>
+                    <td>${row.viagensIda}</td>
+                    <td>${row.viagensRetorno}</td>
                 `;
                 bondeTotalTableBody.appendChild(tr);
             });
 
             // Calculate route totals
             const routeTotals = rotas.map(rota => {
-                let routeViagens = filteredViagens.filter(t => t.saida === rota.saida && t.retorno === rota.retorno);
-                if (reportType === 'diario') {
-                    routeViagens = routeViagens.filter(t => t.data === dateValue);
-                } else if (reportType === 'semanal') {
-                    const { start, end } = getWeekStartEnd(dateValue);
-                    routeViagens = routeViagens.filter(t => {
-                        const transactionDate = new Date(t.data);
-                        return transactionDate >= start && transactionDate <= end;
-                    });
-                } else if (reportType === 'mensal') {
-                    const year = parseInt(dateValue);
-                    const month = parseInt(monthValue);
-                    routeViagens = routeViagens.filter(t => {
-                        const transactionDate = new Date(t.data);
-                        return transactionDate.getFullYear() === year && transactionDate.getMonth() === month;
-                    });
-                } else if (reportType === 'anual') {
-                    const year = parseInt(dateValue);
-                    routeViagens = routeViagens.filter(t => new Date(t.data).getFullYear() === year);
-                }
-                const totalPagantes = routeViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0);
-                const totalMoradores = routeViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0);
-                const totalGratuitos = routeViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0);
+                let rotaViagens = filteredViagens.filter(t => t.saida === rota.saida && t.retorno === rota.retorno);
+                const totalPagantes = rotaViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0);
+                const totalMoradores = rotaViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0);
+                const totalGratuitos = rotaViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0);
                 const total = totalPagantes + totalMoradores + totalGratuitos;
-                return { saida: rota.saida, retorno: rota.retorno, totalPagantes, totalMoradores, totalGratuitos, total };
-            }).filter(row => row.total > 0);
+                const totalViagens = rotaViagens.length;
+                
+                return { 
+                    saida: rota.saida, 
+                    retorno: rota.retorno, 
+                    totalPagantes, 
+                    totalMoradores, 
+                    totalGratuitos, 
+                    total,
+                    totalViagens
+                };
+            });
 
             // Render route totals table
             routeTotals.forEach(row => {
@@ -529,407 +598,150 @@ try {
                     <td>${row.totalMoradores}</td>
                     <td>${row.totalGratuitos}</td>
                     <td>${row.total}</td>
+                    <td>${row.totalViagens}</td>
                 `;
                 routeTotalTableBody.appendChild(tr);
             });
 
-            // Calculate hourly Carioca totals grouped by hour blocks
             const hourlyGroups = {};
             
-            // Group trips by hour block
+            console.log("[v0] Report type:", reportType);
+            console.log("[v0] Date start:", dateStart);
+            console.log("[v0] Date end:", dateEnd);
+            console.log("[v0] Total viagens after filtering:", filteredViagens.length);
+            
+            // Group trips by hour block - usando apenas filteredViagens que já está filtrado corretamente
             filteredViagens.filter(t => t.saida === 'Carioca' || t.retorno === 'Carioca').forEach(viagem => {
-                let shouldInclude = false;
+                console.log("[v0] Processing trip:", viagem.data, viagem.hora, viagem.saida, viagem.retorno, viagem.tipo_viagem);
                 
-                if (reportType === 'diario') {
-                    shouldInclude = viagem.data === dateValue;
-                } else if (reportType === 'semanal') {
-                    const { start, end } = getWeekStartEnd(dateValue);
-                    const transactionDate = new Date(viagem.data);
-                    shouldInclude = transactionDate >= start && transactionDate <= end;
-                } else if (reportType === 'mensal') {
-                    const year = parseInt(dateValue);
-                    const month = parseInt(monthValue);
-                    const transactionDate = new Date(viagem.data);
-                    shouldInclude = transactionDate.getFullYear() === year && transactionDate.getMonth() === month;
-                } else if (reportType === 'anual') {
-                    const year = parseInt(dateValue);
-                    shouldInclude = new Date(viagem.data).getFullYear() === year;
+                const hora = viagem.hora;
+                const hourBlock = hora.split(':')[0] + ':00'; // Extract hour and format as XX:00
+                
+                if (!hourlyGroups[hourBlock]) {
+                    hourlyGroups[hourBlock] = {
+                        subida: 0,
+                        retorno: 0
+                    };
                 }
                 
-                if (shouldInclude) {
-                    const hora = viagem.hora;
-                    const hourBlock = hora.split(':')[0] + ':00'; // Extract hour and format as XX:00
-                    
-                    if (!hourlyGroups[hourBlock]) {
-                        hourlyGroups[hourBlock] = {
-                            totalPagantes: 0,
-                            totalMoradores: 0,
-                            totalGratuitos: 0
-                        };
-                    }
-                    
-                    hourlyGroups[hourBlock].totalPagantes += parseInt(viagem.pagantes);
-                    hourlyGroups[hourBlock].totalMoradores += parseInt(viagem.moradores);
-                    hourlyGroups[hourBlock].totalGratuitos += parseInt(viagem.gratPcdIdoso);
+                const totalPassageiros = parseInt(viagem.pagantes) + parseInt(viagem.moradores) + parseInt(viagem.gratPcdIdoso);
+                
+                // Determine direction based on saida/retorno and tipo_viagem
+                if (viagem.saida === 'Carioca' && viagem.tipo_viagem === 'ida') {
+                    hourlyGroups[hourBlock].subida += totalPassageiros;
+                    console.log("[v0] Added to subida:", totalPassageiros, "for hour", hourBlock);
+                } else if (viagem.retorno === 'Carioca' && viagem.tipo_viagem === 'retorno') {
+                    hourlyGroups[hourBlock].retorno += totalPassageiros;
+                    console.log("[v0] Added to retorno:", totalPassageiros, "for hour", hourBlock);
                 }
             });
+            
+            console.log("[v0] Final hourly groups:", hourlyGroups);
             
             // Convert to array and sort by hour
             const hourlyCariocaTotals = Object.keys(hourlyGroups)
                 .sort()
                 .map(hourBlock => {
                     const group = hourlyGroups[hourBlock];
-                    const total = group.totalPagantes + group.totalMoradores + group.totalGratuitos;
                     return {
                         hora: hourBlock + ' - ' + hourBlock.split(':')[0] + ':59',
-                        totalPagantes: group.totalPagantes,
-                        totalMoradores: group.totalMoradores,
-                        totalGratuitos: group.totalGratuitos,
-                        total: total
+                        subida: group.subida,
+                        retorno: group.retorno
                     };
                 })
-                .filter(row => row.total > 0);
+                .filter(row => row.subida > 0 || row.retorno > 0);
 
             // Render hourly Carioca totals table
             hourlyCariocaTotals.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row.hora}</td>
-                    <td>${row.totalPagantes}</td>
-                    <td>${row.totalMoradores}</td>
-                    <td>${row.totalGratuitos}</td>
-                    <td>${row.total}</td>
+                    <td>${row.subida}</td>
+                    <td>${row.retorno}</td>
                 `;
                 hourlyCariocaTableBody.appendChild(tr);
             });
 
-            if (reportType === 'diario') {
-                filteredViagens = filteredViagens.filter(t => t.data === dateValue);
-                reportTableHead.innerHTML = `
-                    <tr>
-                        <th>Bonde</th>
-                        <th>Saída</th>
-                        <th>Retorno</th>
-                        <th>Maquinista</th>
-                        <th>Agente</th>
-                        <th>Hora</th>
-                        <th>Pagantes</th>
-                        <th>Moradores</th>
-                        <th>Gratuitos</th>
-                        <th>Total Passageiros</th>
-                    </tr>
-                `;
-                const reportData = [];
-                bondes.forEach(bonde => {
-                    rotas.forEach(rota => {
-                        const bondesViagens = filteredViagens.filter(t => t.bonde === bonde && t.saida === rota.saida && t.retorno === rota.retorno);
-                        if (bondesViagens.length > 0) {
-                            bondesViagens.forEach(viagem => {
-                                const pagantes = parseInt(viagem.pagantes);
-                                const moradores = parseInt(viagem.moradores);
-                                const gratuitos = parseInt(viagem.gratPcdIdoso);
-                                const total = pagantes + moradores + gratuitos;
-                                if (total > 0) {
-                                    reportData.push({ 
-                                        bonde: viagem.bonde, 
-                                        saida: rota.saida, 
-                                        retorno: rota.retorno, 
-                                        maquinista: viagem.maquinista || 'N/A',
-                                        agente: viagem.agente || 'N/A',
-                                        hora: viagem.hora || 'N/A',
-                                        pagantes, 
-                                        moradores, 
-                                        gratuitos, 
-                                        total 
-                                    });
-                                }
-                            });
-                        }
+            reportTableHead.innerHTML = `
+                <tr>
+                    <th>Data</th>
+                    <th>Bonde</th>
+                    <th>Saída</th>
+                    <th>Retorno</th>
+                    <th>Maquinista</th>
+                    <th>Agente</th>
+                    <th>Hora</th>
+                    <th>Pagantes</th>
+                    <th>Moradores</th>
+                    <th>Gratuitos</th>
+                    <th>Total Passageiros</th>
+                </tr>
+            `;
+
+            const reportData = [];
+            filteredViagens.forEach(viagem => {
+                const pagantes = parseInt(viagem.pagantes);
+                const moradores = parseInt(viagem.moradores);
+                const gratuitos = parseInt(viagem.gratPcdIdoso);
+                const total = pagantes + moradores + gratuitos;
+                if (total > 0) {
+                    reportData.push({ 
+                        data: viagem.data,
+                        bonde: viagem.bonde, 
+                        saida: viagem.saida, 
+                        retorno: viagem.retorno, 
+                        maquinista: viagem.maquinista || 'N/A',
+                        agente: viagem.agente || 'N/A',
+                        hora: viagem.hora || 'N/A',
+                        pagantes, 
+                        moradores, 
+                        gratuitos, 
+                        total 
                     });
-                });
-
-                reportData.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.bonde}</td>
-                        <td>${row.saida}</td>
-                        <td>${row.retorno}</td>
-                        <td>${row.maquinista}</td>
-                        <td>${row.agente}</td>
-                        <td>${row.hora}</td>
-                        <td>${row.pagantes}</td>
-                        <td>${row.moradores}</td>
-                        <td>${row.gratuitos}</td>
-                        <td>${row.total}</td>
-                    `;
-                    reportTableBody.appendChild(tr);
-                });
-
-                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
-                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
-                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
-                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
-
-                summaryContent.innerHTML = `
-                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
-                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
-                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
-                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
-                `;
-                currentReportData = { type: 'diario', date: dateValue, data: reportData, bondeTotals, routeTotals, hourlyCariocaTotals, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros } };
-
-            } else if (reportType === 'semanal') {
-                const { start, end } = getWeekStartEnd(dateValue);
-                filteredViagens = filteredViagens.filter(t => {
-                    const transactionDate = new Date(t.data);
-                    return transactionDate >= start && transactionDate <= end;
-                });
-                reportTableHead.innerHTML = `
-                    <tr>
-                        <th>Data</th>
-                        <th>Bonde</th>
-                        <th>Saída</th>
-                        <th>Retorno</th>
-                        <th>Maquinista</th>
-                        <th>Agente</th>
-                        <th>Hora</th>
-                        <th>Pagantes</th>
-                        <th>Moradores</th>
-                        <th>Gratuitos</th>
-                        <th>Total Passageiros</th>
-                    </tr>
-                `;
-                const reportData = [];
-                const dates = [];
-                let currentDate = new Date(start);
-                while (currentDate <= end) {
-                    dates.push(formatDate(currentDate));
-                    currentDate.setDate(currentDate.getDate() + 1);
                 }
+            });
 
-                dates.forEach(date => {
-                    bondes.forEach(bonde => {
-                        rotas.forEach(rota => {
-                            const bondesViagens = filteredViagens.filter(t => t.data === date && t.bonde === bonde && t.saida === rota.saida && t.retorno === rota.retorno);
-                            if (bondesViagens.length > 0) {
-                                bondesViagens.forEach(viagem => {
-                                    const pagantes = parseInt(viagem.pagantes);
-                                    const moradores = parseInt(viagem.moradores);
-                                    const gratuitos = parseInt(viagem.gratPcdIdoso);
-                                    const total = pagantes + moradores + gratuitos;
-                                    if (total > 0) {
-                                        reportData.push({ 
-                                            date, 
-                                            bonde, 
-                                            saida: rota.saida, 
-                                            retorno: rota.retorno, 
-                                            maquinista: viagem.maquinista || 'N/A',
-                                            agente: viagem.agente || 'N/A',
-                                            hora: viagem.hora || 'N/A',
-                                            pagantes, 
-                                            moradores, 
-                                            gratuitos, 
-                                            total 
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    });
-                });
-
-                reportData.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.date}</td>
-                        <td>${row.bonde}</td>
-                        <td>${row.saida}</td>
-                        <td>${row.retorno}</td>
-                        <td>${row.maquinista}</td>
-                        <td>${row.agente}</td>
-                        <td>${row.hora}</td>
-                        <td>${row.pagantes}</td>
-                        <td>${row.moradores}</td>
-                        <td>${row.gratuitos}</td>
-                        <td>${row.total}</td>
-                    `;
-                    reportTableBody.appendChild(tr);
-                });
-
-                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
-                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
-                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
-                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
-
-                summaryContent.innerHTML = `
-                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
-                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
-                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
-                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
+            reportData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.data}</td>
+                    <td>${row.bonde}</td>
+                    <td>${row.saida}</td>
+                    <td>${row.retorno}</td>
+                    <td>${row.maquinista}</td>
+                    <td>${row.agente}</td>
+                    <td>${row.hora}</td>
+                    <td>${row.pagantes}</td>
+                    <td>${row.moradores}</td>
+                    <td>${row.gratuitos}</td>
+                    <td>${row.total}</td>
                 `;
-                currentReportData = { type: 'semanal', date: dateValue, data: reportData, bondeTotals, routeTotals, hourlyCariocaTotals, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros } };
+                reportTableBody.appendChild(tr);
+            });
 
-            } else if (reportType === 'mensal') {
-                const year = parseInt(dateValue);
-                const month = parseInt(monthValue);
-                filteredViagens = filteredViagens.filter(t => {
-                    const transactionDate = new Date(t.data);
-                    return transactionDate.getFullYear() === year && transactionDate.getMonth() === month;
-                });
-                reportTableHead.innerHTML = `
-                    <tr>
-                        <th>Data</th>
-                        <th>Bonde</th>
-                        <th>Saída</th>
-                        <th>Retorno</th>
-                        <th>Maquinista</th>
-                        <th>Agente</th>
-                        <th>Hora</th>
-                        <th>Pagantes</th>
-                        <th>Moradores</th>
-                        <th>Gratuitos</th>
-                        <th>Total Passageiros</th>
-                    </tr>
-                `;
-                const reportData = [];
-                const dates = [];
-                const startDate = new Date(year, month, 1);
-                const endDate = new Date(year, month + 1, 0);
-                let currentDate = new Date(startDate);
-                while (currentDate <= endDate) {
-                    dates.push(formatDate(currentDate));
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
+            const summaryData = {
+                'Total Pagantes': generalTotals.totalPagantes,
+                'Total Moradores': generalTotals.totalMoradores,
+                'Total Gratuitos': generalTotals.totalGratuitos,
+                'Total Passageiros': generalTotals.totalPassageiros,
+                'Total Viagens': generalTotals.totalViagens
+            };
 
-                dates.forEach(date => {
-                    bondes.forEach(bonde => {
-                        rotas.forEach(rota => {
-                            const bondesViagens = filteredViagens.filter(t => t.data === date && t.bonde === bonde && t.saida === rota.saida && t.retorno === rota.retorno);
-                            if (bondesViagens.length > 0) {
-                                bondesViagens.forEach(viagem => {
-                                    const pagantes = parseInt(viagem.pagantes);
-                                    const moradores = parseInt(viagem.moradores);
-                                    const gratuitos = parseInt(viagem.gratPcdIdoso);
-                                    const total = pagantes + moradores + gratuitos;
-                                    if (total > 0) {
-                                        reportData.push({ 
-                                            date, 
-                                            bonde, 
-                                            saida: rota.saida, 
-                                            retorno: rota.retorno, 
-                                            maquinista: viagem.maquinista || 'N/A',
-                                            agente: viagem.agente || 'N/A',
-                                            hora: viagem.hora || 'N/A',
-                                            pagantes, 
-                                            moradores, 
-                                            gratuitos, 
-                                            total 
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    });
-                });
+            summaryContent.innerHTML = `
+                <div class="summary-item"><span>Total Pagantes</span><span>${generalTotals.totalPagantes}</span></div>
+                <div class="summary-item"><span>Total Moradores</span><span>${generalTotals.totalMoradores}</span></div>
+                <div class="summary-item"><span>Total Gratuitos</span><span>${generalTotals.totalGratuitos}</span></div>
+                <div class="summary-item"><span>Total Passageiros</span><span>${generalTotals.totalPassageiros}</span></div>
+                <div class="summary-item"><span>Total Viagens</span><span>${generalTotals.totalViagens}</span></div>
+            `;
 
-                reportData.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.date}</td>
-                        <td>${row.bonde}</td>
-                        <td>${row.saida}</td>
-                        <td>${row.retorno}</td>
-                        <td>${row.maquinista}</td>
-                        <td>${row.agente}</td>
-                        <td>${row.hora}</td>
-                        <td>${row.pagantes}</td>
-                        <td>${row.moradores}</td>
-                        <td>${row.gratuitos}</td>
-                        <td>${row.total}</td>
-                    `;
-                    reportTableBody.appendChild(tr);
-                });
-
-                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
-                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
-                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
-                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
-                const totalDays = dates.length;
-                const mediaDiaria = totalDays > 0 ? Math.round(totalPassageiros / totalDays) : 0;
-
-                summaryContent.innerHTML = `
-                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
-                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
-                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
-                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
-  
-                `;
-                currentReportData = { type: 'mensal', date: `${year}-${String(month + 1).padStart(2, '0')}`, data: reportData, bondeTotals, routeTotals, hourlyCariocaTotals, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros, mediaDiaria } };
-
-            } else if (reportType === 'anual') {
-                const year = parseInt(dateValue);
-                filteredViagens = filteredViagens.filter(t => new Date(t.data).getFullYear() === year);
-                reportTableHead.innerHTML = `
-                    <tr>
-                        <th>Bonde</th>
-                        <th>Saída</th>
-                        <th>Retorno</th>
-                        <th>Pagantes</th>
-                        <th>Moradores</th>
-                        <th>Gratuitos</th>
-                        <th>Total Passageiros</th>
-                
-                    </tr>
-                `;
-                const reportData = [];
-                bondes.forEach(bonde => {
-                    rotas.forEach(rota => {
-                        const bondesViagens = filteredViagens.filter(t => t.bonde === bonde && t.saida === rota.saida && t.retorno === rota.retorno);
-                        if (bondesViagens.length > 0) {
-                            const pagantes = bondesViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0);
-                            const moradores = bondesViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0);
-                            const gratuitos = bondesViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0);
-                            const total = pagantes + moradores + gratuitos;
-                            const monthsWithData = new Set(bondesViagens.map(t => new Date(t.data).getMonth())).size;
-                            const mediaMensal = monthsWithData > 0 ? Math.round(total / monthsWithData) : 0;
-                            if (total > 0) {
-                                reportData.push({ bonde, saida: rota.saida, retorno: rota.retorno, pagantes, moradores, gratuitos, total, mediaMensal });
-                            }
-                        }
-                    });
-                });
-
-                reportData.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.bonde}</td>
-                        <td>${row.saida}</td>
-                        <td>${row.retorno}</td>
-                        <td>${row.pagantes}</td>
-                        <td>${row.moradores}</td>
-                        <td>${row.gratuitos}</td>
-                        <td>${row.total}</td>
-               
-                    `;
-                    reportTableBody.appendChild(tr);
-                });
-
-                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
-                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
-                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
-                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
-                const monthsWithData = new Set(filteredViagens.map(t => new Date(t.data).getMonth())).size;
-                const mediaMensalTotal = monthsWithData > 0 ? Math.round(totalPassageiros / monthsWithData) : 0;
-
-                summaryContent.innerHTML = `
-                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
-                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
-                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
-                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
-                 
-                `;
-                currentReportData = { type: 'anual', date: dateValue, data: reportData, bondeTotals, routeTotals, hourlyCariocaTotals, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros, mediaMensalTotal } };
-            }
+            currentReportData = {
+                date: reportType === 'periodo' ? `${dateStart} a ${dateEnd}` : dateValue,
+                summary: summaryData,
+                bondeTotals,
+                routeTotals,
+                hourlyCariocaTotals
+            };
 
             if (reportTableBody.children.length === 0) {
                 const tr = document.createElement('tr');
@@ -1063,7 +875,6 @@ try {
 
     finalY = doc.lastAutoTable.finalY + 20;
             
-    // TOTAIS POR BONDE - primeira seção
     doc.setFontSize(12);
     doc.setFont(undefined, 'bold');
     doc.setTextColor(25, 40, 68);
@@ -1071,8 +882,17 @@ try {
             
     finalY += 8;
             
-    const bondeHeaders = ['Bonde', 'Pagantes', 'Moradores', 'Gratuitos', 'Total'];
-    const bondeData = currentReportData.bondeTotals.map(row => [row.bonde, row.totalPagantes, row.totalMoradores, row.totalGratuitos, row.total]);
+    const bondeHeaders = ['Bonde', 'Pagantes', 'Moradores', 'Gratuitos', 'Total Passageiros', 'Total Viagens', 'Viagens Ida', 'Viagens Retorno'];
+    const bondeData = currentReportData.bondeTotals.map(row => [
+        row.bonde, 
+        row.totalPagantes, 
+        row.totalMoradores, 
+        row.totalGratuitos, 
+        row.total,
+        row.totalViagens,
+        row.viagensIda,
+        row.viagensRetorno
+    ]);
 
     doc.autoTable({
         head: [bondeHeaders],
@@ -1082,8 +902,8 @@ try {
         theme: 'grid',
         showHead: 'firstPage',
         styles: { 
-            fontSize: 9, 
-            cellPadding: 4,
+            fontSize: 8, 
+            cellPadding: 3,
             halign: 'center',
             fontStyle: 'bold',
             lineColor: [25, 40, 68],
@@ -1096,17 +916,19 @@ try {
             halign: 'center'
         },
         columnStyles: {
-            0: { cellWidth: 40 }, // Bonde - mais espaço para o nome
-            1: { cellWidth: 30 }, // Pagantes
-            2: { cellWidth: 30 }, // Moradores  
-            3: { cellWidth: 30 }, // Gratuitos
-            4: { cellWidth: 30 }  // Total
+            0: { cellWidth: 25 }, // Bonde
+            1: { cellWidth: 25 }, // Pagantes
+            2: { cellWidth: 25 }, // Moradores  
+            3: { cellWidth: 25 }, // Gratuitos
+            4: { cellWidth: 30 }, // Total Passageiros
+            5: { cellWidth: 25 }, // Total Viagens
+            6: { cellWidth: 25 }, // Viagens Ida
+            7: { cellWidth: 25 }  // Viagens Retorno
         }
     });
 
     finalY = doc.lastAutoTable.finalY + 20;
-
-    // TOTAIS POR ROTA - segunda seção
+            
     doc.setFontSize(12);
     doc.setFont(undefined, 'bold');
     doc.setTextColor(25, 40, 68);
@@ -1114,8 +936,8 @@ try {
             
     finalY += 8;
 
-    const routeHeaders = ['Saída', 'Retorno', 'Pagantes', 'Moradores', 'Gratuitos', 'Total'];
-    const routeData = currentReportData.routeTotals.map(row => [row.saida, row.retorno, row.totalPagantes, row.totalMoradores, row.totalGratuitos, row.total]);
+            const routeHeaders = ['Saída', 'Retorno', 'Pagantes', 'Moradores', 'Gratuitos', 'Total', 'Total Viagens'];
+            const routeData = currentReportData.routeTotals.map(row => [row.saida, row.retorno, row.totalPagantes, row.totalMoradores, row.totalGratuitos, row.total, row.totalViagens]);
 
     doc.autoTable({
         head: [routeHeaders],
@@ -1144,7 +966,8 @@ try {
             2: { cellWidth: 25 }, // Pagantes
             3: { cellWidth: 25 }, // Moradores
             4: { cellWidth: 25 }, // Gratuitos
-            5: { cellWidth: 25 }  // Total
+            5: { cellWidth: 25 },  // Total
+            6: { cellWidth: 25 }  // Total Viagens
         },
         didParseCell: function(data) {
             if ((data.column.index === 0 || data.column.index === 1) && data.cell.text[0] === 'Carioca') {
@@ -1164,8 +987,8 @@ try {
             
     finalY += 8;
 
-    const hourlyCariocaHeaders = ['Hora', 'Pagantes', 'Moradores', 'Gratuitos', 'Total'];
-    const hourlyCariocaData = currentReportData.hourlyCariocaTotals.slice(0, 8).map(row => [row.hora, row.totalPagantes, row.totalMoradores, row.totalGratuitos, row.total]);
+            const hourlyCariocaHeaders = ['Hora', 'Subida', 'Retorno'];
+            const hourlyCariocaData = currentReportData.hourlyCariocaTotals.slice(0, 8).map(row => [row.hora, row.subida, row.retorno]);
 
     doc.autoTable({
         head: [hourlyCariocaHeaders],
@@ -1190,10 +1013,8 @@ try {
         },
         columnStyles: {
             0: { cellWidth: 50 }, // Hora - mais espaço para formato de hora
-            1: { cellWidth: 25 }, // Pagantes
-            2: { cellWidth: 25 }, // Moradores
-            3: { cellWidth: 25 }, // Gratuitos
-            4: { cellWidth: 25 }  // Total
+            1: { cellWidth: 25 }, // Subida
+            2: { cellWidth: 25 }  // Retorno
         }
     });
 

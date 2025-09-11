@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
         $erro = "Agente inválido!";
     } elseif (!in_array($localizacao, $valid_localizacoes)) {
         $erro = "Localização inválida!";
-    } elseif (!DateTime::createFromFormat('Y-m-d H:i:s', $data)) {
+    } elseif (!DateTime::createFromFormat('Y-m-d H:i:s', $data)) { //aqui é só alterar a ordem
         $erro = "Data e hora inválidas!";
     } else {
         try {

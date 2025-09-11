@@ -46,6 +46,7 @@ try {
         case 'administrador':
             $menuItens = [
                 ['link' => 'painel.php', 'nome' => 'Painel', 'icon' => 'tachometer-alt'],
+                  ['link' => 'gerenciamentotic.php', 'nome' => 'MONITORAMENTO T.I', 'icon' => 'home'],
                 ['link' => 'homeestoque.php', 'nome' => 'Almoxarifado', 'icon' => 'box'],
                 ['link' => 'homecontratos.php', 'nome' => 'Contratos', 'icon' => 'file-contract'],
                  ['link' => 'certidoes.php', 'nome' => 'Certidões de contratos', 'icon' => 'envelope'],

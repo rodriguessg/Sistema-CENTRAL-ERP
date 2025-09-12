@@ -40,6 +40,29 @@ try {
     <!-- Added Lucide icons for better UI -->
      <link rel="stylesheet" href="src/bonde/style/relatoriobonde.css">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        /* Added styles for error messages and readonly inputs */
+        .error-message {
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        /* Removed readonly styles since we're allowing calendar interaction */
+        input[type="date"]:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+    </style>
 </head>
 <body>
     <div class="caderno">
@@ -48,6 +71,12 @@ try {
                 <i data-lucide="file-text" class="icon"></i>
                 Sistema de Relatórios - Bondes Santa Teresa
             </h1>
+        </div>
+        
+        <!-- Added error message container -->
+        <div id="error-container" class="error-message">
+            <i data-lucide="alert-circle" style="display: inline; margin-right: 8px;"></i>
+            <span id="error-text"></span>
         </div>
         
         <div class="form-section">
@@ -84,27 +113,45 @@ try {
                         <option value="periodo">Período Personalizado</option>
                     </select>
                 </div>
-                <div class="input-item" id="date-input-container">
-                    <label for="report-date">
-                        <i data-lucide="calendar-days" class="icon"></i>
-                        Data
-                    </label>
-                    <input type="date" id="report-date" value="2025-07-02">
-                </div>
-                <div class="input-item" id="date-start-container" style="display: none;">
-                    <label for="date-start">
-                        <i data-lucide="calendar-days" class="icon"></i>
-                        Data Inicial
-                    </label>
-                    <input type="date" id="date-start" value="2025-07-01">
-                </div>
-                <div class="input-item" id="date-end-container" style="display: none;">
-                    <label for="date-end">
-                        <i data-lucide="calendar-days" class="icon"></i>
-                        Data Final
-                    </label>
-                    <input type="date" id="date-end" value="2025-07-31">
-                </div>
+            <div class="input-item" id="date-input-container">
+    <label for="report-date">
+        <i data-lucide="calendar-days" class="icon"></i>
+        Data
+    </label>
+    <input 
+        type="date" 
+        id="report-date" 
+        onkeydown="return false" 
+        onpaste="return false"
+    >
+</div>
+
+<div class="input-item" id="date-start-container" style="display: none;">
+    <label for="date-start">
+        <i data-lucide="calendar-days" class="icon"></i>
+        Data Inicial
+    </label>
+    <input 
+        type="date" 
+        id="date-start" 
+        onkeydown="return false" 
+        onpaste="return false"
+    >
+</div>
+
+<div class="input-item" id="date-end-container" style="display: none;">
+    <label for="date-end">
+        <i data-lucide="calendar-days" class="icon"></i>
+        Data Final
+    </label>
+    <input 
+        type="date" 
+        id="date-end" 
+        onkeydown="return false" 
+        onpaste="return false"
+    >
+</div>
+
                 <div class="input-item" id="month-input-container" style="display: none;">
                     <label for="report-month">
                         <i data-lucide="calendar-days" class="icon"></i>
@@ -261,6 +308,87 @@ try {
             lucide.createIcons();
             updateDateInput();
             
+            function preventManualTyping() {
+                const dateInputs = document.querySelectorAll('input[type="date"]');
+                dateInputs.forEach(input => {
+                    // Block all keyboard events except Tab navigation
+                    input.addEventListener('keydown', function(e) {
+                        // Allow only Tab and Shift+Tab for navigation
+                        if (e.key === 'Tab' || (e.shiftKey && e.key === 'Tab')) {
+                            return true;
+                        }
+                        // Block all other keys including numbers, letters, arrows, etc.
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    });
+                    
+                    // Block keypress events
+                    input.addEventListener('keypress', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    });
+                    
+                    // Block keyup events
+                    input.addEventListener('keyup', function(e) {
+                        if (e.key !== 'Tab' && !(e.shiftKey && e.key === 'Tab')) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        }
+                    });
+                    
+                    // Block input events (catches programmatic changes)
+                    input.addEventListener('input', function(e) {
+                        // Allow only if the change came from calendar selection
+                        if (!e.isTrusted) {
+                            return;
+                        }
+                        // If manual typing detected, revert to previous value
+                        const currentValue = this.value;
+                        const previousValue = this.getAttribute('data-previous-value') || '';
+                        
+                        // Check if this is a valid date format change from calendar
+                        if (currentValue && !this.validity.valid) {
+                            this.value = previousValue;
+                        } else {
+                            this.setAttribute('data-previous-value', currentValue);
+                        }
+                    });
+                    
+                    // Prevent paste
+                    input.addEventListener('paste', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    });
+                    
+                    // Prevent drag and drop
+                    input.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    });
+                    
+                    // Prevent context menu (right-click)
+                    input.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        return false;
+                    });
+                    
+                    // Store initial value
+                    input.setAttribute('data-previous-value', input.value);
+                    
+                    // Make input appear readonly but keep calendar functional
+                    input.style.caretColor = 'transparent';
+                    input.style.userSelect = 'none';
+                });
+            }
+            
+            // Call the function initially
+            preventManualTyping();
+            
             const generateBtn = document.getElementById('generate-report-btn');
             const exportBtn = document.getElementById('export-pdf-btn');
             
@@ -388,6 +516,67 @@ try {
         let viagens = <?php echo json_encode($viagens); ?>;
         let currentReportData = null;
 
+        function validateDate(dateString) {
+            if (!dateString) return { valid: false, message: "Data não informada." };
+            
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!dateRegex.test(dateString)) {
+                return { valid: false, message: "Formato de data inválido. Use AAAA-MM-DD." };
+            }
+            
+            const [year, month, day] = dateString.split('-').map(Number);
+            
+            // Check if year is reasonable
+            if (year < 1900 || year > 2100) {
+                return { valid: false, message: "Ano deve estar entre 1900 e 2100." };
+            }
+            
+            // Check if month is valid
+            if (month < 1 || month > 12) {
+                return { valid: false, message: "Mês deve estar entre 01 e 12." };
+            }
+            
+            // Get the actual number of days in the month
+            const daysInMonth = new Date(year, month, 0).getDate();
+            
+            // Check if day is valid for the given month
+            if (day < 1 || day > daysInMonth) {
+                const monthNames = [
+                    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+                ];
+                return { 
+                    valid: false, 
+                    message: `O mês de ${monthNames[month - 1]} de ${year} não possui ${day} dias. Este mês tem apenas ${daysInMonth} dias.` 
+                };
+            }
+            
+            // Additional check: create a Date object and verify it matches our input
+            const testDate = new Date(year, month - 1, day);
+            if (testDate.getFullYear() !== year || testDate.getMonth() !== month - 1 || testDate.getDate() !== day) {
+                return { valid: false, message: "Data inválida detectada." };
+            }
+            
+            return { valid: true, message: "" };
+        }
+
+        function showError(message) {
+            const errorContainer = document.getElementById('error-container');
+            const errorText = document.getElementById('error-text');
+            errorText.textContent = message;
+            errorContainer.classList.add('show');
+            
+            // Hide error after 5 seconds
+            setTimeout(() => {
+                errorContainer.classList.remove('show');
+            }, 5000);
+        }
+
+        function hideError() {
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.classList.remove('show');
+        }
+
         function updateDateInput() {
             const reportType = reportTypeInput.value;
             dateInputContainer.innerHTML = '';
@@ -405,10 +594,14 @@ try {
                 dateInputContainer.innerHTML = '<label for="report-date"><i data-lucide="calendar-days" class="icon"></i>Data</label>';
                 lucide.createIcons();
                 dateInputContainer.appendChild(input);
+                preventManualTyping();
             } else if (reportType === 'periodo') {
                 dateInputContainer.style.display = 'none';
                 document.getElementById('date-start-container').style.display = 'block';
                 document.getElementById('date-end-container').style.display = 'block';
+                setTimeout(() => {
+                    preventManualTyping();
+                }, 100);
             } else if (reportType === 'semanal') {
                 input = document.createElement('input');
                 input.type = 'week';
@@ -418,6 +611,31 @@ try {
                 dateInputContainer.innerHTML = '<label for="report-date"><i data-lucide="calendar-days" class="icon"></i>Semana</label>';
                 lucide.createIcons();
                 dateInputContainer.appendChild(input);
+                setTimeout(() => {
+                    const weekInput = document.getElementById('report-date');
+                    if (weekInput) {
+                        weekInput.addEventListener('keydown', function(e) {
+                            if (e.key === 'Tab' || (e.shiftKey && e.key === 'Tab')) {
+                                return true;
+                            }
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        });
+                        
+                        weekInput.addEventListener('keypress', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        });
+                        
+                        weekInput.addEventListener('paste', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        });
+                    }
+                }, 100);
             } else if (reportType === 'mensal' || reportType === 'anual') {
                 input = document.createElement('input');
                 input.type = 'number';
@@ -453,6 +671,8 @@ try {
         }
 
         function generateReport() {
+            hideError();
+            
             const reportType = reportTypeInput.value;
             const dateValue = reportTypeInput.value === 'periodo' ? null : document.getElementById('report-date')?.value;
             const dateStart = document.getElementById('date-start')?.value;
@@ -460,17 +680,61 @@ try {
             const monthValue = reportMonthInput?.value;
             const bondeValue = bondeInput.value;
 
+            if (reportType === 'diario' && dateValue) {
+                const validation = validateDate(dateValue);
+                if (!validation.valid) {
+                    showError(validation.message);
+                    return;
+                }
+            } else if (reportType === 'periodo') {
+                if (dateStart) {
+                    const startValidation = validateDate(dateStart);
+                    if (!startValidation.valid) {
+                        showError("Data inicial inválida: " + startValidation.message);
+                        return;
+                    }
+                }
+                if (dateEnd) {
+                    const endValidation = validateDate(dateEnd);
+                    if (!endValidation.valid) {
+                        showError("Data final inválida: " + endValidation.message);
+                        return;
+                    }
+                }
+                if (dateStart && dateEnd && dateStart > dateEnd) {
+                    showError("A data inicial não pode ser posterior à data final.");
+                    return;
+                }
+            }
+
             let filteredViagens = viagens.filter(t => !bondeValue || t.bonde === bondeValue);
 
+            function isValidDate(dateStr) {
+                if (!dateStr || dateStr === '0000-00-00' || dateStr === '' || dateStr === null) {
+                    return false;
+                }
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+                return regex.test(dateStr);
+            }
+
             if (reportType === 'diario') {
-                // Direct string comparison for daily reports
                 filteredViagens = filteredViagens.filter(t => t.data === dateValue);
             } else if (reportType === 'periodo') {
                 if (dateStart && dateEnd) {
+                    console.log("[v0] Date range:", dateStart, "to", dateEnd);
+                    
                     filteredViagens = filteredViagens.filter(t => {
-                        // Ensure consistent date format comparison
-                        const tData = t.data.toString();
-                        return tData >= dateStart && tData <= dateEnd;
+                        if (!isValidDate(t.data)) {
+                            console.log("[v0] Invalid date found:", t.data);
+                            return false;
+                        }
+                        
+                        const tripDate = t.data.toString().trim();
+                        const isInRange = tripDate >= dateStart && tripDate <= dateEnd;
+                        
+                        console.log("[v0] Checking trip:", tripDate, "Range:", dateStart, "to", dateEnd, "Result:", isInRange);
+                        
+                        return isInRange;
                     });
                 }
             } else if (reportType === 'semanal') {
@@ -605,15 +869,8 @@ try {
 
             const hourlyGroups = {};
             
-            console.log("[v0] Report type:", reportType);
-            console.log("[v0] Date start:", dateStart);
-            console.log("[v0] Date end:", dateEnd);
-            console.log("[v0] Total viagens after filtering:", filteredViagens.length);
-            
             // Group trips by hour block - usando apenas filteredViagens que já está filtrado corretamente
             filteredViagens.filter(t => t.saida === 'Carioca' || t.retorno === 'Carioca').forEach(viagem => {
-                console.log("[v0] Processing trip:", viagem.data, viagem.hora, viagem.saida, viagem.retorno, viagem.tipo_viagem);
-                
                 const hora = viagem.hora;
                 const hourBlock = hora.split(':')[0] + ':00'; // Extract hour and format as XX:00
                 
@@ -629,14 +886,10 @@ try {
                 // Determine direction based on saida/retorno and tipo_viagem
                 if (viagem.saida === 'Carioca' && viagem.tipo_viagem === 'ida') {
                     hourlyGroups[hourBlock].subida += totalPassageiros;
-                    console.log("[v0] Added to subida:", totalPassageiros, "for hour", hourBlock);
                 } else if (viagem.retorno === 'Carioca' && viagem.tipo_viagem === 'retorno') {
                     hourlyGroups[hourBlock].retorno += totalPassageiros;
-                    console.log("[v0] Added to retorno:", totalPassageiros, "for hour", hourBlock);
                 }
             });
-            
-            console.log("[v0] Final hourly groups:", hourlyGroups);
             
             // Convert to array and sort by hour
             const hourlyCariocaTotals = Object.keys(hourlyGroups)
@@ -755,284 +1008,284 @@ try {
             }
         }
 
-       function exportToPDF() {
-    if (!currentReportData) {
-        alert('Por favor, gere um relatório antes de exportar.');
-        return;
-    }
-
-    const userName = document.getElementById('user-name').value || 'USUÁRIO NÃO INFORMADO';
-    const userRegistration = document.getElementById('user-registration').value || 'MATRÍCULA NÃO INFORMADA';
-    const reportType = document.getElementById('report-type').value;
-    const planType = reportType === 'anual' ? 'Plano Anual' : 'Plano Mensal';
-
-    const doc = new jsPDF('landscape', 'mm', 'a4');
-            
-    doc.setFillColor(25, 40, 68);
-    doc.rect(0, 0, 297, 40, 'F');
-            
-    // Main title with standardized font size
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
-    doc.setFont(undefined, 'bold');
-    doc.text('Secretaria de Estado de Transporte', 148.5, 12, { align: 'center' });
-    doc.text('e Mobilidade Urbana', 148.5, 20, { align: 'center' });
-            
-    doc.setFontSize(10);
-    doc.setFont(undefined, 'bold');
-    const currentDate = new Date().toLocaleDateString('pt-BR');
-    doc.text(`Relatório Elaborado por: ${userName}`, 148.5, 28, { align: 'center' });
-    doc.text(`Matrícula: ${userRegistration}`, 148.5, 32, { align: 'center' });
-    doc.text(`Data do relatório: ${currentDate} | ${planType}`, 148.5, 36, { align: 'center' });
-
-    doc.setDrawColor(25, 40, 68);
-    doc.setLineWidth(1);
-    doc.line(10, 45, 287, 45);
-
-    // Reset text color for content
-    doc.setTextColor(0, 0, 0);
-            
-    const dateValue = currentReportData.date;
-            
-    doc.setFontSize(14);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(25, 40, 68);
-    const title = `Relatório ${reportType.charAt(0).toUpperCase() + reportType.slice(1)} - Bondes Santa Teresa - ${dateValue}`;
-    doc.text(title, 148.5, 55, { align: 'center' });
-
-    const headers = Array.from(reportTableHead.children[0].children).map(th => th.textContent);
-    const data = Array.from(reportTableBody.children).map(row =>
-        Array.from(row.children).map(cell => cell.textContent)
-    );
-
-    if (headers.length === 0 || data.length === 0) {
-        alert('Nenhum dado disponível para exportar.');
-        return;
-    }
-
-    doc.autoTable({
-        head: [headers],
-        body: data,
-        startY: 65,
-        theme: 'grid',
-        styles: { 
-            fontSize: 9, 
-            cellPadding: 3,
-            halign: 'center',
-            fontStyle: 'bold',
-            lineColor: [25, 40, 68],
-            lineWidth: 0.1 // Thinner lines as requested
-        },
-        headStyles: { 
-            fillColor: [25, 40, 68], 
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            fontSize: 10,
-            halign: 'center'
-        },
-        alternateRowStyles: { 
-            fillColor: [248, 250, 252] 
-        },
-        didParseCell: function(data) {
-            if (data.column.index === headers.indexOf('Retorno') && data.cell.text[0] === 'Carioca') {
-                data.cell.styles.textColor = [220, 53, 69];
-                data.cell.styles.fontStyle = 'bold';
+        function exportToPDF() {
+            if (!currentReportData) {
+                alert('Por favor, gere um relatório antes de exportar.');
+                return;
             }
-        }
-    });
 
-    let finalY = doc.lastAutoTable.finalY + 15;
-            
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(25, 40, 68);
-    doc.text('RESUMO EXECUTIVO', 148.5, finalY, { align: 'center' });
-            
-    finalY += 8;
-            
-    const summaryData = Object.entries(currentReportData.summary).map(([key, value]) => {
-        const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-        return [label, value];
-    });
+            const userName = document.getElementById('user-name').value || 'USUÁRIO NÃO INFORMADO';
+            const userRegistration = document.getElementById('user-registration').value || 'MATRÍCULA NÃO INFORMADA';
+            const reportType = document.getElementById('report-type').value;
+            const planType = reportType === 'anual' ? 'Plano Anual' : 'Plano Mensal';
 
-    doc.autoTable({
-        body: summaryData,
-        startY: finalY,
-        theme: 'grid',
-        styles: { 
-            fontSize: 9, 
-            cellPadding: 3,
-            halign: 'center',
-            fontStyle: 'bold',
-            lineColor: [25, 40, 68],
-            lineWidth: 0.1
-        },
-        columnStyles: {
-            0: { cellWidth: 80, fillColor: [25, 40, 68], textColor: [255, 255, 255] },
-            1: { cellWidth: 40, fillColor: [248, 250, 252] }
-        }
-    });
+            const doc = new jsPDF('landscape', 'mm', 'a4');
+            
+            doc.setFillColor(25, 40, 68);
+            doc.rect(0, 0, 297, 40, 'F');
+            
+            // Main title with standardized font size
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('Secretaria de Estado de Transporte', 148.5, 12, { align: 'center' });
+            doc.text('e Mobilidade Urbana', 148.5, 20, { align: 'center' });
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            const currentDate = new Date().toLocaleDateString('pt-BR');
+            doc.text(`Relatório Elaborado por: ${userName}`, 148.5, 28, { align: 'center' });
+            doc.text(`Matrícula: ${userRegistration}`, 148.5, 32, { align: 'center' });
+            doc.text(`Data do relatório: ${currentDate} | ${planType}`, 148.5, 36, { align: 'center' });
 
-    finalY = doc.lastAutoTable.finalY + 20;
-            
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(25, 40, 68);
-    doc.text('TOTAIS POR BONDE', 148.5, finalY, { align: 'center' });
-            
-    finalY += 8;
-            
-    const bondeHeaders = ['Bonde', 'Pagantes', 'Moradores', 'Gratuitos', 'Total Passageiros', 'Total Viagens', 'Viagens Ida', 'Viagens Retorno'];
-    const bondeData = currentReportData.bondeTotals.map(row => [
-        row.bonde, 
-        row.totalPagantes, 
-        row.totalMoradores, 
-        row.totalGratuitos, 
-        row.total,
-        row.totalViagens,
-        row.viagensIda,
-        row.viagensRetorno
-    ]);
+            doc.setDrawColor(25, 40, 68);
+            doc.setLineWidth(1);
+            doc.line(10, 45, 287, 45);
 
-    doc.autoTable({
-        head: [bondeHeaders],
-        body: bondeData,
-        startY: finalY,
-        margin: { left: 10, right: 10 },
-        theme: 'grid',
-        showHead: 'firstPage',
-        styles: { 
-            fontSize: 8, 
-            cellPadding: 3,
-            halign: 'center',
-            fontStyle: 'bold',
-            lineColor: [25, 40, 68],
-            lineWidth: 0.1
-        },
-        headStyles: { 
-            fillColor: [25, 40, 68], 
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            halign: 'center'
-        },
-        columnStyles: {
-            0: { cellWidth: 25 }, // Bonde
-            1: { cellWidth: 25 }, // Pagantes
-            2: { cellWidth: 25 }, // Moradores  
-            3: { cellWidth: 25 }, // Gratuitos
-            4: { cellWidth: 30 }, // Total Passageiros
-            5: { cellWidth: 25 }, // Total Viagens
-            6: { cellWidth: 25 }, // Viagens Ida
-            7: { cellWidth: 25 }  // Viagens Retorno
-        }
-    });
+            // Reset text color for content
+            doc.setTextColor(0, 0, 0);
+            
+            const dateValue = currentReportData.date;
+            
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(25, 40, 68);
+            const title = `Relatório ${reportType.charAt(0).toUpperCase() + reportType.slice(1)} - Bondes Santa Teresa - ${dateValue}`;
+            doc.text(title, 148.5, 55, { align: 'center' });
 
-    finalY = doc.lastAutoTable.finalY + 20;
+            const headers = Array.from(reportTableHead.children[0].children).map(th => th.textContent);
+            const data = Array.from(reportTableBody.children).map(row =>
+                Array.from(row.children).map(cell => cell.textContent)
+            );
+
+            if (headers.length === 0 || data.length === 0) {
+                alert('Nenhum dado disponível para exportar.');
+                return;
+            }
+
+            doc.autoTable({
+                head: [headers],
+                body: data,
+                startY: 65,
+                theme: 'grid',
+                styles: { 
+                    fontSize: 9, 
+                    cellPadding: 3,
+                    halign: 'center',
+                    fontStyle: 'bold',
+                    lineColor: [25, 40, 68],
+                    lineWidth: 0.1 // Thinner lines as requested
+                },
+                headStyles: { 
+                    fillColor: [25, 40, 68], 
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold',
+                    fontSize: 10,
+                    halign: 'center'
+                },
+                alternateRowStyles: { 
+                    fillColor: [248, 250, 252] 
+                },
+                didParseCell: function(data) {
+                    if (data.column.index === headers.indexOf('Retorno') && data.cell.text[0] === 'Carioca') {
+                        data.cell.styles.textColor = [220, 53, 69];
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                }
+            });
+
+            let finalY = doc.lastAutoTable.finalY + 15;
             
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(25, 40, 68);
-    doc.text('TOTAIS POR ROTA', 148.5, finalY, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(25, 40, 68);
+            doc.text('RESUMO EXECUTIVO', 148.5, finalY, { align: 'center' });
             
-    finalY += 8;
+            finalY += 8;
+            
+            const summaryData = Object.entries(currentReportData.summary).map(([key, value]) => {
+                const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                return [label, value];
+            });
+
+            doc.autoTable({
+                body: summaryData,
+                startY: finalY,
+                theme: 'grid',
+                styles: { 
+                    fontSize: 9, 
+                    cellPadding: 3,
+                    halign: 'center',
+                    fontStyle: 'bold',
+                    lineColor: [25, 40, 68],
+                    lineWidth: 0.1
+                },
+                columnStyles: {
+                    0: { cellWidth: 80, fillColor: [25, 40, 68], textColor: [255, 255, 255] },
+                    1: { cellWidth: 40, fillColor: [248, 250, 252] }
+                }
+            });
+
+            finalY = doc.lastAutoTable.finalY + 20;
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(25, 40, 68);
+            doc.text('TOTAIS POR BONDE', 148.5, finalY, { align: 'center' });
+            
+            finalY += 8;
+            
+            const bondeHeaders = ['Bonde', 'Pagantes', 'Moradores', 'Gratuitos', 'Total Passageiros', 'Total Viagens', 'Viagens Ida', 'Viagens Retorno'];
+            const bondeData = currentReportData.bondeTotals.map(row => [
+                row.bonde, 
+                row.totalPagantes, 
+                row.totalMoradores, 
+                row.totalGratuitos, 
+                row.total,
+                row.totalViagens,
+                row.viagensIda,
+                row.viagensRetorno
+            ]);
+
+            doc.autoTable({
+                head: [bondeHeaders],
+                body: bondeData,
+                startY: finalY,
+                margin: { left: 10, right: 10 },
+                theme: 'grid',
+                showHead: 'firstPage',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: 3,
+                    halign: 'center',
+                    fontStyle: 'bold',
+                    lineColor: [25, 40, 68],
+                    lineWidth: 0.1
+                },
+                headStyles: { 
+                    fillColor: [25, 40, 68], 
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                columnStyles: {
+                    0: { cellWidth: 25 }, // Bonde
+                    1: { cellWidth: 25 }, // Pagantes
+                    2: { cellWidth: 25 }, // Moradores  
+                    3: { cellWidth: 25 }, // Gratuitos
+                    4: { cellWidth: 30 }, // Total Passageiros
+                    5: { cellWidth: 25 }, // Total Viagens
+                    6: { cellWidth: 25 }, // Viagens Ida
+                    7: { cellWidth: 25 }  // Viagens Retorno
+                }
+            });
+
+            finalY = doc.lastAutoTable.finalY + 20;
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(25, 40, 68);
+            doc.text('TOTAIS POR ROTA', 148.5, finalY, { align: 'center' });
+            
+            finalY += 8;
 
             const routeHeaders = ['Saída', 'Retorno', 'Pagantes', 'Moradores', 'Gratuitos', 'Total', 'Total Viagens'];
             const routeData = currentReportData.routeTotals.map(row => [row.saida, row.retorno, row.totalPagantes, row.totalMoradores, row.totalGratuitos, row.total, row.totalViagens]);
 
-    doc.autoTable({
-        head: [routeHeaders],
-        body: routeData,
-        startY: finalY,
-        margin: { left: 10, right: 10 },
-        theme: 'grid',
-        showHead: 'firstPage',
-        styles: { 
-            fontSize: 9, 
-            cellPadding: 4,
-            halign: 'center',
-            fontStyle: 'bold',
-            lineColor: [25, 40, 68],
-            lineWidth: 0.1
-        },
-        headStyles: { 
-            fillColor: [25, 40, 68], 
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            halign: 'center'
-        },
-        columnStyles: {
-            0: { cellWidth: 35 }, // Saída - mais espaço para nomes de locais
-            1: { cellWidth: 35 }, // Retorno - mais espaço para nomes de locais
-            2: { cellWidth: 25 }, // Pagantes
-            3: { cellWidth: 25 }, // Moradores
-            4: { cellWidth: 25 }, // Gratuitos
-            5: { cellWidth: 25 },  // Total
-            6: { cellWidth: 25 }  // Total Viagens
-        },
-        didParseCell: function(data) {
-            if ((data.column.index === 0 || data.column.index === 1) && data.cell.text[0] === 'Carioca') {
-                data.cell.styles.textColor = [220, 53, 69];
-                data.cell.styles.fontStyle = 'bold';
-            }
-        }
-    });
+            doc.autoTable({
+                head: [routeHeaders],
+                body: routeData,
+                startY: finalY,
+                margin: { left: 10, right: 10 },
+                theme: 'grid',
+                showHead: 'firstPage',
+                styles: { 
+                    fontSize: 9, 
+                    cellPadding: 4,
+                    halign: 'center',
+                    fontStyle: 'bold',
+                    lineColor: [25, 40, 68],
+                    lineWidth: 0.1
+                },
+                headStyles: { 
+                    fillColor: [25, 40, 68], 
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                columnStyles: {
+                    0: { cellWidth: 35 }, // Saída - mais espaço para nomes de locais
+                    1: { cellWidth: 35 }, // Retorno - mais espaço para nomes de locais
+                    2: { cellWidth: 25 }, // Pagantes
+                    3: { cellWidth: 25 }, // Moradores
+                    4: { cellWidth: 25 }, // Gratuitos
+                    5: { cellWidth: 25 },  // Total
+                    6: { cellWidth: 25 }  // Total Viagens
+                },
+                didParseCell: function(data) {
+                    if ((data.column.index === 0 || data.column.index === 1) && data.cell.text[0] === 'Carioca') {
+                        data.cell.styles.textColor = [220, 53, 69];
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                }
+            });
 
-    finalY = doc.lastAutoTable.finalY + 20;
+            finalY = doc.lastAutoTable.finalY + 20;
 
-    // PASSAGEIROS POR HORA - terceira seção
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(25, 40, 68);
-    doc.text('PASSAGEIROS POR HORA', 148.5, finalY, { align: 'center' });
+            // PASSAGEIROS POR HORA - terceira seção
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(25, 40, 68);
+            doc.text('PASSAGEIROS POR HORA', 148.5, finalY, { align: 'center' });
             
-    finalY += 8;
+            finalY += 8;
 
             const hourlyCariocaHeaders = ['Hora', 'Subida', 'Retorno'];
             const hourlyCariocaData = currentReportData.hourlyCariocaTotals.slice(0, 8).map(row => [row.hora, row.subida, row.retorno]);
 
-    doc.autoTable({
-        head: [hourlyCariocaHeaders],
-        body: hourlyCariocaData,
-        startY: finalY,
-        margin: { left: 10, right: 10 },
-        theme: 'grid',
-        showHead: 'firstPage',
-        styles: { 
-            fontSize: 9, 
-            cellPadding: 4,
-            halign: 'center',
-            fontStyle: 'bold',
-            lineColor: [25, 40, 68],
-            lineWidth: 0.1
-        },
-        headStyles: { 
-            fillColor: [25, 40, 68], 
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            halign: 'center'
-        },
-        columnStyles: {
-            0: { cellWidth: 50 }, // Hora - mais espaço para formato de hora
-            1: { cellWidth: 25 }, // Subida
-            2: { cellWidth: 25 }  // Retorno
-        }
-    });
+            doc.autoTable({
+                head: [hourlyCariocaHeaders],
+                body: hourlyCariocaData,
+                startY: finalY,
+                margin: { left: 10, right: 10 },
+                theme: 'grid',
+                showHead: 'firstPage',
+                styles: { 
+                    fontSize: 9, 
+                    cellPadding: 4,
+                    halign: 'center',
+                    fontStyle: 'bold',
+                    lineColor: [25, 40, 68],
+                    lineWidth: 0.1
+                },
+                headStyles: { 
+                    fillColor: [25, 40, 68], 
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                columnStyles: {
+                    0: { cellWidth: 50 }, // Hora - mais espaço para formato de hora
+                    1: { cellWidth: 25 }, // Subida
+                    2: { cellWidth: 25 }  // Retorno
+                }
+            });
 
-    doc.setDrawColor(25, 40, 68);
-    doc.setLineWidth(1);
-    doc.line(10, 190, 287, 190);
+            doc.setDrawColor(25, 40, 68);
+            doc.setLineWidth(1);
+            doc.line(10, 190, 287, 190);
             
-    doc.setTextColor(25, 40, 68);
-    doc.setFontSize(9);
-    doc.setFont(undefined, 'bold');
-    doc.text('Secretaria de Estado de Transporte e Mobilidade Urbana', 10, 195);
-    doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 287, 195, { align: 'right' });
-    doc.text('Página 1 de 1', 148.5, 195, { align: 'center' });
+            doc.setTextColor(25, 40, 68);
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'bold');
+            doc.text('Secretaria de Estado de Transporte e Mobilidade Urbana', 10, 195);
+            doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 287, 195, { align: 'right' });
+            doc.text('Página 1 de 1', 148.5, 195, { align: 'center' });
     
-    doc.text(`Data do Relatório: ${dateValue}`, 148.5, 200, { align: 'center' });
+            doc.text(`Data do Relatório: ${dateValue}`, 148.5, 200, { align: 'center' });
 
-    doc.save(`relatorio_${reportType}_${dateValue}.pdf`);
-}
+            doc.save(`relatorio_${reportType}_${dateValue}.pdf`);
+        }
 
         reportTypeInput.addEventListener('change', updateDateInput);
         document.getElementById('generate-report-btn').addEventListener('click', generateReport);

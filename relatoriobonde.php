@@ -19,7 +19,7 @@ try {
     $bondes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Query para buscar os dados da tabela viagens
-    $sql = "SELECT data, bonde, saida, retorno, maquinista, agente, hora, pagantes, moradores, gratuidade AS gratPcdIdoso FROM viagens";
+    $sql = "SELECT data, bonde, saida, retorno, maquinista, agente, hora, pagantes, moradores, gratuidade AS gratPcdIdoso, tipo_viagem FROM viagens";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $viagens = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -40,6 +40,29 @@ try {
     <!-- Added Lucide icons for better UI -->
      <link rel="stylesheet" href="src/bonde/style/relatoriobonde.css">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        /* Added styles for error messages and readonly inputs */
+        .error-message {
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        /* Removed readonly styles since we're allowing calendar interaction */
+        input[type="date"]:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+    </style>
 </head>
 <body>
     <div class="caderno">
@@ -48,6 +71,12 @@ try {
                 <i data-lucide="file-text" class="icon"></i>
                 Sistema de Relatórios - Bondes Santa Teresa
             </h1>
+        </div>
+        
+        <!-- Added error message container -->
+        <div id="error-container" class="error-message">
+            <i data-lucide="alert-circle" style="display: inline; margin-right: 8px;"></i>
+            <span id="error-text"></span>
         </div>
         
         <div class="form-section">
@@ -70,6 +99,7 @@ try {
                     </label>
                     <input type="text" id="user-registration" placeholder="Digite sua matrícula" value="">
                 </div>
+            <div class="filters-section">
                 <div class="input-item">
                     <label for="report-type">
                         <i data-lucide="calendar" class="icon"></i>
@@ -80,15 +110,48 @@ try {
                         <option value="semanal">Semanal</option>
                         <option value="mensal">Mensal</option>
                         <option value="anual">Anual</option>
+                        <option value="periodo">Período Personalizado</option>
                     </select>
                 </div>
-                <div class="input-item" id="date-input-container">
-                    <label for="report-date">
-                        <i data-lucide="calendar-days" class="icon"></i>
-                        Data
-                    </label>
-                    <input type="date" id="report-date" value="2025-07-02">
-                </div>
+            <div class="input-item" id="date-input-container">
+    <label for="report-date">
+        <i data-lucide="calendar-days" class="icon"></i>
+        Data
+    </label>
+    <input 
+        type="date" 
+        id="report-date" 
+        onkeydown="return false" 
+        onpaste="return false"
+    >
+</div>
+
+<div class="input-item" id="date-start-container" style="display: none;">
+    <label for="date-start">
+        <i data-lucide="calendar-days" class="icon"></i>
+        Data Inicial
+    </label>
+    <input 
+        type="date" 
+        id="date-start" 
+        onkeydown="return false" 
+        onpaste="return false"
+    >
+</div>
+
+<div class="input-item" id="date-end-container" style="display: none;">
+    <label for="date-end">
+        <i data-lucide="calendar-days" class="icon"></i>
+        Data Final
+    </label>
+    <input 
+        type="date" 
+        id="date-end" 
+        onkeydown="return false" 
+        onpaste="return false"
+    >
+</div>
+
                 <div class="input-item" id="month-input-container" style="display: none;">
                     <label for="report-month">
                         <i data-lucide="calendar-days" class="icon"></i>
@@ -176,6 +239,9 @@ try {
                         <th>Moradores</th>
                         <th>Gratuitos</th>
                         <th>Total Passageiros</th>
+                        <th>Total Viagens</th>
+                        <th>Viagens Ida</th>
+                        <th>Viagens Retorno</th>
                     </tr>
                 </thead>
                 <tbody id="bonde-total-table-body"></tbody>
@@ -196,6 +262,7 @@ try {
                         <th>Moradores</th>
                         <th>Gratuitos</th>
                         <th>Total Passageiros</th>
+                        <th>Total Viagens</th>
                     </tr>
                 </thead>
                 <tbody id="route-total-table-body"></tbody>
@@ -211,14 +278,28 @@ try {
                 <thead>
                     <tr>
                         <th>Hora</th>
-                        <th>Pagantes</th>
-                        <th>Moradores</th>
-                        <th>Gratuitos</th>
-                        <th>Total Passageiros</th>
+                        <th>Subida</th>
+                        <th>Retorno</th>
                     </tr>
                 </thead>
                 <tbody id="hourly-carioca-table-body"></tbody>
             </table>
+        </div>
+
+        <div class="general-totals-section" id="general-totals-section" style="display: none;">
+            <h3>
+                <i data-lucide="align-justify" class="icon"></i>
+                Totais Gerais
+            </h3>
+            <div id="general-totals-content">
+                <div class="summary-item"><span>Total Pagantes</span><span id="totalPagantes">0</span></div>
+                <div class="summary-item"><span>Total Moradores</span><span id="totalMoradores">0</span></div>
+                <div class="summary-item"><span>Total Gratuitos</span><span id="totalGratuitos">0</span></div>
+                <div class="summary-item"><span>Total Passageiros</span><span id="totalPassageiros">0</span></div>
+                <div class="summary-item"><span>Total Viagens</span><span id="totalViagens">0</span></div>
+                <div class="summary-item"><span>Viagens Ida</span><span id="viagensIda">0</span></div>
+                <div class="summary-item"><span>Viagens Retorno</span><span id="viagensRetorno">0</span></div>
+            </div>
         </div>
     </div>
 
@@ -226,6 +307,87 @@ try {
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             updateDateInput();
+            
+            function preventManualTyping() {
+                const dateInputs = document.querySelectorAll('input[type="date"]');
+                dateInputs.forEach(input => {
+                    // Block all keyboard events except Tab navigation
+                    input.addEventListener('keydown', function(e) {
+                        // Allow only Tab and Shift+Tab for navigation
+                        if (e.key === 'Tab' || (e.shiftKey && e.key === 'Tab')) {
+                            return true;
+                        }
+                        // Block all other keys including numbers, letters, arrows, etc.
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    });
+                    
+                    // Block keypress events
+                    input.addEventListener('keypress', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    });
+                    
+                    // Block keyup events
+                    input.addEventListener('keyup', function(e) {
+                        if (e.key !== 'Tab' && !(e.shiftKey && e.key === 'Tab')) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        }
+                    });
+                    
+                    // Block input events (catches programmatic changes)
+                    input.addEventListener('input', function(e) {
+                        // Allow only if the change came from calendar selection
+                        if (!e.isTrusted) {
+                            return;
+                        }
+                        // If manual typing detected, revert to previous value
+                        const currentValue = this.value;
+                        const previousValue = this.getAttribute('data-previous-value') || '';
+                        
+                        // Check if this is a valid date format change from calendar
+                        if (currentValue && !this.validity.valid) {
+                            this.value = previousValue;
+                        } else {
+                            this.setAttribute('data-previous-value', currentValue);
+                        }
+                    });
+                    
+                    // Prevent paste
+                    input.addEventListener('paste', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    });
+                    
+                    // Prevent drag and drop
+                    input.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    });
+                    
+                    // Prevent context menu (right-click)
+                    input.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        return false;
+                    });
+                    
+                    // Store initial value
+                    input.setAttribute('data-previous-value', input.value);
+                    
+                    // Make input appear readonly but keep calendar functional
+                    input.style.caretColor = 'transparent';
+                    input.style.userSelect = 'none';
+                });
+            }
+            
+            // Call the function initially
+            preventManualTyping();
             
             const generateBtn = document.getElementById('generate-report-btn');
             const exportBtn = document.getElementById('export-pdf-btn');
@@ -349,14 +511,79 @@ try {
         const routeTotalTableBody = document.getElementById('route-total-table-body');
         const hourlyCariocaSection = document.getElementById('hourly-carioca-section');
         const hourlyCariocaTableBody = document.getElementById('hourly-carioca-table-body');
+        const generalTotalsSection = document.getElementById('general-totals-section');
 
         let viagens = <?php echo json_encode($viagens); ?>;
         let currentReportData = null;
+
+        function validateDate(dateString) {
+            if (!dateString) return { valid: false, message: "Data não informada." };
+            
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!dateRegex.test(dateString)) {
+                return { valid: false, message: "Formato de data inválido. Use AAAA-MM-DD." };
+            }
+            
+            const [year, month, day] = dateString.split('-').map(Number);
+            
+            // Check if year is reasonable
+            if (year < 1900 || year > 2100) {
+                return { valid: false, message: "Ano deve estar entre 1900 e 2100." };
+            }
+            
+            // Check if month is valid
+            if (month < 1 || month > 12) {
+                return { valid: false, message: "Mês deve estar entre 01 e 12." };
+            }
+            
+            // Get the actual number of days in the month
+            const daysInMonth = new Date(year, month, 0).getDate();
+            
+            // Check if day is valid for the given month
+            if (day < 1 || day > daysInMonth) {
+                const monthNames = [
+                    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+                ];
+                return { 
+                    valid: false, 
+                    message: `O mês de ${monthNames[month - 1]} de ${year} não possui ${day} dias. Este mês tem apenas ${daysInMonth} dias.` 
+                };
+            }
+            
+            // Additional check: create a Date object and verify it matches our input
+            const testDate = new Date(year, month - 1, day);
+            if (testDate.getFullYear() !== year || testDate.getMonth() !== month - 1 || testDate.getDate() !== day) {
+                return { valid: false, message: "Data inválida detectada." };
+            }
+            
+            return { valid: true, message: "" };
+        }
+
+        function showError(message) {
+            const errorContainer = document.getElementById('error-container');
+            const errorText = document.getElementById('error-text');
+            errorText.textContent = message;
+            errorContainer.classList.add('show');
+            
+            // Hide error after 5 seconds
+            setTimeout(() => {
+                errorContainer.classList.remove('show');
+            }, 5000);
+        }
+
+        function hideError() {
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.classList.remove('show');
+        }
 
         function updateDateInput() {
             const reportType = reportTypeInput.value;
             dateInputContainer.innerHTML = '';
             monthInputContainer.style.display = 'none';
+            document.getElementById('date-start-container').style.display = 'none';
+            document.getElementById('date-end-container').style.display = 'none';
+            
             let input;
             if (reportType === 'diario') {
                 input = document.createElement('input');
@@ -367,6 +594,14 @@ try {
                 dateInputContainer.innerHTML = '<label for="report-date"><i data-lucide="calendar-days" class="icon"></i>Data</label>';
                 lucide.createIcons();
                 dateInputContainer.appendChild(input);
+                preventManualTyping();
+            } else if (reportType === 'periodo') {
+                dateInputContainer.style.display = 'none';
+                document.getElementById('date-start-container').style.display = 'block';
+                document.getElementById('date-end-container').style.display = 'block';
+                setTimeout(() => {
+                    preventManualTyping();
+                }, 100);
             } else if (reportType === 'semanal') {
                 input = document.createElement('input');
                 input.type = 'week';
@@ -376,6 +611,31 @@ try {
                 dateInputContainer.innerHTML = '<label for="report-date"><i data-lucide="calendar-days" class="icon"></i>Semana</label>';
                 lucide.createIcons();
                 dateInputContainer.appendChild(input);
+                setTimeout(() => {
+                    const weekInput = document.getElementById('report-date');
+                    if (weekInput) {
+                        weekInput.addEventListener('keydown', function(e) {
+                            if (e.key === 'Tab' || (e.shiftKey && e.key === 'Tab')) {
+                                return true;
+                            }
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        });
+                        
+                        weekInput.addEventListener('keypress', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        });
+                        
+                        weekInput.addEventListener('paste', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        });
+                    }
+                }, 100);
             } else if (reportType === 'mensal' || reportType === 'anual') {
                 input = document.createElement('input');
                 input.type = 'number';
@@ -411,23 +671,96 @@ try {
         }
 
         function generateReport() {
+            hideError();
+            
             const reportType = reportTypeInput.value;
-            const dateValue = document.getElementById('report-date')?.value;
-            const monthValue = reportType === 'mensal' ? reportMonthInput.value : null;
-            const bonde = bondeInput.value;
-            let filteredViagens = viagens;
+            const dateValue = reportTypeInput.value === 'periodo' ? null : document.getElementById('report-date')?.value;
+            const dateStart = document.getElementById('date-start')?.value;
+            const dateEnd = document.getElementById('date-end')?.value;
+            const monthValue = reportMonthInput?.value;
+            const bondeValue = bondeInput.value;
 
-            if (!dateValue) {
-                alert('Por favor, selecione uma data, semana ou ano.');
-                return;
-            }
-            if (reportType === 'mensal' && !monthValue) {
-                alert('Por favor, selecione um mês.');
-                return;
+            if (reportType === 'diario' && dateValue) {
+                const validation = validateDate(dateValue);
+                if (!validation.valid) {
+                    showError(validation.message);
+                    return;
+                }
+            } else if (reportType === 'periodo') {
+                if (dateStart) {
+                    const startValidation = validateDate(dateStart);
+                    if (!startValidation.valid) {
+                        showError("Data inicial inválida: " + startValidation.message);
+                        return;
+                    }
+                }
+                if (dateEnd) {
+                    const endValidation = validateDate(dateEnd);
+                    if (!endValidation.valid) {
+                        showError("Data final inválida: " + endValidation.message);
+                        return;
+                    }
+                }
+                if (dateStart && dateEnd && dateStart > dateEnd) {
+                    showError("A data inicial não pode ser posterior à data final.");
+                    return;
+                }
             }
 
-            if (bonde) {
-                filteredViagens = viagens.filter(t => t.bonde === bonde);
+            let filteredViagens = viagens.filter(t => !bondeValue || t.bonde === bondeValue);
+
+            function isValidDate(dateStr) {
+                if (!dateStr || dateStr === '0000-00-00' || dateStr === '' || dateStr === null) {
+                    return false;
+                }
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+                return regex.test(dateStr);
+            }
+
+            if (reportType === 'diario') {
+                filteredViagens = filteredViagens.filter(t => t.data === dateValue);
+            } else if (reportType === 'periodo') {
+                if (dateStart && dateEnd) {
+                    console.log("[v0] Date range:", dateStart, "to", dateEnd);
+                    
+                    filteredViagens = filteredViagens.filter(t => {
+                        if (!isValidDate(t.data)) {
+                            console.log("[v0] Invalid date found:", t.data);
+                            return false;
+                        }
+                        
+                        const tripDate = t.data.toString().trim();
+                        const isInRange = tripDate >= dateStart && tripDate <= dateEnd;
+                        
+                        console.log("[v0] Checking trip:", tripDate, "Range:", dateStart, "to", dateEnd, "Result:", isInRange);
+                        
+                        return isInRange;
+                    });
+                }
+            } else if (reportType === 'semanal') {
+                const { start, end } = getWeekStartEnd(dateValue);
+                const startStr = start.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+                const endStr = end.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+                filteredViagens = filteredViagens.filter(t => {
+                    return t.data >= startStr && t.data <= endStr;
+                });
+            } else if (reportType === 'mensal') {
+                const year = parseInt(dateValue);
+                const month = parseInt(monthValue);
+                // Create start and end date strings in YYYY-MM-DD format
+                const startOfMonth = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const endOfMonth = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+                filteredViagens = filteredViagens.filter(t => {
+                    return t.data >= startOfMonth && t.data <= endOfMonth;
+                });
+            } else if (reportType === 'anual') {
+                const year = parseInt(dateValue);
+                const startOfYear = `${year}-01-01`;
+                const endOfYear = `${year}-12-31`;
+                filteredViagens = filteredViagens.filter(t => {
+                    return t.data >= startOfYear && t.data <= endOfYear;
+                });
             }
 
             reportTableSection.style.display = 'block';
@@ -448,33 +781,39 @@ try {
             const rotas = [...new Set(viagens.map(t => JSON.stringify({ saida: t.saida, retorno: t.retorno })))].map(JSON.parse);
             const horas = [...new Set(viagens.map(t => t.hora))].sort();
 
-            // Calculate totals per bonde
+            const generalTotals = {
+                totalPagantes: filteredViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0),
+                totalMoradores: filteredViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0),
+                totalGratuitos: filteredViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0),
+                totalViagens: filteredViagens.length,
+                viagensIda: filteredViagens.filter(t => t.tipo_viagem === 'ida').length,
+                viagensRetorno: filteredViagens.filter(t => t.tipo_viagem === 'retorno').length
+            };
+            generalTotals.totalPassageiros = generalTotals.totalPagantes + generalTotals.totalMoradores + generalTotals.totalGratuitos;
+
             const bondeTotals = bondes.map(bonde => {
                 let bondeViagens = filteredViagens.filter(t => t.bonde === bonde);
-                if (reportType === 'diario') {
-                    bondeViagens = bondeViagens.filter(t => t.data === dateValue);
-                } else if (reportType === 'semanal') {
-                    const { start, end } = getWeekStartEnd(dateValue);
-                filteredViagens = bondeViagens.filter(t => {
-                    const transactionDate = new Date(t.data);
-                    return transactionDate >= start && transactionDate <= end;
-                });
-                } else if (reportType === 'mensal') {
-                    const year = parseInt(dateValue);
-                    const month = parseInt(monthValue);
-                    bondeViagens = bondeViagens.filter(t => {
-                        const transactionDate = new Date(t.data);
-                        return transactionDate.getFullYear() === year && transactionDate.getMonth() === month;
-                    });
-                } else if (reportType === 'anual') {
-                    const year = parseInt(dateValue);
-                    bondeViagens = bondeViagens.filter(t => new Date(t.data).getFullYear() === year);
-                }
+                // No need to re-filter by date since filteredViagens already contains the correct date range
+                
                 const totalPagantes = bondeViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0);
                 const totalMoradores = bondeViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0);
                 const totalGratuitos = bondeViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0);
                 const total = totalPagantes + totalMoradores + totalGratuitos;
-                return { bonde, totalPagantes, totalMoradores, totalGratuitos, total };
+                
+                const totalViagens = bondeViagens.length;
+                const viagensIda = bondeViagens.filter(t => t.tipo_viagem === 'ida').length;
+                const viagensRetorno = bondeViagens.filter(t => t.tipo_viagem === 'retorno').length;
+                
+                return { 
+                    bonde, 
+                    totalPagantes, 
+                    totalMoradores, 
+                    totalGratuitos, 
+                    total, 
+                    totalViagens,
+                    viagensIda,
+                    viagensRetorno
+                };
             }).filter(row => row.total > 0);
 
             // Render bonde totals table
@@ -486,38 +825,32 @@ try {
                     <td>${row.totalMoradores}</td>
                     <td>${row.totalGratuitos}</td>
                     <td>${row.total}</td>
+                    <td>${row.totalViagens}</td>
+                    <td>${row.viagensIda}</td>
+                    <td>${row.viagensRetorno}</td>
                 `;
                 bondeTotalTableBody.appendChild(tr);
             });
 
             // Calculate route totals
             const routeTotals = rotas.map(rota => {
-                let routeViagens = filteredViagens.filter(t => t.saida === rota.saida && t.retorno === rota.retorno);
-                if (reportType === 'diario') {
-                    routeViagens = routeViagens.filter(t => t.data === dateValue);
-                } else if (reportType === 'semanal') {
-                    const { start, end } = getWeekStartEnd(dateValue);
-                    routeViagens = routeViagens.filter(t => {
-                        const transactionDate = new Date(t.data);
-                        return transactionDate >= start && transactionDate <= end;
-                    });
-                } else if (reportType === 'mensal') {
-                    const year = parseInt(dateValue);
-                    const month = parseInt(monthValue);
-                    routeViagens = routeViagens.filter(t => {
-                        const transactionDate = new Date(t.data);
-                        return transactionDate.getFullYear() === year && transactionDate.getMonth() === month;
-                    });
-                } else if (reportType === 'anual') {
-                    const year = parseInt(dateValue);
-                    routeViagens = routeViagens.filter(t => new Date(t.data).getFullYear() === year);
-                }
-                const totalPagantes = routeViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0);
-                const totalMoradores = routeViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0);
-                const totalGratuitos = routeViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0);
+                let rotaViagens = filteredViagens.filter(t => t.saida === rota.saida && t.retorno === rota.retorno);
+                const totalPagantes = rotaViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0);
+                const totalMoradores = rotaViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0);
+                const totalGratuitos = rotaViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0);
                 const total = totalPagantes + totalMoradores + totalGratuitos;
-                return { saida: rota.saida, retorno: rota.retorno, totalPagantes, totalMoradores, totalGratuitos, total };
-            }).filter(row => row.total > 0);
+                const totalViagens = rotaViagens.length;
+                
+                return { 
+                    saida: rota.saida, 
+                    retorno: rota.retorno, 
+                    totalPagantes, 
+                    totalMoradores, 
+                    totalGratuitos, 
+                    total,
+                    totalViagens
+                };
+            });
 
             // Render route totals table
             routeTotals.forEach(row => {
@@ -529,48 +862,32 @@ try {
                     <td>${row.totalMoradores}</td>
                     <td>${row.totalGratuitos}</td>
                     <td>${row.total}</td>
+                    <td>${row.totalViagens}</td>
                 `;
                 routeTotalTableBody.appendChild(tr);
             });
 
-            // Calculate hourly Carioca totals grouped by hour blocks
             const hourlyGroups = {};
             
-            // Group trips by hour block
+            // Group trips by hour block - usando apenas filteredViagens que já está filtrado corretamente
             filteredViagens.filter(t => t.saida === 'Carioca' || t.retorno === 'Carioca').forEach(viagem => {
-                let shouldInclude = false;
+                const hora = viagem.hora;
+                const hourBlock = hora.split(':')[0] + ':00'; // Extract hour and format as XX:00
                 
-                if (reportType === 'diario') {
-                    shouldInclude = viagem.data === dateValue;
-                } else if (reportType === 'semanal') {
-                    const { start, end } = getWeekStartEnd(dateValue);
-                    const transactionDate = new Date(viagem.data);
-                    shouldInclude = transactionDate >= start && transactionDate <= end;
-                } else if (reportType === 'mensal') {
-                    const year = parseInt(dateValue);
-                    const month = parseInt(monthValue);
-                    const transactionDate = new Date(viagem.data);
-                    shouldInclude = transactionDate.getFullYear() === year && transactionDate.getMonth() === month;
-                } else if (reportType === 'anual') {
-                    const year = parseInt(dateValue);
-                    shouldInclude = new Date(viagem.data).getFullYear() === year;
+                if (!hourlyGroups[hourBlock]) {
+                    hourlyGroups[hourBlock] = {
+                        subida: 0,
+                        retorno: 0
+                    };
                 }
                 
-                if (shouldInclude) {
-                    const hora = viagem.hora;
-                    const hourBlock = hora.split(':')[0] + ':00'; // Extract hour and format as XX:00
-                    
-                    if (!hourlyGroups[hourBlock]) {
-                        hourlyGroups[hourBlock] = {
-                            totalPagantes: 0,
-                            totalMoradores: 0,
-                            totalGratuitos: 0
-                        };
-                    }
-                    
-                    hourlyGroups[hourBlock].totalPagantes += parseInt(viagem.pagantes);
-                    hourlyGroups[hourBlock].totalMoradores += parseInt(viagem.moradores);
-                    hourlyGroups[hourBlock].totalGratuitos += parseInt(viagem.gratPcdIdoso);
+                const totalPassageiros = parseInt(viagem.pagantes) + parseInt(viagem.moradores) + parseInt(viagem.gratPcdIdoso);
+                
+                // Determine direction based on saida/retorno and tipo_viagem
+                if (viagem.saida === 'Carioca' && viagem.tipo_viagem === 'ida') {
+                    hourlyGroups[hourBlock].subida += totalPassageiros;
+                } else if (viagem.retorno === 'Carioca' && viagem.tipo_viagem === 'retorno') {
+                    hourlyGroups[hourBlock].retorno += totalPassageiros;
                 }
             });
             
@@ -579,357 +896,105 @@ try {
                 .sort()
                 .map(hourBlock => {
                     const group = hourlyGroups[hourBlock];
-                    const total = group.totalPagantes + group.totalMoradores + group.totalGratuitos;
                     return {
                         hora: hourBlock + ' - ' + hourBlock.split(':')[0] + ':59',
-                        totalPagantes: group.totalPagantes,
-                        totalMoradores: group.totalMoradores,
-                        totalGratuitos: group.totalGratuitos,
-                        total: total
+                        subida: group.subida,
+                        retorno: group.retorno
                     };
                 })
-                .filter(row => row.total > 0);
+                .filter(row => row.subida > 0 || row.retorno > 0);
 
             // Render hourly Carioca totals table
             hourlyCariocaTotals.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row.hora}</td>
-                    <td>${row.totalPagantes}</td>
-                    <td>${row.totalMoradores}</td>
-                    <td>${row.totalGratuitos}</td>
-                    <td>${row.total}</td>
+                    <td>${row.subida}</td>
+                    <td>${row.retorno}</td>
                 `;
                 hourlyCariocaTableBody.appendChild(tr);
             });
 
-            if (reportType === 'diario') {
-                filteredViagens = filteredViagens.filter(t => t.data === dateValue);
-                reportTableHead.innerHTML = `
-                    <tr>
-                        <th>Bonde</th>
-                        <th>Saída</th>
-                        <th>Retorno</th>
-                        <th>Maquinista</th>
-                        <th>Agente</th>
-                        <th>Hora</th>
-                        <th>Pagantes</th>
-                        <th>Moradores</th>
-                        <th>Gratuitos</th>
-                        <th>Total Passageiros</th>
-                    </tr>
-                `;
-                const reportData = [];
-                bondes.forEach(bonde => {
-                    rotas.forEach(rota => {
-                        const bondesViagens = filteredViagens.filter(t => t.bonde === bonde && t.saida === rota.saida && t.retorno === rota.retorno);
-                        if (bondesViagens.length > 0) {
-                            bondesViagens.forEach(viagem => {
-                                const pagantes = parseInt(viagem.pagantes);
-                                const moradores = parseInt(viagem.moradores);
-                                const gratuitos = parseInt(viagem.gratPcdIdoso);
-                                const total = pagantes + moradores + gratuitos;
-                                if (total > 0) {
-                                    reportData.push({ 
-                                        bonde: viagem.bonde, 
-                                        saida: rota.saida, 
-                                        retorno: rota.retorno, 
-                                        maquinista: viagem.maquinista || 'N/A',
-                                        agente: viagem.agente || 'N/A',
-                                        hora: viagem.hora || 'N/A',
-                                        pagantes, 
-                                        moradores, 
-                                        gratuitos, 
-                                        total 
-                                    });
-                                }
-                            });
-                        }
+            reportTableHead.innerHTML = `
+                <tr>
+                    <th>Data</th>
+                    <th>Bonde</th>
+                    <th>Saída</th>
+                    <th>Retorno</th>
+                    <th>Maquinista</th>
+                    <th>Agente</th>
+                    <th>Hora</th>
+                    <th>Pagantes</th>
+                    <th>Moradores</th>
+                    <th>Gratuitos</th>
+                    <th>Total Passageiros</th>
+                </tr>
+            `;
+
+            const reportData = [];
+            filteredViagens.forEach(viagem => {
+                const pagantes = parseInt(viagem.pagantes);
+                const moradores = parseInt(viagem.moradores);
+                const gratuitos = parseInt(viagem.gratPcdIdoso);
+                const total = pagantes + moradores + gratuitos;
+                if (total > 0) {
+                    reportData.push({ 
+                        data: viagem.data,
+                        bonde: viagem.bonde, 
+                        saida: viagem.saida, 
+                        retorno: viagem.retorno, 
+                        maquinista: viagem.maquinista || 'N/A',
+                        agente: viagem.agente || 'N/A',
+                        hora: viagem.hora || 'N/A',
+                        pagantes, 
+                        moradores, 
+                        gratuitos, 
+                        total 
                     });
-                });
-
-                reportData.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.bonde}</td>
-                        <td>${row.saida}</td>
-                        <td>${row.retorno}</td>
-                        <td>${row.maquinista}</td>
-                        <td>${row.agente}</td>
-                        <td>${row.hora}</td>
-                        <td>${row.pagantes}</td>
-                        <td>${row.moradores}</td>
-                        <td>${row.gratuitos}</td>
-                        <td>${row.total}</td>
-                    `;
-                    reportTableBody.appendChild(tr);
-                });
-
-                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
-                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
-                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
-                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
-
-                summaryContent.innerHTML = `
-                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
-                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
-                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
-                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
-                `;
-                currentReportData = { type: 'diario', date: dateValue, data: reportData, bondeTotals, routeTotals, hourlyCariocaTotals, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros } };
-
-            } else if (reportType === 'semanal') {
-                const { start, end } = getWeekStartEnd(dateValue);
-                filteredViagens = filteredViagens.filter(t => {
-                    const transactionDate = new Date(t.data);
-                    return transactionDate >= start && transactionDate <= end;
-                });
-                reportTableHead.innerHTML = `
-                    <tr>
-                        <th>Data</th>
-                        <th>Bonde</th>
-                        <th>Saída</th>
-                        <th>Retorno</th>
-                        <th>Maquinista</th>
-                        <th>Agente</th>
-                        <th>Hora</th>
-                        <th>Pagantes</th>
-                        <th>Moradores</th>
-                        <th>Gratuitos</th>
-                        <th>Total Passageiros</th>
-                    </tr>
-                `;
-                const reportData = [];
-                const dates = [];
-                let currentDate = new Date(start);
-                while (currentDate <= end) {
-                    dates.push(formatDate(currentDate));
-                    currentDate.setDate(currentDate.getDate() + 1);
                 }
+            });
 
-                dates.forEach(date => {
-                    bondes.forEach(bonde => {
-                        rotas.forEach(rota => {
-                            const bondesViagens = filteredViagens.filter(t => t.data === date && t.bonde === bonde && t.saida === rota.saida && t.retorno === rota.retorno);
-                            if (bondesViagens.length > 0) {
-                                bondesViagens.forEach(viagem => {
-                                    const pagantes = parseInt(viagem.pagantes);
-                                    const moradores = parseInt(viagem.moradores);
-                                    const gratuitos = parseInt(viagem.gratPcdIdoso);
-                                    const total = pagantes + moradores + gratuitos;
-                                    if (total > 0) {
-                                        reportData.push({ 
-                                            date, 
-                                            bonde, 
-                                            saida: rota.saida, 
-                                            retorno: rota.retorno, 
-                                            maquinista: viagem.maquinista || 'N/A',
-                                            agente: viagem.agente || 'N/A',
-                                            hora: viagem.hora || 'N/A',
-                                            pagantes, 
-                                            moradores, 
-                                            gratuitos, 
-                                            total 
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    });
-                });
-
-                reportData.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.date}</td>
-                        <td>${row.bonde}</td>
-                        <td>${row.saida}</td>
-                        <td>${row.retorno}</td>
-                        <td>${row.maquinista}</td>
-                        <td>${row.agente}</td>
-                        <td>${row.hora}</td>
-                        <td>${row.pagantes}</td>
-                        <td>${row.moradores}</td>
-                        <td>${row.gratuitos}</td>
-                        <td>${row.total}</td>
-                    `;
-                    reportTableBody.appendChild(tr);
-                });
-
-                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
-                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
-                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
-                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
-
-                summaryContent.innerHTML = `
-                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
-                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
-                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
-                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
+            reportData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.data}</td>
+                    <td>${row.bonde}</td>
+                    <td>${row.saida}</td>
+                    <td>${row.retorno}</td>
+                    <td>${row.maquinista}</td>
+                    <td>${row.agente}</td>
+                    <td>${row.hora}</td>
+                    <td>${row.pagantes}</td>
+                    <td>${row.moradores}</td>
+                    <td>${row.gratuitos}</td>
+                    <td>${row.total}</td>
                 `;
-                currentReportData = { type: 'semanal', date: dateValue, data: reportData, bondeTotals, routeTotals, hourlyCariocaTotals, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros } };
+                reportTableBody.appendChild(tr);
+            });
 
-            } else if (reportType === 'mensal') {
-                const year = parseInt(dateValue);
-                const month = parseInt(monthValue);
-                filteredViagens = filteredViagens.filter(t => {
-                    const transactionDate = new Date(t.data);
-                    return transactionDate.getFullYear() === year && transactionDate.getMonth() === month;
-                });
-                reportTableHead.innerHTML = `
-                    <tr>
-                        <th>Data</th>
-                        <th>Bonde</th>
-                        <th>Saída</th>
-                        <th>Retorno</th>
-                        <th>Maquinista</th>
-                        <th>Agente</th>
-                        <th>Hora</th>
-                        <th>Pagantes</th>
-                        <th>Moradores</th>
-                        <th>Gratuitos</th>
-                        <th>Total Passageiros</th>
-                    </tr>
-                `;
-                const reportData = [];
-                const dates = [];
-                const startDate = new Date(year, month, 1);
-                const endDate = new Date(year, month + 1, 0);
-                let currentDate = new Date(startDate);
-                while (currentDate <= endDate) {
-                    dates.push(formatDate(currentDate));
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
+            const summaryData = {
+                'Total Pagantes': generalTotals.totalPagantes,
+                'Total Moradores': generalTotals.totalMoradores,
+                'Total Gratuitos': generalTotals.totalGratuitos,
+                'Total Passageiros': generalTotals.totalPassageiros,
+                'Total Viagens': generalTotals.totalViagens
+            };
 
-                dates.forEach(date => {
-                    bondes.forEach(bonde => {
-                        rotas.forEach(rota => {
-                            const bondesViagens = filteredViagens.filter(t => t.data === date && t.bonde === bonde && t.saida === rota.saida && t.retorno === rota.retorno);
-                            if (bondesViagens.length > 0) {
-                                bondesViagens.forEach(viagem => {
-                                    const pagantes = parseInt(viagem.pagantes);
-                                    const moradores = parseInt(viagem.moradores);
-                                    const gratuitos = parseInt(viagem.gratPcdIdoso);
-                                    const total = pagantes + moradores + gratuitos;
-                                    if (total > 0) {
-                                        reportData.push({ 
-                                            date, 
-                                            bonde, 
-                                            saida: rota.saida, 
-                                            retorno: rota.retorno, 
-                                            maquinista: viagem.maquinista || 'N/A',
-                                            agente: viagem.agente || 'N/A',
-                                            hora: viagem.hora || 'N/A',
-                                            pagantes, 
-                                            moradores, 
-                                            gratuitos, 
-                                            total 
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    });
-                });
+            summaryContent.innerHTML = `
+                <div class="summary-item"><span>Total Pagantes</span><span>${generalTotals.totalPagantes}</span></div>
+                <div class="summary-item"><span>Total Moradores</span><span>${generalTotals.totalMoradores}</span></div>
+                <div class="summary-item"><span>Total Gratuitos</span><span>${generalTotals.totalGratuitos}</span></div>
+                <div class="summary-item"><span>Total Passageiros</span><span>${generalTotals.totalPassageiros}</span></div>
+                <div class="summary-item"><span>Total Viagens</span><span>${generalTotals.totalViagens}</span></div>
+            `;
 
-                reportData.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.date}</td>
-                        <td>${row.bonde}</td>
-                        <td>${row.saida}</td>
-                        <td>${row.retorno}</td>
-                        <td>${row.maquinista}</td>
-                        <td>${row.agente}</td>
-                        <td>${row.hora}</td>
-                        <td>${row.pagantes}</td>
-                        <td>${row.moradores}</td>
-                        <td>${row.gratuitos}</td>
-                        <td>${row.total}</td>
-                    `;
-                    reportTableBody.appendChild(tr);
-                });
-
-                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
-                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
-                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
-                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
-                const totalDays = dates.length;
-                const mediaDiaria = totalDays > 0 ? Math.round(totalPassageiros / totalDays) : 0;
-
-                summaryContent.innerHTML = `
-                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
-                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
-                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
-                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
-  
-                `;
-                currentReportData = { type: 'mensal', date: `${year}-${String(month + 1).padStart(2, '0')}`, data: reportData, bondeTotals, routeTotals, hourlyCariocaTotals, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros, mediaDiaria } };
-
-            } else if (reportType === 'anual') {
-                const year = parseInt(dateValue);
-                filteredViagens = filteredViagens.filter(t => new Date(t.data).getFullYear() === year);
-                reportTableHead.innerHTML = `
-                    <tr>
-                        <th>Bonde</th>
-                        <th>Saída</th>
-                        <th>Retorno</th>
-                        <th>Pagantes</th>
-                        <th>Moradores</th>
-                        <th>Gratuitos</th>
-                        <th>Total Passageiros</th>
-                
-                    </tr>
-                `;
-                const reportData = [];
-                bondes.forEach(bonde => {
-                    rotas.forEach(rota => {
-                        const bondesViagens = filteredViagens.filter(t => t.bonde === bonde && t.saida === rota.saida && t.retorno === rota.retorno);
-                        if (bondesViagens.length > 0) {
-                            const pagantes = bondesViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0);
-                            const moradores = bondesViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0);
-                            const gratuitos = bondesViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0);
-                            const total = pagantes + moradores + gratuitos;
-                            const monthsWithData = new Set(bondesViagens.map(t => new Date(t.data).getMonth())).size;
-                            const mediaMensal = monthsWithData > 0 ? Math.round(total / monthsWithData) : 0;
-                            if (total > 0) {
-                                reportData.push({ bonde, saida: rota.saida, retorno: rota.retorno, pagantes, moradores, gratuitos, total, mediaMensal });
-                            }
-                        }
-                    });
-                });
-
-                reportData.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.bonde}</td>
-                        <td>${row.saida}</td>
-                        <td>${row.retorno}</td>
-                        <td>${row.pagantes}</td>
-                        <td>${row.moradores}</td>
-                        <td>${row.gratuitos}</td>
-                        <td>${row.total}</td>
-               
-                    `;
-                    reportTableBody.appendChild(tr);
-                });
-
-                const totalPagantes = reportData.reduce((sum, row) => sum + row.pagantes, 0);
-                const totalMoradores = reportData.reduce((sum, row) => sum + row.moradores, 0);
-                const totalGratuitos = reportData.reduce((sum, row) => sum + row.gratuitos, 0);
-                const totalPassageiros = totalPagantes + totalMoradores + totalGratuitos;
-                const monthsWithData = new Set(filteredViagens.map(t => new Date(t.data).getMonth())).size;
-                const mediaMensalTotal = monthsWithData > 0 ? Math.round(totalPassageiros / monthsWithData) : 0;
-
-                summaryContent.innerHTML = `
-                    <div class="summary-item"><span>Total Pagantes</span><span>${totalPagantes}</span></div>
-                    <div class="summary-item"><span>Total Moradores</span><span>${totalMoradores}</span></div>
-                    <div class="summary-item"><span>Total Gratuitos</span><span>${totalGratuitos}</span></div>
-                    <div class="summary-item"><span>Total Passageiros</span><span>${totalPassageiros}</span></div>
-                 
-                `;
-                currentReportData = { type: 'anual', date: dateValue, data: reportData, bondeTotals, routeTotals, hourlyCariocaTotals, summary: { totalPagantes, totalMoradores, totalGratuitos, totalPassageiros, mediaMensalTotal } };
-            }
+            currentReportData = {
+                date: reportType === 'periodo' ? `${dateStart} a ${dateEnd}` : dateValue,
+                summary: summaryData,
+                bondeTotals,
+                routeTotals,
+                hourlyCariocaTotals
+            };
 
             if (reportTableBody.children.length === 0) {
                 const tr = document.createElement('tr');
@@ -943,275 +1008,284 @@ try {
             }
         }
 
-       function exportToPDF() {
-    if (!currentReportData) {
-        alert('Por favor, gere um relatório antes de exportar.');
-        return;
-    }
-
-    const userName = document.getElementById('user-name').value || 'USUÁRIO NÃO INFORMADO';
-    const userRegistration = document.getElementById('user-registration').value || 'MATRÍCULA NÃO INFORMADA';
-    const reportType = document.getElementById('report-type').value;
-    const planType = reportType === 'anual' ? 'Plano Anual' : 'Plano Mensal';
-
-    const doc = new jsPDF('landscape', 'mm', 'a4');
-            
-    doc.setFillColor(25, 40, 68);
-    doc.rect(0, 0, 297, 40, 'F');
-            
-    // Main title with standardized font size
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
-    doc.setFont(undefined, 'bold');
-    doc.text('Secretaria de Estado de Transporte', 148.5, 12, { align: 'center' });
-    doc.text('e Mobilidade Urbana', 148.5, 20, { align: 'center' });
-            
-    doc.setFontSize(10);
-    doc.setFont(undefined, 'bold');
-    const currentDate = new Date().toLocaleDateString('pt-BR');
-    doc.text(`Relatório Elaborado por: ${userName}`, 148.5, 28, { align: 'center' });
-    doc.text(`Matrícula: ${userRegistration}`, 148.5, 32, { align: 'center' });
-    doc.text(`Data do relatório: ${currentDate} | ${planType}`, 148.5, 36, { align: 'center' });
-
-    doc.setDrawColor(25, 40, 68);
-    doc.setLineWidth(1);
-    doc.line(10, 45, 287, 45);
-
-    // Reset text color for content
-    doc.setTextColor(0, 0, 0);
-            
-    const dateValue = currentReportData.date;
-            
-    doc.setFontSize(14);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(25, 40, 68);
-    const title = `Relatório ${reportType.charAt(0).toUpperCase() + reportType.slice(1)} - Bondes Santa Teresa - ${dateValue}`;
-    doc.text(title, 148.5, 55, { align: 'center' });
-
-    const headers = Array.from(reportTableHead.children[0].children).map(th => th.textContent);
-    const data = Array.from(reportTableBody.children).map(row =>
-        Array.from(row.children).map(cell => cell.textContent)
-    );
-
-    if (headers.length === 0 || data.length === 0) {
-        alert('Nenhum dado disponível para exportar.');
-        return;
-    }
-
-    doc.autoTable({
-        head: [headers],
-        body: data,
-        startY: 65,
-        theme: 'grid',
-        styles: { 
-            fontSize: 9, 
-            cellPadding: 3,
-            halign: 'center',
-            fontStyle: 'bold',
-            lineColor: [25, 40, 68],
-            lineWidth: 0.1 // Thinner lines as requested
-        },
-        headStyles: { 
-            fillColor: [25, 40, 68], 
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            fontSize: 10,
-            halign: 'center'
-        },
-        alternateRowStyles: { 
-            fillColor: [248, 250, 252] 
-        },
-        didParseCell: function(data) {
-            if (data.column.index === headers.indexOf('Retorno') && data.cell.text[0] === 'Carioca') {
-                data.cell.styles.textColor = [220, 53, 69];
-                data.cell.styles.fontStyle = 'bold';
+        function exportToPDF() {
+            if (!currentReportData) {
+                alert('Por favor, gere um relatório antes de exportar.');
+                return;
             }
-        }
-    });
 
-    let finalY = doc.lastAutoTable.finalY + 15;
+            const userName = document.getElementById('user-name').value || 'USUÁRIO NÃO INFORMADO';
+            const userRegistration = document.getElementById('user-registration').value || 'MATRÍCULA NÃO INFORMADA';
+            const reportType = document.getElementById('report-type').value;
+            const planType = reportType === 'anual' ? 'Plano Anual' : 'Plano Mensal';
+
+            const doc = new jsPDF('landscape', 'mm', 'a4');
             
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(25, 40, 68);
-    doc.text('RESUMO EXECUTIVO', 148.5, finalY, { align: 'center' });
+            doc.setFillColor(25, 40, 68);
+            doc.rect(0, 0, 297, 40, 'F');
             
-    finalY += 8;
+            // Main title with standardized font size
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('Secretaria de Estado de Transporte', 148.5, 12, { align: 'center' });
+            doc.text('e Mobilidade Urbana', 148.5, 20, { align: 'center' });
             
-    const summaryData = Object.entries(currentReportData.summary).map(([key, value]) => {
-        const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-        return [label, value];
-    });
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            const currentDate = new Date().toLocaleDateString('pt-BR');
+            doc.text(`Relatório Elaborado por: ${userName}`, 148.5, 28, { align: 'center' });
+            doc.text(`Matrícula: ${userRegistration}`, 148.5, 32, { align: 'center' });
+            doc.text(`Data do relatório: ${currentDate} | ${planType}`, 148.5, 36, { align: 'center' });
 
-    doc.autoTable({
-        body: summaryData,
-        startY: finalY,
-        theme: 'grid',
-        styles: { 
-            fontSize: 9, 
-            cellPadding: 3,
-            halign: 'center',
-            fontStyle: 'bold',
-            lineColor: [25, 40, 68],
-            lineWidth: 0.1
-        },
-        columnStyles: {
-            0: { cellWidth: 80, fillColor: [25, 40, 68], textColor: [255, 255, 255] },
-            1: { cellWidth: 40, fillColor: [248, 250, 252] }
-        }
-    });
+            doc.setDrawColor(25, 40, 68);
+            doc.setLineWidth(1);
+            doc.line(10, 45, 287, 45);
 
-    finalY = doc.lastAutoTable.finalY + 20;
+            // Reset text color for content
+            doc.setTextColor(0, 0, 0);
             
-    // TOTAIS POR BONDE - primeira seção
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(25, 40, 68);
-    doc.text('TOTAIS POR BONDE', 148.5, finalY, { align: 'center' });
+            const dateValue = currentReportData.date;
             
-    finalY += 8;
-            
-    const bondeHeaders = ['Bonde', 'Pagantes', 'Moradores', 'Gratuitos', 'Total'];
-    const bondeData = currentReportData.bondeTotals.map(row => [row.bonde, row.totalPagantes, row.totalMoradores, row.totalGratuitos, row.total]);
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(25, 40, 68);
+            const title = `Relatório ${reportType.charAt(0).toUpperCase() + reportType.slice(1)} - Bondes Santa Teresa - ${dateValue}`;
+            doc.text(title, 148.5, 55, { align: 'center' });
 
-    doc.autoTable({
-        head: [bondeHeaders],
-        body: bondeData,
-        startY: finalY,
-        margin: { left: 10, right: 10 },
-        theme: 'grid',
-        showHead: 'firstPage',
-        styles: { 
-            fontSize: 9, 
-            cellPadding: 4,
-            halign: 'center',
-            fontStyle: 'bold',
-            lineColor: [25, 40, 68],
-            lineWidth: 0.1
-        },
-        headStyles: { 
-            fillColor: [25, 40, 68], 
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            halign: 'center'
-        },
-        columnStyles: {
-            0: { cellWidth: 40 }, // Bonde - mais espaço para o nome
-            1: { cellWidth: 30 }, // Pagantes
-            2: { cellWidth: 30 }, // Moradores  
-            3: { cellWidth: 30 }, // Gratuitos
-            4: { cellWidth: 30 }  // Total
-        }
-    });
+            const headers = Array.from(reportTableHead.children[0].children).map(th => th.textContent);
+            const data = Array.from(reportTableBody.children).map(row =>
+                Array.from(row.children).map(cell => cell.textContent)
+            );
 
-    finalY = doc.lastAutoTable.finalY + 20;
-
-    // TOTAIS POR ROTA - segunda seção
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(25, 40, 68);
-    doc.text('TOTAIS POR ROTA', 148.5, finalY, { align: 'center' });
-            
-    finalY += 8;
-
-    const routeHeaders = ['Saída', 'Retorno', 'Pagantes', 'Moradores', 'Gratuitos', 'Total'];
-    const routeData = currentReportData.routeTotals.map(row => [row.saida, row.retorno, row.totalPagantes, row.totalMoradores, row.totalGratuitos, row.total]);
-
-    doc.autoTable({
-        head: [routeHeaders],
-        body: routeData,
-        startY: finalY,
-        margin: { left: 10, right: 10 },
-        theme: 'grid',
-        showHead: 'firstPage',
-        styles: { 
-            fontSize: 9, 
-            cellPadding: 4,
-            halign: 'center',
-            fontStyle: 'bold',
-            lineColor: [25, 40, 68],
-            lineWidth: 0.1
-        },
-        headStyles: { 
-            fillColor: [25, 40, 68], 
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            halign: 'center'
-        },
-        columnStyles: {
-            0: { cellWidth: 35 }, // Saída - mais espaço para nomes de locais
-            1: { cellWidth: 35 }, // Retorno - mais espaço para nomes de locais
-            2: { cellWidth: 25 }, // Pagantes
-            3: { cellWidth: 25 }, // Moradores
-            4: { cellWidth: 25 }, // Gratuitos
-            5: { cellWidth: 25 }  // Total
-        },
-        didParseCell: function(data) {
-            if ((data.column.index === 0 || data.column.index === 1) && data.cell.text[0] === 'Carioca') {
-                data.cell.styles.textColor = [220, 53, 69];
-                data.cell.styles.fontStyle = 'bold';
+            if (headers.length === 0 || data.length === 0) {
+                alert('Nenhum dado disponível para exportar.');
+                return;
             }
-        }
-    });
 
-    finalY = doc.lastAutoTable.finalY + 20;
+            doc.autoTable({
+                head: [headers],
+                body: data,
+                startY: 65,
+                theme: 'grid',
+                styles: { 
+                    fontSize: 9, 
+                    cellPadding: 3,
+                    halign: 'center',
+                    fontStyle: 'bold',
+                    lineColor: [25, 40, 68],
+                    lineWidth: 0.1 // Thinner lines as requested
+                },
+                headStyles: { 
+                    fillColor: [25, 40, 68], 
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold',
+                    fontSize: 10,
+                    halign: 'center'
+                },
+                alternateRowStyles: { 
+                    fillColor: [248, 250, 252] 
+                },
+                didParseCell: function(data) {
+                    if (data.column.index === headers.indexOf('Retorno') && data.cell.text[0] === 'Carioca') {
+                        data.cell.styles.textColor = [220, 53, 69];
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                }
+            });
 
-    // PASSAGEIROS POR HORA - terceira seção
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
-    doc.setTextColor(25, 40, 68);
-    doc.text('PASSAGEIROS POR HORA', 148.5, finalY, { align: 'center' });
+            let finalY = doc.lastAutoTable.finalY + 15;
             
-    finalY += 8;
-
-    const hourlyCariocaHeaders = ['Hora', 'Pagantes', 'Moradores', 'Gratuitos', 'Total'];
-    const hourlyCariocaData = currentReportData.hourlyCariocaTotals.slice(0, 8).map(row => [row.hora, row.totalPagantes, row.totalMoradores, row.totalGratuitos, row.total]);
-
-    doc.autoTable({
-        head: [hourlyCariocaHeaders],
-        body: hourlyCariocaData,
-        startY: finalY,
-        margin: { left: 10, right: 10 },
-        theme: 'grid',
-        showHead: 'firstPage',
-        styles: { 
-            fontSize: 9, 
-            cellPadding: 4,
-            halign: 'center',
-            fontStyle: 'bold',
-            lineColor: [25, 40, 68],
-            lineWidth: 0.1
-        },
-        headStyles: { 
-            fillColor: [25, 40, 68], 
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            halign: 'center'
-        },
-        columnStyles: {
-            0: { cellWidth: 50 }, // Hora - mais espaço para formato de hora
-            1: { cellWidth: 25 }, // Pagantes
-            2: { cellWidth: 25 }, // Moradores
-            3: { cellWidth: 25 }, // Gratuitos
-            4: { cellWidth: 25 }  // Total
-        }
-    });
-
-    doc.setDrawColor(25, 40, 68);
-    doc.setLineWidth(1);
-    doc.line(10, 190, 287, 190);
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(25, 40, 68);
+            doc.text('RESUMO EXECUTIVO', 148.5, finalY, { align: 'center' });
             
-    doc.setTextColor(25, 40, 68);
-    doc.setFontSize(9);
-    doc.setFont(undefined, 'bold');
-    doc.text('Secretaria de Estado de Transporte e Mobilidade Urbana', 10, 195);
-    doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 287, 195, { align: 'right' });
-    doc.text('Página 1 de 1', 148.5, 195, { align: 'center' });
+            finalY += 8;
+            
+            const summaryData = Object.entries(currentReportData.summary).map(([key, value]) => {
+                const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                return [label, value];
+            });
+
+            doc.autoTable({
+                body: summaryData,
+                startY: finalY,
+                theme: 'grid',
+                styles: { 
+                    fontSize: 9, 
+                    cellPadding: 3,
+                    halign: 'center',
+                    fontStyle: 'bold',
+                    lineColor: [25, 40, 68],
+                    lineWidth: 0.1
+                },
+                columnStyles: {
+                    0: { cellWidth: 80, fillColor: [25, 40, 68], textColor: [255, 255, 255] },
+                    1: { cellWidth: 40, fillColor: [248, 250, 252] }
+                }
+            });
+
+            finalY = doc.lastAutoTable.finalY + 20;
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(25, 40, 68);
+            doc.text('TOTAIS POR BONDE', 148.5, finalY, { align: 'center' });
+            
+            finalY += 8;
+            
+            const bondeHeaders = ['Bonde', 'Pagantes', 'Moradores', 'Gratuitos', 'Total Passageiros', 'Total Viagens', 'Viagens Ida', 'Viagens Retorno'];
+            const bondeData = currentReportData.bondeTotals.map(row => [
+                row.bonde, 
+                row.totalPagantes, 
+                row.totalMoradores, 
+                row.totalGratuitos, 
+                row.total,
+                row.totalViagens,
+                row.viagensIda,
+                row.viagensRetorno
+            ]);
+
+            doc.autoTable({
+                head: [bondeHeaders],
+                body: bondeData,
+                startY: finalY,
+                margin: { left: 10, right: 10 },
+                theme: 'grid',
+                showHead: 'firstPage',
+                styles: { 
+                    fontSize: 8, 
+                    cellPadding: 3,
+                    halign: 'center',
+                    fontStyle: 'bold',
+                    lineColor: [25, 40, 68],
+                    lineWidth: 0.1
+                },
+                headStyles: { 
+                    fillColor: [25, 40, 68], 
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                columnStyles: {
+                    0: { cellWidth: 25 }, // Bonde
+                    1: { cellWidth: 25 }, // Pagantes
+                    2: { cellWidth: 25 }, // Moradores  
+                    3: { cellWidth: 25 }, // Gratuitos
+                    4: { cellWidth: 30 }, // Total Passageiros
+                    5: { cellWidth: 25 }, // Total Viagens
+                    6: { cellWidth: 25 }, // Viagens Ida
+                    7: { cellWidth: 25 }  // Viagens Retorno
+                }
+            });
+
+            finalY = doc.lastAutoTable.finalY + 20;
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(25, 40, 68);
+            doc.text('TOTAIS POR ROTA', 148.5, finalY, { align: 'center' });
+            
+            finalY += 8;
+
+            const routeHeaders = ['Saída', 'Retorno', 'Pagantes', 'Moradores', 'Gratuitos', 'Total', 'Total Viagens'];
+            const routeData = currentReportData.routeTotals.map(row => [row.saida, row.retorno, row.totalPagantes, row.totalMoradores, row.totalGratuitos, row.total, row.totalViagens]);
+
+            doc.autoTable({
+                head: [routeHeaders],
+                body: routeData,
+                startY: finalY,
+                margin: { left: 10, right: 10 },
+                theme: 'grid',
+                showHead: 'firstPage',
+                styles: { 
+                    fontSize: 9, 
+                    cellPadding: 4,
+                    halign: 'center',
+                    fontStyle: 'bold',
+                    lineColor: [25, 40, 68],
+                    lineWidth: 0.1
+                },
+                headStyles: { 
+                    fillColor: [25, 40, 68], 
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                columnStyles: {
+                    0: { cellWidth: 35 }, // Saída - mais espaço para nomes de locais
+                    1: { cellWidth: 35 }, // Retorno - mais espaço para nomes de locais
+                    2: { cellWidth: 25 }, // Pagantes
+                    3: { cellWidth: 25 }, // Moradores
+                    4: { cellWidth: 25 }, // Gratuitos
+                    5: { cellWidth: 25 },  // Total
+                    6: { cellWidth: 25 }  // Total Viagens
+                },
+                didParseCell: function(data) {
+                    if ((data.column.index === 0 || data.column.index === 1) && data.cell.text[0] === 'Carioca') {
+                        data.cell.styles.textColor = [220, 53, 69];
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                }
+            });
+
+            finalY = doc.lastAutoTable.finalY + 20;
+
+            // PASSAGEIROS POR HORA - terceira seção
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(25, 40, 68);
+            doc.text('PASSAGEIROS POR HORA', 148.5, finalY, { align: 'center' });
+            
+            finalY += 8;
+
+            const hourlyCariocaHeaders = ['Hora', 'Subida', 'Retorno'];
+            const hourlyCariocaData = currentReportData.hourlyCariocaTotals.slice(0, 8).map(row => [row.hora, row.subida, row.retorno]);
+
+            doc.autoTable({
+                head: [hourlyCariocaHeaders],
+                body: hourlyCariocaData,
+                startY: finalY,
+                margin: { left: 10, right: 10 },
+                theme: 'grid',
+                showHead: 'firstPage',
+                styles: { 
+                    fontSize: 9, 
+                    cellPadding: 4,
+                    halign: 'center',
+                    fontStyle: 'bold',
+                    lineColor: [25, 40, 68],
+                    lineWidth: 0.1
+                },
+                headStyles: { 
+                    fillColor: [25, 40, 68], 
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                columnStyles: {
+                    0: { cellWidth: 50 }, // Hora - mais espaço para formato de hora
+                    1: { cellWidth: 25 }, // Subida
+                    2: { cellWidth: 25 }  // Retorno
+                }
+            });
+
+            doc.setDrawColor(25, 40, 68);
+            doc.setLineWidth(1);
+            doc.line(10, 190, 287, 190);
+            
+            doc.setTextColor(25, 40, 68);
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'bold');
+            doc.text('Secretaria de Estado de Transporte e Mobilidade Urbana', 10, 195);
+            doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 287, 195, { align: 'right' });
+            doc.text('Página 1 de 1', 148.5, 195, { align: 'center' });
     
-    doc.text(`Data do Relatório: ${dateValue}`, 148.5, 200, { align: 'center' });
+            doc.text(`Data do Relatório: ${dateValue}`, 148.5, 200, { align: 'center' });
 
-    doc.save(`relatorio_${reportType}_${dateValue}.pdf`);
-}
+            doc.save(`relatorio_${reportType}_${dateValue}.pdf`);
+        }
 
         reportTypeInput.addEventListener('change', updateDateInput);
         document.getElementById('generate-report-btn').addEventListener('click', generateReport);

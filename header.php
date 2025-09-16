@@ -154,7 +154,7 @@ try {
             break;
         case 'ocorrencia':
             $menuItens = [
-       ['link' => 'painelocorrencia.php', 'nome' => 'Relatórios', 'icon' => 'cogs'],
+       ['link' => 'painelreportocorrencia.php', 'nome' => 'Relatórios', 'icon' => 'cogs'],
                 ['link' => 'reportacidentes.php', 'nome' => 'Home', 'icon' => 'home'],
                
                  ['link' => 'monitoramento.php', 'nome' => 'Monitoramento', 'icon' => 'home'],    

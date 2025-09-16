@@ -373,12 +373,12 @@ include 'header.php';
     <link rel="stylesheet" href="src/bonde/style/painelbonde.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <!-- SheetJS CDN com fallback local -->
-    <script src="https://unpkg.com/xlsx@0.20.3/dist/xlsx.full.min.js"></script>
+    <!-- jsPDF CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        // Fallback para versão local do SheetJS se o CDN falhar
-        if (typeof XLSX === 'undefined') {
-            document.write('<script src="/src/js/xlsx.full.min.js"><\/script>');
+        // Fallback para versão local do jsPDF se o CDN falhar
+        if (typeof jspdf === 'undefined') {
+            document.write('<script src="/src/js/jspdf.umd.min.js"><\/script>');
         }
     </script>
     <style>
@@ -568,7 +568,7 @@ include 'header.php';
                         <option value="mensal" selected>Mensal</option>
                         <option value="anual">Anual</option>
                     </select>
-                    <button class="export-button" onclick="exportarParaExcel()">Exportar para Excel</button>
+                    <button class="export-button" onclick="exportarParaPDF()">Exportar para PDF</button>
                 </div>
                 <div class="cards-grid">
                     <div class="card">
@@ -1036,18 +1036,30 @@ include 'header.php';
             atualizarGraficoPassageirosHorario(periodo);
         }
 
-        // Função para exportar os dados para Excel
-        function exportarParaExcel() {
-            if (typeof XLSX === 'undefined' || !XLSX.utils || !XLSX.write_file) {
-                console.error('SheetJS library is not loaded or write_file is not available.');
-                alert('Erro: A biblioteca de exportação para Excel não foi carregada corretamente. Tente novamente mais tarde.');
+        // Função para exportar os dados para PDF
+        function exportarParaPDF() {
+            const { jsPDF } = window.jspdf;
+            if (!jsPDF) {
+                console.error('jsPDF library is not loaded.');
+                alert('Erro: A biblioteca de exportação para PDF não foi carregada corretamente. Tente novamente mais tarde.');
                 return;
             }
 
+            const doc = new jsPDF();
             const periodo = document.getElementById('globalPeriodSelect').value;
-            const wb = XLSX.utils.book_new();
+            const periodoNome = periodo === 'diario' ? 'Diário' : periodo === 'mensal' ? 'Mensal' : 'Anual';
+            const dataAtual = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            let y = 10;
 
-            // Aba: Métricas Gerais
+            // Título do documento
+            doc.setFontSize(16);
+            doc.text(`Relatório de Painel Bonde - ${periodoNome}`, 10, y);
+            y += 10;
+
+            // Seção: Métricas Gerais
+            doc.setFontSize(14);
+            doc.text('Métricas Gerais', 10, y);
+            y += 10;
             const metricasGerais = [
                 ['Métrica', 'Valor'],
                 ['Total de Bondes', <?php echo $total_bondes; ?>],
@@ -1057,60 +1069,110 @@ include 'header.php';
                 ['Moradores', dadosCards[periodo].moradores],
                 ['Gratuidade', dadosCards[periodo].gratuidade]
             ];
-            const wsMetricas = XLSX.utils.aoa_to_sheet(metricasGerais);
-            XLSX.utils.book_append_sheet(wb, wsMetricas, 'Métricas Gerais');
+            doc.autoTable({
+                startY: y,
+                head: [metricasGerais[0]],
+                body: metricasGerais.slice(1),
+                theme: 'grid',
+                headStyles: { fillColor: [44, 62, 80] },
+                styles: { fontSize: 10, cellPadding: 2 }
+            });
+            y = doc.lastAutoTable.finalY + 10;
 
-            // Aba: Distribuição de Passageiros
+            // Seção: Distribuição de Passageiros
+            doc.setFontSize(14);
+            doc.text('Distribuição de Passageiros', 10, y);
+            y += 10;
             const distPassageiros = [
                 ['Categoria', 'Quantidade'],
                 ['Pagantes', dadosPassageiros[periodo].pagantes],
                 ['Moradores', dadosPassageiros[periodo].moradores],
                 ['Gratuidade', dadosPassageiros[periodo].gratuidade]
             ];
-            const wsDistPassageiros = XLSX.utils.aoa_to_sheet(distPassageiros);
-            XLSX.utils.book_append_sheet(wb, wsDistPassageiros, 'Dist. Passageiros');
+            doc.autoTable({
+                startY: y,
+                head: [distPassageiros[0]],
+                body: distPassageiros.slice(1),
+                theme: 'grid',
+                headStyles: { fillColor: [44, 62, 80] },
+                styles: { fontSize: 10, cellPadding: 2 }
+            });
+            y = doc.lastAutoTable.finalY + 10;
 
-            // Aba: Bondes com Mais Viagens
-            let wsBondesViagens;
+            // Seção: Bondes com Mais Viagens
+            doc.setFontSize(14);
+            doc.text('Bondes com Mais Viagens', 10, y);
+            y += 10;
             if (periodo === 'anual') {
                 const bondesViagensData = [['Bonde', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']];
                 dadosBondesViagens.anual.datasets.forEach(dataset => {
                     bondesViagensData.push([dataset.label, ...dataset.data]);
                 });
-                wsBondesViagens = XLSX.utils.aoa_to_sheet(bondesViagensData);
+                doc.autoTable({
+                    startY: y,
+                    head: [bondesViagensData[0]],
+                    body: bondesViagensData.slice(1),
+                    theme: 'grid',
+                    headStyles: { fillColor: [44, 62, 80] },
+                    styles: { fontSize: 10, cellPadding: 2 }
+                });
             } else {
                 const bondesViagensData = [['Bonde', 'Viagens']];
                 dadosBondesViagens[periodo].labels.forEach((label, index) => {
                     bondesViagensData.push([label, dadosBondesViagens[periodo].data[index]]);
                 });
-                wsBondesViagens = XLSX.utils.aoa_to_sheet(bondesViagensData);
+                doc.autoTable({
+                    startY: y,
+                    head: [bondesViagensData[0]],
+                    body: bondesViagensData.slice(1),
+                    theme: 'grid',
+                    headStyles: { fillColor: [44, 62, 80] },
+                    styles: { fontSize: 10, cellPadding: 2 }
+                });
             }
-            XLSX.utils.book_append_sheet(wb, wsBondesViagens, 'Bondes Mais Viagens');
+            y = doc.lastAutoTable.finalY + 10;
 
-            // Aba: Viagens por Dia da Semana
+            // Seção: Viagens por Dia da Semana
+            doc.setFontSize(14);
+            doc.text('Viagens por Dia da Semana', 10, y);
+            y += 10;
             const viagensDiaSemanaData = [['Dia da Semana', 'Viagens']];
             dadosViagensDiaSemana[periodo].labels.forEach((label, index) => {
                 viagensDiaSemanaData.push([label, dadosViagensDiaSemana[periodo].data[index]]);
             });
-            const wsViagensDiaSemana = XLSX.utils.aoa_to_sheet(viagensDiaSemanaData);
-            XLSX.utils.book_append_sheet(wb, wsViagensDiaSemana, 'Viagens por Dia');
+            doc.autoTable({
+                startY: y,
+                head: [viagensDiaSemanaData[0]],
+                body: viagensDiaSemanaData.slice(1),
+                theme: 'grid',
+                headStyles: { fillColor: [44, 62, 80] },
+                styles: { fontSize: 10, cellPadding: 2 }
+            });
+            y = doc.lastAutoTable.finalY + 10;
 
-            // Aba: Fluxo de Passageiros por Horário
+            // Seção: Fluxo de Passageiros por Horário
+            doc.setFontSize(14);
+            doc.text('Fluxo de Passageiros por Horário', 10, y);
+            y += 10;
             const passageirosHorarioData = [['Horário', 'Passageiros']];
             dadosPassageirosHorario[periodo].labels.forEach((label, index) => {
                 passageirosHorarioData.push([label, dadosPassageirosHorario[periodo].data[index]]);
             });
-            const wsPassageirosHorario = XLSX.utils.aoa_to_sheet(passageirosHorarioData);
-            XLSX.utils.book_append_sheet(wb, wsPassageirosHorario, 'Fluxo Passageiros');
+            doc.autoTable({
+                startY: y,
+                head: [passageirosHorarioData[0]],
+                body: passageirosHorarioData.slice(1),
+                theme: 'grid',
+                headStyles: { fillColor: [44, 62, 80] },
+                styles: { fontSize: 10, cellPadding: 2 }
+            });
 
-            // Gera o arquivo Excel com nome dinâmico baseado no período e na data
-            const periodoNome = periodo === 'diario' ? 'Diario' : periodo === 'mensal' ? 'Mensal' : 'Anual';
-            const dataAtual = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            // Gera o arquivo PDF com nome dinâmico baseado no período e na data
             try {
-                XLSX.write_file(wb, `Painel_Bonde_${periodoNome}_${dataAtual}.xlsx`);
+                doc.save(`Painel_Bonde_${periodoNome}_${dataAtual}.pdf`);
             } catch (error) {
-                console.error('Erro ao gerar o arquivo Excel:', error);
-                alert('Erro ao exportar para Excel. Por favor, tente novamente.');
+                console.error('Erro ao gerar o arquivo PDF:', error);
+                alert('Erro ao exportar para PDF. Por favor, tente novamente.');
             }
         }
 

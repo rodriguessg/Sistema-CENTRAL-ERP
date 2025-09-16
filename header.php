@@ -53,7 +53,7 @@ try {
                 ['link' => 'homefinanceiro.php', 'nome' => 'Financeiro', 'icon' => 'money-bill'],
                 ['link' => 'homepatrimonio.php', 'nome' => 'Patrimônio', 'icon' => 'building'],
                  ['link' => 'homebonde.php', 'nome' => 'Operacao bonde', 'icon' => 'home'],
-                 ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios de Acidentes', 'icon' => 'home'],
+                //  ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios de Acidentes', 'icon' => 'home'],
                  ['link' => 'reportacidentes.php', 'nome' => 'Registrar Acidentes', 'icon' => 'home'],
                   ['link' => 'manutencaobonde.php', 'nome' => 'Registro de manutenção', 'icon' => 'home'],
                    ['link' => 'relatoriobonde.php', 'nome' => 'Relatório Bonde', 'icon' => 'home'],
@@ -127,7 +127,7 @@ try {
                 ['link' => 'painelbonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
                 ['link' => 'homebonde.php', 'nome' => 'Operacao', 'icon' => 'home'],      
                 ['link' => 'relatoriobonde.php', 'nome' => 'Relatório Bonde', 'icon' => 'home'],               
-                ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios de Acidentes', 'icon' => 'home'],
+                // ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios de Acidentes', 'icon' => 'home'],
                 ['link' => 'reportacidentes.php', 'nome' => 'Registrar Acidentes', 'icon' => 'home'],
                   ['link' => 'manutencaobonde.php', 'nome' => 'Registro de manutenção', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
@@ -154,9 +154,9 @@ try {
             break;
         case 'ocorrencia':
             $menuItens = [
-      
+       ['link' => 'painelocorrencia.php', 'nome' => 'Relatórios', 'icon' => 'cogs'],
                 ['link' => 'reportacidentes.php', 'nome' => 'Home', 'icon' => 'home'],
-                ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios', 'icon' => 'home'],
+               
                  ['link' => 'monitoramento.php', 'nome' => 'Monitoramento', 'icon' => 'home'],    
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
                 

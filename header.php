@@ -83,7 +83,8 @@ try {
                 ['link' => 'relatoriosplanejamento.php', 'nome' => 'Relatórios', 'icon' => 'home'],
             
             ];
-            break;    
+            break;   
+           
 
         case 'contratos':
             $menuItens = [
@@ -151,7 +152,17 @@ try {
   
             ];
             break;
-
+        case 'ocorrencia':
+            $menuItens = [
+      
+                ['link' => 'reportacidentes.php', 'nome' => 'Home', 'icon' => 'home'],
+                ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios', 'icon' => 'home'],
+                 ['link' => 'monitoramento.php', 'nome' => 'Monitoramento', 'icon' => 'home'],    
+                ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],
+                
+  
+            ];
+            break;
         default:
             // Caso o setor não seja reconhecido, redireciona para a página de erro
             header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=setor_nao_reconhecido&pagina=/Sistema-CENTRAL-ERP/login.php");
@@ -162,7 +173,14 @@ try {
     // Caso haja erro ao buscar informações do banco de dados, exibe a mensagem de erro
     die("Erro ao acessar as informações do usuário: " . $e->getMessage());
 }
+                                                                    // PASSO A PASSO PARA ADICIONAR UM NOVO MODULO
+                                                                                
+                                                                                //1. ATUALIZAR BANCO TABELA - USUARIOS E SETORES
+                                                                                //2. ATUALIZER HEADER  E LOGIN 
+                                                                                //3. ATUIALIZAR ETAPA CADASTRO DE USUARIO
 ?>
+
+
 
 <?php
 // Supondo que a variável $setor contém o setor do usuário logado (essa variável já deve estar definida)

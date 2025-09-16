@@ -83,6 +83,8 @@ function getRedirectionPage($setor) {
             return "RH.php";
         case 'contratos':
             return "painelcontratos.php";
+              case 'ocorrencia':
+            return "painelreportocorrencia.php";
         case 'ccooperacao':
             return 'operacao.php';
             case'sisbonde':

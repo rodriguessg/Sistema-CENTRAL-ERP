@@ -145,7 +145,7 @@ $printers = [
 $computers = [
     ['nome' => 'GETUWAY GERAL', 'ip' => '10.9.5.1'],
     ['nome' => 'BANCO DE DADOS TESTE', 'ip' => '10.9.5.48'],
-    ['nome' => 'BANCO DE DADOS SISTEAMA', 'ip' => '10.9.5.49'],
+    ['nome' => 'BANCO DE DADOS SISTEMA', 'ip' => '10.9.5.49'],
     ['nome' => 'COMPUTADOR', 'ip' => '10.9.5.50'],
     ['nome' => 'COMPUTADOR CCO', 'ip' => '10.9.28.140'],
     ['nome' => 'SERVIDOR', 'ip' => '10.11.92.131'],

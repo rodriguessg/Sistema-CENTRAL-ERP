@@ -98,6 +98,7 @@
                             <option value="ccooperacao">Bonde Operação</option>
                             <option value="sisbonde">Bonde Controle</option>
                             <option value="planejamento">planejamento</option>
+                            <option value="ocorrencia">ocorrencia</option>
                       
                         </select>
                     </div>

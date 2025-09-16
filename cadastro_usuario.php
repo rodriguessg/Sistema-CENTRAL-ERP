@@ -228,6 +228,7 @@ include 'header.php';
                        <option value="ccooperacao">Bonde Bilheteria</option>
                        <option value="cco">Sisbonde</option>
                        <option value="planejamento">planejamento</option>
+                          <option value="ocorrencia">ocorrencia</option>
                     </select>
                 </div>
                 <button type="submit" name="cadastrar">Cadastrar</button>

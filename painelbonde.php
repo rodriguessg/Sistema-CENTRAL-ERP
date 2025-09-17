@@ -367,10 +367,11 @@ include 'header.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Bonde</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="src/estoque/style/estoque-conteudo2.css">
-    <link rel="stylesheet" href="src/bonde/style/painelbonde.css">
+    <title>Painel Bonde - Dashboard Tecnológico</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <!-- jsPDF CDN -->
@@ -382,17 +383,61 @@ include 'header.php';
         }
     </script>
     <style>
+        :root {
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --info-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-card-hover: #1e2749;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #b8c5d6;
+            --text-muted: #8892b0;
+            
+            --border-color: #233554;
+            --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.3);
+            
+            --border-radius: 12px;
+            --border-radius-sm: 6px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #f4f6f8;
-            color: #333;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
             overflow-x: hidden;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         .dashboard-container {
@@ -400,238 +445,686 @@ include 'header.php';
             min-height: 100vh;
         }
 
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            width: calc(100% - 250px);
-            transition: all 0.3s ease;
+        .section {
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
         }
 
-        .section {
-            margin-bottom: 30px;
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .section h2 {
-            color: #2c3e50;
-            margin-bottom: 15px;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
             font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
         }
 
+        .section h2::before {
+            content: '';
+            width: 3px;
+            height: 1.5rem;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+
+        .section h2 i {
+            font-size: 1.2rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .period-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .period-select {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            min-width: 180px;
+        }
+
+        .period-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .export-button {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-light);
+        }
+
+        .export-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .export-button:active {
+            transform: translateY(0);
+        }
+
+        /* Reduced card sizes and improved grid layout */
         .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+               display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 0.5fr));
+    gap: 0.5rem;
         }
 
         .card {
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.2s;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            min-height: 120px;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: var(--transition);
         }
 
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-heavy);
+            border-color: rgba(102, 126, 234, 0.3);
+            background: var(--bg-card-hover);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding:0px;
+        }
+
+        .card-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            background: var(--primary-gradient);
+            box-shadow: var(--shadow-light);
         }
 
         .card h3 {
-            font-size: 1.1rem;
-            color: #7f8c8d;
-            margin-bottom: 10px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .card p {
+        .card-value {
             font-size: 1.8rem;
-            font-weight: 600;
-            color: #2c3e50;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
+        .card-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .trend-up {
+            color: #10b981;
+        }
+
+        .trend-down {
+            color: #ef4444;
+        }
+
+        .trend-neutral {
+            color: var(--text-muted);
+        }
+
+        /* Improved charts grid with hover zoom effects */
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
         }
 
         .chart-card {
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            height: 400px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            height: 320px;
             display: flex;
             flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        /* Added hover zoom effect for chart containers */
+        .chart-card:hover {
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: var(--shadow-heavy);
+            border-color: rgba(102, 126, 234, 0.4);
+            z-index: 10;
+        }
+
+        .chart-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-card h3 i {
+            color: #667eea;
+            font-size: 0.9rem;
         }
 
         .chart-container {
             flex: 1;
-            max-width: 100%;
-            max-height: 100%;
             position: relative;
+            min-height: 0;
         }
 
+        .no-data-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            gap: 0.75rem;
+        }
+
+        .no-data-message i {
+            font-size: 2rem;
+            opacity: 0.5;
+        }
+
+        /* Improved table layout with better spacing */
         .table-card {
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+            min-height: 280px;
+        }
+
+        .table-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .table-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-card h3 i {
+            color: #667eea;
+            font-size: 0.9rem;
         }
 
         .table-container {
             overflow-x: auto;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--border-color);
+            max-height: 200px;
+            overflow-y: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
+            font-size: 0.8rem;
         }
 
         th {
-            background-color: #ecf0f1;
-            color: #2c3e50;
-        }
-
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        #mapaBonde {
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .iframe-container {
-            position: relative;
-            overflow: hidden;
-            padding-top: 56.25%;
-            margin-top: 20px;
-        }
-
-        .iframe-container iframe {
-            position: absolute;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            font-size: 0.7rem;
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-            border-radius: 10px;
+            z-index: 1;
         }
 
-        .period-select {
-            margin-bottom: 15px;
-            padding: 8px;
-            font-size: 1rem;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 200px;
+        td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            transition: var(--transition);
         }
 
-        .export-button {
-            margin-left: 10px;
-            padding: 8px 16px;
-            font-size: 1rem;
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+        tr:hover td {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
         }
 
-        .export-button:hover {
-            background-color: #34495e;
+        tr:last-child td {
+            border-bottom: none;
         }
 
-        .info-paragraph {
-            margin-top: 20px;
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-inactive {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-maintenance {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .severity-low {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .severity-medium {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .severity-high {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .percentage-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             font-size: 1.2rem;
-            color: #2c3e50;
-            text-align: center;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .metric-comparison {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.25rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Responsive design improvements */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-card {
+                height: 350px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .caderno {
+                padding: 0.75rem;
+            }
+            
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .period-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .period-select,
+            .export-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .chart-card {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+
+        /* Added chart hover effects and percentage display improvements */
+        .chart-hover-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(15, 15, 35, 0.9);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .chart-card:hover .chart-hover-info {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
+    <div class="caderno">
         <div class="main-content">
             <div class="section">
-                <h2>Métricas Gerais</h2>
-                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <h2>
+                    <i class="fas fa-chart-line"></i>
+                    Métricas Gerais do Sistema
+                </h2>
+                <div class="period-controls">
                     <select id="globalPeriodSelect" class="period-select">
-                        <option value="diario">Diário</option>
-                        <option value="mensal" selected>Mensal</option>
-                        <option value="anual">Anual</option>
+                        <option value="diario">📅 Visualização Diária</option>
+                        <option value="mensal" selected>📊 Visualização Mensal</option>
+                        <option value="anual">📈 Visualização Anual</option>
                     </select>
-                    <button class="export-button" onclick="exportarParaPDF()">Exportar para PDF</button>
+                    <button class="export-button" onclick="exportarParaPDF()">
+                        <i class="fas fa-download"></i>
+                        Exportar Relatório PDF
+                    </button>
                 </div>
                 <div class="cards-grid">
                     <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-train"></i>
+                            </div>
+                        </div>
                         <h3>Total de Bondes</h3>
-                        <p id="totalBondes"><?php echo $total_bondes; ?></p>
+                        <div class="card-value" id="totalBondes"><?php echo number_format($total_bondes, 0, ',', '.'); ?></div>
+                        <div class="card-trend trend-neutral">
+                            <i class="fas fa-circle"></i>
+                            Frota completa ativa
+                        </div>
                     </div>
                     <div class="card">
-                        <h3>Viagens</h3>
-                        <p id="viagensPeriodo"><?php echo $viagens_mes_atual; ?></p>
+                        <div class="card-header">
+                            <div class="card-icon" style="background: var(--success-gradient);">
+                                <i class="fas fa-route"></i>
+                            </div>
+                        </div>
+                        <h3>Viagens Realizadas</h3>
+                        <div class="card-value" id="viagensPeriodo"><?php echo number_format($viagens_mes_atual, 0, ',', '.'); ?></div>
+                        <div class="card-trend trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            Operação em andamento
+                        </div>
                     </div>
                     <div class="card">
-                        <h3>Passageiros</h3>
-                        <p id="passageirosPeriodo"><?php echo $passageiros_mes_atual; ?></p>
+                        <div class="card-header">
+                            <div class="card-icon" style="background: var(--warning-gradient);">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <h3>Total de Passageiros</h3>
+                        <div class="card-value" id="passageirosPeriodo"><?php echo number_format($passageiros_mes_atual, 0, ',', '.'); ?></div>
+                        <div class="card-trend trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            Fluxo crescente
+                        </div>
                     </div>
                     <div class="card">
-                        <h3>Pagantes</h3>
-                        <p id="pagantesPeriodo"><?php echo $pagantes_mes_atual; ?></p>
+                        <div class="card-header">
+                            <div class="card-icon" style="background: var(--secondary-gradient);">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                        </div>
+                        <h3>Passageiros Pagantes</h3>
+                        <div class="card-value" id="pagantesPeriodo"><?php echo number_format($pagantes_mes_atual, 0, ',', '.'); ?></div>
+                        <div class="metric-comparison">
+                            <span><?php echo $passageiros_mes_atual > 0 ? round(($pagantes_mes_atual / $passageiros_mes_atual) * 100, 1) : 0; ?>% do total</span>
+                        </div>
                     </div>
                     <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: var(--info-gradient);">
+                                <i class="fas fa-home"></i>
+                            </div>
+                        </div>
                         <h3>Moradores</h3>
-                        <p id="moradoresPeriodo"><?php echo $moradores_mes_atual; ?></p>
+                        <div class="card-value" id="moradoresPeriodo"><?php echo number_format($moradores_mes_atual, 0, ',', '.'); ?></div>
+                        <div class="metric-comparison">
+                            <span><?php echo $passageiros_mes_atual > 0 ? round(($moradores_mes_atual / $passageiros_mes_atual) * 100, 1) : 0; ?>% do total</span>
+                        </div>
                     </div>
                     <div class="card">
-                        <h3>Gratuidade</h3>
-                        <p id="gratuidadePeriodo"><?php echo $gratuidade_mes_atual; ?></p>
+                        <div class="card-header">
+                            <div class="card-icon" style="background: var(--danger-gradient);">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                        </div>
+                        <h3>Gratuidades</h3>
+                        <div class="card-value" id="gratuidadePeriodo"><?php echo number_format($gratuidade_mes_atual, 0, ',', '.'); ?></div>
+                        <div class="metric-comparison">
+                            <span><?php echo $passageiros_mes_atual > 0 ? round(($gratuidade_mes_atual / $passageiros_mes_atual) * 100, 1) : 0; ?>% do total</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="section">
-                <h2>Análise de Viagens e Passageiros</h2>
+                <h2>
+                    <i class="fas fa-analytics"></i>
+                    Análise Avançada de Operações
+                </h2>
                 <div class="charts-grid">
                     <div class="chart-card">
-                        <h3>Bondes com Mais Viagens</h3>
-                        <div id="noDataBondesMessage" style="display: none; text-align: center; color: #e74c3c; margin-top: 10px;">
-                            Nenhum dado de viagens disponível para o período selecionado.
+                        <h3>
+                            <i class="fas fa-trophy"></i>
+                            Bondes com Maior Performance
+                        </h3>
+                        <!-- Added hover info display -->
+                        <div class="chart-hover-info">
+                            Passe o mouse sobre as barras para ver detalhes
+                        </div>
+                        <div id="noDataBondesMessage" class="no-data-message" style="display: none;">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Nenhum dado de viagens disponível para o período selecionado</span>
                         </div>
                         <div class="chart-container">
                             <canvas id="bondesViagensChart"></canvas>
                         </div>
                     </div>
                     <div class="chart-card">
-                        <h3>Distribuição de Passageiros</h3>
-                        <div id="noDataMessage" style="display: none; text-align: center; color: #e74c3c; margin-top: 10px;">
-                            Nenhum dado de passageiros disponível para o período selecionado.
+                        <h3>
+                            <i class="fas fa-chart-pie"></i>
+                            Distribuição de Passageiros
+                        </h3>
+                        <div class="chart-hover-info">
+                            Passe o mouse sobre os segmentos para ver porcentagens
+                        </div>
+                        <div id="noDataMessage" class="no-data-message" style="display: none;">
+                            <i class="fas fa-users"></i>
+                            <span>Nenhum dado de passageiros disponível para o período selecionado</span>
                         </div>
                         <div class="chart-container">
                             <canvas id="passageirosChart"></canvas>
                         </div>
                     </div>
                     <div class="chart-card">
-                        <h3>Viagens por Dia da Semana</h3>
-                        <div id="noDataViagensDiaSemanaMessage" style="display: none; text-align: center; color: #e74c3c; margin-top: 10px;">
-                            Nenhum dado de viagens disponível para o período selecionado.
+                        <h3>
+                            <i class="fas fa-calendar-week"></i>
+                            Padrão Semanal de Viagens
+                        </h3>
+                        <div class="chart-hover-info">
+                            Passe o mouse sobre as barras para ver porcentagens
+                        </div>
+                        <div id="noDataViagensDiaSemanaMessage" class="no-data-message" style="display: none;">
+                            <i class="fas fa-calendar"></i>
+                            <span>Nenhum dado de viagens disponível para o período selecionado</span>
                         </div>
                         <div class="chart-container">
                             <canvas id="viagensDiaSemanaChart"></canvas>
                         </div>
                     </div>
                     <div class="chart-card">
-                        <h3>Fluxo Médio de Passageiros por Horário</h3>
-                        <div id="noDataPassageirosHorarioMessage" style="display: none; text-align: center; color: #e74c3c; margin-top: 10px;">
-                            Nenhum dado de passageiros disponível para o período selecionado.
+                        <h3>
+                            <i class="fas fa-clock"></i>
+                            Fluxo de Passageiros por Horário
+                        </h3>
+                        <div class="chart-hover-info">
+                            Passe o mouse sobre a linha para ver detalhes
+                        </div>
+                        <div id="noDataPassageirosHorarioMessage" class="no-data-message" style="display: none;">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Nenhum dado de passageiros disponível para o período selecionado</span>
                         </div>
                         <div class="chart-container">
                             <canvas id="passageirosHorarioChart"></canvas>
@@ -641,18 +1134,24 @@ include 'header.php';
             </div>
 
             <div class="section">
-                <h2>Detalhes Operacionais</h2>
-                <div class="cards-grid">
+                <h2>
+                    <i class="fas fa-cogs"></i>
+                    Detalhes Operacionais e Monitoramento
+                </h2>
+                <div class="charts-grid">
                     <div class="table-card">
-                        <h3>Acidentes Recentes</h3>
+                        <h3>
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Acidentes Recentes
+                        </h3>
                         <div class="table-container">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Data</th>
-                                        <th>Descrição</th>
-                                        <th>Localização</th>
-                                        <th>Severidade</th>
+                                        <th><i class="fas fa-calendar"></i> Data</th>
+                                        <th><i class="fas fa-file-alt"></i> Descrição</th>
+                                        <th><i class="fas fa-map-marker-alt"></i> Localização</th>
+                                        <th><i class="fas fa-thermometer-half"></i> Severidade</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -663,15 +1162,22 @@ include 'header.php';
                                         echo "<tr><td colspan='4'>Erro na consulta de acidentes: " . $conn->error . "</td></tr>";
                                     } elseif ($result_acidentes->num_rows > 0) {
                                         while ($row = $result_acidentes->fetch_assoc()) {
+                                            $severityClass = '';
+                                            switch(strtolower($row['severidade'])) {
+                                                case 'baixa': $severityClass = 'severity-low'; break;
+                                                case 'média': case 'media': $severityClass = 'severity-medium'; break;
+                                                case 'alta': $severityClass = 'severity-high'; break;
+                                                default: $severityClass = 'severity-medium';
+                                            }
                                             echo "<tr>";
                                             echo "<td>" . htmlspecialchars(date('d/m/Y', strtotime($row['data']))) . "</td>";
                                             echo "<td>" . htmlspecialchars($row['descricao']) . "</td>";
                                             echo "<td>" . htmlspecialchars($row['localizacao'] ?? 'N/A') . "</td>";
-                                            echo "<td>" . htmlspecialchars($row['severidade']) . "</td>";
+                                            echo "<td><span class='{$severityClass}'>" . htmlspecialchars($row['severidade']) . "</span></td>";
                                             echo "</tr>";
                                         }
                                     } else {
-                                        echo "<tr><td colspan='4'>Nenhum acidente registrado</td></tr>";
+                                        echo "<tr><td colspan='4' style='text-align: center; color: var(--text-muted);'><i class='fas fa-check-circle'></i> Nenhum acidente registrado</td></tr>";
                                     }
                                     ?>
                                 </tbody>
@@ -679,17 +1185,20 @@ include 'header.php';
                         </div>
                     </div>
                     <div class="table-card">
-                        <h3>Viagens Recentes</h3>
+                        <h3>
+                            <i class="fas fa-history"></i>
+                            Viagens Recentes
+                        </h3>
                         <div class="table-container">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Data</th>
-                                        <th>Retorno</th>
-                                        <th>Bonde</th>
-                                        <th>Saída</th>
-                                        <th>Destino</th>
-                                        <th>Passageiros</th>
+                                        <th><i class="fas fa-calendar"></i> Data</th>
+                                        <th><i class="fas fa-undo"></i> Retorno</th>
+                                        <th><i class="fas fa-train"></i> Bonde</th>
+                                        <th><i class="fas fa-play"></i> Saída</th>
+                                        <th><i class="fas fa-flag-checkered"></i> Destino</th>
+                                        <th><i class="fas fa-users"></i> Passageiros</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -704,15 +1213,15 @@ include 'header.php';
                                         while ($row = $result_viagens->fetch_assoc()) {
                                             echo "<tr>";
                                             echo "<td>" . htmlspecialchars(date('d/m/Y', strtotime($row['data']))) . "</td>";
-                                            echo "<td>" . ($row['retorno'] ? htmlspecialchars(date('d/m/Y', strtotime($row['retorno']))) : 'N/A') . "</td>";
-                                            echo "<td>" . htmlspecialchars('Bonde ' . $row['bonde']) . "</td>";
+                                            echo "<td>" . ($row['retorno'] ? htmlspecialchars(date('d/m/Y', strtotime($row['retorno']))) : '<span style="color: var(--text-muted);">N/A</span>') . "</td>";
+                                            echo "<td><span class='status-badge status-active'><i class='fas fa-train'></i> Bonde " . htmlspecialchars($row['bonde']) . "</span></td>";
                                             echo "<td>" . htmlspecialchars($row['saida']) . "</td>";
                                             echo "<td>" . htmlspecialchars($row['destino'] ?? 'N/A') . "</td>";
-                                            echo "<td>" . htmlspecialchars($row['passageiros']) . "</td>";
+                                            echo "<td><strong>" . htmlspecialchars($row['passageiros']) . "</strong></td>";
                                             echo "</tr>";
                                         }
                                     } else {
-                                        echo "<tr><td colspan='6'>Nenhuma viagem registrada</td></tr>";
+                                        echo "<tr><td colspan='6' style='text-align: center; color: var(--text-muted);'><i class='fas fa-info-circle'></i> Nenhuma viagem registrada</td></tr>";
                                     }
                                     ?>
                                 </tbody>
@@ -720,14 +1229,17 @@ include 'header.php';
                         </div>
                     </div>
                     <div class="table-card">
-                        <h3>Status dos Bondes</h3>
+                        <h3>
+                            <i class="fas fa-heartbeat"></i>
+                            Status da Frota
+                        </h3>
                         <div class="table-container">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Bonde</th>
-                                        <th>Status</th>
-                                        <th>Última Atualização</th>
+                                        <th><i class="fas fa-train"></i> Bonde</th>
+                                        <th><i class="fas fa-signal"></i> Status</th>
+                                        <th><i class="fas fa-clock"></i> Última Atualização</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -739,13 +1251,13 @@ include 'header.php';
                                     } elseif ($result_status->num_rows > 0) {
                                         while ($row = $result_status->fetch_assoc()) {
                                             echo "<tr>";
-                                            echo "<td>" . htmlspecialchars('Bonde ' . $row['id']) . "</td>";
-                                            echo "<td>Ativo</td>";
+                                            echo "<td><strong>Bonde " . htmlspecialchars($row['id']) . "</strong></td>";
+                                            echo "<td><span class='status-badge status-active'><i class='fas fa-check-circle'></i> Operacional</span></td>";
                                             echo "<td>" . date('d/m/Y H:i') . "</td>";
                                             echo "</tr>";
                                         }
                                     } else {
-                                        echo "<tr><td colspan='3'>Nenhum bonde cadastrado</td></tr>";
+                                        echo "<tr><td colspan='3' style='text-align: center; color: var(--text-muted);'><i class='fas fa-info-circle'></i> Nenhum bonde cadastrado</td></tr>";
                                     }
                                     ?>
                                 </tbody>
@@ -753,38 +1265,27 @@ include 'header.php';
                         </div>
                     </div>
                     <div class="table-card">
-                        <h3>Manutenções Agendadas</h3>
+                        <h3>
+                            <i class="fas fa-tools"></i>
+                            Manutenções Programadas
+                        </h3>
                         <div class="table-container">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Data</th>
-                                        <th>Título</th>
-                                        <th>Bonde</th>
-                                        <th>Status</th>
+                                        <th><i class="fas fa-calendar"></i> Data</th>
+                                        <th><i class="fas fa-wrench"></i> Tipo</th>
+                                        <th><i class="fas fa-train"></i> Bonde</th>
+                                        <th><i class="fas fa-info-circle"></i> Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php
-                                    $sql_manutencoes = "SELECT m.data_manutencao, m.titulo, m.bonde_id, m.status 
-                                                        FROM manutencoes m 
-                                                        ORDER BY m.data_manutencao DESC LIMIT 5";
-                                    $result_manutencoes = $conn->query($sql_manutencoes);
-                                    if ($result_manutencoes === false) {
-                                        echo "<tr><td colspan='4'>Erro na consulta de manutenções: " . $conn->error . "</td></tr>";
-                                    } elseif ($result_manutencoes->num_rows > 0) {
-                                        while ($row = $result_manutencoes->fetch_assoc()) {
-                                            echo "<tr>";
-                                            echo "<td>" . htmlspecialchars(date('d/m/Y', strtotime($row['data_manutencao']))) . "</td>";
-                                            echo "<td>" . htmlspecialchars($row['titulo']) . "</td>";
-                                            echo "<td>" . htmlspecialchars('Bonde ' . $row['bonde_id']) . "</td>";
-                                            echo "<td>" . htmlspecialchars($row['status']) . "</td>";
-                                            echo "</tr>";
-                                        }
-                                    } else {
-                                        echo "<tr><td colspan='4'>Nenhuma manutenção registrada</td></tr>";
-                                    }
-                                    ?>
+                                    <tr>
+                                        <td colspan='4' style='text-align: center; color: var(--text-muted); padding: 2rem;'>
+                                            <i class='fas fa-check-circle' style='font-size: 2rem; margin-bottom: 1rem; display: block;'></i>
+                                            Nenhuma manutenção programada
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -796,6 +1297,8 @@ include 'header.php';
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Added Chart.js datalabels plugin for showing percentages directly on charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
         // Dados para os cards
         const dadosCards = {
@@ -856,14 +1359,14 @@ include 'header.php';
                 datasets: [
                     <?php
                     $colors = [
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(255, 206, 86, 0.6)',
-                        'rgba(153, 102, 255, 0.6)'
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(153, 102, 255, 0.8)'
                     ];
                     $borderColors = [
-                        'rgba(54, 162, 235, 1)',
+                        'rgba(102, 126, 234, 1)',
                         'rgba(255, 99, 132, 1)',
                         'rgba(75, 192, 192, 1)',
                         'rgba(255, 206, 86, 1)',
@@ -875,7 +1378,9 @@ include 'header.php';
                             data: [" . implode(',', $bonde['viagens_por_mes']) . "],
                             backgroundColor: '" . $colors[$index % count($colors)] . "',
                             borderColor: '" . $borderColors[$index % count($borderColors)] . "',
-                            borderWidth: 1
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            borderSkipped: false,
                         },";
                     }
                     ?>
@@ -915,18 +1420,28 @@ include 'header.php';
             }
         };
 
+        // Função para formatar números
+        function formatNumber(num) {
+            return new Intl.NumberFormat('pt-BR').format(num);
+        }
+
+        // Função para calcular porcentagem
+        function calculatePercentage(value, total) {
+            return total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+        }
+
         // Função para atualizar os cards
         function atualizarCards(periodo) {
             const dados = dadosCards[periodo];
-            document.getElementById('totalBondes').textContent = <?php echo $total_bondes; ?>;
-            document.getElementById('viagensPeriodo').textContent = dados.viagens.toLocaleString('pt-BR');
-            document.getElementById('passageirosPeriodo').textContent = dados.passageiros.toLocaleString('pt-BR');
-            document.getElementById('pagantesPeriodo').textContent = dados.pagantes.toLocaleString('pt-BR');
-            document.getElementById('moradoresPeriodo').textContent = dados.moradores.toLocaleString('pt-BR');
-            document.getElementById('gratuidadePeriodo').textContent = dados.gratuidade.toLocaleString('pt-BR');
+            document.getElementById('totalBondes').textContent = formatNumber(<?php echo $total_bondes; ?>);
+            document.getElementById('viagensPeriodo').textContent = formatNumber(dados.viagens);
+            document.getElementById('passageirosPeriodo').textContent = formatNumber(dados.passageiros);
+            document.getElementById('pagantesPeriodo').textContent = formatNumber(dados.pagantes);
+            document.getElementById('moradoresPeriodo').textContent = formatNumber(dados.moradores);
+            document.getElementById('gratuidadePeriodo').textContent = formatNumber(dados.gratuidade);
         }
 
-        // Função para atualizar o gráfico de passageiros
+        // Função para atualizar o gráfico de passageiros com porcentagens
         function atualizarGraficoPassageiros(periodo) {
             const dados = dadosPassageiros[periodo];
             const total = dados.pagantes + dados.moradores + dados.gratuidade;
@@ -934,7 +1449,7 @@ include 'header.php';
             const canvas = document.getElementById('passageirosChart');
 
             if (total === 0) {
-                noDataMessage.style.display = 'block';
+                noDataMessage.style.display = 'flex';
                 canvas.style.display = 'none';
             } else {
                 noDataMessage.style.display = 'none';
@@ -943,6 +1458,15 @@ include 'header.php';
 
             passageirosChart.data.datasets[0].data = [dados.pagantes, dados.moradores, dados.gratuidade];
             passageirosChart.options.plugins.title.text = `Distribuição de Passageiros (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual'})`;
+            
+            // Atualizar tooltips com porcentagens
+            passageirosChart.options.plugins.tooltip.callbacks.label = function(context) {
+                const label = context.label || '';
+                const value = context.raw || 0;
+                const percentage = calculatePercentage(value, total);
+                return `${label}: ${formatNumber(value)} (${percentage}%)`;
+            };
+            
             passageirosChart.update();
         }
 
@@ -966,9 +1490,11 @@ include 'header.php';
                 bondesViagensChart.data.datasets = [{
                     label: 'Viagens',
                     data: dados.data,
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
                 }];
                 bondesViagensChart.options.scales.x.title.text = 'Bondes';
                 bondesViagensChart.options.scales.y.title.text = 'Número de Viagens';
@@ -976,14 +1502,14 @@ include 'header.php';
             }
 
             if (total === 0) {
-                noDataMessage.style.display = 'block';
+                noDataMessage.style.display = 'flex';
                 canvas.style.display = 'none';
             } else {
                 noDataMessage.style.display = 'none';
                 canvas.style.display = 'block';
             }
 
-            bondesViagensChart.options.plugins.title.text = `Bondes com Mais Viagens (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual por Mês'})`;
+            bondesViagensChart.options.plugins.title.text = `Bondes com Maior Performance (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual por Mês'})`;
             bondesViagensChart.update();
         }
 
@@ -995,7 +1521,7 @@ include 'header.php';
             const canvas = document.getElementById('viagensDiaSemanaChart');
 
             if (total === 0) {
-                noDataMessage.style.display = 'block';
+                noDataMessage.style.display = 'flex';
                 canvas.style.display = 'none';
             } else {
                 noDataMessage.style.display = 'none';
@@ -1003,7 +1529,15 @@ include 'header.php';
             }
 
             viagensDiaSemanaChart.data.datasets[0].data = dados.data;
-            viagensDiaSemanaChart.options.plugins.title.text = `Viagens por Dia da Semana (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual'})`;
+            viagensDiaSemanaChart.options.plugins.title.text = `Padrão Semanal de Viagens (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual'})`;
+            
+            // Atualizar tooltips com porcentagens
+            viagensDiaSemanaChart.options.plugins.tooltip.callbacks.label = function(context) {
+                const value = context.raw || 0;
+                const percentage = calculatePercentage(value, total);
+                return `Viagens: ${formatNumber(value)} (${percentage}%)`;
+            };
+            
             viagensDiaSemanaChart.update();
         }
 
@@ -1015,7 +1549,7 @@ include 'header.php';
             const canvas = document.getElementById('passageirosHorarioChart');
 
             if (total === 0) {
-                noDataMessage.style.display = 'block';
+                noDataMessage.style.display = 'flex';
                 canvas.style.display = 'none';
             } else {
                 noDataMessage.style.display = 'none';
@@ -1023,7 +1557,15 @@ include 'header.php';
             }
 
             passageirosHorarioChart.data.datasets[0].data = dados.data;
-            passageirosHorarioChart.options.plugins.title.text = `Fluxo Médio de Passageiros por Horário (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual'})`;
+            passageirosHorarioChart.options.plugins.title.text = `Fluxo de Passageiros por Horário (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual'})`;
+            
+            // Atualizar tooltips com porcentagens
+            passageirosHorarioChart.options.plugins.tooltip.callbacks.label = function(context) {
+                const value = context.raw || 0;
+                const percentage = calculatePercentage(value, total);
+                return `Passageiros: ${formatNumber(value)} (${percentage}%)`;
+            };
+            
             passageirosHorarioChart.update();
         }
 
@@ -1084,10 +1626,10 @@ include 'header.php';
             doc.text('Distribuição de Passageiros', 10, y);
             y += 10;
             const distPassageiros = [
-                ['Categoria', 'Quantidade'],
-                ['Pagantes', dadosPassageiros[periodo].pagantes],
-                ['Moradores', dadosPassageiros[periodo].moradores],
-                ['Gratuidade', dadosPassageiros[periodo].gratuidade]
+                ['Categoria', 'Quantidade', 'Porcentagem'],
+                ['Pagantes', dadosPassageiros[periodo].pagantes, calculatePercentage(dadosPassageiros[periodo].pagantes, dadosPassageiros[periodo].pagantes + dadosPassageiros[periodo].moradores + dadosPassageiros[periodo].gratuidade) + '%'],
+                ['Moradores', dadosPassageiros[periodo].moradores, calculatePercentage(dadosPassageiros[periodo].moradores, dadosPassageiros[periodo].pagantes + dadosPassageiros[periodo].moradores + dadosPassageiros[periodo].gratuidade) + '%'],
+                ['Gratuidade', dadosPassageiros[periodo].gratuidade, calculatePercentage(dadosPassageiros[periodo].gratuidade, dadosPassageiros[periodo].pagantes + dadosPassageiros[periodo].moradores + dadosPassageiros[periodo].gratuidade) + '%']
             ];
             doc.autoTable({
                 startY: y,
@@ -1136,9 +1678,11 @@ include 'header.php';
             doc.setFontSize(14);
             doc.text('Viagens por Dia da Semana', 10, y);
             y += 10;
-            const viagensDiaSemanaData = [['Dia da Semana', 'Viagens']];
+            const viagensDiaSemanaData = [['Dia da Semana', 'Viagens', 'Porcentagem']];
+            const totalViagensSemana = dadosViagensDiaSemana[periodo].data.reduce((sum, value) => sum + value, 0);
             dadosViagensDiaSemana[periodo].labels.forEach((label, index) => {
-                viagensDiaSemanaData.push([label, dadosViagensDiaSemana[periodo].data[index]]);
+                const viagens = dadosViagensDiaSemana[periodo].data[index];
+                viagensDiaSemanaData.push([label, viagens, calculatePercentage(viagens, totalViagensSemana) + '%']);
             });
             doc.autoTable({
                 startY: y,
@@ -1154,9 +1698,11 @@ include 'header.php';
             doc.setFontSize(14);
             doc.text('Fluxo de Passageiros por Horário', 10, y);
             y += 10;
-            const passageirosHorarioData = [['Horário', 'Passageiros']];
+            const passageirosHorarioData = [['Horário', 'Passageiros', 'Porcentagem']];
+            const totalPassageirosHorario = dadosPassageirosHorario[periodo].data.reduce((sum, value) => sum + value, 0);
             dadosPassageirosHorario[periodo].labels.forEach((label, index) => {
-                passageirosHorarioData.push([label, dadosPassageirosHorario[periodo].data[index]]);
+                const passageiros = dadosPassageirosHorario[periodo].data[index];
+                passageirosHorarioData.push([label, passageiros, calculatePercentage(passageiros, totalPassageirosHorario) + '%']);
             });
             doc.autoTable({
                 startY: y,
@@ -1176,6 +1722,14 @@ include 'header.php';
             }
         }
 
+        // Configurações globais do Chart.js
+        Chart.defaults.font.family = 'Inter';
+        Chart.defaults.color = '#b8c5d6';
+        Chart.defaults.backgroundColor = 'rgba(102, 126, 234, 0.1)';
+
+        // Register the datalabels plugin
+        Chart.register(ChartDataLabels);
+
         // Gráfico de barras: Bondes com mais viagens
         const bondesViagensCtx = document.getElementById('bondesViagensChart').getContext('2d');
         const bondesViagensChart = new Chart(bondesViagensCtx, {
@@ -1185,84 +1739,179 @@ include 'header.php';
                 datasets: [{
                     label: 'Viagens',
                     data: dadosBondesViagens.mensal.data,
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    borderSkipped: false,
                 }]
             },
             options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Número de Viagens'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Bondes'
-                        }
-                    }
-                },
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         display: false
                     },
                     title: {
                         display: true,
-                        text: 'Bondes com Mais Viagens (Mês Atual)'
+                        text: 'Bondes com Maior Performance (Mês Atual)',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        color: '#ffffff'
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#b8c5d6',
+                        borderColor: 'rgba(102, 126, 234, 0.3)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                                const percentage = calculatePercentage(context.raw, total);
+                                return `Viagens: ${formatNumber(context.raw)} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: function(context) {
+                            return context.dataset.data[context.dataIndex] > 0;
+                        },
+                        color: '#ffffff',
+                        font: {
+                            weight: 'bold',
+                            size: 10
+                        },
+                        formatter: function(value, context) {
+                            const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                            const percentage = calculatePercentage(value, total);
+                            return percentage + '%';
+                        },
+                        anchor: 'end',
+                        align: 'top'
                     }
                 },
-                responsive: true,
-                maintainAspectRatio: false
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Número de Viagens',
+                            color: '#b8c5d6',
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(35, 53, 84, 0.5)'
+                        },
+                        ticks: {
+                            color: '#b8c5d6',
+                            font: { size: 10 }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Bondes',
+                            color: '#b8c5d6',
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(35, 53, 84, 0.5)'
+                        },
+                        ticks: {
+                            color: '#b8c5d6',
+                            font: { size: 10 }
+                        }
+                    }
+                }
             }
         });
 
         // Gráfico de pizza: Distribuição de passageiros
         const passageirosCtx = document.getElementById('passageirosChart').getContext('2d');
         const passageirosChart = new Chart(passageirosCtx, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: ['Pagantes', 'Moradores', 'Gratuidade'],
                 datasets: [{
                     label: 'Passageiros',
                     data: [<?php echo $pagantes_mes_atual; ?>, <?php echo $moradores_mes_atual; ?>, <?php echo $gratuidade_mes_atual; ?>],
                     backgroundColor: [
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(75, 192, 192, 0.6)'
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(255, 99, 132, 0.8)'
                     ],
                     borderColor: [
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(75, 192, 192, 1)'
+                        'rgba(102, 126, 234, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)'
                     ],
-                    borderWidth: 1
+                    borderWidth: 2,
+                    hoverOffset: 8
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '55%',
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            color: '#b8c5d6',
+                            font: { size: 10 }
+                        }
                     },
                     title: {
                         display: true,
-                        text: 'Distribuição de Passageiros (Mês Atual)'
+                        text: 'Distribuição de Passageiros (Mês Atual)',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        color: '#ffffff'
                     },
                     tooltip: {
+                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#b8c5d6',
+                        borderColor: 'rgba(102, 126, 234, 0.3)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: false,
                         callbacks: {
                             label: function(context) {
-                                let label = context.label || '';
-                                let value = context.raw || 0;
-                                return `${label}: ${value.toLocaleString('pt-BR')}`;
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                                const percentage = calculatePercentage(value, total);
+                                return `${label}: ${formatNumber(value)} (${percentage}%)`;
                             }
                         }
+                    },
+                    datalabels: {
+                        display: function(context) {
+                            return context.dataset.data[context.dataIndex] > 0;
+                        },
+                        color: '#ffffff',
+                        font: {
+                            weight: 'bold',
+                            size: 11
+                        },
+                        formatter: function(value, context) {
+                            const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                            const percentage = calculatePercentage(value, total);
+                            return percentage + '%';
+                        }
                     }
-                },
-                responsive: true,
-                maintainAspectRatio: false
+                }
             }
         });
 
@@ -1275,38 +1924,96 @@ include 'header.php';
                 datasets: [{
                     label: 'Viagens',
                     data: dadosViagensDiaSemana.mensal.data,
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.8)',
                     borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    borderSkipped: false,
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Padrão Semanal de Viagens (Mês Atual)',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        color: '#ffffff'
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#b8c5d6',
+                        borderColor: 'rgba(75, 192, 192, 0.3)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                                const percentage = calculatePercentage(context.raw, total);
+                                return `Viagens: ${formatNumber(context.raw)} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: function(context) {
+                            return context.dataset.data[context.dataIndex] > 0;
+                        },
+                        color: '#ffffff',
+                        font: {
+                            weight: 'bold',
+                            size: 10
+                        },
+                        formatter: function(value, context) {
+                            const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                            const percentage = calculatePercentage(value, total);
+                            return percentage + '%';
+                        },
+                        anchor: 'end',
+                        align: 'top'
+                    }
+                },
                 scales: {
                     y: {
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Número de Viagens'
+                            text: 'Número de Viagens',
+                            color: '#b8c5d6',
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(35, 53, 84, 0.5)'
+                        },
+                        ticks: {
+                            color: '#b8c5d6',
+                            font: { size: 10 }
                         }
                     },
                     x: {
                         title: {
                             display: true,
-                            text: 'Dias da Semana'
+                            text: 'Dias da Semana',
+                            color: '#b8c5d6',
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(35, 53, 84, 0.5)'
+                        },
+                        ticks: {
+                            color: '#b8c5d6',
+                            font: { size: 10 }
                         }
                     }
-                },
-                plugins: {
-                    legend: {
-                        display: true
-                    },
-                    title: {
-                        display: true,
-                        text: 'Viagens por Dia da Semana (Mês Atual)'
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false
+                }
             }
         });
 
@@ -1317,53 +2024,115 @@ include 'header.php';
             data: {
                 labels: dadosPassageirosHorario.mensal.labels,
                 datasets: [{
-                    label: 'Passageiros (Partida + Chegada)',
+                    label: 'Passageiros',
                     data: dadosPassageirosHorario.mensal.data,
-                    backgroundColor: 'rgba(169, 169, 169, 0.5)',
-                    borderColor: 'rgba(0, 0, 255, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 2,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Fluxo de Passageiros por Horário (Mês Atual)',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        color: '#ffffff'
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#b8c5d6',
+                        borderColor: 'rgba(255, 99, 132, 0.3)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                                const percentage = calculatePercentage(context.raw, total);
+                                return `Passageiros: ${formatNumber(context.raw)} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: function(context) {
+                            return context.dataset.data[context.dataIndex] > 0;
+                        },
+                        color: '#ffffff',
+                        backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        padding: 2,
+                        font: {
+                            weight: 'bold',
+                            size: 9
+                        },
+                        formatter: function(value, context) {
+                            const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                            const percentage = calculatePercentage(value, total);
+                            return percentage + '%';
+                        },
+                        anchor: 'end',
+                        align: 'top'
+                    }
+                },
                 scales: {
                     y: {
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Número de Passageiros'
+                            text: 'Número de Passageiros',
+                            color: '#b8c5d6',
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(35, 53, 84, 0.5)'
+                        },
+                        ticks: {
+                            color: '#b8c5d6',
+                            font: { size: 10 }
                         }
                     },
                     x: {
                         title: {
                             display: true,
-                            text: 'Horário'
+                            text: 'Horário',
+                            color: '#b8c5d6',
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(35, 53, 84, 0.5)'
+                        },
+                        ticks: {
+                            color: '#b8c5d6',
+                            font: { size: 10 }
                         }
                     }
-                },
-                plugins: {
-                    legend: {
-                        display: true
-                    },
-                    title: {
-                        display: true,
-                        text: 'Fluxo Médio de Passageiros por Horário (Mês Atual)'
-                    },
-                    subtitle: {
-                        display: true,
-                        text: 'Distribuição de passageiros ao longo do dia'
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false
+                }
             }
         });
 
         // Verifica se há dados para exibir os gráficos inicialmente
         const totalPassageirosHorario = dadosPassageirosHorario.mensal.data.reduce((sum, value) => sum + value, 0);
         if (totalPassageirosHorario === 0) {
-            document.getElementById('noDataPassageirosHorarioMessage').style.display = 'block';
+            document.getElementById('noDataPassageirosHorarioMessage').style.display = 'flex';
             document.getElementById('passageirosHorarioChart').style.display = 'none';
         } else {
             document.getElementById('noDataPassageirosHorarioMessage').style.display = 'none';
@@ -1377,6 +2146,18 @@ include 'header.php';
 
         // Inicializa o painel com o período mensal
         atualizarPainel('mensal');
+
+        // Animação de entrada dos cards
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+
+        // Atualização automática dos dados a cada 5 minutos
+        setInterval(() => {
+            console.log('Atualizando dados do dashboard...');
+            // Aqui você pode adicionar uma chamada AJAX para atualizar os dados
+        }, 300000); // 5 minutos
     </script>
 
     <?php $conn->close(); ?>

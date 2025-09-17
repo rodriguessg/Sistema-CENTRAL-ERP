@@ -74,6 +74,60 @@ include 'header.php';
     <link href="https://unpkg.com/lucide@latest/dist/umd/lucide.js" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
+
+        
+        /* ===== VARIÁVEIS CSS ===== */
+        :root {
+          /* Cores Principais */
+          --primary-color: #192844;
+          --secondary-color: #472774;
+          --accent-color: #667eea;
+          --success-color: #10b981;
+          --warning-color: #f59e0b;
+          --danger-color: #ef4444;
+          --info-color: #3b82f6;
+
+          /* Gradientes */
+          --primary-gradient: linear-gradient(135deg, #192844 0%, #472774 100%);
+          --secondary-gradient: linear-gradient(135deg, #472774 0%, #6a4c93 100%);
+          --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+          --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+          /* Cores de Texto */
+          --text-primary: #1f2937;
+          --text-secondary: #6b7280;
+          --text-muted: #9ca3af;
+          --text-light: #d1d5db;
+
+          /* Cores de Fundo */
+          --bg-primary: #ffffff;
+          --bg-secondary: #f8fafc;
+          --bg-tertiary: #f1f5f9;
+          --bg-dark: #0f172a;
+
+          /* Bordas e Sombras */
+          --border-color: #e5e7eb;
+          --border-light: #f3f4f6;
+          --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+          --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+          --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+          /* Raios de Borda */
+          --radius-sm: 6px;
+          --radius-md: 8px;
+          --radius-lg: 12px;
+          --radius-xl: 16px;
+
+          /* Transições */
+          --transition-fast: all 0.15s ease;
+          --transition-normal: all 0.3s ease;
+          --transition-slow: all 0.5s ease;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -82,85 +136,102 @@ include 'header.php';
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8fafc; /* Changed to clean white background */
-            min-height: 100vh;
-            padding: 20px;
+            background: #f1f5f9;
         }
 
         .header {
-            background: #1e293b; /* Changed to solid dark blue header */
+            background: var(--primary-gradient);
             color: white;
-            padding: 24px 30px;
-            text-align: center;
+            padding: 20px 20px;
             position: relative;
+            border-radius: 20px 20px 0px 0px;
         }
 
         .header h1 {
-            font-size: 20px;
-            font-weight: 500;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
+             font-size: 18px;
+             font-weight: 600;
+        }
+
+        .header::after {
+            content: 'Sistema de controle de manutenção dos bondes de Santa Teresa';
+            position: absolute;
+            bottom: 5px;
+            left: 40px;
+            font-size: 14px;
+            color: #bfdbfe;
+            font-weight: 400;
         }
 
         .form-container {
-            padding: 48px; /* Increased padding for larger containers */
+            padding: 20px;
+            background: white;
+            border: 1px solid #e5e7eb;
         }
 
         .form-group {
-            margin-bottom: 28px;
+            margin-bottom: 24px;
+            position: relative;
         }
 
         label {
             display: block;
             font-weight: 500;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #374151;
-            font-size: 14px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         input, textarea, select {
             width: 100%;
-            padding: 16px 20px; /* Increased padding for larger input fields */
+            padding: 12px 16px;
             border: 1px solid #d1d5db;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 14px;
             font-family: 'Inter', sans-serif;
             transition: all 0.2s ease;
             background: white;
         }
 
+        input[type="number"], input[type="text"], input[type="date"] {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+        }
+
+        input[type="number"]:focus, input[type="text"]:focus, input[type="date"]:focus {
+            background: white;
+        }
+
         input:focus, textarea:focus, select:focus {
             outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
         }
 
         textarea {
             resize: vertical;
-            min-height: 120px;
+            min-height: 100px;
         }
 
         select {
             cursor: pointer;
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%236b7280" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>');
             background-repeat: no-repeat;
-            background-position: right 16px center;
+            background-position: right 12px center;
             background-size: 16px;
             appearance: none;
         }
 
         .btn {
-            background: #1e293b; /* Made button smaller and more standard size */
+             background: var(--primary-gradient);
             color: white;
             border: none;
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
@@ -169,14 +240,15 @@ include 'header.php';
             align-items: center;
             justify-content: center;
             gap: 8px;
-            width: auto; /* Removed full width */
             font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
         }
 
         .btn:hover {
-            background: #334155;
+            background: #1d4ed8;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.15);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
         }
 
         .btn:active {
@@ -191,48 +263,57 @@ include 'header.php';
             display: flex;
             align-items: center;
             gap: 12px;
+            border-left: 4px solid;
         }
 
         .alert.error {
             background: #fef2f2;
             color: #dc2626;
-            border: 1px solid #fecaca;
+            border-color: #dc2626;
         }
 
         .alert.success {
             background: #f0fdf4;
             color: #16a34a;
-            border: 1px solid #bbf7d0;
+            border-color: #16a34a;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 24px;
+            margin-left : 0px;
         }
 
-        .button-container { /* Added button container for proper alignment */
+        .button-container {
             display: flex;
-            justify-content: flex-end;
-            margin-top: 32px;
+            margin-top: 20px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
         }
 
         @media (max-width: 768px) {
-            .container {
+            .caderno {
                 margin: 10px;
-                border-radius: 12px;
+                border-radius: 8px;
             }
             
             .header {
-                padding: 20px;
+                padding: 16px 20px;
             }
             
             .header h1 {
-                font-size: 18px;
+                font-size: 16px;
+                padding-left: 40px;
+            }
+            
+            .header::after {
+                left: 60px;
+                font-size: 11px;
             }
             
             .form-container {
-                padding: 32px 24px;
+                padding: 24px 20px;
             }
             
             .form-row {
@@ -242,8 +323,9 @@ include 'header.php';
         }
 
         .icon {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -338,7 +420,7 @@ include 'header.php';
                     </div>
                 </div>
                 
-                <div class="button-container"> <!-- Added button container and changed button alignment -->
+                <div class="button-container">
                     <button type="submit" class="btn">
                         <i data-lucide="save" class="icon"></i>
                         Salvar Registro

@@ -66,7 +66,7 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
 
         // Bondes com mais viagens - todos os períodos
         $bondes_viagens_diario = [];
-        $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens FROM viagens WHERE DATE(data) = CURDATE() GROUP BY bonde ORDER BY total_viagens DESC LIMIT 5");
+        $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens FROM viagens WHERE DATE(data) = CURDATE() GROUP BY bonde ORDER BY total_viagens DESC");
         if ($result) {
             while ($row = $result->fetch_assoc()) {
                 $bondes_viagens_diario[] = ['bonde' => 'Bonde ' . $row['bonde'], 'total_viagens' => (int)$row['total_viagens']];
@@ -74,10 +74,18 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
         }
 
         $bondes_viagens_mensal = [];
-        $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month GROUP BY bonde ORDER BY total_viagens DESC LIMIT 5");
+        $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month GROUP BY bonde ORDER BY total_viagens DESC");
         if ($result) {
             while ($row = $result->fetch_assoc()) {
                 $bondes_viagens_mensal[] = ['bonde' => 'Bonde ' . $row['bonde'], 'total_viagens' => (int)$row['total_viagens']];
+            }
+        }
+
+        $bondes_viagens_anual = [];
+        $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens FROM viagens WHERE YEAR(data) = $current_year GROUP BY bonde ORDER BY total_viagens DESC");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $bondes_viagens_anual[] = ['bonde' => 'Bonde ' . $row['bonde'], 'total_viagens' => (int)$row['total_viagens']];
             }
         }
 
@@ -400,8 +408,7 @@ $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens
                         FROM viagens 
                         WHERE DATE(data) = CURDATE() 
                         GROUP BY bonde 
-                        ORDER BY total_viagens DESC 
-                        LIMIT 5");
+                        ORDER BY total_viagens DESC");
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $bondes_viagens_diario[] = [
@@ -419,8 +426,7 @@ $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens
                         FROM viagens 
                         WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month 
                         GROUP BY bonde 
-                        ORDER BY total_viagens DESC 
-                        LIMIT 5");
+                        ORDER BY total_viagens DESC");
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $bondes_viagens_mensal[] = [
@@ -575,6 +581,8 @@ include 'header.php';
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <!-- jsPDF CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Adicionando html2pdf para melhor captura de gráficos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         // Fallback para versão local do jsPDF se o CDN falhar
         if (typeof jspdf === 'undefined') {
@@ -1251,6 +1259,118 @@ include 'header.php';
             margin-right: 8px;
             color: #3b82f6;
         }
+
+        /* Adicionando estilos para o botão de refresh */
+        .refresh-button {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .refresh-button:hover {
+            background: linear-gradient(135deg, #218838, #1ea085);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+
+        .refresh-button:active {
+            transform: translateY(0);
+        }
+
+        .refresh-button.refreshing {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+            pointer-events: none;
+        }
+
+        .refresh-button.refreshing .fa-sync-alt {
+            animation: spin 1s linear infinite;
+        }
+
+        .refresh-countdown {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Adicionando estilos para exportação PDF sem cor de fundo */
+        @media print, .pdf-export {
+            body {
+                background: white !important;
+                color: #333 !important;
+            }
+            
+            .dashboard-container {
+                background: white !important;
+            }
+            
+            .sidebar {
+                background: white !important;
+                border-right: 1px solid #ddd !important;
+            }
+            
+            .main-content {
+                background: white !important;
+            }
+            
+            .card {
+                background: white !important;
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+            }
+            
+            .section {
+                background: white !important;
+            }
+            
+            .chart-container {
+                background: white !important;
+            }
+            
+            .table-container {
+                background: white !important;
+            }
+            
+            .table {
+                background: white !important;
+            }
+            
+            .table th {
+                background: #f8f9fa !important;
+                color: #333 !important;
+            }
+            
+            .table td {
+                background: white !important;
+                color: #333 !important;
+            }
+            
+            .refresh-button {
+                display: none !important;
+            }
+            
+            .export-button {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1275,6 +1395,12 @@ include 'header.php';
                     <button class="export-button" onclick="exportarParaPDF()">
                         <i class="fas fa-download"></i>
                         Exportar Relatório PDF
+                    </button>
+                    <!-- Adicionando botão de refresh automático -->
+                    <button class="refresh-button" id="refreshButton" onclick="atualizarDashboard()">
+                        <i class="fas fa-sync-alt"></i>
+                        <span class="refresh-text">Atualizar</span>
+                        <span class="refresh-countdown" id="refreshCountdown">30s</span>
                     </button>
                     <!-- Substituído indicador de última atualização por relógio em tempo real -->
                     <div class="real-time-clock" id="realTimeClock">
@@ -1886,148 +2012,70 @@ include 'header.php';
             atualizarGraficoPassageirosHorario(periodo);
         }
 
-        // Função para exportar os dados para PDF
         function exportarParaPDF() {
-            const { jsPDF } = window.jspdf;
-            if (!jsPDF) {
-                console.error('jsPDF library is not loaded.');
-                alert('Erro: A biblioteca de exportação para PDF não foi carregada corretamente. Tente novamente mais tarde.');
-                return;
-            }
+            // Mostrar indicador de carregamento
+            const exportButton = document.querySelector('.export-button');
+            const originalText = exportButton.innerHTML;
+            exportButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando PDF...';
+            exportButton.disabled = true;
 
-            const doc = new jsPDF();
-            const periodo = document.getElementById('globalPeriodSelect').value;
-            const periodoNome = periodo === 'diario' ? 'Diário' : periodo === 'mensal' ? 'Mensal' : 'Anual';
-            const dataAtual = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-            let y = 10;
+            // Configurar elemento para exportação
+            const element = document.querySelector('.main-content');
+            
+            // Aplicar classe para estilos de exportação
+            document.body.classList.add('pdf-export');
+            
+            const opt = {
+                margin: [10, 10, 10, 10],
+                filename: `Dashboard_Bonde_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.pdf`,
+                image: { 
+                    type: 'jpeg', 
+                    quality: 0.98 
+                },
+                html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    scrollX: 0,
+                    scrollY: 0,
+                    width: element.scrollWidth,
+                    height: element.scrollHeight
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'landscape' 
+                },
+                pagebreak: { 
+                    mode: ['avoid-all', 'css', 'legacy'] 
+                }
+            };
 
-            // Título do documento
-            doc.setFontSize(16);
-            doc.text(`Relatório de Painel Bonde - ${periodoNome}`, 10, y);
-            y += 10;
-
-            // Seção: Métricas Gerais
-            doc.setFontSize(14);
-            doc.text('Métricas Gerais', 10, y);
-            y += 10;
-            const metricasGerais = [
-                ['Métrica', 'Valor'],
-                ['Total de Bondes', <?php echo $total_bondes; ?>],
-                ['Viagens', dadosCards[periodo].viagens],
-                ['Passageiros', dadosCards[periodo].passageiros],
-                ['Pagantes', dadosCards[periodo].pagantes],
-                ['Moradores', dadosCards[periodo].moradores],
-                ['Gratuidade', dadosCards[periodo].gratuidade]
-            ];
-            doc.autoTable({
-                startY: y,
-                head: [metricasGerais[0]],
-                body: metricasGerais.slice(1),
-                theme: 'grid',
-                headStyles: { fillColor: [44, 62, 80] },
-                styles: { fontSize: 10, cellPadding: 2 }
-            });
-            y = doc.lastAutoTable.finalY + 10;
-
-            // Seção: Distribuição de Passageiros
-            doc.setFontSize(14);
-            doc.text('Distribuição de Passageiros', 10, y);
-            y += 10;
-            const distPassageiros = [
-                ['Categoria', 'Quantidade', 'Porcentagem'],
-                ['Pagantes', dadosPassageiros[periodo].pagantes, calculatePercentage(dadosPassageiros[periodo].pagantes, dadosPassageiros[periodo].pagantes + dadosPassageiros[periodo].moradores + dadosPassageiros[periodo].gratuidade) + '%'],
-                ['Moradores', dadosPassageiros[periodo].moradores, calculatePercentage(dadosPassageiros[periodo].moradores, dadosPassageiros[periodo].pagantes + dadosPassageiros[periodo].moradores + dadosPassageiros[periodo].gratuidade) + '%'],
-                ['Gratuidade', dadosPassageiros[periodo].gratuidade, calculatePercentage(dadosPassageiros[periodo].gratuidade, dadosPassageiros[periodo].pagantes + dadosPassageiros[periodo].moradores + dadosPassageiros[periodo].gratuidade) + '%']
-            ];
-            doc.autoTable({
-                startY: y,
-                head: [distPassageiros[0]],
-                body: distPassageiros.slice(1),
-                theme: 'grid',
-                headStyles: { fillColor: [44, 62, 80] },
-                styles: { fontSize: 10, cellPadding: 2 }
-            });
-            y = doc.lastAutoTable.finalY + 10;
-
-            // Seção: Bondes com Mais Viagens
-            doc.setFontSize(14);
-            doc.text('Bondes com Mais Viagens', 10, y);
-            y += 10;
-            if (periodo === 'anual') {
-                const bondesViagensData = [['Bonde', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']];
-                dadosBondesViagens.anual.datasets.forEach(dataset => {
-                    bondesViagensData.push([dataset.label, ...dataset.data]);
+            // Aguardar um momento para garantir que os gráficos estejam renderizados
+            setTimeout(() => {
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Remover classe de exportação
+                    document.body.classList.remove('pdf-export');
+                    
+                    // Restaurar botão
+                    exportButton.innerHTML = originalText;
+                    exportButton.disabled = false;
+                    
+                    console.log('PDF exportado com sucesso!');
+                }).catch((error) => {
+                    console.error('Erro ao exportar PDF:', error);
+                    
+                    // Remover classe de exportação
+                    document.body.classList.remove('pdf-export');
+                    
+                    // Restaurar botão
+                    exportButton.innerHTML = originalText;
+                    exportButton.disabled = false;
+                    
+                    alert('Erro ao exportar PDF. Tente novamente.');
                 });
-                doc.autoTable({
-                    startY: y,
-                    head: [bondesViagensData[0]],
-                    body: bondesViagensData.slice(1),
-                    theme: 'grid',
-                    headStyles: { fillColor: [44, 62, 80] },
-                    styles: { fontSize: 10, cellPadding: 2 }
-                });
-            } else {
-                const bondesViagensData = [['Bonde', 'Viagens']];
-                dadosBondesViagens[periodo].labels.forEach((label, index) => {
-                    bondesViagensData.push([label, dadosBondesViagens[periodo].data[index]]);
-                });
-                doc.autoTable({
-                    startY: y,
-                    head: [bondesViagensData[0]],
-                    body: bondesViagensData.slice(1),
-                    theme: 'grid',
-                    headStyles: { fillColor: [44, 62, 80] },
-                    styles: { fontSize: 10, cellPadding: 2 }
-                });
-            }
-            y = doc.lastAutoTable.finalY + 10;
-
-            // Seção: Viagens por Dia da Semana
-            doc.setFontSize(14);
-            doc.text('Viagens por Dia da Semana', 10, y);
-            y += 10;
-            const viagensDiaSemanaData = [['Dia da Semana', 'Viagens', 'Porcentagem']];
-            const totalViagensSemana = dadosViagensDiaSemana[periodo].data.reduce((sum, value) => sum + value, 0);
-            dadosViagensDiaSemana[periodo].labels.forEach((label, index) => {
-                const viagens = dadosViagensDiaSemana[periodo].data[index];
-                viagensDiaSemanaData.push([label, viagens, calculatePercentage(viagens, totalViagensSemana) + '%']);
-            });
-            doc.autoTable({
-                startY: y,
-                head: [viagensDiaSemanaData[0]],
-                body: viagensDiaSemanaData.slice(1),
-                theme: 'grid',
-                headStyles: { fillColor: [44, 62, 80] },
-                styles: { fontSize: 10, cellPadding: 2 }
-            });
-            y = doc.lastAutoTable.finalY + 10;
-
-            // Seção: Fluxo de Passageiros por Horário
-            doc.setFontSize(14);
-            doc.text('Fluxo de Passageiros por Horário', 10, y);
-            y += 10;
-            const passageirosHorarioData = [['Horário', 'Passageiros', 'Porcentagem']];
-            const totalPassageirosHorario = dadosPassageirosHorario[periodo].data.reduce((sum, value) => sum + value, 0);
-            dadosPassageirosHorario[periodo].labels.forEach((label, index) => {
-                const passageiros = dadosPassageirosHorario[periodo].data[index];
-                passageirosHorarioData.push([label, passageiros, calculatePercentage(passageiros, totalPassageirosHorario) + '%']);
-            });
-            doc.autoTable({
-                startY: y,
-                head: [passageirosHorarioData[0]],
-                body: passageirosHorarioData.slice(1),
-                theme: 'grid',
-                headStyles: { fillColor: [44, 62, 80] },
-                styles: { fontSize: 10, cellPadding: 2 }
-            });
-
-            // Gera o arquivo PDF com nome dinâmico baseado no período e na data
-            try {
-                doc.save(`Painel_Bonde_${periodoNome}_${dataAtual}.pdf`);
-            } catch (error) {
-                console.error('Erro ao gerar o arquivo PDF:', error);
-                alert('Erro ao exportar para PDF. Por favor, tente novamente.');
-            }
+            }, 1000);
         }
 
         // Configurações globais do Chart.js
@@ -2729,7 +2777,6 @@ include 'header.php';
 
         let intervalId = setInterval(atualizarDadosAutomaticamente, 10000);
         
-        // Pausar atualização quando a página não estiver visível
         document.addEventListener('visibilitychange', function() {
             if (document.hidden) {
                 clearInterval(intervalId);
@@ -2743,6 +2790,64 @@ include 'header.php';
 
         // Executar primeira atualização após 2 segundos
         setTimeout(atualizarDadosAutomaticamente, 2000);
+
+        function atualizarDashboard() {
+            const refreshButton = document.getElementById('refreshButton');
+            const refreshText = refreshButton.querySelector('.refresh-text');
+            const countdownElement = document.getElementById('refreshCountdown');
+            
+            // Parar contador atual
+            clearInterval(countdownInterval);
+            clearInterval(autoRefreshInterval);
+            
+            // Indicar que está atualizando
+            refreshButton.classList.add('refreshing');
+            refreshText.textContent = 'Atualizando...';
+            countdownElement.textContent = '';
+            
+            console.log('[v0] Iniciando atualização do dashboard');
+            
+            // Recarregar a página para garantir dados atualizados
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+
+        let refreshCountdown = 30;
+        let countdownInterval;
+        let autoRefreshInterval;
+
+        function iniciarContadorRefresh() {
+            refreshCountdown = 30;
+            const countdownElement = document.getElementById('refreshCountdown');
+            
+            countdownInterval = setInterval(() => {
+                refreshCountdown--;
+                if (countdownElement) {
+                    countdownElement.textContent = refreshCountdown + 's';
+                }
+                
+                if (refreshCountdown <= 0) {
+                    atualizarDashboard();
+                }
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[v0] Dashboard carregado, iniciando contador de refresh');
+            iniciarContadorRefresh();
+        });
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                clearInterval(countdownInterval);
+                clearInterval(autoRefreshInterval);
+                console.log('[v0] Atualização pausada - página não visível');
+            } else {
+                iniciarContadorRefresh();
+                console.log('[v0] Atualização retomada - página visível');
+            }
+        });
 
     </script>
 

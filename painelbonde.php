@@ -1,6 +1,205 @@
 <?php
 session_start();
 
+if (isset($_GET['api']) && $_GET['api'] === 'data') {
+    header('Content-Type: application/json');
+    header('Cache-Control: no-cache, must-revalidate');
+    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+    
+    // Verifica sessão
+    if (!isset($_SESSION['username'])) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'error' => 'Usuário não autenticado']);
+        exit;
+    }
+    
+    // Conexão com o banco
+    $host = 'localhost';
+    $user = 'root';
+    $password = '';
+    $dbname = 'gm_sicbd';
+    $conn = new mysqli($host, $user, $password, $dbname);
+    
+    if ($conn->connect_error) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => 'Erro na conexão com o banco']);
+        exit;
+    }
+    
+    $current_year = date('Y');
+    $current_month = date('m');
+    
+    try {
+        // Consulta consolidada para melhor performance
+        $sql = "
+        SELECT 
+            -- Métricas gerais
+            (SELECT COUNT(*) FROM bondes) as total_bondes,
+            (SELECT COUNT(*) FROM acidentes) as total_acidentes,
+            (SELECT COUNT(*) FROM viagens) as total_viagens,
+            (SELECT COUNT(*) FROM bondes WHERE id NOT IN (SELECT COALESCE(bonde_afetado, 0) FROM manutencoes WHERE status = 'Em Andamento')) as bondes_ativos,
+            
+            -- Dados diários
+            (SELECT COUNT(*) FROM viagens WHERE DATE(data) = CURDATE()) as viagens_hoje,
+            (SELECT COALESCE(SUM(pagantes), 0) FROM viagens WHERE DATE(data) = CURDATE()) as pagantes_hoje,
+            (SELECT COALESCE(SUM(moradores), 0) FROM viagens WHERE DATE(data) = CURDATE()) as moradores_hoje,
+            (SELECT COALESCE(SUM(gratuidade), 0) FROM viagens WHERE DATE(data) = CURDATE()) as gratuidade_hoje,
+            
+            -- Dados mensais
+            (SELECT COUNT(*) FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month) as viagens_mes_atual,
+            (SELECT COALESCE(SUM(pagantes), 0) FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month) as pagantes_mes_atual,
+            (SELECT COALESCE(SUM(moradores), 0) FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month) as moradores_mes_atual,
+            (SELECT COALESCE(SUM(gratuidade), 0) FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month) as gratuidade_mes_atual,
+            
+            -- Dados anuais
+            (SELECT COALESCE(SUM(pagantes), 0) FROM viagens WHERE YEAR(data) = $current_year) as pagantes_anual,
+            (SELECT COALESCE(SUM(moradores), 0) FROM viagens WHERE YEAR(data) = $current_year) as moradores_anual,
+            (SELECT COALESCE(SUM(gratuidade), 0) FROM viagens WHERE YEAR(data) = $current_year) as gratuidade_anual
+        ";
+
+        $result = $conn->query($sql);
+        if (!$result) {
+            throw new Exception('Erro na consulta principal: ' . $conn->error);
+        }
+
+        $metrics = $result->fetch_assoc();
+
+        // Bondes com mais viagens - todos os períodos
+        $bondes_viagens_diario = [];
+        $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens FROM viagens WHERE DATE(data) = CURDATE() GROUP BY bonde ORDER BY total_viagens DESC LIMIT 5");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $bondes_viagens_diario[] = ['bonde' => 'Bonde ' . $row['bonde'], 'total_viagens' => (int)$row['total_viagens']];
+            }
+        }
+
+        $bondes_viagens_mensal = [];
+        $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month GROUP BY bonde ORDER BY total_viagens DESC LIMIT 5");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $bondes_viagens_mensal[] = ['bonde' => 'Bonde ' . $row['bonde'], 'total_viagens' => (int)$row['total_viagens']];
+            }
+        }
+
+        // Dados para gráficos de passageiros por horário
+        $passageiros_por_horario_diario = array_fill(6, 15, 0);
+        $result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total_passageiros FROM viagens WHERE DATE(created_at) = CURDATE() AND HOUR(created_at) BETWEEN 6 AND 20 GROUP BY HOUR(created_at)");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $passageiros_por_horario_diario[(int)$row['hora']] = (int)$row['total_passageiros'];
+            }
+        }
+
+        $passageiros_por_horario_mensal = array_fill(6, 15, 0);
+        $result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total_passageiros FROM viagens WHERE YEAR(created_at) = $current_year AND MONTH(created_at) = $current_month AND HOUR(created_at) BETWEEN 6 AND 20 GROUP BY HOUR(created_at)");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $passageiros_por_horario_mensal[(int)$row['hora']] = (int)$row['total_passageiros'];
+            }
+        }
+
+        // Calcular totais e porcentagens
+        $passageiros_hoje = $metrics['pagantes_hoje'] + $metrics['moradores_hoje'] + $metrics['gratuidade_hoje'];
+        $passageiros_mes_atual = $metrics['pagantes_mes_atual'] + $metrics['moradores_mes_atual'] + $metrics['gratuidade_mes_atual'];
+        $passageiros_anual = $metrics['pagantes_anual'] + $metrics['moradores_anual'] + $metrics['gratuidade_anual'];
+
+        $total_passageiros_geral = max($passageiros_anual, 1);
+        $frota_ativa_percent = round(($metrics['bondes_ativos'] / max($metrics['total_bondes'], 1)) * 100, 1);
+        $operacao_andamento_percent = round(($metrics['viagens_mes_atual'] / max($metrics['total_viagens'], 1)) * 100, 1);
+        $fluxo_crescente_percent = round(($passageiros_mes_atual / $total_passageiros_geral) * 100, 1);
+
+        $data = [
+            'success' => true,
+            'timestamp' => time(),
+            'total_bondes' => (int)$metrics['total_bondes'],
+            'viagens_realizadas' => (int)$metrics['viagens_mes_atual'],
+            'total_passageiros' => $passageiros_mes_atual,
+            'passageiros_pagantes' => (int)$metrics['pagantes_mes_atual'],
+            'moradores' => (int)$metrics['moradores_mes_atual'],
+            'gratuidades' => (int)$metrics['gratuidade_mes_atual'],
+            'frota_ativa_percent' => $frota_ativa_percent,
+            'operacao_andamento_percent' => $operacao_andamento_percent,
+            'fluxo_crescente_percent' => $fluxo_crescente_percent,
+            'dados_cards' => [
+                'diario' => [
+                    'viagens' => (int)$metrics['viagens_hoje'],
+                    'passageiros' => $passageiros_hoje,
+                    'pagantes' => (int)$metrics['pagantes_hoje'],
+                    'moradores' => (int)$metrics['moradores_hoje'],
+                    'gratuidade' => (int)$metrics['gratuidade_hoje']
+                ],
+                'mensal' => [
+                    'viagens' => (int)$metrics['viagens_mes_atual'],
+                    'passageiros' => $passageiros_mes_atual,
+                    'pagantes' => (int)$metrics['pagantes_mes_atual'],
+                    'moradores' => (int)$metrics['moradores_mes_atual'],
+                    'gratuidade' => (int)$metrics['gratuidade_mes_atual']
+                ],
+                'anual' => [
+                    'viagens' => (int)$metrics['total_viagens'],
+                    'passageiros' => $passageiros_anual,
+                    'pagantes' => (int)$metrics['pagantes_anual'],
+                    'moradores' => (int)$metrics['moradores_anual'],
+                    'gratuidade' => (int)$metrics['gratuidade_anual']
+                ]
+            ],
+            'graficos' => [
+                'bondes_viagens' => [
+                    'diario' => [
+                        'labels' => array_column($bondes_viagens_diario, 'bonde'),
+                        'data' => array_column($bondes_viagens_diario, 'total_viagens')
+                    ],
+                    'mensal' => [
+                        'labels' => array_column($bondes_viagens_mensal, 'bonde'),
+                        'data' => array_column($bondes_viagens_mensal, 'total_viagens')
+                    ]
+                ],
+                'passageiros' => [
+                    'diario' => [
+                        'pagantes' => (int)$metrics['pagantes_hoje'],
+                        'moradores' => (int)$metrics['moradores_hoje'],
+                        'gratuidade' => (int)$metrics['gratuidade_hoje']
+                    ],
+                    'mensal' => [
+                        'pagantes' => (int)$metrics['pagantes_mes_atual'],
+                        'moradores' => (int)$metrics['moradores_mes_atual'],
+                        'gratuidade' => (int)$metrics['gratuidade_mes_atual']
+                    ],
+                    'anual' => [
+                        'pagantes' => (int)$metrics['pagantes_anual'],
+                        'moradores' => (int)$metrics['moradores_anual'],
+                        'gratuidade' => (int)$metrics['gratuidade_anual']
+                    ]
+                ],
+                'passageiros_horario' => [
+                    'diario' => [
+                        'labels' => ['6h', '7h', '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h'],
+                        'data' => array_values(array_slice($passageiros_por_horario_diario, 6, 15, true))
+                    ],
+                    'mensal' => [
+                        'labels' => ['6h', '7h', '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h'],
+                        'data' => array_values(array_slice($passageiros_por_horario_mensal, 6, 15, true))
+                    ]
+                ]
+            ]
+        ];
+
+        echo json_encode($data);
+        $conn->close();
+        exit;
+
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Erro interno: ' . $e->getMessage(),
+            'timestamp' => time()
+        ]);
+        $conn->close();
+        exit;
+    }
+}
+
 // Conexão com o banco
 $host = 'localhost';
 $user = 'root';
@@ -440,6 +639,42 @@ include 'header.php';
             z-index: -1;
         }
 
+        /* Adicionado loading overlay e spinner */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 15, 35, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .dashboard-container {
             display: flex;
             min-height: 100vh;
@@ -678,7 +913,8 @@ include 'header.php';
             font-size: 1rem;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 1rem;
+            /* Increased margin-bottom for better spacing between title and chart */
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -736,11 +972,6 @@ include 'header.php';
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
-
-        .table-card h3 i {
-            color: #667eea;
-            font-size: 0.9rem;
         }
 
         .table-container {
@@ -959,9 +1190,75 @@ include 'header.php';
         .chart-card:hover .chart-hover-info {
             opacity: 1;
         }
+
+        /* Melhorado sistema de notificações */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-heavy);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: var(--transition);
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .notification.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .notification.info {
+            border-left: 4px solid #667eea;
+        }
+
+        /* Atualizado CSS para o relógio em tempo real */
+        .real-time-clock {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .real-time-clock:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .real-time-clock i {
+            margin-right: 8px;
+            color: #3b82f6;
+        }
     </style>
 </head>
 <body>
+    <!-- Adicionado loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
     <div class="caderno">
         <div class="main-content">
             <div class="section">
@@ -979,6 +1276,11 @@ include 'header.php';
                         <i class="fas fa-download"></i>
                         Exportar Relatório PDF
                     </button>
+                    <!-- Substituído indicador de última atualização por relógio em tempo real -->
+                    <div class="real-time-clock" id="realTimeClock">
+                        <i class="fas fa-clock"></i>
+                        <span id="currentTime"></span>
+                    </div>
                 </div>
                 <div class="cards-grid">
                     <div class="card">
@@ -1510,6 +1812,12 @@ include 'header.php';
             }
 
             bondesViagensChart.options.plugins.title.text = `Bondes com Maior Performance (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual por Mês'})`;
+            
+            // Configurar datalabels para mostrar total de viagens
+            bondesViagensChart.options.plugins.datalabels.formatter = function(value, context) {
+                return formatNumber(value); // Mostra o total de viagens
+            };
+            
             bondesViagensChart.update();
         }
 
@@ -1749,6 +2057,11 @@ include 'header.php';
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        top: 25 // Espaço extra para evitar sobreposição do título
+                    }
+                },
                 plugins: {
                     legend: {
                         display: false
@@ -1757,10 +2070,13 @@ include 'header.php';
                         display: true,
                         text: 'Bondes com Maior Performance (Mês Atual)',
                         font: {
-                            size: 14,
+                            size: 12,
                             weight: 'bold'
                         },
-                        color: '#ffffff'
+                        color: '#ffffff',
+                        padding: {
+                            bottom: 15
+                        }
                     },
                     tooltip: {
                         backgroundColor: 'rgba(15, 15, 35, 0.95)',
@@ -1772,9 +2088,7 @@ include 'header.php';
                         displayColors: false,
                         callbacks: {
                             label: function(context) {
-                                const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
-                                const percentage = calculatePercentage(context.raw, total);
-                                return `Viagens: ${formatNumber(context.raw)} (${percentage}%)`;
+                                return `Viagens: ${formatNumber(context.raw)}`;
                             }
                         }
                     },
@@ -1788,12 +2102,11 @@ include 'header.php';
                             size: 10
                         },
                         formatter: function(value, context) {
-                            const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
-                            const percentage = calculatePercentage(value, total);
-                            return percentage + '%';
+                            return formatNumber(value); // Mostra o total de viagens
                         },
                         anchor: 'end',
-                        align: 'top'
+                        align: 'top',
+                        offset: 4 // Espaçamento para evitar sobreposição
                     }
                 },
                 scales: {
@@ -1859,6 +2172,11 @@ include 'header.php';
                 responsive: true,
                 maintainAspectRatio: false,
                 cutout: '55%',
+                layout: {
+                    padding: {
+                        top: 25
+                    }
+                },
                 plugins: {
                     legend: {
                         position: 'bottom',
@@ -1873,10 +2191,13 @@ include 'header.php';
                         display: true,
                         text: 'Distribuição de Passageiros (Mês Atual)',
                         font: {
-                            size: 14,
+                            size: 12,
                             weight: 'bold'
                         },
-                        color: '#ffffff'
+                        color: '#ffffff',
+                        padding: {
+                            bottom: 15
+                        }
                     },
                     tooltip: {
                         backgroundColor: 'rgba(15, 15, 35, 0.95)',
@@ -1909,7 +2230,9 @@ include 'header.php';
                             const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
                             const percentage = calculatePercentage(value, total);
                             return percentage + '%';
-                        }
+                        },
+                        anchor: 'center',
+                        align: 'center'
                     }
                 }
             }
@@ -1934,6 +2257,11 @@ include 'header.php';
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        top: 25
+                    }
+                },
                 plugins: {
                     legend: {
                         display: false
@@ -1942,10 +2270,13 @@ include 'header.php';
                         display: true,
                         text: 'Padrão Semanal de Viagens (Mês Atual)',
                         font: {
-                            size: 14,
+                            size: 12,
                             weight: 'bold'
                         },
-                        color: '#ffffff'
+                        color: '#ffffff',
+                        padding: {
+                            bottom: 15
+                        }
                     },
                     tooltip: {
                         backgroundColor: 'rgba(15, 15, 35, 0.95)',
@@ -1978,7 +2309,8 @@ include 'header.php';
                             return percentage + '%';
                         },
                         anchor: 'end',
-                        align: 'top'
+                        align: 'top',
+                        offset: 4
                     }
                 },
                 scales: {
@@ -2041,6 +2373,11 @@ include 'header.php';
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        top: 35 // Mais espaço para evitar sobreposição
+                    }
+                },
                 plugins: {
                     legend: {
                         display: false
@@ -2049,10 +2386,13 @@ include 'header.php';
                         display: true,
                         text: 'Fluxo de Passageiros por Horário (Mês Atual)',
                         font: {
-                            size: 14,
+                            size: 12,
                             weight: 'bold'
                         },
-                        color: '#ffffff'
+                        color: '#ffffff',
+                        padding: {
+                            bottom: 15
+                        }
                     },
                     tooltip: {
                         backgroundColor: 'rgba(15, 15, 35, 0.95)',
@@ -2072,14 +2412,22 @@ include 'header.php';
                     },
                     datalabels: {
                         display: function(context) {
-                            return context.dataset.data[context.dataIndex] > 0;
+                            const value = context.dataset.data[context.dataIndex];
+                            // Só mostra labels nos pontos com valores mais altos para evitar sobreposição
+                            const maxValue = Math.max(...context.dataset.data);
+                            return value > 0 && value >= maxValue * 0.3; // Mostra apenas se for 30% do valor máximo
                         },
                         color: '#ffffff',
-                        backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.9)',
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1,
                         borderRadius: 4,
-                        padding: 2,
+                        padding: {
+                            top: 2,
+                            bottom: 2,
+                            left: 4,
+                            right: 4
+                        },
                         font: {
                             weight: 'bold',
                             size: 9
@@ -2090,7 +2438,8 @@ include 'header.php';
                             return percentage + '%';
                         },
                         anchor: 'end',
-                        align: 'top'
+                        align: 'top',
+                        offset: 8
                     }
                 },
                 scales: {
@@ -2153,11 +2502,248 @@ include 'header.php';
             card.style.animationDelay = `${index * 0.1}s`;
         });
 
-        // Atualização automática dos dados a cada 5 minutos
-        setInterval(() => {
-            console.log('Atualizando dados do dashboard...');
-            // Aqui você pode adicionar uma chamada AJAX para atualizar os dados
-        }, 300000); // 5 minutos
+        // Função para atualizar relógio em tempo real
+        function atualizarRelogio() {
+            const agora = new Date();
+            const opcoes = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'America/Sao_Paulo'
+            };
+            const tempoFormatado = agora.toLocaleDateString('pt-BR', opcoes);
+            document.getElementById('currentTime').textContent = tempoFormatado;
+        }
+
+        // Atualizar relógio a cada segundo
+        setInterval(atualizarRelogio, 1000);
+        atualizarRelogio(); // Executar imediatamente
+
+        async function atualizarDadosAutomaticamente() {
+            try {
+                console.log('[v0] Iniciando atualização automática dos dados...');
+                const timestamp = new Date().getTime();
+                const response = await fetch(`?api=data&t=${timestamp}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const dados = await response.json();
+                console.log('[v0] Dados recebidos:', dados);
+                
+                if (dados.success) {
+                    // Atualizar cards principais
+                    const totalBondesEl = document.getElementById('totalBondes');
+                    const viagensPeriodoEl = document.getElementById('viagensPeriodo');
+                    const passageirosPeriodoEl = document.getElementById('passageirosPeriodo');
+                    const pagantesPeriodoEl = document.getElementById('pagantesPeriodo');
+                    const moradoresPeriodoEl = document.getElementById('moradoresPeriodo');
+                    const gratuidadePeriodoEl = document.getElementById('gratuidadePeriodo');
+                    
+                    if (totalBondesEl) totalBondesEl.textContent = formatNumber(dados.total_bondes);
+                    if (viagensPeriodoEl) viagensPeriodoEl.textContent = formatNumber(dados.viagens_realizadas);
+                    if (passageirosPeriodoEl) passageirosPeriodoEl.textContent = formatNumber(dados.total_passageiros);
+                    if (pagantesPeriodoEl) pagantesPeriodoEl.textContent = formatNumber(dados.passageiros_pagantes);
+                    if (moradoresPeriodoEl) moradoresPeriodoEl.textContent = formatNumber(dados.moradores);
+                    if (gratuidadePeriodoEl) gratuidadePeriodoEl.textContent = formatNumber(dados.gratuidades);
+                    
+                    // Atualizar porcentagens dos cards
+                    const metricComparisons = document.querySelectorAll('.metric-comparison span');
+                    if (metricComparisons.length >= 3) {
+                        metricComparisons[0].textContent = dados.frota_ativa_percent + '% do total';
+                        metricComparisons[1].textContent = dados.operacao_andamento_percent + '% do total';
+                        metricComparisons[2].textContent = dados.fluxo_crescente_percent + '% do total';
+                    }
+                    
+                    // Atualizar dados globais para os gráficos
+                    if (dados.dados_cards) {
+                        dadosCards = dados.dados_cards;
+                    }
+                    
+                    if (dados.graficos) {
+                        dadosBondesViagens = dados.graficos.bondes_viagens;
+                        dadosPassageiros = dados.graficos.passageiros;
+                        dadosPassageirosHorario = dados.graficos.passageiros_horario;
+                        dadosViagensSemanais = dados.graficos.viagens_semanais;
+                    }
+                    
+                    // Recriar gráficos com novos dados
+                    const periodoAtual = document.getElementById('periodoSelect').value;
+                    
+                    // Destruir e recriar todos os gráficos
+                    if (window.bondesViagensChart) {
+                        window.bondesViagensChart.destroy();
+                    }
+                    if (window.passageirosChart) {
+                        window.passageirosChart.destroy();
+                    }
+                    if (window.passageirosHorarioChart) {
+                        window.passageirosHorarioChart.destroy();
+                    }
+                    if (window.viagensSemanaisChart) {
+                        window.viagensSemanaisChart.destroy();
+                    }
+                    
+                    // Recriar gráficos
+                    setTimeout(() => {
+                        atualizarGraficoBondesViagens(periodoAtual);
+                        atualizarGraficoPassageiros(periodoAtual);
+                        atualizarGraficoPassageirosHorario(periodoAtual);
+                        atualizarGraficoViagensSemanais(periodoAtual);
+                    }, 100);
+                    
+                    // Atualizar tabelas
+                    if (dados.tabelas) {
+                        // Atualizar tabela de acidentes
+                        if (dados.tabelas.acidentes) {
+                            const tabelaAcidentes = document.querySelector('#acidentes-table tbody');
+                            if (tabelaAcidentes) {
+                                tabelaAcidentes.innerHTML = '';
+                                dados.tabelas.acidentes.forEach(acidente => {
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
+                                        <td class="px-3 py-2 text-sm">${acidente.data}</td>
+                                        <td class="px-3 py-2 text-sm">${acidente.descricao}</td>
+                                        <td class="px-3 py-2 text-sm">${acidente.localizacao}</td>
+                                        <td class="px-3 py-2 text-sm">
+                                            <span class="px-2 py-1 text-xs rounded-full ${acidente.severidade === 'Grave' ? 'bg-red-100 text-red-800' : acidente.severidade === 'Moderado' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+                                                ${acidente.severidade}
+                                            </span>
+                                        </td>
+                                    `;
+                                    tabelaAcidentes.appendChild(row);
+                                });
+                            }
+                        }
+                        
+                        // Atualizar tabela de viagens
+                        if (dados.tabelas.viagens) {
+                            const tabelaViagens = document.querySelector('#viagens-table tbody');
+                            if (tabelaViagens) {
+                                tabelaViagens.innerHTML = '';
+                                dados.tabelas.viagens.forEach(viagem => {
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
+                                        <td class="px-3 py-2 text-sm">${viagem.data}</td>
+                                        <td class="px-3 py-2 text-sm">${viagem.retorno}</td>
+                                        <td class="px-3 py-2 text-sm">${viagem.bonde}</td>
+                                        <td class="px-3 py-2 text-sm">${viagem.saida}</td>
+                                        <td class="px-3 py-2 text-sm">${viagem.destino}</td>
+                                        <td class="px-3 py-2 text-sm">${viagem.passageiros}</td>
+                                    `;
+                                    tabelaViagens.appendChild(row);
+                                });
+                            }
+                        }
+                        
+                        // Atualizar tabela de status da frota
+                        if (dados.tabelas.status_frota) {
+                            const tabelaStatus = document.querySelector('#status-table tbody');
+                            if (tabelaStatus) {
+                                tabelaStatus.innerHTML = '';
+                                dados.tabelas.status_frota.forEach(status => {
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
+                                        <td class="px-3 py-2 text-sm">${status.bonde}</td>
+                                        <td class="px-3 py-2 text-sm">
+                                            <span class="px-2 py-1 text-xs rounded-full ${status.status === 'Operacional' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                                ${status.status}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-sm">${status.ultima_atualizacao}</td>
+                                    `;
+                                    tabelaStatus.appendChild(row);
+                                });
+                            }
+                        }
+                        
+                        // Atualizar tabela de manutenções
+                        if (dados.tabelas.manutencoes) {
+                            const tabelaManutencoes = document.querySelector('#manutencoes-table tbody');
+                            if (tabelaManutencoes) {
+                                tabelaManutencoes.innerHTML = '';
+                                dados.tabelas.manutencoes.forEach(manutencao => {
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
+                                        <td class="px-3 py-2 text-sm">${manutencao.data}</td>
+                                        <td class="px-3 py-2 text-sm">${manutencao.tipo}</td>
+                                        <td class="px-3 py-2 text-sm">${manutencao.bonde}</td>
+                                        <td class="px-3 py-2 text-sm">
+                                            <span class="px-2 py-1 text-xs rounded-full ${manutencao.status === 'Concluída' ? 'bg-green-100 text-green-800' : manutencao.status === 'Em Andamento' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}">
+                                                ${manutencao.status}
+                                            </span>
+                                        </td>
+                                    `;
+                                    tabelaManutencoes.appendChild(row);
+                                });
+                            }
+                        }
+                    }
+                    
+                    // Indicador visual de atualização bem-sucedida
+                    const clockIndicator = document.getElementById('realTimeClock');
+                    if (clockIndicator) {
+                        clockIndicator.style.backgroundColor = 'rgba(34, 197, 94, 0.1)';
+                        clockIndicator.style.borderColor = '#22c55e';
+                        setTimeout(() => {
+                            clockIndicator.style.backgroundColor = '';
+                            clockIndicator.style.borderColor = '';
+                        }, 2000);
+                    }
+                    
+                    console.log('[v0] Todos os dados atualizados com sucesso (cards, gráficos e tabelas)');
+                    
+                } else {
+                    console.error('[v0] Erro ao atualizar dados:', dados.error);
+                    // Indicador visual de erro
+                    const clockIndicator = document.getElementById('realTimeClock');
+                    if (clockIndicator) {
+                        clockIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                        clockIndicator.style.borderColor = '#ef4444';
+                        setTimeout(() => {
+                            clockIndicator.style.backgroundColor = '';
+                            clockIndicator.style.borderColor = '';
+                        }, 3000);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('[v0] Erro na atualização automática:', error);
+                // Indicador visual de erro de conexão
+                const clockIndicator = document.getElementById('realTimeClock');
+                if (clockIndicator) {
+                    clockIndicator.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                    clockIndicator.style.borderColor = '#ef4444';
+                    setTimeout(() => {
+                        clockIndicator.style.backgroundColor = '';
+                        clockIndicator.style.borderColor = '';
+                    }, 3000);
+                }
+            }
+        }
+
+        let intervalId = setInterval(atualizarDadosAutomaticamente, 10000);
+        
+        // Pausar atualização quando a página não estiver visível
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                clearInterval(intervalId);
+                console.log('[v0] Atualização automática pausada - página não visível');
+            } else {
+                intervalId = setInterval(atualizarDadosAutomaticamente, 10000);
+                atualizarDadosAutomaticamente(); // Atualizar imediatamente
+                console.log('[v0] Atualização automática retomada - página visível');
+            }
+        });
+
+        // Executar primeira atualização após 2 segundos
+        setTimeout(atualizarDadosAutomaticamente, 2000);
+
     </script>
 
     <?php $conn->close(); ?>

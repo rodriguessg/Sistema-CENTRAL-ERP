@@ -85,7 +85,7 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
         $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens FROM viagens WHERE YEAR(data) = $current_year GROUP BY bonde ORDER BY total_viagens DESC");
         if ($result) {
             while ($row = $result->fetch_assoc()) {
-                $bondes_viagens_anual[] = ['bonde' => 'Bonde ' . $row['bonde'], 'total_viagens' => (int)$row['total_viagens']];
+                $bondes_viagens_anual[] = ['bonde' => 'Bonde' . $row['bonde'], 'total_viagens' => (int)$row['total_viagens']];
             }
         }
 
@@ -103,6 +103,100 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
         if ($result) {
             while ($row = $result->fetch_assoc()) {
                 $passageiros_por_horario_mensal[(int)$row['hora']] = (int)$row['total_passageiros'];
+            }
+        }
+
+        // Dados para recorde de passageiros por mês
+        $passageiros_por_mes = array_fill(1, 12, 0);
+        $result = $conn->query("SELECT MONTH(data) as mes, COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total_passageiros 
+                                FROM viagens 
+                                WHERE YEAR(data) = $current_year 
+                                GROUP BY MONTH(data)");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $passageiros_por_mes[(int)$row['mes']] = (int)$row['total_passageiros'];
+            }
+        }
+
+        // Dados para viagens por maquinista e agente
+        $viagens_maquinista_agente_diario = [];
+        $result = $conn->query("SELECT 
+                                    COALESCE(maquinista, 'Desconhecido') as nome, 
+                                    'Maquinista' as tipo, 
+                                    COUNT(id) as total_viagens 
+                                FROM viagens 
+                                WHERE DATE(data) = CURDATE() 
+                                GROUP BY maquinista
+                                UNION
+                                SELECT 
+                                    COALESCE(agente, 'Desconhecido') as nome, 
+                                    'Agente' as tipo, 
+                                    COUNT(id) as total_viagens 
+                                FROM viagens 
+                                WHERE DATE(data) = CURDATE() 
+                                GROUP BY agente
+                                ORDER BY total_viagens DESC");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $viagens_maquinista_agente_diario[] = [
+                    'nome' => $row['nome'],
+                    'tipo' => $row['tipo'],
+                    'total_viagens' => (int)$row['total_viagens']
+                ];
+            }
+        }
+
+        $viagens_maquinista_agente_mensal = [];
+        $result = $conn->query("SELECT 
+                                    COALESCE(maquinista, 'Desconhecido') as nome, 
+                                    'Maquinista' as tipo, 
+                                    COUNT(id) as total_viagens 
+                                FROM viagens 
+                                WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month 
+                                GROUP BY maquinista
+                                UNION
+                                SELECT 
+                                    COALESCE(agente, 'Desconhecido') as nome, 
+                                    'Agente' as tipo, 
+                                    COUNT(id) as total_viagens 
+                                FROM viagens 
+                                WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month 
+                                GROUP BY agente
+                                ORDER BY total_viagens DESC");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $viagens_maquinista_agente_mensal[] = [
+                    'nome' => $row['nome'],
+                    'tipo' => $row['tipo'],
+                    'total_viagens' => (int)$row['total_viagens']
+                ];
+            }
+        }
+
+        $viagens_maquinista_agente_anual = [];
+        $result = $conn->query("SELECT 
+                                    COALESCE(maquinista, 'Desconhecido') as nome, 
+                                    'Maquinista' as tipo, 
+                                    COUNT(id) as total_viagens 
+                                FROM viagens 
+                                WHERE YEAR(data) = $current_year 
+                                GROUP BY maquinista
+                                UNION
+                                SELECT 
+                                    COALESCE(agente, 'Desconhecido') as nome, 
+                                    'Agente' as tipo, 
+                                    COUNT(id) as total_viagens 
+                                FROM viagens 
+                                WHERE YEAR(data) = $current_year 
+                                GROUP BY agente
+                                ORDER BY total_viagens DESC");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $viagens_maquinista_agente_anual[] = [
+                    'nome' => $row['nome'],
+                    'tipo' => $row['tipo'],
+                    'total_viagens' => (int)$row['total_viagens']
+                ];
             }
         }
 
@@ -187,6 +281,29 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
                     'mensal' => [
                         'labels' => ['6h', '7h', '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h'],
                         'data' => array_values(array_slice($passageiros_por_horario_mensal, 6, 15, true))
+                    ]
+                ],
+                'passageiros_por_mes' => [
+                    'anual' => [
+                        'labels' => ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                        'data' => array_values($passageiros_por_mes)
+                    ]
+                ],
+                'viagens_maquinista_agente' => [
+                    'diario' => [
+                        'labels' => array_map(function($item) { return $item['nome'] . ' (' . $item['tipo'] . ')'; }, $viagens_maquinista_agente_diario),
+                        'data' => array_column($viagens_maquinista_agente_diario, 'total_viagens'),
+                        'colors' => array_map(function($item) { return $item['tipo'] === 'Maquinista' ? 'rgba(102, 126, 234, 0.8)' : 'rgba(75, 192, 192, 0.8)'; }, $viagens_maquinista_agente_diario)
+                    ],
+                    'mensal' => [
+                        'labels' => array_map(function($item) { return $item['nome'] . ' (' . $item['tipo'] . ')'; }, $viagens_maquinista_agente_mensal),
+                        'data' => array_column($viagens_maquinista_agente_mensal, 'total_viagens'),
+                        'colors' => array_map(function($item) { return $item['tipo'] === 'Maquinista' ? 'rgba(102, 126, 234, 0.8)' : 'rgba(75, 192, 192, 0.8)'; }, $viagens_maquinista_agente_mensal)
+                    ],
+                    'anual' => [
+                        'labels' => array_map(function($item) { return $item['nome'] . ' (' . $item['tipo'] . ')'; }, $viagens_maquinista_agente_anual),
+                        'data' => array_column($viagens_maquinista_agente_anual, 'total_viagens'),
+                        'colors' => array_map(function($item) { return $item['tipo'] === 'Maquinista' ? 'rgba(102, 126, 234, 0.8)' : 'rgba(75, 192, 192, 0.8)'; }, $viagens_maquinista_agente_anual)
                     ]
                 ]
             ]
@@ -412,7 +529,7 @@ $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $bondes_viagens_diario[] = [
-            'bonde' => 'Bonde ' . $row['bonde'],
+            'bonde' => ' ' . $row['bonde'],
             'total_viagens' => $row['total_viagens']
         ];
     }
@@ -430,7 +547,7 @@ $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $bondes_viagens_mensal[] = [
-            'bonde' => 'Bonde ' . $row['bonde'],
+            'bonde' => ' ' . $row['bonde'],
             'total_viagens' => $row['total_viagens']
         ];
     }
@@ -447,7 +564,7 @@ $result = $conn->query("SELECT bonde, MONTH(data) as mes, COUNT(id) as total_via
 if ($result) {
     $viagens_por_bonde_mes = [];
     while ($row = $result->fetch_assoc()) {
-        $bonde = 'Bonde ' . $row['bonde'];
+        $bonde = '          ' . $row['bonde'];
         $mes = (int)$row['mes'];
         $total_viagens = (int)$row['total_viagens'];
         if (!isset($viagens_por_bonde_mes[$bonde])) {
@@ -562,6 +679,112 @@ if ($result) {
     error_log("Passageiros por horário (anual): " . json_encode($passageiros_por_horario_anual));
 } else {
     die("Erro na consulta de passageiros por horário (anual): " . $conn->error);
+}
+
+// Consultas para viagens por maquinista e agente
+$viagens_maquinista_agente_diario = [];
+$result = $conn->query("SELECT 
+                            COALESCE(maquinista, 'Desconhecido') as nome, 
+                            'Maquinista' as tipo, 
+                            COUNT(id) as total_viagens 
+                        FROM viagens 
+                        WHERE DATE(data) = CURDATE() 
+                        GROUP BY maquinista
+                        UNION
+                        SELECT 
+                            COALESCE(agente, 'Desconhecido') as nome, 
+                            'Agente' as tipo, 
+                            COUNT(id) as total_viagens 
+                        FROM viagens 
+                        WHERE DATE(data) = CURDATE() 
+                        GROUP BY agente
+                        ORDER BY total_viagens DESC");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $viagens_maquinista_agente_diario[] = [
+            'nome' => $row['nome'],
+            'tipo' => $row['tipo'],
+            'total_viagens' => (int)$row['total_viagens']
+        ];
+    }
+    error_log("Viagens por maquinista/agente (diário): " . json_encode($viagens_maquinista_agente_diario));
+} else {
+    die("Erro na consulta de viagens por maquinista/agente (diário): " . $conn->error);
+}
+
+$viagens_maquinista_agente_mensal = [];
+$result = $conn->query("SELECT 
+                            COALESCE(maquinista, 'Desconhecido') as nome, 
+                            'Maquinista' as tipo, 
+                            COUNT(id) as total_viagens 
+                        FROM viagens 
+                        WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month 
+                        GROUP BY maquinista
+                        UNION
+                        SELECT 
+                            COALESCE(agente, 'Desconhecido') as nome, 
+                            'Agente' as tipo, 
+                            COUNT(id) as total_viagens 
+                        FROM viagens 
+                        WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month 
+                        GROUP BY agente
+                        ORDER BY total_viagens DESC");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $viagens_maquinista_agente_mensal[] = [
+            'nome' => $row['nome'],
+            'tipo' => $row['tipo'],
+            'total_viagens' => (int)$row['total_viagens']
+        ];
+    }
+    error_log("Viagens por maquinista/agente (mensal): " . json_encode($viagens_maquinista_agente_mensal));
+} else {
+    die("Erro na consulta de viagens por maquinista/agente (mensal): " . $conn->error);
+}
+
+$viagens_maquinista_agente_anual = [];
+$result = $conn->query("SELECT 
+                            COALESCE(maquinista, 'Desconhecido') as nome, 
+                            'Maquinista' as tipo, 
+                            COUNT(id) as total_viagens 
+                        FROM viagens 
+                        WHERE YEAR(data) = $current_year 
+                        GROUP BY maquinista
+                        UNION
+                        SELECT 
+                            COALESCE(agente, 'Desconhecido') as nome, 
+                            'Agente' as tipo, 
+                            COUNT(id) as total_viagens 
+                        FROM viagens 
+                        WHERE YEAR(data) = $current_year 
+                        GROUP BY agente
+                        ORDER BY total_viagens DESC");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $viagens_maquinista_agente_anual[] = [
+            'nome' => $row['nome'],
+            'tipo' => $row['tipo'],
+            'total_viagens' => (int)$row['total_viagens']
+        ];
+    }
+    error_log("Viagens por maquinista/agente (anual): " . json_encode($viagens_maquinista_agente_anual));
+} else {
+    die("Erro na consulta de viagens por maquinista/agente (anual): " . $conn->error);
+}
+
+// Consultas para recorde de passageiros por mês
+$passageiros_por_mes = array_fill(1, 12, 0);
+$result = $conn->query("SELECT MONTH(data) as mes, COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total_passageiros 
+                        FROM viagens 
+                        WHERE YEAR(data) = $current_year 
+                        GROUP BY MONTH(data)");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $passageiros_por_mes[(int)$row['mes']] = (int)$row['total_passageiros'];
+    }
+    error_log("Passageiros por mês (anual): " . json_encode($passageiros_por_mes));
+} else {
+    die("Erro na consulta de passageiros por mês (anual): " . $conn->error);
 }
 
 include 'header.php';
@@ -786,9 +1009,9 @@ include 'header.php';
 
         /* Reduced card sizes and improved grid layout */
         .cards-grid {
-               display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 0.5fr));
-    gap: 0.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 0.5fr));
+            gap: 0.5rem;
         }
 
         .card {
@@ -890,7 +1113,7 @@ include 'header.php';
         /* Improved charts grid with hover zoom effects */
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
         }
 
@@ -1312,7 +1535,7 @@ include 'header.php';
         }
 
         /* Adicionando estilos para exportação PDF sem cor de fundo */
-        @media print, .pdf-export {
+        @media print {
             body {
                 background: white !important;
                 color: #333 !important;
@@ -1498,7 +1721,6 @@ include 'header.php';
                             <i class="fas fa-trophy"></i>
                             Bondes com Maior Performance
                         </h3>
-                        <!-- Added hover info display -->
                         <div class="chart-hover-info">
                             Passe o mouse sobre as barras para ver detalhes
                         </div>
@@ -1556,6 +1778,38 @@ include 'header.php';
                         </div>
                         <div class="chart-container">
                             <canvas id="passageirosHorarioChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>
+                            <i class="fas fa-users"></i>
+                            Recorde de Passageiros por Mês
+                        </h3>
+                        <div class="chart-hover-info">
+                            Passe o mouse sobre as barras para ver detalhes
+                        </div>
+                        <div id="noDataPassageirosMesMessage" class="no-data-message" style="display: none;">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Nenhum dado de passageiros disponível para o ano atual</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="passageirosMesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>
+                            <i class="fas fa-chart-bar"></i>
+                            Viagens por Maquinista e Agente
+                        </h3>
+                        <div class="chart-hover-info">
+                            Passe o mouse sobre as barras para ver detalhes
+                        </div>
+                        <div id="noDataMaquinistaAgenteMessage" class="no-data-message" style="display: none;">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Nenhum dado disponível para o período selecionado</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="maquinistaAgenteChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -1622,7 +1876,7 @@ include 'header.php';
                                 <thead>
                                     <tr>
                                         <th><i class="fas fa-calendar"></i> Data</th>
-                                        <th><i class="fas fa-undo"></i> Retorno</th>
+                                        <!-- <th><i class="fas fa-undo"></i> Retorno</th> -->
                                         <th><i class="fas fa-train"></i> Bonde</th>
                                         <th><i class="fas fa-play"></i> Saída</th>
                                         <th><i class="fas fa-flag-checkered"></i> Destino</th>
@@ -1641,8 +1895,8 @@ include 'header.php';
                                         while ($row = $result_viagens->fetch_assoc()) {
                                             echo "<tr>";
                                             echo "<td>" . htmlspecialchars(date('d/m/Y', strtotime($row['data']))) . "</td>";
-                                            echo "<td>" . ($row['retorno'] ? htmlspecialchars(date('d/m/Y', strtotime($row['retorno']))) : '<span style="color: var(--text-muted);">N/A</span>') . "</td>";
-                                            echo "<td><span class='status-badge status-active'><i class='fas fa-train'></i> Bonde " . htmlspecialchars($row['bonde']) . "</span></td>";
+                                            // echo "<td>" . ($row['retorno'] ? htmlspecialchars(date('d/m/Y', strtotime($row['retorno']))) : '<span style="color: var(--text-muted);">N/A</span>') . "</td>";
+                                            echo "<td><span class='status-badge status-active'><i class='fas fa-train'></i>  " . htmlspecialchars($row['bonde']) . "</span></td>";
                                             echo "<td>" . htmlspecialchars($row['saida']) . "</td>";
                                             echo "<td>" . htmlspecialchars($row['destino'] ?? 'N/A') . "</td>";
                                             echo "<td><strong>" . htmlspecialchars($row['passageiros']) . "</strong></td>";
@@ -1728,6 +1982,8 @@ include 'header.php';
     <!-- Added Chart.js datalabels plugin for showing percentages directly on charts -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
+
+        
         // Dados para os cards
         const dadosCards = {
             diario: {
@@ -1848,6 +2104,33 @@ include 'header.php';
             }
         };
 
+        // Dados para o gráfico de recorde de passageiros por mês
+        const dadosPassageirosMes = {
+            anual: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                data: [<?php echo implode(',', array_values($passageiros_por_mes)); ?>]
+            }
+        };
+
+        // Dados para o gráfico de viagens por maquinista e agente
+        const dadosViagensMaquinistaAgente = {
+            diario: {
+                labels: [<?php echo "'" . implode("','", array_map(function($item) { return $item['nome'] . ' (' . $item['tipo'] . ')'; }, $viagens_maquinista_agente_diario)) . "'"; ?>],
+                data: [<?php echo implode(',', array_column($viagens_maquinista_agente_diario, 'total_viagens')); ?>],
+                colors: [<?php echo "'" . implode("','", array_map(function($item) { return $item['tipo'] === 'Maquinista' ? 'rgba(102, 126, 234, 0.8)' : 'rgba(75, 192, 192, 0.8)'; }, $viagens_maquinista_agente_diario)) . "'"; ?>]
+            },
+            mensal: {
+                labels: [<?php echo "'" . implode("','", array_map(function($item) { return $item['nome'] . ' (' . $item['tipo'] . ')'; }, $viagens_maquinista_agente_mensal)) . "'"; ?>],
+                data: [<?php echo implode(',', array_column($viagens_maquinista_agente_mensal, 'total_viagens')); ?>],
+                colors: [<?php echo "'" . implode("','", array_map(function($item) { return $item['tipo'] === 'Maquinista' ? 'rgba(102, 126, 234, 0.8)' : 'rgba(75, 192, 192, 0.8)'; }, $viagens_maquinista_agente_mensal)) . "'"; ?>]
+            },
+            anual: {
+                labels: [<?php echo "'" . implode("','", array_map(function($item) { return $item['nome'] . ' (' . $item['tipo'] . ')'; }, $viagens_maquinista_agente_anual)) . "'"; ?>],
+                data: [<?php echo implode(',', array_column($viagens_maquinista_agente_anual, 'total_viagens')); ?>],
+                colors: [<?php echo "'" . implode("','", array_map(function($item) { return $item['tipo'] === 'Maquinista' ? 'rgba(102, 126, 234, 0.8)' : 'rgba(75, 192, 192, 0.8)'; }, $viagens_maquinista_agente_anual)) . "'"; ?>]
+            }
+        };
+
         // Função para formatar números
         function formatNumber(num) {
             return new Intl.NumberFormat('pt-BR').format(num);
@@ -1924,7 +2207,7 @@ include 'header.php';
                     borderRadius: 8,
                     borderSkipped: false,
                 }];
-                bondesViagensChart.options.scales.x.title.text = 'Bondes';
+                bondesViagensChart.options.scales.x.title.text = '';
                 bondesViagensChart.options.scales.y.title.text = 'Número de Viagens';
                 bondesViagensChart.options.plugins.legend.display = false;
             }
@@ -2003,6 +2286,65 @@ include 'header.php';
             passageirosHorarioChart.update();
         }
 
+        // Função para atualizar o gráfico de recorde de passageiros por mês
+        function atualizarGraficoPassageirosMes(periodo) {
+            const dados = dadosPassageirosMes.anual; // Apenas anual para este gráfico
+            const total = dados.data.reduce((sum, value) => sum + value, 0);
+            const noDataMessage = document.getElementById('noDataPassageirosMesMessage');
+            const canvas = document.getElementById('passageirosMesChart');
+
+            if (total === 0) {
+                noDataMessage.style.display = 'flex';
+                canvas.style.display = 'none';
+            } else {
+                noDataMessage.style.display = 'none';
+                canvas.style.display = 'block';
+            }
+
+            passageirosMesChart.data.datasets[0].data = dados.data;
+            passageirosMesChart.options.plugins.title.text = `Recorde de Passageiros por Mês (Ano ${<?php echo $current_year; ?>})`;
+            
+            // Atualizar tooltips com porcentagens
+            passageirosMesChart.options.plugins.tooltip.callbacks.label = function(context) {
+                const value = context.raw || 0;
+                const percentage = calculatePercentage(value, total);
+                return `Passageiros: ${formatNumber(value)} (${percentage}%)`;
+            };
+            
+            passageirosMesChart.update();
+        }
+
+        // Função para atualizar o gráfico de viagens por maquinista e agente
+        function atualizarGraficoMaquinistaAgente(periodo) {
+            const dados = dadosViagensMaquinistaAgente[periodo];
+            const total = dados.data.reduce((sum, value) => sum + value, 0);
+            const noDataMessage = document.getElementById('noDataMaquinistaAgenteMessage');
+            const canvas = document.getElementById('maquinistaAgenteChart');
+
+            if (total === 0) {
+                noDataMessage.style.display = 'flex';
+                canvas.style.display = 'none';
+            } else {
+                noDataMessage.style.display = 'none';
+                canvas.style.display = 'block';
+            }
+
+            maquinistaAgenteChart.data.labels = dados.labels;
+            maquinistaAgenteChart.data.datasets[0].data = dados.data;
+            maquinistaAgenteChart.data.datasets[0].backgroundColor = dados.colors;
+            maquinistaAgenteChart.data.datasets[0].borderColor = dados.colors.map(color => color.replace('0.8', '1'));
+            maquinistaAgenteChart.options.plugins.title.text = `Viagens por Maquinista e Agente (${periodo.charAt(0).toUpperCase() + periodo.slice(1)})`;
+            
+            // Atualizar tooltips com porcentagens
+            maquinistaAgenteChart.options.plugins.tooltip.callbacks.label = function(context) {
+                const value = context.raw || 0;
+                const percentage = calculatePercentage(value, total);
+                return `Viagens: ${formatNumber(value)} (${percentage}%)`;
+            };
+            
+            maquinistaAgenteChart.update();
+        }
+
         // Função para atualizar todo o painel
         function atualizarPainel(periodo) {
             atualizarCards(periodo);
@@ -2010,6 +2352,8 @@ include 'header.php';
             atualizarGraficoBondesViagens(periodo);
             atualizarGraficoViagensDiaSemana(periodo);
             atualizarGraficoPassageirosHorario(periodo);
+            atualizarGraficoPassageirosMes(periodo);
+            atualizarGraficoMaquinistaAgente(periodo);
         }
 
         function exportarParaPDF() {
@@ -2526,6 +2870,204 @@ include 'header.php';
             }
         });
 
+        // Gráfico de barras: Recorde de passageiros por mês
+        const passageirosMesCtx = document.getElementById('passageirosMesChart').getContext('2d');
+        const passageirosMesChart = new Chart(passageirosMesCtx, {
+            type: 'bar',
+            data: {
+                labels: dadosPassageirosMes.anual.labels,
+                datasets: [{
+                    label: 'Passageiros',
+                    data: dadosPassageirosMes.anual.data,
+                    backgroundColor: 'rgba(153, 102, 255, 0.8)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        top: 25
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Recorde de Passageiros por Mês (Ano <?php echo $current_year; ?>)',
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        color: '#ffffff',
+                        padding: {
+                            bottom: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#b8c5d6',
+                        borderColor: 'rgba(153, 102, 255, 0.3)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `Passageiros: ${formatNumber(context.raw)}`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: function(context) {
+                            return context.dataset.data[context.dataIndex] > 0;
+                        },
+                        color: '#ffffff',
+                        font: {
+                            weight: 'bold',
+                            size: 10
+                        },
+                        formatter: function(value, context) {
+                            return formatNumber(value);
+                        },
+                        anchor: 'end',
+                        align: 'top',
+                        offset: 4
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Número de Passageiros',
+                            color: '#b8c5d6',
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(35, 53, 84, 0.5)'
+                        },
+                        ticks: {
+                            color: '#b8c5d6',
+                            font: { size: 10 }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Meses',
+                            color: '#b8c5d6',
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(35, 53, 84, 0.5)'
+                        },
+                        ticks: {
+                            color: '#b8c5d6',
+                            font: { size: 10 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de barras: Viagens por maquinista e agente
+      // Gráfico de barras: Viagens por Maquinista e Agente
+const maquinistaAgenteCtx = document.getElementById('maquinistaAgenteChart').getContext('2d');
+const maquinistaAgenteChart = new Chart(maquinistaAgenteCtx, {
+    type: 'bar',
+    data: {
+        labels: dadosViagensMaquinistaAgente.mensal.labels,
+        datasets: [{
+            label: 'Viagens',
+            data: dadosViagensMaquinistaAgente.mensal.data,
+            backgroundColor: dadosViagensMaquinistaAgente.mensal.colors,
+            borderColor: dadosViagensMaquinistaAgente.mensal.colors.map(color => color.replace('0.8', '1')),
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y', // Altera para barras horizontais, movendo labels (maquinistas e agentes) para o eixo Y
+        scales: {
+            x: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Número de Viagens',
+                    color: '#b8c5d6',
+                    font: { size: 11 }
+                },
+                grid: {
+                    color: 'rgba(35, 53, 84, 0.5)'
+                },
+                ticks: {
+                    color: '#b8c5d6',
+                    font: { size: 10 }
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Maquinistas e Agentes',
+                    color: '#b8c5d6',
+                    font: { size: 11 }
+                },
+                grid: {
+                    color: 'rgba(35, 53, 84, 0.5)'
+                },
+                ticks: {
+                    color: '#b8c5d6',
+                    font: { size: 10 }
+                }
+            }
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: 'Viagens por Maquinista e Agente (Mensal)',
+                font: {
+                    size: 12,
+                    weight: 'bold'
+                },
+                color: '#ffffff',
+                padding: {
+                    bottom: 15
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                titleColor: '#ffffff',
+                bodyColor: '#b8c5d6',
+                borderColor: 'rgba(102, 126, 234, 0.3)',
+                borderWidth: 1,
+                cornerRadius: 8,
+                displayColors: false,
+                callbacks: {
+                    label: function(context) {
+                        const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                        const percentage = calculatePercentage(context.raw, total);
+                        return `Viagens: ${formatNumber(context.raw)} (${percentage}%)`;
+                    }
+                }
+            },
+            datalabels: {
+                anchor: 'end',
+                align: 'end',
+                formatter: function(value) {
+                    return formatNumber(value);
+                }
+            }
+        }
+    }
+});
         // Verifica se há dados para exibir os gráficos inicialmente
         const totalPassageirosHorario = dadosPassageirosHorario.mensal.data.reduce((sum, value) => sum + value, 0);
         if (totalPassageirosHorario === 0) {
@@ -2534,6 +3076,15 @@ include 'header.php';
         } else {
             document.getElementById('noDataPassageirosHorarioMessage').style.display = 'none';
             document.getElementById('passageirosHorarioChart').style.display = 'block';
+        }
+
+        const totalMaquinistaAgente = dadosViagensMaquinistaAgente.mensal.data.reduce((sum, value) => sum + value, 0);
+        if (totalMaquinistaAgente === 0) {
+            document.getElementById('noDataMaquinistaAgenteMessage').style.display = 'flex';
+            document.getElementById('maquinistaAgenteChart').style.display = 'none';
+        } else {
+            document.getElementById('noDataMaquinistaAgenteMessage').style.display = 'none';
+            document.getElementById('maquinistaAgenteChart').style.display = 'block';
         }
 
         // Evento para o select global
@@ -2617,121 +3168,44 @@ include 'header.php';
                         dadosBondesViagens = dados.graficos.bondes_viagens;
                         dadosPassageiros = dados.graficos.passageiros;
                         dadosPassageirosHorario = dados.graficos.passageiros_horario;
-                        dadosViagensSemanais = dados.graficos.viagens_semanais;
+                        dadosPassageirosMes = dados.graficos.passageiros_por_mes;
+                        dadosViagensMaquinistaAgente = dados.graficos.viagens_maquinista_agente;
                     }
                     
                     // Recriar gráficos com novos dados
-                    const periodoAtual = document.getElementById('periodoSelect').value;
+                    const periodoAtual = document.getElementById('globalPeriodSelect').value;
                     
                     // Destruir e recriar todos os gráficos
-                    if (window.bondesViagensChart) {
-                        window.bondesViagensChart.destroy();
+                    if (bondesViagensChart) {
+                        bondesViagensChart.destroy();
                     }
-                    if (window.passageirosChart) {
-                        window.passageirosChart.destroy();
+                    if (passageirosChart) {
+                        passageirosChart.destroy();
                     }
-                    if (window.passageirosHorarioChart) {
-                        window.passageirosHorarioChart.destroy();
+                    if (viagensDiaSemanaChart) {
+                        viagensDiaSemanaChart.destroy();
                     }
-                    if (window.viagensSemanaisChart) {
-                        window.viagensSemanaisChart.destroy();
+                    if (passageirosHorarioChart) {
+                        passageirosHorarioChart.destroy();
+                    }
+                    if (passageirosMesChart) {
+                        passageirosMesChart.destroy();
+                    }
+                    if (maquinistaAgenteChart) {
+                        maquinistaAgenteChart.destroy();
                     }
                     
                     // Recriar gráficos
                     setTimeout(() => {
-                        atualizarGraficoBondesViagens(periodoAtual);
-                        atualizarGraficoPassageiros(periodoAtual);
-                        atualizarGraficoPassageirosHorario(periodoAtual);
-                        atualizarGraficoViagensSemanais(periodoAtual);
+                        bondesViagensChart = new Chart(bondesViagensCtx, { /* config as above */ });
+                        passageirosChart = new Chart(passageirosCtx, { /* config as above */ });
+                        viagensDiaSemanaChart = new Chart(viagensDiaSemanaCtx, { /* config as above */ });
+                        passageirosHorarioChart = new Chart(passageirosHorarioCtx, { /* config as above */ });
+                        passageirosMesChart = new Chart(passageirosMesCtx, { /* config as above */ });
+                        maquinistaAgenteChart = new Chart(maquinistaAgenteCtx, { /* config as above */ });
+                        
+                        atualizarPainel(periodoAtual);
                     }, 100);
-                    
-                    // Atualizar tabelas
-                    if (dados.tabelas) {
-                        // Atualizar tabela de acidentes
-                        if (dados.tabelas.acidentes) {
-                            const tabelaAcidentes = document.querySelector('#acidentes-table tbody');
-                            if (tabelaAcidentes) {
-                                tabelaAcidentes.innerHTML = '';
-                                dados.tabelas.acidentes.forEach(acidente => {
-                                    const row = document.createElement('tr');
-                                    row.innerHTML = `
-                                        <td class="px-3 py-2 text-sm">${acidente.data}</td>
-                                        <td class="px-3 py-2 text-sm">${acidente.descricao}</td>
-                                        <td class="px-3 py-2 text-sm">${acidente.localizacao}</td>
-                                        <td class="px-3 py-2 text-sm">
-                                            <span class="px-2 py-1 text-xs rounded-full ${acidente.severidade === 'Grave' ? 'bg-red-100 text-red-800' : acidente.severidade === 'Moderado' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
-                                                ${acidente.severidade}
-                                            </span>
-                                        </td>
-                                    `;
-                                    tabelaAcidentes.appendChild(row);
-                                });
-                            }
-                        }
-                        
-                        // Atualizar tabela de viagens
-                        if (dados.tabelas.viagens) {
-                            const tabelaViagens = document.querySelector('#viagens-table tbody');
-                            if (tabelaViagens) {
-                                tabelaViagens.innerHTML = '';
-                                dados.tabelas.viagens.forEach(viagem => {
-                                    const row = document.createElement('tr');
-                                    row.innerHTML = `
-                                        <td class="px-3 py-2 text-sm">${viagem.data}</td>
-                                        <td class="px-3 py-2 text-sm">${viagem.retorno}</td>
-                                        <td class="px-3 py-2 text-sm">${viagem.bonde}</td>
-                                        <td class="px-3 py-2 text-sm">${viagem.saida}</td>
-                                        <td class="px-3 py-2 text-sm">${viagem.destino}</td>
-                                        <td class="px-3 py-2 text-sm">${viagem.passageiros}</td>
-                                    `;
-                                    tabelaViagens.appendChild(row);
-                                });
-                            }
-                        }
-                        
-                        // Atualizar tabela de status da frota
-                        if (dados.tabelas.status_frota) {
-                            const tabelaStatus = document.querySelector('#status-table tbody');
-                            if (tabelaStatus) {
-                                tabelaStatus.innerHTML = '';
-                                dados.tabelas.status_frota.forEach(status => {
-                                    const row = document.createElement('tr');
-                                    row.innerHTML = `
-                                        <td class="px-3 py-2 text-sm">${status.bonde}</td>
-                                        <td class="px-3 py-2 text-sm">
-                                            <span class="px-2 py-1 text-xs rounded-full ${status.status === 'Operacional' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                                ${status.status}
-                                            </span>
-                                        </td>
-                                        <td class="px-3 py-2 text-sm">${status.ultima_atualizacao}</td>
-                                    `;
-                                    tabelaStatus.appendChild(row);
-                                });
-                            }
-                        }
-                        
-                        // Atualizar tabela de manutenções
-                        if (dados.tabelas.manutencoes) {
-                            const tabelaManutencoes = document.querySelector('#manutencoes-table tbody');
-                            if (tabelaManutencoes) {
-                                tabelaManutencoes.innerHTML = '';
-                                dados.tabelas.manutencoes.forEach(manutencao => {
-                                    const row = document.createElement('tr');
-                                    row.innerHTML = `
-                                        <td class="px-3 py-2 text-sm">${manutencao.data}</td>
-                                        <td class="px-3 py-2 text-sm">${manutencao.tipo}</td>
-                                        <td class="px-3 py-2 text-sm">${manutencao.bonde}</td>
-                                        <td class="px-3 py-2 text-sm">
-                                            <span class="px-2 py-1 text-xs rounded-full ${manutencao.status === 'Concluída' ? 'bg-green-100 text-green-800' : manutencao.status === 'Em Andamento' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}">
-                                                ${manutencao.status}
-                                            </span>
-                                        </td>
-                                    `;
-                                    tabelaManutencoes.appendChild(row);
-                                });
-                            }
-                        }
-                    }
                     
                     // Indicador visual de atualização bem-sucedida
                     const clockIndicator = document.getElementById('realTimeClock');

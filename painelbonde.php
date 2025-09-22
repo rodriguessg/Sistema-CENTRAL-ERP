@@ -200,6 +200,8 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
             }
         }
 
+        
+
         // Calcular totais e porcentagens
         $passageiros_hoje = $metrics['pagantes_hoje'] + $metrics['moradores_hoje'] + $metrics['gratuidade_hoje'];
         $passageiros_mes_atual = $metrics['pagantes_mes_atual'] + $metrics['moradores_mes_atual'] + $metrics['gratuidade_mes_atual'];
@@ -1783,7 +1785,7 @@ include 'header.php';
                     <div class="chart-card">
                         <h3>
                             <i class="fas fa-users"></i>
-                            Recorde de Passageiros por Mês
+                            Quantidade de  Passageiros por Mês
                         </h3>
                         <div class="chart-hover-info">
                             Passe o mouse sobre as barras para ver detalhes
@@ -1910,7 +1912,7 @@ include 'header.php';
                             </table>
                         </div>
                     </div>
-                    <div class="table-card">
+<div class="table-card">
                         <h3>
                             <i class="fas fa-heartbeat"></i>
                             Status da Frota
@@ -2168,7 +2170,7 @@ include 'header.php';
             }
 
             passageirosChart.data.datasets[0].data = [dados.pagantes, dados.moradores, dados.gratuidade];
-            passageirosChart.options.plugins.title.text = `Distribuição de Passageiros (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual'})`;
+            // passageirosChart.options.plugins.title.text = `Distribuição de Passageiros (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual'})`;
             
             // Atualizar tooltips com porcentagens
             passageirosChart.options.plugins.tooltip.callbacks.label = function(context) {
@@ -2220,7 +2222,7 @@ include 'header.php';
                 canvas.style.display = 'block';
             }
 
-            bondesViagensChart.options.plugins.title.text = `Bondes com Maior Performance (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual por Mês'})`;
+            // bondesViagensChart.options.plugins.title.text = `Bondes com Maior Performance (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual por Mês'})`;
             
             // Configurar datalabels para mostrar total de viagens
             bondesViagensChart.options.plugins.datalabels.formatter = function(value, context) {
@@ -2246,7 +2248,7 @@ include 'header.php';
             }
 
             viagensDiaSemanaChart.data.datasets[0].data = dados.data;
-            viagensDiaSemanaChart.options.plugins.title.text = `Padrão Semanal de Viagens (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual'})`;
+            // viagensDiaSemanaChart.options.plugins.title.text = `Padrão Semanal de Viagens (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual'})`;
             
             // Atualizar tooltips com porcentagens
             viagensDiaSemanaChart.options.plugins.tooltip.callbacks.label = function(context) {
@@ -2274,7 +2276,7 @@ include 'header.php';
             }
 
             passageirosHorarioChart.data.datasets[0].data = dados.data;
-            passageirosHorarioChart.options.plugins.title.text = `Fluxo de Passageiros por Horário (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual'})`;
+            // passageirosHorarioChart.options.plugins.title.text = `Fluxo de Passageiros por Horário (${periodo === 'diario' ? 'Hoje' : periodo === 'mensal' ? 'Mês Atual' : 'Anual'})`;
             
             // Atualizar tooltips com porcentagens
             passageirosHorarioChart.options.plugins.tooltip.callbacks.label = function(context) {
@@ -2302,7 +2304,7 @@ include 'header.php';
             }
 
             passageirosMesChart.data.datasets[0].data = dados.data;
-            passageirosMesChart.options.plugins.title.text = `Recorde de Passageiros por Mês (Ano ${<?php echo $current_year; ?>})`;
+            // passageirosMesChart.options.plugins.title.text = `Recorde de Passageiros por Mês (Ano ${<?php echo $current_year; ?>})`;
             
             // Atualizar tooltips com porcentagens
             passageirosMesChart.options.plugins.tooltip.callbacks.label = function(context) {
@@ -2333,7 +2335,7 @@ include 'header.php';
             maquinistaAgenteChart.data.datasets[0].data = dados.data;
             maquinistaAgenteChart.data.datasets[0].backgroundColor = dados.colors;
             maquinistaAgenteChart.data.datasets[0].borderColor = dados.colors.map(color => color.replace('0.8', '1'));
-            maquinistaAgenteChart.options.plugins.title.text = `Viagens por Maquinista e Agente (${periodo.charAt(0).toUpperCase() + periodo.slice(1)})`;
+            // maquinistaAgenteChart.options.plugins.title.text = `Viagens por Maquinista e Agente (${periodo.charAt(0).toUpperCase() + periodo.slice(1)})`;
             
             // Atualizar tooltips com porcentagens
             maquinistaAgenteChart.options.plugins.tooltip.callbacks.label = function(context) {
@@ -2460,7 +2462,7 @@ include 'header.php';
                     },
                     title: {
                         display: true,
-                        text: 'Bondes com Maior Performance (Mês Atual)',
+                        // text: 'Bondes com Maior Performance (Mês Atual)',
                         font: {
                             size: 12,
                             weight: 'bold'
@@ -2581,7 +2583,7 @@ include 'header.php';
                     },
                     title: {
                         display: true,
-                        text: 'Distribuição de Passageiros (Mês Atual)',
+                        // text: 'Distribuição de Passageiros (Mês Atual)',
                         font: {
                             size: 12,
                             weight: 'bold'
@@ -2660,7 +2662,7 @@ include 'header.php';
                     },
                     title: {
                         display: true,
-                        text: 'Padrão Semanal de Viagens (Mês Atual)',
+                        // text: 'Padrão Semanal de Viagens (Mês Atual)',
                         font: {
                             size: 12,
                             weight: 'bold'
@@ -2776,7 +2778,7 @@ include 'header.php';
                     },
                     title: {
                         display: true,
-                        text: 'Fluxo de Passageiros por Horário (Mês Atual)',
+                        // text: 'Fluxo de Passageiros por Horário (Mês Atual)',
                         font: {
                             size: 12,
                             weight: 'bold'
@@ -2900,7 +2902,7 @@ include 'header.php';
                     },
                     title: {
                         display: true,
-                        text: 'Recorde de Passageiros por Mês (Ano <?php echo $current_year; ?>)',
+                        // text: 'Recorde de Passageiros por Mês (Ano <?php echo $current_year; ?>)',
                         font: {
                             size: 12,
                             weight: 'bold'
@@ -2985,7 +2987,7 @@ const maquinistaAgenteChart = new Chart(maquinistaAgenteCtx, {
     data: {
         labels: dadosViagensMaquinistaAgente.mensal.labels,
         datasets: [{
-            label: 'Viagens',
+            label: 'Maquinista',
             data: dadosViagensMaquinistaAgente.mensal.data,
             backgroundColor: dadosViagensMaquinistaAgente.mensal.colors,
             borderColor: dadosViagensMaquinistaAgente.mensal.colors.map(color => color.replace('0.8', '1')),
@@ -3032,7 +3034,7 @@ const maquinistaAgenteChart = new Chart(maquinistaAgenteCtx, {
         plugins: {
             title: {
                 display: true,
-                text: 'Viagens por Maquinista e Agente (Mensal)',
+                // text: 'Viagens por Maquinista e Agente (Mensal)',
                 font: {
                     size: 12,
                     weight: 'bold'

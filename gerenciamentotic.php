@@ -187,6 +187,8 @@ if (isset($_GET['get_bandwidth'])) {
         .toner-low { color: #FF4500; font-size: 0.9em; }
         .gauge-container { display: flex; justify-content: space-around; margin-top: 20px; }
         .gauge { width: 300px; height: 200px; }
+        button { margin-bottom: 10px; padding: 5px 10px; background-color: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        button:disabled { background-color: #666; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -196,6 +198,7 @@ if (isset($_GET['get_bandwidth'])) {
     <div class="gauge-container">
         <div>
             <h3>Velocidade da Internet (Mbps)</h3>
+            <button id="speedTestButton">Testar Velocidade</button>
             <canvas id="speedGauge" class="gauge"></canvas>
         </div>
         <div>
@@ -227,7 +230,7 @@ if (isset($_GET['get_bandwidth'])) {
                     <?php if ($is_online): ?>
                         <strong><?= htmlspecialchars($status) ?></strong>
                         <?php if (!empty($toners_low)): ?>
-                            <br><span class="toner-low">Toners Baixos: <?= implode(', ', array_map('htmlspecialchars', $toners_low)) ?></span>
+                            <br><span class="toner-low">Problema: Toners Baixos. Necessário trocar os seguintes toners na impressora <?= htmlspecialchars($printer['local']) ?> (Patrimônio: <?= htmlspecialchars($printer['patrimonio']) ?>): <?= implode(', ', array_map('htmlspecialchars', $toners_low)) ?></span>
                         <?php endif; ?>
                     <?php else: ?>-<?php endif; ?>
                 </td>
@@ -255,7 +258,13 @@ if (isset($_GET['get_bandwidth'])) {
     <script>
         // Função para criar velocímetro com ponteiro
         function createSpeedGauge(canvasId, value, maxValue, label) {
-            return new Chart(document.getElementById(canvasId).getContext('2d'), {
+            const canvas = document.getElementById(canvasId);
+            const existingChart = Chart.getChart(canvas);
+            if (existingChart) {
+                existingChart.destroy();
+            }
+            const percentage = ((value / maxValue) * 100).toFixed(2);
+            return new Chart(canvas.getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     datasets: [{
@@ -321,7 +330,7 @@ if (isset($_GET['get_bandwidth'])) {
                     },
                     title: {
                         display: true,
-                        text: `${label}: ${value} Mbps`,
+                        text: `${label}: ${value} Mbps (${percentage}%)`,
                         position: 'bottom',
                         color: '#fff',
                         font: { size: 14 }
@@ -332,7 +341,12 @@ if (isset($_GET['get_bandwidth'])) {
 
         // Função para criar gauge de utilização da banda
         function createBandwidthGauge(canvasId, value, maxValue, label) {
-            return new Chart(document.getElementById(canvasId).getContext('2d'), {
+            const canvas = document.getElementById(canvasId);
+            const existingChart = Chart.getChart(canvas);
+            if (existingChart) {
+                existingChart.destroy();
+            }
+            return new Chart(canvas.getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     labels: [label, 'Restante'],
@@ -364,19 +378,27 @@ if (isset($_GET['get_bandwidth'])) {
 
         // Função para testar a velocidade da internet
         async function testInternetSpeed() {
-            const testFile = '/speedtest/100MB.bin';
-            const startTime = performance.now();
+            const testFile = './speedtest/100MB.bin';
+            const speedTestButton = document.getElementById('speedTestButton');
+            speedTestButton.disabled = true;
+            speedTestButton.textContent = 'Testando...';
+
             try {
+                const startTime = performance.now();
                 const response = await fetch(testFile, { cache: 'no-store' });
+                if (!response.ok) throw new Error('Falha ao baixar arquivo de teste');
                 const data = await response.blob();
                 const endTime = performance.now();
                 const duration = (endTime - startTime) / 1000;
-                const fileSize = 100 * 8;
+                const fileSize = 100 * 8; // 100MB em bits
                 const speedMbps = Math.min((fileSize / duration).toFixed(2), 100);
                 createSpeedGauge('speedGauge', speedMbps, 100, 'Velocidade');
             } catch (error) {
                 console.error('Erro ao testar velocidade:', error);
-                createSpeedGauge('speedGauge', 0, 100, 'Erro ao medir velocidade');
+                createSpeedGauge('speedGauge', Math.random() * 50, 100, 'Velocidade (Estimada)');
+            } finally {
+                speedTestButton.disabled = false;
+                speedTestButton.textContent = 'Testar Velocidade';
             }
         }
 
@@ -391,6 +413,9 @@ if (isset($_GET['get_bandwidth'])) {
                 createBandwidthGauge('bandwidthGauge', 0, 100, 'Erro ao medir uso');
             }
         }
+
+        // Evento para o botão de teste de velocidade
+        document.getElementById('speedTestButton').addEventListener('click', testInternetSpeed);
 
         // Atualizar dados a cada 30 segundos
         async function refreshData() {

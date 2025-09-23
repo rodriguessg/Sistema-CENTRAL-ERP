@@ -1412,10 +1412,10 @@ try {
                         <label for="passageiros"><i class="fas fa-users"></i> PASSAGEIROS</label>
                         <input type="number" id="passageiros" name="passageiros" value="0" readonly>
                     </div>
-                    <div class="input-item">
-                        <label for="viagem"><i class="fas fa-route"></i> VIAGEM</label>
-                        <input type="number" id="viagem" name="viagem" value="1" min="1" required>
-                    </div>
+                  <div class="input-item">
+    <label for="viagem"><i class="fas fa-route"></i> VIAGEM</label>
+    <input type="number" id="viagem" name="viagem" value="1" min="1" required readonly>
+</div>
                 </div>
                 
                 <div class="input-group">
@@ -1440,9 +1440,6 @@ try {
                     <button type="button" id="clear-transactions-btn"><i class="fas fa-broom"></i> Limpar Transações</button>
                     <button type="button" id="add-bonde-btn"><i class="fas fa-plus-circle"></i> Adicionar Bonde</button>
                     <button type="button" id="add-staff-btn"><i class="fas fa-user-plus"></i> Adicionar Maquinistas ou Agentes</button>
-                     <button type="button" id="manage-bondes-btn" class="btn-primary">
-                    <i class="fas fa-cog"></i> Gerenciar
-                </button>
                     <div class="id-input-container">
                         <label for="id-filter">ID:</label>
                         <input type="text" id="id-filter" placeholder="Filtrar por ID">
@@ -1508,9 +1505,12 @@ try {
             </div>
         </div>
         
-        <div class="bondes-container" style="display: none;">
+        <div class="bondes-container">
             <div class="bondes-header">
                 <h3><i class="fas fa-train"></i> Bondes Ativos</h3>
+                <button type="button" id="manage-bondes-btn" class="btn-primary">
+                    <i class="fas fa-cog"></i> Gerenciar
+                </button>
             </div>
             <div class="bondes-content">
                 <p><em>Cadastre aqui os bondes que estão operacionais na atual data: <?php date_default_timezone_set('America/Sao_Paulo'); echo date('H:i d/m/Y'); ?></em></p>
@@ -2198,7 +2198,25 @@ try {
        //     console.log('📄 DOM carregado, aguardando dados...');
             setTimeout(applyTransactionRules, 1000);
         });
+document.addEventListener('DOMContentLoaded', function() {
+    const horaInput = document.getElementById('hora');
 
+    function atualizarHora() {
+        const agora = new Date();
+        const opcoes = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: 'America/Sao_Paulo',
+            hour12: false
+        };
+        const horaFormatada = agora.toLocaleTimeString('pt-BR', opcoes);
+        horaInput.value = horaFormatada;
+    }
+
+    setInterval(atualizarHora, 1000);
+    atualizarHora(); // Atualiza imediatamente ao carregar
+});
         setInterval(() => {
             const tableBody = document.getElementById('transactions-table-body');
             if (tableBody && tableBody.children.length > 0) {
@@ -2214,6 +2232,39 @@ try {
         }, 5000); // Increased interval to reduce interference
 
         // console.log('🚀 Sistema de cores e organização inicializado!');
+
+        // Função para preparar o formulário para registrar retorno
+document.getElementById('return-btn').addEventListener('click', function() {
+    const form = document.getElementById('viagem-form');
+    const retornoSelect = document.getElementById('retorno');
+    const saidaSelect = document.getElementById('saida');
+
+    // Definir tipo de viagem como retorno
+    document.getElementById('viagem').value = '1'; // Garantir que viagem seja 1
+    // Preencher retorno com base na última partida, se aplicável
+    const ultimaSaida = saidaSelect.value;
+    if (ultimaSaida) {
+        retornoSelect.value = ultimaSaida; // Retorno para o ponto de partida
+    }
+
+});
+
+// Mostrar o botão de retorno quando houver uma ida registrada
+function checkForReturn() {
+    const tableBody = document.getElementById('transactions-table-body');
+    const returnBtn = document.getElementById('return-btn');
+    if (tableBody && returnBtn) {
+        const idasPendentes = Array.from(tableBody.querySelectorAll('tr')).some(row => {
+            const tipoViagemCell = row.cells[11].textContent.toLowerCase();
+            return tipoViagemCell.includes('pendente');
+        });
+        returnBtn.style.display = idasPendentes ? 'inline-flex' : 'none';
+    }
+}
+
+// Verificar a cada 5 segundos se há idas pendentes
+setInterval(checkForReturn, 5000);
+checkForReturn(); // Verificar ao carregar a página
     </script>
 </body>
 </html>

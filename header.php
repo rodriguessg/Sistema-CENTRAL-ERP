@@ -127,7 +127,7 @@ try {
                 ['link' => 'painelbonde.php', 'nome' => 'Painel', 'icon' => 'cogs'],
                 ['link' => 'homebonde.php', 'nome' => 'Operacao', 'icon' => 'home'],      
                 ['link' => 'relatoriobonde.php', 'nome' => 'Relatório Bonde', 'icon' => 'home'],               
-                // ['link' => 'relatorioacidentes.php', 'nome' => 'Relatórios de Acidentes', 'icon' => 'home'],
+                 ['link' => 'monitoramento.php', 'nome' => 'Monitoramento Ocorrências', 'icon' => 'home'],
                 ['link' => 'reportacidentes.php', 'nome' => 'Registrar Acidentes', 'icon' => 'home'],
                   ['link' => 'manutencaobonde.php', 'nome' => 'Registro de manutenção', 'icon' => 'home'],
                 ['link' => 'rh.php', 'nome' => 'Assinatura webmail', 'icon' => 'envelope'],

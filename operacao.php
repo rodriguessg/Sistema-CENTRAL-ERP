@@ -1440,6 +1440,9 @@ try {
                     <button type="button" id="clear-transactions-btn"><i class="fas fa-broom"></i> Limpar Transações</button>
                     <button type="button" id="add-bonde-btn"><i class="fas fa-plus-circle"></i> Adicionar Bonde</button>
                     <button type="button" id="add-staff-btn"><i class="fas fa-user-plus"></i> Adicionar Maquinistas ou Agentes</button>
+                     <button type="button" id="manage-bondes-btn" class="btn-primary">
+                    <i class="fas fa-cog"></i> Gerenciar
+                </button>
                     <div class="id-input-container">
                         <label for="id-filter">ID:</label>
                         <input type="text" id="id-filter" placeholder="Filtrar por ID">
@@ -1505,12 +1508,10 @@ try {
             </div>
         </div>
         
-        <div class="bondes-container">
+        <div class="bondes-container" style="display:none;">
             <div class="bondes-header">
                 <h3><i class="fas fa-train"></i> Bondes Ativos</h3>
-                <button type="button" id="manage-bondes-btn" class="btn-primary">
-                    <i class="fas fa-cog"></i> Gerenciar
-                </button>
+               
             </div>
             <div class="bondes-content">
                 <p><em>Cadastre aqui os bondes que estão operacionais na atual data: <?php date_default_timezone_set('America/Sao_Paulo'); echo date('H:i d/m/Y'); ?></em></p>

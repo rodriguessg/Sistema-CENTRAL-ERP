@@ -1119,6 +1119,12 @@ include 'header.php';
             gap: 1rem;
         }
 
+         .charts-grid2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
         .chart-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -1831,7 +1837,7 @@ include 'header.php';
                     <i class="fas fa-cogs"></i>
                     Detalhes Operacionais e Monitoramento
                 </h2>
-                <div class="charts-grid">
+                <div class="charts-grid2">
                     <div class="table-card">
                         <h3>
                             <i class="fas fa-exclamation-triangle"></i>
@@ -1842,14 +1848,14 @@ include 'header.php';
                                 <thead>
                                     <tr>
                                         <th><i class="fas fa-calendar"></i> Data</th>
-                                        <th><i class="fas fa-file-alt"></i> Descrição</th>
+                                        <th><i class="fas fa-file-alt"></i> Tipo</th>
                                         <th><i class="fas fa-map-marker-alt"></i> Localização</th>
                                         <th><i class="fas fa-thermometer-half"></i> Severidade</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $sql_acidentes = "SELECT data, descricao, localizacao, severidade FROM acidentes ORDER BY data_registro DESC LIMIT 5";
+                                    $sql_acidentes = "SELECT data_registro, categoria, localizacao, severidade FROM acidentes ORDER BY data_registro DESC LIMIT 5";
                                     $result_acidentes = $conn->query($sql_acidentes);
                                     if ($result_acidentes === false) {
                                         echo "<tr><td colspan='4'>Erro na consulta de acidentes: " . $conn->error . "</td></tr>";
@@ -1863,8 +1869,8 @@ include 'header.php';
                                                 default: $severityClass = 'severity-medium';
                                             }
                                             echo "<tr>";
-                                            echo "<td>" . htmlspecialchars(date('d/m/Y', strtotime($row['data']))) . "</td>";
-                                            echo "<td>" . htmlspecialchars($row['descricao']) . "</td>";
+                                            echo "<td>" . htmlspecialchars(date('d/m/Y', strtotime($row['data_registro']))) . "</td>";
+                                            echo "<td>" . htmlspecialchars($row['categoria']) . "</td>";
                                             echo "<td>" . htmlspecialchars($row['localizacao'] ?? 'N/A') . "</td>";
                                             echo "<td><span class='{$severityClass}'>" . htmlspecialchars($row['severidade']) . "</span></td>";
                                             echo "</tr>";
@@ -1926,63 +1932,111 @@ include 'header.php';
                             <i class="fas fa-heartbeat"></i>
                             Status da Frota
                         </h3>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th><i class="fas fa-train"></i> Bonde</th>
-                                        <th><i class="fas fa-signal"></i> Status</th>
-                                        <th><i class="fas fa-clock"></i> Última Atualização</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $sql_status = "SELECT id FROM bondes ORDER BY id ASC";
-                                    $result_status = $conn->query($sql_status);
-                                    if ($result_status === false) {
-                                        echo "<tr><td colspan='3'>Erro na consulta de status: " . $conn->error . "</td></tr>";
-                                    } elseif ($result_status->num_rows > 0) {
-                                        while ($row = $result_status->fetch_assoc()) {
-                                            echo "<tr>";
-                                            echo "<td><strong>Bonde " . htmlspecialchars($row['id']) . "</strong></td>";
-                                            echo "<td><span class='status-badge status-active'><i class='fas fa-check-circle'></i> Operacional</span></td>";
-                                            echo "<td>" . date('d/m/Y H:i') . "</td>";
-                                            echo "</tr>";
-                                        }
-                                    } else {
-                                        echo "<tr><td colspan='3' style='text-align: center; color: var(--text-muted);'><i class='fas fa-info-circle'></i> Nenhum bonde cadastrado</td></tr>";
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
-                        </div>
+                      <div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th><i class="fas fa-train"></i> Bonde</th>
+                <th><i class="fas fa-signal"></i> Status</th>
+                <th><i class="fas fa-clock"></i> Última Atualização</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            // Ajuste na consulta SQL para incluir as colunas 'modelo' e 'ativo'
+            $sql_status = "SELECT id, modelo, ativo FROM bondes ORDER BY id ASC";
+            $result_status = $conn->query($sql_status);
+            if ($result_status === false) {
+                echo "<tr><td colspan='3'>Erro na consulta de status: " . $conn->error . "</td></tr>";
+            } elseif ($result_status->num_rows > 0) {
+                while ($row = $result_status->fetch_assoc()) {
+                    echo "<tr>";
+                    // Exibe o valor da coluna 'modelo' na coluna Bonde
+                    echo "<td><strong>" . (empty($row['modelo']) ? 'Sem modelo' : htmlspecialchars($row['modelo'])) . "</strong></td>";
+                    // Verifica o valor da coluna 'ativo' e exibe 'Operacional' para 1 ou 'Inoperante-Manutenção' para 0
+                    echo "<td><span class='status-badge " . ($row['ativo'] == '1' ? 'status-active' : 'status-inactive') . "'>";
+                    echo "<i class='fas fa-" . ($row['ativo'] == '1' ? 'check-circle' : 'times-circle') . "'></i> ";
+                    echo ($row['ativo'] == '1' ? 'Operacional' : 'Inoperante-Manutenção') . "</span></td>";
+                    echo "<td>" . date('d/m/Y H:i') . "</td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='3' style='text-align: center; color: var(--text-muted);'><i class='fas fa-info-circle'></i> Nenhum bonde cadastrado</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
                     </div>
-                    <div class="table-card">
-                        <h3>
-                            <i class="fas fa-tools"></i>
-                            Manutenções Programadas
-                        </h3>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th><i class="fas fa-calendar"></i> Data</th>
-                                        <th><i class="fas fa-wrench"></i> Tipo</th>
-                                        <th><i class="fas fa-train"></i> Bonde</th>
-                                        <th><i class="fas fa-info-circle"></i> Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan='4' style='text-align: center; color: var(--text-muted); padding: 2rem;'>
-                                            <i class='fas fa-check-circle' style='font-size: 2rem; margin-bottom: 1rem; display: block;'></i>
-                                            Nenhuma manutenção programada
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                   <div class="table-card">
+    <h3>
+        <i class="fas fa-tools"></i>
+        Manutenções Programadas
+    </h3>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                      <th><i class="fas fa-train"></i> Bonde</th>                 
+                    <th><i class="fas fa-wrench"></i> Tipo</th>                 
+                    <th><i class="fas fa-info-circle"></i> Status</th>
+                      <th><i class="fas fa-calendar"></i> Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // Configuração de conexão (exemplo com PDO)
+                $host = 'localhost';
+                $dbname = 'gm_sicbd';
+                $username = 'root';
+                $password = '';
+
+                try {
+                    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                    // Consulta para pegar manutenções programadas (status 'pendente' ou 'em_andamento')
+                    $stmt = $pdo->prepare("
+                        SELECT m.data, m.tipo, b.modelo AS bonde, m.status
+                        FROM manutencoes m
+                        JOIN bondes b ON m.bonde_afetado = b.id
+                        WHERE m.status IN ('pendente', 'em_andamento')
+                        ORDER BY m.data ASC
+                    ");
+                    $stmt->execute();
+
+                    $manutencoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                    if (count($manutencoes) > 0) {
+                        foreach ($manutencoes as $manutencao) {
+                            echo "<tr>";
+
+                            echo "<td>" . htmlspecialchars($manutencao['bonde']) . "</td>";
+                          
+                            echo "<td>" . htmlspecialchars($manutencao['tipo']) . "</td>";
+                            
+                            echo "<td>" . htmlspecialchars($manutencao['status']) . "</td>";
+                              echo "<td>" . htmlspecialchars($manutencao['data']) . "</td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr>";
+                        echo "<td colspan='4' style='text-align: center; color: var(--text-muted); padding: 2rem;'>";
+                        echo "<i class='fas fa-check-circle' style='font-size: 2rem; margin-bottom: 1rem; display: block;'></i>";
+                        echo "Nenhuma manutenção programada";
+                        echo "</td>";
+                        echo "</tr>";
+                    }
+                } catch (PDOException $e) {
+                    echo "<tr>";
+                    echo "<td colspan='4' style='text-align: center; color: red; padding: 2rem;'>Erro: " . htmlspecialchars($e->getMessage()) . "</td>";
+                    echo "</tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+</div>
                 </div>
             </div>
         </div>

@@ -1798,13 +1798,22 @@ include 'header.php';
                             <canvas id="passageirosMesChart"></canvas>
                         </div>
                     </div>
-                    <div class="chart-card">
+                      <div class="chart-card">
                         <h3>
                             <i class="fas fa-chart-bar"></i>
                             Viagens por Maquinista e Agente
                         </h3>
                         <div class="chart-hover-info">
                             Passe o mouse sobre as barras para ver detalhes
+                        </div>
+                        <!-- Adicionando filtros separados para Agente e Maquinista -->
+                        <div class="filter-buttons" style="margin-bottom: 15px; display: flex; gap: 10px; justify-content: center;">
+                            <button id="filterAgente" class="filter-btn active" onclick="filtrarMaquinistaAgente('Agente')" style="background: rgba(75, 192, 192, 0.8); color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                                Agente
+                            </button>
+                            <button id="filterMaquinista" class="filter-btn" onclick="filtrarMaquinistaAgente('Maquinista')" style="background: rgba(102, 126, 234, 0.3); color: #b8c5d6; border: 1px solid rgba(102, 126, 234, 0.5); padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                                Maquinista
+                            </button>
                         </div>
                         <div id="noDataMaquinistaAgenteMessage" class="no-data-message" style="display: none;">
                             <i class="fas fa-chart-bar"></i>
@@ -2980,96 +2989,96 @@ include 'header.php';
         });
 
         // Gráfico de barras: Viagens por maquinista e agente
-      // Gráfico de barras: Viagens por Maquinista e Agente
-const maquinistaAgenteCtx = document.getElementById('maquinistaAgenteChart').getContext('2d');
-const maquinistaAgenteChart = new Chart(maquinistaAgenteCtx, {
-    type: 'bar',
-    data: {
-        labels: dadosViagensMaquinistaAgente.mensal.labels,
-        datasets: [{
-            label: 'Maquinista',
-            data: dadosViagensMaquinistaAgente.mensal.data,
-            backgroundColor: dadosViagensMaquinistaAgente.mensal.colors,
-            borderColor: dadosViagensMaquinistaAgente.mensal.colors.map(color => color.replace('0.8', '1')),
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        indexAxis: 'y', // Altera para barras horizontais, movendo labels (maquinistas e agentes) para o eixo Y
-        scales: {
-            x: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Número de Viagens',
-                    color: '#b8c5d6',
-                    font: { size: 11 }
-                },
-                grid: {
-                    color: 'rgba(35, 53, 84, 0.5)'
-                },
-                ticks: {
-                    color: '#b8c5d6',
-                    font: { size: 10 }
-                }
+  let maquinistaAgenteChart;
+        const maquinistaAgenteCtx = document.getElementById('maquinistaAgenteChart').getContext('2d');
+        maquinistaAgenteChart = new Chart(maquinistaAgenteCtx, {
+            type: 'bar',
+            data: {
+                labels: dadosViagensMaquinistaAgente.mensal.labels,
+                datasets: [{
+                    label: 'Viagens',
+                    data: dadosViagensMaquinistaAgente.mensal.data,
+                    backgroundColor: dadosViagensMaquinistaAgente.mensal.colors,
+                    borderColor: dadosViagensMaquinistaAgente.mensal.colors.map(color => color.replace('0.8', '1')),
+                    borderWidth: 1
+                }]
             },
-            y: {
-                title: {
-                    display: true,
-                    text: 'Maquinistas e Agentes',
-                    color: '#b8c5d6',
-                    font: { size: 11 }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // Altera para barras horizontais, movendo labels (maquinistas e agentes) para o eixo Y
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Número de Viagens',
+                            color: '#b8c5d6',
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(35, 53, 84, 0.5)'
+                        },
+                        ticks: {
+                            color: '#b8c5d6',
+                            font: { size: 10 }
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Maquinistas e Agentes',
+                            color: '#b8c5d6',
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(35, 53, 84, 0.5)'
+                        },
+                        ticks: {
+                            color: '#b8c5d6',
+                            font: { size: 10 }
+                        }
+                    }
                 },
-                grid: {
-                    color: 'rgba(35, 53, 84, 0.5)'
-                },
-                ticks: {
-                    color: '#b8c5d6',
-                    font: { size: 10 }
-                }
-            }
-        },
-        plugins: {
-            title: {
-                display: true,
-                // text: 'Viagens por Maquinista e Agente (Mensal)',
-                font: {
-                    size: 12,
-                    weight: 'bold'
-                },
-                color: '#ffffff',
-                padding: {
-                    bottom: 15
-                }
-            },
-            tooltip: {
-                backgroundColor: 'rgba(15, 15, 35, 0.95)',
-                titleColor: '#ffffff',
-                bodyColor: '#b8c5d6',
-                borderColor: 'rgba(102, 126, 234, 0.3)',
-                borderWidth: 1,
-                cornerRadius: 8,
-                displayColors: false,
-                callbacks: {
-                    label: function(context) {
-                        const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
-                        const percentage = calculatePercentage(context.raw, total);
-                        return `Viagens: ${formatNumber(context.raw)} (${percentage}%)`;
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Viagens por Maquinista e Agente (Mês Atual)',
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        color: '#ffffff',
+                        padding: {
+                            bottom: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#b8c5d6',
+                        borderColor: 'rgba(102, 126, 234, 0.3)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                                const percentage = calculatePercentage(value, total);
+                                return `Viagens: ${formatNumber(value)} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        formatter: function(value) {
+                            return formatNumber(value);
+                        }
                     }
                 }
-            },
-            datalabels: {
-                anchor: 'end',
-                align: 'end',
-                formatter: function(value) {
-                    return formatNumber(value);
-                }
             }
-        }
-    }
-});
+        });
         // Verifica se há dados para exibir os gráficos inicialmente
         const totalPassageirosHorario = dadosPassageirosHorario.mensal.data.reduce((sum, value) => sum + value, 0);
         if (totalPassageirosHorario === 0) {
@@ -3124,7 +3133,7 @@ const maquinistaAgenteChart = new Chart(maquinistaAgenteCtx, {
         setInterval(atualizarRelogio, 1000);
         atualizarRelogio(); // Executar imediatamente
 
-        async function atualizarDadosAutomaticamente() {
+      async function atualizarDadosAutomaticamente() {
             try {
                 console.log('[v0] Iniciando atualização automática dos dados...');
                 const timestamp = new Date().getTime();
@@ -3199,16 +3208,519 @@ const maquinistaAgenteChart = new Chart(maquinistaAgenteCtx, {
                     
                     // Recriar gráficos
                     setTimeout(() => {
-                        bondesViagensChart = new Chart(bondesViagensCtx, { /* config as above */ });
-                        passageirosChart = new Chart(passageirosCtx, { /* config as above */ });
-                        viagensDiaSemanaChart = new Chart(viagensDiaSemanaCtx, { /* config as above */ });
-                        passageirosHorarioChart = new Chart(passageirosHorarioCtx, { /* config as above */ });
-                        passageirosMesChart = new Chart(passageirosMesCtx, { /* config as above */ });
-                        maquinistaAgenteChart = new Chart(maquinistaAgenteCtx, { /* config as above */ });
+                        // Recriar gráfico de bondes com configuração completa
+                        bondesViagensChart = new Chart(bondesViagensCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: dadosBondesViagens.mensal.labels,
+                                datasets: [{
+                                    label: 'Viagens',
+                                    data: dadosBondesViagens.mensal.data,
+                                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                                    borderColor: 'rgba(102, 126, 234, 1)',
+                                    borderWidth: 2,
+                                    borderRadius: 6,
+                                    borderSkipped: false,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                layout: {
+                                    padding: {
+                                        top: 25
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Bondes com Maior Performance (Mês Atual)',
+                                        font: {
+                                            size: 12,
+                                            weight: 'bold'
+                                        },
+                                        color: '#ffffff',
+                                        padding: {
+                                            bottom: 15
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                                        titleColor: '#ffffff',
+                                        bodyColor: '#b8c5d6',
+                                        borderColor: 'rgba(102, 126, 234, 0.3)',
+                                        borderWidth: 1,
+                                        cornerRadius: 8,
+                                        displayColors: false,
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `Viagens: ${formatNumber(context.raw)}`;
+                                            }
+                                        }
+                                    },
+                                    datalabels: {
+                                        display: function(context) {
+                                            return context.dataset.data[context.dataIndex] > 0;
+                                        },
+                                        color: '#ffffff',
+                                        font: {
+                                            weight: 'bold',
+                                            size: 10
+                                        },
+                                        formatter: function(value, context) {
+                                            return formatNumber(value);
+                                        },
+                                        anchor: 'end',
+                                        align: 'top',
+                                        offset: 4
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Número de Viagens',
+                                            color: '#b8c5d6',
+                                            font: { size: 11 }
+                                        },
+                                        grid: {
+                                            color: 'rgba(35, 53, 84, 0.5)'
+                                        },
+                                        ticks: {
+                                            color: '#b8c5d6',
+                                            font: { size: 10 }
+                                        }
+                                    },
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Bondes',
+                                            color: '#b8c5d6',
+                                            font: { size: 11 }
+                                        },
+                                        grid: {
+                                            color: 'rgba(35, 53, 84, 0.5)'
+                                        },
+                                        ticks: {
+                                            color: '#b8c5d6',
+                                            font: { size: 10 }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        // Recriar gráfico de passageiros com configuração completa
+                        passageirosChart = new Chart(passageirosCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Pagantes', 'Moradores', 'Gratuidade'],
+                                datasets: [{
+                                    data: [dadosPassageiros.mensal.pagantes, dadosPassageiros.mensal.moradores, dadosPassageiros.mensal.gratuidade],
+                                    backgroundColor: [
+                                        'rgba(102, 126, 234, 0.8)',
+                                        'rgba(75, 192, 192, 0.8)',
+                                        'rgba(255, 159, 64, 0.8)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(102, 126, 234, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(255, 159, 64, 1)'
+                                    ],
+                                    borderWidth: 2
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                cutout: '55%',
+                                layout: {
+                                    padding: {
+                                        top: 25
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            color: '#b8c5d6',
+                                            font: { size: 11 },
+                                            padding: 15,
+                                            usePointStyle: true,
+                                            pointStyle: 'circle'
+                                        }
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Distribuição de Passageiros (Mês Atual)',
+                                        font: {
+                                            size: 12,
+                                            weight: 'bold'
+                                        },
+                                        color: '#ffffff',
+                                        padding: {
+                                            bottom: 15
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                                        titleColor: '#ffffff',
+                                        bodyColor: '#b8c5d6',
+                                        borderColor: 'rgba(102, 126, 234, 0.3)',
+                                        borderWidth: 1,
+                                        cornerRadius: 8,
+                                        displayColors: true,
+                                        callbacks: {
+                                            label: function(context) {
+                                                const label = context.label || '';
+                                                const value = context.raw || 0;
+                                                const total = dadosPassageiros.mensal.pagantes + dadosPassageiros.mensal.moradores + dadosPassageiros.mensal.gratuidade;
+                                                const percentage = calculatePercentage(value, total);
+                                                return `${label}: ${formatNumber(value)} (${percentage}%)`;
+                                            }
+                                        }
+                                    },
+                                    datalabels: {
+                                        display: function(context) {
+                                            return context.dataset.data[context.dataIndex] > 0;
+                                        },
+                                        color: '#ffffff',
+                                        font: {
+                                            weight: 'bold',
+                                            size: 11
+                                        },
+                                        formatter: function(value, context) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = calculatePercentage(value, total);
+                                            return `${percentage}%`;
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        // Recriar outros gráficos com suas configurações completas
+                        viagensDiaSemanaChart = new Chart(viagensDiaSemanaCtx, {
+                            // Configuração completa do gráfico de viagens por dia da semana
+                            type: 'bar',
+                            data: {
+                                labels: dadosViagensDiaSemana.mensal.labels,
+                                datasets: [{
+                                    label: 'Viagens',
+                                    data: dadosViagensDiaSemana.mensal.data,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 2,
+                                    borderRadius: 6,
+                                    borderSkipped: false,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    title: {
+                                        display: true,
+                                        text: 'Padrão Semanal de Viagens (Mês Atual)',
+                                        font: { size: 12, weight: 'bold' },
+                                        color: '#ffffff',
+                                        padding: { bottom: 15 }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                                        titleColor: '#ffffff',
+                                        bodyColor: '#b8c5d6',
+                                        borderColor: 'rgba(75, 192, 192, 0.3)',
+                                        borderWidth: 1,
+                                        cornerRadius: 8,
+                                        displayColors: false,
+                                        callbacks: {
+                                            label: function(context) {
+                                                const total = dadosViagensDiaSemana.mensal.data.reduce((a, b) => a + b, 0);
+                                                const percentage = calculatePercentage(context.raw, total);
+                                                return `Viagens: ${formatNumber(context.raw)} (${percentage}%)`;
+                                            }
+                                        }
+                                    },
+                                    datalabels: {
+                                        display: function(context) {
+                                            return context.dataset.data[context.dataIndex] > 0;
+                                        },
+                                        color: '#ffffff',
+                                        font: { weight: 'bold', size: 10 },
+                                        formatter: function(value) {
+                                            return formatNumber(value);
+                                        },
+                                        anchor: 'end',
+                                        align: 'top',
+                                        offset: 4
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Número de Viagens',
+                                            color: '#b8c5d6',
+                                            font: { size: 11 }
+                                        },
+                                        grid: { color: 'rgba(35, 53, 84, 0.5)' },
+                                        ticks: { color: '#b8c5d6', font: { size: 10 } }
+                                    },
+                                    x: {
+                                        grid: { color: 'rgba(35, 53, 84, 0.5)' },
+                                        ticks: { color: '#b8c5d6', font: { size: 10 } }
+                                    }
+                                }
+                            }
+                        });
+
+                        // Recriar gráfico de passageiros por horário
+                        passageirosHorarioChart = new Chart(passageirosHorarioCtx, {
+                            type: 'line',
+                            data: {
+                                labels: dadosPassageirosHorario.mensal.labels,
+                                datasets: [{
+                                    label: 'Passageiros',
+                                    data: dadosPassageirosHorario.mensal.data,
+                                    borderColor: 'rgba(255, 159, 64, 1)',
+                                    backgroundColor: 'rgba(255, 159, 64, 0.1)',
+                                    borderWidth: 3,
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointBackgroundColor: 'rgba(255, 159, 64, 1)',
+                                    pointBorderColor: '#ffffff',
+                                    pointBorderWidth: 2,
+                                    pointRadius: 5,
+                                    pointHoverRadius: 8
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    title: {
+                                        display: true,
+                                        text: 'Fluxo de Passageiros por Horário (Mês Atual)',
+                                        font: { size: 12, weight: 'bold' },
+                                        color: '#ffffff',
+                                        padding: { bottom: 15 }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                                        titleColor: '#ffffff',
+                                        bodyColor: '#b8c5d6',
+                                        borderColor: 'rgba(255, 159, 64, 0.3)',
+                                        borderWidth: 1,
+                                        cornerRadius: 8,
+                                        displayColors: false,
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `Passageiros: ${formatNumber(context.raw)}`;
+                                            }
+                                        }
+                                    },
+                                    datalabels: { display: false }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Número de Passageiros',
+                                            color: '#b8c5d6',
+                                            font: { size: 11 }
+                                        },
+                                        grid: { color: 'rgba(35, 53, 84, 0.5)' },
+                                        ticks: { color: '#b8c5d6', font: { size: 10 } }
+                                    },
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Horário',
+                                            color: '#b8c5d6',
+                                            font: { size: 11 }
+                                        },
+                                        grid: { color: 'rgba(35, 53, 84, 0.5)' },
+                                        ticks: { color: '#b8c5d6', font: { size: 10 } }
+                                    }
+                                }
+                            }
+                        });
+
+                        // Recriar gráfico de passageiros por mês
+                        passageirosMesChart = new Chart(passageirosMesCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: dadosPassageirosMes.labels,
+                                datasets: [{
+                                    label: 'Passageiros',
+                                    data: dadosPassageirosMes.data,
+                                    backgroundColor: 'rgba(153, 102, 255, 0.8)',
+                                    borderColor: 'rgba(153, 102, 255, 1)',
+                                    borderWidth: 2,
+                                    borderRadius: 6,
+                                    borderSkipped: false,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    title: {
+                                        display: true,
+                                        text: 'Recorde de Passageiros por Mês',
+                                        font: { size: 12, weight: 'bold' },
+                                        color: '#ffffff',
+                                        padding: { bottom: 15 }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                                        titleColor: '#ffffff',
+                                        bodyColor: '#b8c5d6',
+                                        borderColor: 'rgba(153, 102, 255, 0.3)',
+                                        borderWidth: 1,
+                                        cornerRadius: 8,
+                                        displayColors: false,
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `Passageiros: ${formatNumber(context.raw)}`;
+                                            }
+                                        }
+                                    },
+                                    datalabels: {
+                                        display: function(context) {
+                                            return context.dataset.data[context.dataIndex] > 0;
+                                        },
+                                        color: '#ffffff',
+                                        font: { weight: 'bold', size: 10 },
+                                        formatter: function(value) {
+                                            return formatNumber(value);
+                                        },
+                                        anchor: 'end',
+                                        align: 'top',
+                                        offset: 4
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Número de Passageiros',
+                                            color: '#b8c5d6',
+                                            font: { size: 11 }
+                                        },
+                                        grid: { color: 'rgba(35, 53, 84, 0.5)' },
+                                        ticks: { color: '#b8c5d6', font: { size: 10 } }
+                                    },
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Meses',
+                                            color: '#b8c5d6',
+                                            font: { size: 11 }
+                                        },
+                                        grid: { color: 'rgba(35, 53, 84, 0.5)' },
+                                        ticks: { color: '#b8c5d6', font: { size: 10 } }
+                                    }
+                                }
+                            }
+                        });
+
+                        // Recriar gráfico de maquinista e agente
+                        maquinistaAgenteChart = new Chart(maquinistaAgenteCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: dadosViagensMaquinistaAgente.mensal.labels,
+                                datasets: [{
+                                    label: 'Viagens',
+                                    data: dadosViagensMaquinistaAgente.mensal.data,
+                                    backgroundColor: dadosViagensMaquinistaAgente.mensal.colors,
+                                    borderColor: dadosViagensMaquinistaAgente.mensal.colors.map(color => color.replace('0.8', '1')),
+                                    borderWidth: 2,
+                                    borderRadius: 6,
+                                    borderSkipped: false,
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    title: {
+                                        display: true,
+                                        text: 'Viagens por Maquinista e Agente (Mês Atual)',
+                                        font: { size: 12, weight: 'bold' },
+                                        color: '#ffffff',
+                                        padding: { bottom: 15 }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(15, 15, 35, 0.95)',
+                                        titleColor: '#ffffff',
+                                        bodyColor: '#b8c5d6',
+                                        borderColor: 'rgba(102, 126, 234, 0.3)',
+                                        borderWidth: 1,
+                                        cornerRadius: 8,
+                                        displayColors: false,
+                                        callbacks: {
+                                            label: function(context) {
+                                                const value = context.raw || 0;
+                                                const total = dadosViagensMaquinistaAgente.mensal.data.reduce((a, b) => a + b, 0);
+                                                const percentage = calculatePercentage(value, total);
+                                                return `Viagens: ${formatNumber(value)} (${percentage}%)`;
+                                            }
+                                        }
+                                    },
+                                    datalabels: {
+                                        display: function(context) {
+                                            return context.dataset.data[context.dataIndex] > 0;
+                                        },
+                                        color: '#ffffff',
+                                        font: { weight: 'bold', size: 10 },
+                                        formatter: function(value) {
+                                            return formatNumber(value);
+                                        },
+                                        anchor: 'end',
+                                        align: 'right',
+                                        offset: 4
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Número de Viagens',
+                                            color: '#b8c5d6',
+                                            font: { size: 11 }
+                                        },
+                                        grid: { color: 'rgba(35, 53, 84, 0.5)' },
+                                        ticks: { color: '#b8c5d6', font: { size: 10 } }
+                                    },
+                                    y: {
+                                        grid: { color: 'rgba(35, 53, 84, 0.5)' },
+                                        ticks: { color: '#b8c5d6', font: { size: 10 } }
+                                    }
+                                }
+                            }
+                        });
+                        
+                        // Aplicar filtro padrão (Agente) após recriar o gráfico
+                        filtrarMaquinistaAgente('Agente');
                         
                         atualizarPainel(periodoAtual);
                     }, 100);
-                    
+
                     // Indicador visual de atualização bem-sucedida
                     const clockIndicator = document.getElementById('realTimeClock');
                     if (clockIndicator) {
@@ -3325,6 +3837,118 @@ const maquinistaAgenteChart = new Chart(maquinistaAgenteCtx, {
             }
         });
 
+       function atualizarGraficoMaquinistaAgente(periodo) {
+    // Remove qualquer filtro ativo no carregamento inicial
+    const botoesFiltro = document.querySelectorAll('.filter-btn');
+    botoesFiltro.forEach(btn => btn.classList.remove('active'));
+
+    const dados = dadosViagensMaquinistaAgente[periodo];
+    const total = dados.data.reduce((sum, value) => sum + value, 0);
+    const noDataMessage = document.getElementById('noDataMaquinistaAgenteMessage');
+    const canvas = document.getElementById('maquinistaAgenteChart');
+
+    // Verifica se há um filtro ativo após a limpeza
+    const filtroAtivo = document.querySelector('.filter-btn.active');
+    const tipoFiltro = filtroAtivo ? (filtroAtivo.id === 'filterAgente' ? 'Agente' : 'Maquinista') : null;
+
+    if (tipoFiltro) {
+        filtrarMaquinistaAgente(tipoFiltro);
+    } else {
+        if (total === 0) {
+            noDataMessage.style.display = 'flex';
+            canvas.style.display = 'none';
+        } else {
+            noDataMessage.style.display = 'none';
+            canvas.style.display = 'block';
+        }
+
+        maquinistaAgenteChart.data.labels = dados.labels;
+        maquinistaAgenteChart.data.datasets[0].data = dados.data;
+        maquinistaAgenteChart.data.datasets[0].backgroundColor = dados.colors;
+        maquinistaAgenteChart.data.datasets[0].borderColor = dados.colors.map(color => color.replace('0.8', '1'));
+        maquinistaAgenteChart.options.plugins.title.text = `Viagens por Maquinista e Agente (${periodo.charAt(0).toUpperCase() + periodo.slice(1)})`;
+        
+        maquinistaAgenteChart.options.plugins.tooltip.callbacks.label = function(context) {
+            const value = context.raw || 0;
+            const percentage = calculatePercentage(value, total);
+            return `Viagens: ${formatNumber(value)} (${percentage}%)`;
+        };
+        
+        maquinistaAgenteChart.update();
+    }
+}
+    function filtrarMaquinistaAgente(tipoFiltro) {
+            const periodoAtual = document.getElementById('globalPeriodSelect').value;
+            const dados = dadosViagensMaquinistaAgente[periodoAtual];
+            
+            // Filtrar dados baseado no tipo selecionado
+            const dadosFiltrados = {
+                labels: [],
+                data: [],
+                colors: []
+            };
+            
+            dados.labels.forEach((label, index) => {
+                if (label.includes(`(${tipoFiltro})`)) {
+                    dadosFiltrados.labels.push(label);
+                    dadosFiltrados.data.push(dados.data[index]);
+                    dadosFiltrados.colors.push(dados.colors[index]);
+                }
+            });
+            
+            // Atualizar botões de filtro
+            document.getElementById('filterAgente').classList.remove('active');
+            document.getElementById('filterMaquinista').classList.remove('active');
+            document.getElementById(`filter${tipoFiltro}`).classList.add('active');
+            
+            // Atualizar estilos dos botões
+            const botoes = document.querySelectorAll('.filter-btn');
+            botoes.forEach(btn => {
+                if (btn.classList.contains('active')) {
+                    if (btn.id === 'filterAgente') {
+                        btn.style.background = 'rgba(75, 192, 192, 0.8)';
+                        btn.style.color = 'white';
+                        btn.style.border = 'none';
+                    } else {
+                        btn.style.background = 'rgba(102, 126, 234, 0.8)';
+                        btn.style.color = 'white';
+                        btn.style.border = 'none';
+                    }
+                } else {
+                    btn.style.background = 'rgba(102, 126, 234, 0.3)';
+                    btn.style.color = '#b8c5d6';
+                    btn.style.border = '1px solid rgba(102, 126, 234, 0.5)';
+                }
+            });
+            
+            const total = dadosFiltrados.data.reduce((sum, value) => sum + value, 0);
+            const noDataMessage = document.getElementById('noDataMaquinistaAgenteMessage');
+            const canvas = document.getElementById('maquinistaAgenteChart');
+
+            if (total === 0) {
+                noDataMessage.style.display = 'flex';
+                canvas.style.display = 'none';
+            } else {
+                noDataMessage.style.display = 'none';
+                canvas.style.display = 'block';
+            }
+
+            // Atualizar gráfico com dados filtrados
+            maquinistaAgenteChart.data.labels = dadosFiltrados.labels;
+            maquinistaAgenteChart.data.datasets[0].data = dadosFiltrados.data;
+            maquinistaAgenteChart.data.datasets[0].backgroundColor = dadosFiltrados.colors;
+            maquinistaAgenteChart.data.datasets[0].borderColor = dadosFiltrados.colors.map(color => color.replace('0.8', '1'));
+            maquinistaAgenteChart.options.plugins.title.text = `Viagens por ${tipoFiltro} (${periodoAtual.charAt(0).toUpperCase() + periodoAtual.slice(1)})`;
+            
+            // Atualizar tooltips com porcentagens
+            maquinistaAgenteChart.options.plugins.tooltip.callbacks.label = function(context) {
+                const value = context.raw || 0;
+                const percentage = calculatePercentage(value, total);
+                return `Viagens: ${formatNumber(value)} (${percentage}%)`;
+            };
+            
+            maquinistaAgenteChart.update();
+        }
     </script>
 
     <?php $conn->close(); ?>

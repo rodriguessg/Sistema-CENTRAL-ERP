@@ -1936,9 +1936,10 @@ include 'header.php';
     <table>
         <thead>
             <tr>
+                    <th><i class="fas fa-clock"></i> Última Atualização</th>
                 <th><i class="fas fa-train"></i> Bonde</th>
                 <th><i class="fas fa-signal"></i> Status</th>
-                <th><i class="fas fa-clock"></i> Última Atualização</th>
+            
             </tr>
         </thead>
         <tbody>
@@ -1951,13 +1952,14 @@ include 'header.php';
             } elseif ($result_status->num_rows > 0) {
                 while ($row = $result_status->fetch_assoc()) {
                     echo "<tr>";
+                         echo "<td>" . date('d/m/Y ') . "</td>";
                     // Exibe o valor da coluna 'modelo' na coluna Bonde
                     echo "<td><strong>" . (empty($row['modelo']) ? 'Sem modelo' : htmlspecialchars($row['modelo'])) . "</strong></td>";
                     // Verifica o valor da coluna 'ativo' e exibe 'Operacional' para 1 ou 'Inoperante-Manutenção' para 0
                     echo "<td><span class='status-badge " . ($row['ativo'] == '1' ? 'status-active' : 'status-inactive') . "'>";
                     echo "<i class='fas fa-" . ($row['ativo'] == '1' ? 'check-circle' : 'times-circle') . "'></i> ";
                     echo ($row['ativo'] == '1' ? 'Operacional' : 'Inoperante-Manutenção') . "</span></td>";
-                    echo "<td>" . date('d/m/Y H:i') . "</td>";
+               
                     echo "</tr>";
                 }
             } else {
@@ -1976,11 +1978,12 @@ include 'header.php';
     <div class="table-container">
         <table>
             <thead>
-                <tr>
+                <tr>   
+                     <th><i class="fas fa-calendar"></i> Data</th>
                       <th><i class="fas fa-train"></i> Bonde</th>                 
                     <th><i class="fas fa-wrench"></i> Tipo</th>                 
                     <th><i class="fas fa-info-circle"></i> Status</th>
-                      <th><i class="fas fa-calendar"></i> Data</th>
+                  
                 </tr>
             </thead>
             <tbody>
@@ -2010,13 +2013,13 @@ include 'header.php';
                     if (count($manutencoes) > 0) {
                         foreach ($manutencoes as $manutencao) {
                             echo "<tr>";
-
+   echo "<td>" . htmlspecialchars($manutencao['data']) . "</td>";
                             echo "<td>" . htmlspecialchars($manutencao['bonde']) . "</td>";
                           
                             echo "<td>" . htmlspecialchars($manutencao['tipo']) . "</td>";
                             
                             echo "<td>" . htmlspecialchars($manutencao['status']) . "</td>";
-                              echo "<td>" . htmlspecialchars($manutencao['data']) . "</td>";
+                           
                             echo "</tr>";
                         }
                     } else {

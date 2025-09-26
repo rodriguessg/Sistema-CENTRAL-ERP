@@ -1251,7 +1251,8 @@ include 'header.php';
                             </button>
                             <button class="report-btn" data-row-index="${globalIndex}">
                                 <i class="fas fa-file-alt"></i>
-                                Gerar Relatório
+                              
+                            Relatório
                             </button>`}
                     </td>
                 `;

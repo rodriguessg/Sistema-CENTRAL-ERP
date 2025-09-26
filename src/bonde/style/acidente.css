@@ -252,7 +252,6 @@
           align-items: center;
           justify-content: center;
           gap: 0.375rem;
-          padding: 0.625rem 1rem;
           font-size: 0.8rem;
           font-weight: 600;
           border-radius: var(--radius-md);
@@ -773,6 +772,68 @@
         }
 
         .status-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+          gap: 5px;
+        }
+
+
+.report-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.95rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  border: none;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+  background: var(--success-gradient);
+  box-shadow: var(--shadow-sm);
+  gap: 5px;
+  margin-top: 5px;
+}
+
+/* Tooltip */
+.report-btn::after {
+  content: "Gerar Relatório";
+  position: absolute;
+  bottom: 120%; /* acima do botão */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.report-btn:hover::after {
+  opacity: 1;
+}
+
+
+        .report-btn:hover {
+          box-shadow: var(--shadow-md);
+          transform: translateY(-1px);
+        }
+
+        .report-btn.resolved {
+          background: var(--success-gradient);
+          cursor: not-allowed;
+          opacity: 0.8;
+          gap: 5px;
+        }
+
+        .report-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
           transform: none;

@@ -18,8 +18,8 @@ try {
     $stmt->execute();
     $bondes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Query para buscar os dados da tabela viagens
-    $sql = "SELECT data, bonde, saida, retorno, maquinista, agente, hora, pagantes, moradores, gratuidade AS gratPcdIdoso, tipo_viagem FROM viagens";
+    // Query para buscar os dados da tabela viagens, incluindo grat_pcd_idoso
+    $sql = "SELECT data, bonde, saida, retorno, maquinista, agente, hora, pagantes, moradores, grat_pcd_idoso, tipo_viagem FROM viagens";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $viagens = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -38,7 +38,7 @@ try {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <!-- Added Lucide icons for better UI -->
-     <link rel="stylesheet" href="src/bonde/style/relatoriobonde.css">
+    <link rel="stylesheet" href="src/bonde/style/relatoriobonde.css">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         /* Added styles for error messages and readonly inputs */
@@ -99,6 +99,7 @@ try {
                     </label>
                     <input type="text" id="user-registration" placeholder="Digite sua matrícula" value="">
                 </div>
+            </div>
             <div class="filters-section">
                 <div class="input-item">
                     <label for="report-type">
@@ -113,45 +114,42 @@ try {
                         <option value="periodo">Período Personalizado</option>
                     </select>
                 </div>
-            <div class="input-item" id="date-input-container">
-    <label for="report-date">
-        <i data-lucide="calendar-days" class="icon"></i>
-        Data
-    </label>
-    <input 
-        type="date" 
-        id="report-date" 
-        onkeydown="return false" 
-        onpaste="return false"
-    >
-</div>
-
-<div class="input-item" id="date-start-container" style="display: none;">
-    <label for="date-start">
-        <i data-lucide="calendar-days" class="icon"></i>
-        Data Inicial
-    </label>
-    <input 
-        type="date" 
-        id="date-start" 
-        onkeydown="return false" 
-        onpaste="return false"
-    >
-</div>
-
-<div class="input-item" id="date-end-container" style="display: none;">
-    <label for="date-end">
-        <i data-lucide="calendar-days" class="icon"></i>
-        Data Final
-    </label>
-    <input 
-        type="date" 
-        id="date-end" 
-        onkeydown="return false" 
-        onpaste="return false"
-    >
-</div>
-
+                <div class="input-item" id="date-input-container">
+                    <label for="report-date">
+                        <i data-lucide="calendar-days" class="icon"></i>
+                        Data
+                    </label>
+                    <input 
+                        type="date" 
+                        id="report-date" 
+                        onkeydown="return false" 
+                        onpaste="return false"
+                    >
+                </div>
+                <div class="input-item" id="date-start-container" style="display: none;">
+                    <label for="date-start">
+                        <i data-lucide="calendar-days" class="icon"></i>
+                        Data Inicial
+                    </label>
+                    <input 
+                        type="date" 
+                        id="date-start" 
+                        onkeydown="return false" 
+                        onpaste="return false"
+                    >
+                </div>
+                <div class="input-item" id="date-end-container" style="display: none;">
+                    <label for="date-end">
+                        <i data-lucide="calendar-days" class="icon"></i>
+                        Data Final
+                    </label>
+                    <input 
+                        type="date" 
+                        id="date-end" 
+                        onkeydown="return false" 
+                        onpaste="return false"
+                    >
+                </div>
                 <div class="input-item" id="month-input-container" style="display: none;">
                     <label for="report-month">
                         <i data-lucide="calendar-days" class="icon"></i>
@@ -188,7 +186,6 @@ try {
                 </div>
             </div>
             <div class="buttons-section">
-                <!-- Simplificando estrutura dos botões para garantir contraste adequado -->
                 <button 
                     id="generate-report-btn"
                     type="button"
@@ -237,7 +234,8 @@ try {
                         <th>Bonde</th>
                         <th>Pagantes</th>
                         <th>Moradores</th>
-                        <th>Gratuitos</th>
+                        <th>Gratuitos PCD/Idoso</th>
+                        <th>Gratuitos Totais</th>
                         <th>Total Passageiros</th>
                         <th>Total Viagens</th>
                         <th>Viagens Ida</th>
@@ -260,7 +258,8 @@ try {
                         <th>Retorno</th>
                         <th>Pagantes</th>
                         <th>Moradores</th>
-                        <th>Gratuitos</th>
+                        <th>Gratuitos PCD/Idoso</th>
+                        <th>Gratuitos Totais</th>
                         <th>Total Passageiros</th>
                         <th>Total Viagens</th>
                     </tr>
@@ -294,6 +293,7 @@ try {
             <div id="general-totals-content">
                 <div class="summary-item"><span>Total Pagantes</span><span id="totalPagantes">0</span></div>
                 <div class="summary-item"><span>Total Moradores</span><span id="totalMoradores">0</span></div>
+                <div class="summary-item"><span>Total Gratuitos PCD/Idoso</span><span id="totalGratPcdIdoso">0</span></div>
                 <div class="summary-item"><span>Total Gratuitos</span><span id="totalGratuitos">0</span></div>
                 <div class="summary-item"><span>Total Passageiros</span><span id="totalPassageiros">0</span></div>
                 <div class="summary-item"><span>Total Viagens</span><span id="totalViagens">0</span></div>
@@ -313,24 +313,20 @@ try {
                 dateInputs.forEach(input => {
                     // Block all keyboard events except Tab navigation
                     input.addEventListener('keydown', function(e) {
-                        // Allow only Tab and Shift+Tab for navigation
                         if (e.key === 'Tab' || (e.shiftKey && e.key === 'Tab')) {
                             return true;
                         }
-                        // Block all other keys including numbers, letters, arrows, etc.
                         e.preventDefault();
                         e.stopPropagation();
                         return false;
                     });
                     
-                    // Block keypress events
                     input.addEventListener('keypress', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                         return false;
                     });
                     
-                    // Block keyup events
                     input.addEventListener('keyup', function(e) {
                         if (e.key !== 'Tab' && !(e.shiftKey && e.key === 'Tab')) {
                             e.preventDefault();
@@ -339,17 +335,12 @@ try {
                         }
                     });
                     
-                    // Block input events (catches programmatic changes)
                     input.addEventListener('input', function(e) {
-                        // Allow only if the change came from calendar selection
                         if (!e.isTrusted) {
                             return;
                         }
-                        // If manual typing detected, revert to previous value
                         const currentValue = this.value;
                         const previousValue = this.getAttribute('data-previous-value') || '';
-                        
-                        // Check if this is a valid date format change from calendar
                         if (currentValue && !this.validity.valid) {
                             this.value = previousValue;
                         } else {
@@ -357,43 +348,35 @@ try {
                         }
                     });
                     
-                    // Prevent paste
                     input.addEventListener('paste', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                         return false;
                     });
                     
-                    // Prevent drag and drop
                     input.addEventListener('drop', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                         return false;
                     });
                     
-                    // Prevent context menu (right-click)
                     input.addEventListener('contextmenu', function(e) {
                         e.preventDefault();
                         return false;
                     });
                     
-                    // Store initial value
                     input.setAttribute('data-previous-value', input.value);
-                    
-                    // Make input appear readonly but keep calendar functional
                     input.style.caretColor = 'transparent';
                     input.style.userSelect = 'none';
                 });
             }
             
-            // Call the function initially
             preventManualTyping();
             
             const generateBtn = document.getElementById('generate-report-btn');
             const exportBtn = document.getElementById('export-pdf-btn');
             
             if (generateBtn) {
-                // Removendo todos os estilos existentes e aplicando novos
                 generateBtn.removeAttribute('style');
                 generateBtn.style.cssText = `
                     background: #1f2937 !important;
@@ -417,7 +400,6 @@ try {
                     width: auto !important;
                 `;
                 
-                // Aplicando estilos aos elementos filhos
                 const generateBtnSpan = generateBtn.querySelector('span');
                 const generateBtnIcon = generateBtn.querySelector('i');
                 if (generateBtnSpan) {
@@ -427,7 +409,6 @@ try {
                     generateBtnIcon.style.cssText = 'color: #ffffff !important;';
                 }
                 
-                // Evento hover
                 generateBtn.addEventListener('mouseenter', function() {
                     this.style.background = '#374151 !important';
                     this.style.borderColor = '#374151 !important';
@@ -440,7 +421,6 @@ try {
             }
             
             if (exportBtn) {
-                // Removendo todos os estilos existentes e aplicando novos
                 exportBtn.removeAttribute('style');
                 exportBtn.style.cssText = `
                     background: #059669 !important;
@@ -464,7 +444,6 @@ try {
                     width: auto !important;
                 `;
                 
-                // Aplicando estilos aos elementos filhos
                 const exportBtnSpan = exportBtn.querySelector('span');
                 const exportBtnIcon = exportBtn.querySelector('i');
                 if (exportBtnSpan) {
@@ -474,7 +453,6 @@ try {
                     exportBtnIcon.style.cssText = 'color: #ffffff !important;';
                 }
                 
-                // Evento hover (apenas quando não estiver desabilitado)
                 exportBtn.addEventListener('mouseenter', function() {
                     if (!this.disabled) {
                         this.style.background = '#047857 !important';
@@ -526,20 +504,16 @@ try {
             
             const [year, month, day] = dateString.split('-').map(Number);
             
-            // Check if year is reasonable
             if (year < 1900 || year > 2100) {
                 return { valid: false, message: "Ano deve estar entre 1900 e 2100." };
             }
             
-            // Check if month is valid
             if (month < 1 || month > 12) {
                 return { valid: false, message: "Mês deve estar entre 01 e 12." };
             }
             
-            // Get the actual number of days in the month
             const daysInMonth = new Date(year, month, 0).getDate();
             
-            // Check if day is valid for the given month
             if (day < 1 || day > daysInMonth) {
                 const monthNames = [
                     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -551,7 +525,6 @@ try {
                 };
             }
             
-            // Additional check: create a Date object and verify it matches our input
             const testDate = new Date(year, month - 1, day);
             if (testDate.getFullYear() !== year || testDate.getMonth() !== month - 1 || testDate.getDate() !== day) {
                 return { valid: false, message: "Data inválida detectada." };
@@ -566,7 +539,6 @@ try {
             errorText.textContent = message;
             errorContainer.classList.add('show');
             
-            // Hide error after 5 seconds
             setTimeout(() => {
                 errorContainer.classList.remove('show');
             }, 5000);
@@ -739,15 +711,14 @@ try {
                 }
             } else if (reportType === 'semanal') {
                 const { start, end } = getWeekStartEnd(dateValue);
-                const startStr = start.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
-                const endStr = end.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+                const startStr = start.toISOString().split('T')[0];
+                const endStr = end.toISOString().split('T')[0];
                 filteredViagens = filteredViagens.filter(t => {
                     return t.data >= startStr && t.data <= endStr;
                 });
             } else if (reportType === 'mensal') {
                 const year = parseInt(dateValue);
                 const month = parseInt(monthValue);
-                // Create start and end date strings in YYYY-MM-DD format
                 const startOfMonth = `${year}-${String(month + 1).padStart(2, '0')}-01`;
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
                 const endOfMonth = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
@@ -784,21 +755,21 @@ try {
             const generalTotals = {
                 totalPagantes: filteredViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0),
                 totalMoradores: filteredViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0),
-                totalGratuitos: filteredViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0),
+                totalGratPcdIdoso: filteredViagens.reduce((sum, t) => sum + parseInt(t.grat_pcd_idoso), 0),
                 totalViagens: filteredViagens.length,
                 viagensIda: filteredViagens.filter(t => t.tipo_viagem === 'ida').length,
                 viagensRetorno: filteredViagens.filter(t => t.tipo_viagem === 'retorno').length
             };
-            generalTotals.totalPassageiros = generalTotals.totalPagantes + generalTotals.totalMoradores + generalTotals.totalGratuitos;
+            generalTotals.totalGratuitos = generalTotals.totalMoradores + generalTotals.totalGratPcdIdoso;
+            generalTotals.totalPassageiros = generalTotals.totalPagantes + generalTotals.totalMoradores + generalTotals.totalGratPcdIdoso;
 
             const bondeTotals = bondes.map(bonde => {
                 let bondeViagens = filteredViagens.filter(t => t.bonde === bonde);
-                // No need to re-filter by date since filteredViagens already contains the correct date range
-                
                 const totalPagantes = bondeViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0);
                 const totalMoradores = bondeViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0);
-                const totalGratuitos = bondeViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0);
-                const total = totalPagantes + totalMoradores + totalGratuitos;
+                const totalGratPcdIdoso = bondeViagens.reduce((sum, t) => sum + parseInt(t.grat_pcd_idoso), 0);
+                const totalGratuitos = totalMoradores + totalGratPcdIdoso;
+                const total = totalPagantes + totalMoradores + totalGratPcdIdoso;
                 
                 const totalViagens = bondeViagens.length;
                 const viagensIda = bondeViagens.filter(t => t.tipo_viagem === 'ida').length;
@@ -808,6 +779,7 @@ try {
                     bonde, 
                     totalPagantes, 
                     totalMoradores, 
+                    totalGratPcdIdoso,
                     totalGratuitos, 
                     total, 
                     totalViagens,
@@ -816,13 +788,13 @@ try {
                 };
             }).filter(row => row.total > 0);
 
-            // Render bonde totals table
             bondeTotals.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row.bonde}</td>
                     <td>${row.totalPagantes}</td>
                     <td>${row.totalMoradores}</td>
+                    <td>${row.totalGratPcdIdoso}</td>
                     <td>${row.totalGratuitos}</td>
                     <td>${row.total}</td>
                     <td>${row.totalViagens}</td>
@@ -832,13 +804,13 @@ try {
                 bondeTotalTableBody.appendChild(tr);
             });
 
-            // Calculate route totals
             const routeTotals = rotas.map(rota => {
                 let rotaViagens = filteredViagens.filter(t => t.saida === rota.saida && t.retorno === rota.retorno);
                 const totalPagantes = rotaViagens.reduce((sum, t) => sum + parseInt(t.pagantes), 0);
                 const totalMoradores = rotaViagens.reduce((sum, t) => sum + parseInt(t.moradores), 0);
-                const totalGratuitos = rotaViagens.reduce((sum, t) => sum + parseInt(t.gratPcdIdoso), 0);
-                const total = totalPagantes + totalMoradores + totalGratuitos;
+                const totalGratPcdIdoso = rotaViagens.reduce((sum, t) => sum + parseInt(t.grat_pcd_idoso), 0);
+                const totalGratuitos = totalMoradores + totalGratPcdIdoso;
+                const total = totalPagantes + totalMoradores + totalGratPcdIdoso;
                 const totalViagens = rotaViagens.length;
                 
                 return { 
@@ -846,13 +818,13 @@ try {
                     retorno: rota.retorno, 
                     totalPagantes, 
                     totalMoradores, 
+                    totalGratPcdIdoso,
                     totalGratuitos, 
                     total,
                     totalViagens
                 };
             });
 
-            // Render route totals table
             routeTotals.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -860,6 +832,7 @@ try {
                     <td>${row.retorno}</td>
                     <td>${row.totalPagantes}</td>
                     <td>${row.totalMoradores}</td>
+                    <td>${row.totalGratPcdIdoso}</td>
                     <td>${row.totalGratuitos}</td>
                     <td>${row.total}</td>
                     <td>${row.totalViagens}</td>
@@ -869,10 +842,9 @@ try {
 
             const hourlyGroups = {};
             
-            // Group trips by hour block - usando apenas filteredViagens que já está filtrado corretamente
             filteredViagens.filter(t => t.saida === 'Carioca' || t.retorno === 'Carioca').forEach(viagem => {
                 const hora = viagem.hora;
-                const hourBlock = hora.split(':')[0] + ':00'; // Extract hour and format as XX:00
+                const hourBlock = hora.split(':')[0] + ':00';
                 
                 if (!hourlyGroups[hourBlock]) {
                     hourlyGroups[hourBlock] = {
@@ -881,9 +853,8 @@ try {
                     };
                 }
                 
-                const totalPassageiros = parseInt(viagem.pagantes) + parseInt(viagem.moradores) + parseInt(viagem.gratPcdIdoso);
+                const totalPassageiros = parseInt(viagem.pagantes) + parseInt(viagem.moradores) + parseInt(viagem.grat_pcd_idoso);
                 
-                // Determine direction based on saida/retorno and tipo_viagem
                 if (viagem.saida === 'Carioca' && viagem.tipo_viagem === 'ida') {
                     hourlyGroups[hourBlock].subida += totalPassageiros;
                 } else if (viagem.retorno === 'Carioca' && viagem.tipo_viagem === 'retorno') {
@@ -891,7 +862,6 @@ try {
                 }
             });
             
-            // Convert to array and sort by hour
             const hourlyCariocaTotals = Object.keys(hourlyGroups)
                 .sort()
                 .map(hourBlock => {
@@ -904,7 +874,6 @@ try {
                 })
                 .filter(row => row.subida > 0 || row.retorno > 0);
 
-            // Render hourly Carioca totals table
             hourlyCariocaTotals.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -926,7 +895,8 @@ try {
                     <th>Hora</th>
                     <th>Pagantes</th>
                     <th>Moradores</th>
-                    <th>Gratuitos</th>
+                    <th>Gratuitos PCD/Idoso</th>
+                    <th>Gratuitos Totais</th>
                     <th>Total Passageiros</th>
                 </tr>
             `;
@@ -935,8 +905,9 @@ try {
             filteredViagens.forEach(viagem => {
                 const pagantes = parseInt(viagem.pagantes);
                 const moradores = parseInt(viagem.moradores);
-                const gratuitos = parseInt(viagem.gratPcdIdoso);
-                const total = pagantes + moradores + gratuitos;
+                const gratPcdIdoso = parseInt(viagem.grat_pcd_idoso);
+                const gratuitos = moradores + gratPcdIdoso;
+                const total = pagantes + moradores + gratPcdIdoso;
                 if (total > 0) {
                     reportData.push({ 
                         data: viagem.data,
@@ -948,6 +919,7 @@ try {
                         hora: viagem.hora || 'N/A',
                         pagantes, 
                         moradores, 
+                        gratPcdIdoso,
                         gratuitos, 
                         total 
                     });
@@ -966,6 +938,7 @@ try {
                     <td>${row.hora}</td>
                     <td>${row.pagantes}</td>
                     <td>${row.moradores}</td>
+                    <td>${row.gratPcdIdoso}</td>
                     <td>${row.gratuitos}</td>
                     <td>${row.total}</td>
                 `;
@@ -975,6 +948,7 @@ try {
             const summaryData = {
                 'Total Pagantes': generalTotals.totalPagantes,
                 'Total Moradores': generalTotals.totalMoradores,
+                'Total Gratuitos PCD/Idoso': generalTotals.totalGratPcdIdoso,
                 'Total Gratuitos': generalTotals.totalGratuitos,
                 'Total Passageiros': generalTotals.totalPassageiros,
                 'Total Viagens': generalTotals.totalViagens
@@ -983,6 +957,7 @@ try {
             summaryContent.innerHTML = `
                 <div class="summary-item"><span>Total Pagantes</span><span>${generalTotals.totalPagantes}</span></div>
                 <div class="summary-item"><span>Total Moradores</span><span>${generalTotals.totalMoradores}</span></div>
+                <div class="summary-item"><span>Total Gratuitos PCD/Idoso</span><span>${generalTotals.totalGratPcdIdoso}</span></div>
                 <div class="summary-item"><span>Total Gratuitos</span><span>${generalTotals.totalGratuitos}</span></div>
                 <div class="summary-item"><span>Total Passageiros</span><span>${generalTotals.totalPassageiros}</span></div>
                 <div class="summary-item"><span>Total Viagens</span><span>${generalTotals.totalViagens}</span></div>
@@ -1024,7 +999,6 @@ try {
             doc.setFillColor(25, 40, 68);
             doc.rect(0, 0, 297, 40, 'F');
             
-            // Main title with standardized font size
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(16);
             doc.setFont(undefined, 'bold');
@@ -1042,7 +1016,6 @@ try {
             doc.setLineWidth(1);
             doc.line(10, 45, 287, 45);
 
-            // Reset text color for content
             doc.setTextColor(0, 0, 0);
             
             const dateValue = currentReportData.date;
@@ -1074,7 +1047,7 @@ try {
                     halign: 'center',
                     fontStyle: 'bold',
                     lineColor: [25, 40, 68],
-                    lineWidth: 0.1 // Thinner lines as requested
+                    lineWidth: 0.1
                 },
                 headStyles: { 
                     fillColor: [25, 40, 68], 
@@ -1085,6 +1058,20 @@ try {
                 },
                 alternateRowStyles: { 
                     fillColor: [248, 250, 252] 
+                },
+                columnStyles: {
+                    0: { cellWidth: 25 }, // Data
+                    1: { cellWidth: 25 }, // Bonde
+                    2: { cellWidth: 25 }, // Saída
+                    3: { cellWidth: 25 }, // Retorno
+                    4: { cellWidth: 25 }, // Maquinista
+                    5: { cellWidth: 25 }, // Agente
+                    6: { cellWidth: 20 }, // Hora
+                    7: { cellWidth: 20 }, // Pagantes
+                    8: { cellWidth: 20 }, // Moradores
+                    9: { cellWidth: 20 }, // Gratuitos PCD/Idoso
+                    10: { cellWidth: 20 }, // Gratuitos Totais
+                    11: { cellWidth: 20 }  // Total Passageiros
                 },
                 didParseCell: function(data) {
                     if (data.column.index === headers.indexOf('Retorno') && data.cell.text[0] === 'Carioca') {
@@ -1135,11 +1122,12 @@ try {
             
             finalY += 8;
             
-            const bondeHeaders = ['Bonde', 'Pagantes', 'Moradores', 'Gratuitos', 'Total Passageiros', 'Total Viagens', 'Viagens Ida', 'Viagens Retorno'];
+            const bondeHeaders = ['Bonde', 'Pagantes', 'Moradores', 'Gratuitos PCD/Idoso', 'Gratuitos Totais', 'Total Passageiros', 'Total Viagens', 'Viagens Ida', 'Viagens Retorno'];
             const bondeData = currentReportData.bondeTotals.map(row => [
                 row.bonde, 
                 row.totalPagantes, 
                 row.totalMoradores, 
+                row.totalGratPcdIdoso,
                 row.totalGratuitos, 
                 row.total,
                 row.totalViagens,
@@ -1170,13 +1158,14 @@ try {
                 },
                 columnStyles: {
                     0: { cellWidth: 25 }, // Bonde
-                    1: { cellWidth: 25 }, // Pagantes
-                    2: { cellWidth: 25 }, // Moradores  
-                    3: { cellWidth: 25 }, // Gratuitos
-                    4: { cellWidth: 30 }, // Total Passageiros
-                    5: { cellWidth: 25 }, // Total Viagens
-                    6: { cellWidth: 25 }, // Viagens Ida
-                    7: { cellWidth: 25 }  // Viagens Retorno
+                    1: { cellWidth: 20 }, // Pagantes
+                    2: { cellWidth: 20 }, // Moradores
+                    3: { cellWidth: 20 }, // Gratuitos PCD/Idoso
+                    4: { cellWidth: 20 }, // Gratuitos Totais
+                    5: { cellWidth: 20 }, // Total Passageiros
+                    6: { cellWidth: 20 }, // Total Viagens
+                    7: { cellWidth: 20 }, // Viagens Ida
+                    8: { cellWidth: 20 }  // Viagens Retorno
                 }
             });
 
@@ -1189,8 +1178,17 @@ try {
             
             finalY += 8;
 
-            const routeHeaders = ['Saída', 'Retorno', 'Pagantes', 'Moradores', 'Gratuitos', 'Total', 'Total Viagens'];
-            const routeData = currentReportData.routeTotals.map(row => [row.saida, row.retorno, row.totalPagantes, row.totalMoradores, row.totalGratuitos, row.total, row.totalViagens]);
+            const routeHeaders = ['Saída', 'Retorno', 'Pagantes', 'Moradores', 'Gratuitos PCD/Idoso', 'Gratuitos Totais', 'Total', 'Total Viagens'];
+            const routeData = currentReportData.routeTotals.map(row => [
+                row.saida, 
+                row.retorno, 
+                row.totalPagantes, 
+                row.totalMoradores, 
+                row.totalGratPcdIdoso,
+                row.totalGratuitos, 
+                row.total,
+                row.totalViagens
+            ]);
 
             doc.autoTable({
                 head: [routeHeaders],
@@ -1214,13 +1212,14 @@ try {
                     halign: 'center'
                 },
                 columnStyles: {
-                    0: { cellWidth: 35 }, // Saída - mais espaço para nomes de locais
-                    1: { cellWidth: 35 }, // Retorno - mais espaço para nomes de locais
-                    2: { cellWidth: 25 }, // Pagantes
-                    3: { cellWidth: 25 }, // Moradores
-                    4: { cellWidth: 25 }, // Gratuitos
-                    5: { cellWidth: 25 },  // Total
-                    6: { cellWidth: 25 }  // Total Viagens
+                    0: { cellWidth: 35 }, // Saída
+                    1: { cellWidth: 35 }, // Retorno
+                    2: { cellWidth: 20 }, // Pagantes
+                    3: { cellWidth: 20 }, // Moradores
+                    4: { cellWidth: 20 }, // Gratuitos PCD/Idoso
+                    5: { cellWidth: 20 }, // Gratuitos Totais
+                    6: { cellWidth: 20 },  // Total
+                    7: { cellWidth: 20 }  // Total Viagens
                 },
                 didParseCell: function(data) {
                     if ((data.column.index === 0 || data.column.index === 1) && data.cell.text[0] === 'Carioca') {
@@ -1232,7 +1231,6 @@ try {
 
             finalY = doc.lastAutoTable.finalY + 20;
 
-            // PASSAGEIROS POR HORA - terceira seção
             doc.setFontSize(12);
             doc.setFont(undefined, 'bold');
             doc.setTextColor(25, 40, 68);
@@ -1265,7 +1263,7 @@ try {
                     halign: 'center'
                 },
                 columnStyles: {
-                    0: { cellWidth: 50 }, // Hora - mais espaço para formato de hora
+                    0: { cellWidth: 50 }, // Hora
                     1: { cellWidth: 25 }, // Subida
                     2: { cellWidth: 25 }  // Retorno
                 }
@@ -1290,7 +1288,6 @@ try {
         reportTypeInput.addEventListener('change', updateDateInput);
         document.getElementById('generate-report-btn').addEventListener('click', generateReport);
         document.getElementById('export-pdf-btn').addEventListener('click', exportToPDF);
-
     </script>
 </body>
 </html>

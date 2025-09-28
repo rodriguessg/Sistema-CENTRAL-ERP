@@ -44,17 +44,20 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
             (SELECT COALESCE(SUM(pagantes), 0) FROM viagens WHERE DATE(data) = CURDATE()) as pagantes_hoje,
             (SELECT COALESCE(SUM(moradores), 0) FROM viagens WHERE DATE(data) = CURDATE()) as moradores_hoje,
             (SELECT COALESCE(SUM(gratuidade), 0) FROM viagens WHERE DATE(data) = CURDATE()) as gratuidade_hoje,
+            (SELECT COALESCE(SUM(grat_pcd_idoso), 0) FROM viagens WHERE DATE(data) = CURDATE()) as grat_pcd_idoso_hoje,
             
             -- Dados mensais
             (SELECT COUNT(*) FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month) as viagens_mes_atual,
             (SELECT COALESCE(SUM(pagantes), 0) FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month) as pagantes_mes_atual,
             (SELECT COALESCE(SUM(moradores), 0) FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month) as moradores_mes_atual,
             (SELECT COALESCE(SUM(gratuidade), 0) FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month) as gratuidade_mes_atual,
+            (SELECT COALESCE(SUM(grat_pcd_idoso), 0) FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month) as grat_pcd_idoso,
             
             -- Dados anuais
             (SELECT COALESCE(SUM(pagantes), 0) FROM viagens WHERE YEAR(data) = $current_year) as pagantes_anual,
             (SELECT COALESCE(SUM(moradores), 0) FROM viagens WHERE YEAR(data) = $current_year) as moradores_anual,
-            (SELECT COALESCE(SUM(gratuidade), 0) FROM viagens WHERE YEAR(data) = $current_year) as gratuidade_anual
+            (SELECT COALESCE(SUM(gratuidade), 0) FROM viagens WHERE YEAR(data) = $current_year) as gratuidade_anual,
+            (SELECT COALESCE(SUM(grat_pcd_idoso), 0) FROM viagens WHERE YEAR(data) = $current_year) as grat_pcd_idoso_anual
         ";
 
         $result = $conn->query($sql);
@@ -85,30 +88,34 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
         $result = $conn->query("SELECT bonde, COUNT(id) as total_viagens FROM viagens WHERE YEAR(data) = $current_year GROUP BY bonde ORDER BY total_viagens DESC");
         if ($result) {
             while ($row = $result->fetch_assoc()) {
-                $bondes_viagens_anual[] = ['bonde' => 'Bonde' . $row['bonde'], 'total_viagens' => (int)$row['total_viagens']];
+                $bondes_viagens_anual[] = ['bonde' => 'Bonde ' . $row['bonde'], 'total_viagens' => (int)$row['total_viagens']];
             }
         }
 
         // Dados para gráficos de passageiros por horário
-        $passageiros_por_horario_diario = array_fill(6, 15, 0);
-        $result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total_passageiros FROM viagens WHERE DATE(created_at) = CURDATE() AND HOUR(created_at) BETWEEN 6 AND 20 GROUP BY HOUR(created_at)");
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $passageiros_por_horario_diario[(int)$row['hora']] = (int)$row['total_passageiros'];
-            }
-        }
+$passageiros_por_horario_diario = array_fill(6, 15, 0);
+$result = $conn->query("SELECT HOUR(hora) as hora, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros FROM viagens WHERE DATE(data) = CURDATE() AND HOUR(hora) BETWEEN 6 AND 20 GROUP BY HOUR(hora)");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $passageiros_por_horario_diario[(int)$row['hora']] = (int)$row['total_passageiros'];
+    }
+} else {
+    error_log("Erro na consulta de passageiros por horário (diário): " . $conn->error);
+}
 
-        $passageiros_por_horario_mensal = array_fill(6, 15, 0);
-        $result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total_passageiros FROM viagens WHERE YEAR(created_at) = $current_year AND MONTH(created_at) = $current_month AND HOUR(created_at) BETWEEN 6 AND 20 GROUP BY HOUR(created_at)");
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $passageiros_por_horario_mensal[(int)$row['hora']] = (int)$row['total_passageiros'];
-            }
-        }
+$passageiros_por_horario_mensal = array_fill(6, 15, 0);
+$result = $conn->query("SELECT HOUR(hora) as hora, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month AND HOUR(hora) BETWEEN 6 AND 20 GROUP BY HOUR(hora)");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $passageiros_por_horario_mensal[(int)$row['hora']] = (int)$row['total_passageiros'];
+    }
+} else {
+    error_log("Erro na consulta de passageiros por horário (mensal): " . $conn->error);
+}
 
         // Dados para recorde de passageiros por mês
         $passageiros_por_mes = array_fill(1, 12, 0);
-        $result = $conn->query("SELECT MONTH(data) as mes, COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total_passageiros 
+        $result = $conn->query("SELECT MONTH(data) as mes, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros 
                                 FROM viagens 
                                 WHERE YEAR(data) = $current_year 
                                 GROUP BY MONTH(data)");
@@ -200,12 +207,10 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
             }
         }
 
-        
-
         // Calcular totais e porcentagens
-        $passageiros_hoje = $metrics['pagantes_hoje'] + $metrics['moradores_hoje'] + $metrics['gratuidade_hoje'];
-        $passageiros_mes_atual = $metrics['pagantes_mes_atual'] + $metrics['moradores_mes_atual'] + $metrics['gratuidade_mes_atual'];
-        $passageiros_anual = $metrics['pagantes_anual'] + $metrics['moradores_anual'] + $metrics['gratuidade_anual'];
+        $passageiros_hoje = $metrics['pagantes_hoje'] + $metrics['moradores_hoje'] + $metrics['gratuidade_hoje'] + $metrics['grat_pcd_idoso_hoje'];
+        $passageiros_mes_atual = $metrics['pagantes_mes_atual'] + $metrics['moradores_mes_atual'] + $metrics['gratuidade_mes_atual'] + $metrics['grat_pcd_idoso'];
+        $passageiros_anual = $metrics['pagantes_anual'] + $metrics['moradores_anual'] + $metrics['gratuidade_anual'] + $metrics['grat_pcd_idoso_anual'];
 
         $total_passageiros_geral = max($passageiros_anual, 1);
         $frota_ativa_percent = round(($metrics['bondes_ativos'] / max($metrics['total_bondes'], 1)) * 100, 1);
@@ -221,6 +226,7 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
             'passageiros_pagantes' => (int)$metrics['pagantes_mes_atual'],
             'moradores' => (int)$metrics['moradores_mes_atual'],
             'gratuidades' => (int)$metrics['gratuidade_mes_atual'],
+            'grat_pcd_idoso' => (int)$metrics['grat_pcd_idoso'],
             'frota_ativa_percent' => $frota_ativa_percent,
             'operacao_andamento_percent' => $operacao_andamento_percent,
             'fluxo_crescente_percent' => $fluxo_crescente_percent,
@@ -230,21 +236,24 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
                     'passageiros' => $passageiros_hoje,
                     'pagantes' => (int)$metrics['pagantes_hoje'],
                     'moradores' => (int)$metrics['moradores_hoje'],
-                    'gratuidade' => (int)$metrics['gratuidade_hoje']
+                    'gratuidade' => (int)$metrics['gratuidade_hoje'],
+                    'grat_pcd_idoso' => (int)$metrics['grat_pcd_idoso_hoje']
                 ],
                 'mensal' => [
                     'viagens' => (int)$metrics['viagens_mes_atual'],
                     'passageiros' => $passageiros_mes_atual,
                     'pagantes' => (int)$metrics['pagantes_mes_atual'],
                     'moradores' => (int)$metrics['moradores_mes_atual'],
-                    'gratuidade' => (int)$metrics['gratuidade_mes_atual']
+                    'gratuidade' => (int)$metrics['gratuidade_mes_atual'],
+                    'grat_pcd_idoso' => (int)$metrics['grat_pcd_idoso']
                 ],
                 'anual' => [
                     'viagens' => (int)$metrics['total_viagens'],
                     'passageiros' => $passageiros_anual,
                     'pagantes' => (int)$metrics['pagantes_anual'],
                     'moradores' => (int)$metrics['moradores_anual'],
-                    'gratuidade' => (int)$metrics['gratuidade_anual']
+                    'gratuidade' => (int)$metrics['gratuidade_anual'],
+                    'grat_pcd_idoso' => (int)$metrics['grat_pcd_idoso_anual']
                 ]
             ],
             'graficos' => [
@@ -262,17 +271,20 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
                     'diario' => [
                         'pagantes' => (int)$metrics['pagantes_hoje'],
                         'moradores' => (int)$metrics['moradores_hoje'],
-                        'gratuidade' => (int)$metrics['gratuidade_hoje']
+                        'gratuidade' => (int)$metrics['gratuidade_hoje'],
+                        'grat_pcd_idoso' => (int)$metrics['grat_pcd_idoso_hoje']
                     ],
                     'mensal' => [
                         'pagantes' => (int)$metrics['pagantes_mes_atual'],
                         'moradores' => (int)$metrics['moradores_mes_atual'],
-                        'gratuidade' => (int)$metrics['gratuidade_mes_atual']
+                        'gratuidade' => (int)$metrics['gratuidade_mes_atual'],
+                        'grat_pcd_idoso' => (int)$metrics['grat_pcd_idoso']
                     ],
                     'anual' => [
                         'pagantes' => (int)$metrics['pagantes_anual'],
                         'moradores' => (int)$metrics['moradores_anual'],
-                        'gratuidade' => (int)$metrics['gratuidade_anual']
+                        'gratuidade' => (int)$metrics['gratuidade_anual'],
+                        'grat_pcd_idoso' => (int)$metrics['grat_pcd_idoso_anual']
                     ]
                 ],
                 'passageiros_horario' => [
@@ -429,8 +441,17 @@ if ($result) {
     die("Erro na consulta de gratuidade diário: " . $conn->error);
 }
 
+$grat_pcd_idoso_hoje = 0;
+$result = $conn->query("SELECT COALESCE(SUM(grat_pcd_idoso), 0) as total FROM viagens WHERE DATE(data) = CURDATE()");
+if ($result) {
+    $row = $result->fetch_assoc();
+    $grat_pcd_idoso_hoje = $row['total'];
+} else {
+    die("Erro na consulta de gratuidades PCD/Idoso diário: " . $conn->error);
+}
+
 $passageiros_hoje = 0;
-$result = $conn->query("SELECT COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total FROM viagens WHERE DATE(data) = CURDATE()");
+$result = $conn->query("SELECT COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total FROM viagens WHERE DATE(data) = CURDATE()");
 if ($result) {
     $row = $result->fetch_assoc();
     $passageiros_hoje = $row['total'];
@@ -466,6 +487,15 @@ if ($result) {
     die("Erro na consulta de gratuidade mensal: " . $conn->error);
 }
 
+$grat_pcd_idoso = 0;
+$result = $conn->query("SELECT COALESCE(SUM(grat_pcd_idoso), 0) as total FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month");
+if ($result) {
+    $row = $result->fetch_assoc();
+    $grat_pcd_idoso = $row['total'];
+} else {
+    die("Erro na consulta de gratuidades PCD/Idoso mensal: " . $conn->error);
+}
+
 $viagens_mes_atual = 0;
 $result = $conn->query("SELECT COUNT(*) as total FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month");
 if ($result) {
@@ -476,7 +506,7 @@ if ($result) {
 }
 
 $passageiros_mes_atual = 0;
-$result = $conn->query("SELECT COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month");
+$result = $conn->query("SELECT COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month");
 if ($result) {
     $row = $result->fetch_assoc();
     $passageiros_mes_atual = $row['total'];
@@ -512,8 +542,17 @@ if ($result) {
     die("Erro na consulta de gratuidade anual: " . $conn->error);
 }
 
+$grat_pcd_idoso_anual = 0;
+$result = $conn->query("SELECT COALESCE(SUM(grat_pcd_idoso), 0) as total FROM viagens WHERE YEAR(data) = $current_year");
+if ($result) {
+    $row = $result->fetch_assoc();
+    $grat_pcd_idoso_anual = $row['total'];
+} else {
+    die("Erro na consulta de gratuidades PCD/Idoso anual: " . $conn->error);
+}
+
 $passageiros_anual = 0;
-$result = $conn->query("SELECT COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total FROM viagens WHERE YEAR(data) = $current_year");
+$result = $conn->query("SELECT COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total FROM viagens WHERE YEAR(data) = $current_year");
 if ($result) {
     $row = $result->fetch_assoc();
     $passageiros_anual = $row['total'];
@@ -639,7 +678,7 @@ if ($result) {
 
 // Consultas para fluxo de passageiros por horário
 $passageiros_por_horario_diario = array_fill(6, 15, 0);
-$result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total_passageiros 
+$result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros 
                         FROM viagens 
                         WHERE DATE(created_at) = CURDATE() AND HOUR(created_at) BETWEEN 6 AND 20 
                         GROUP BY HOUR(created_at)");
@@ -654,7 +693,7 @@ if ($result) {
 }
 
 $passageiros_por_horario_mensal = array_fill(6, 15, 0);
-$result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total_passageiros 
+$result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros 
                         FROM viagens 
                         WHERE YEAR(created_at) = $current_year AND MONTH(created_at) = $current_month AND HOUR(created_at) BETWEEN 6 AND 20 
                         GROUP BY HOUR(created_at)");
@@ -669,7 +708,7 @@ if ($result) {
 }
 
 $passageiros_por_horario_anual = array_fill(6, 15, 0);
-$result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total_passageiros 
+$result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros 
                         FROM viagens 
                         WHERE YEAR(created_at) = $current_year AND HOUR(created_at) BETWEEN 6 AND 20 
                         GROUP BY HOUR(created_at)");
@@ -776,7 +815,7 @@ if ($result) {
 
 // Consultas para recorde de passageiros por mês
 $passageiros_por_mes = array_fill(1, 12, 0);
-$result = $conn->query("SELECT MONTH(data) as mes, COALESCE(SUM(pagantes + moradores + gratuidade), 0) as total_passageiros 
+$result = $conn->query("SELECT MONTH(data) as mes, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros 
                         FROM viagens 
                         WHERE YEAR(data) = $current_year 
                         GROUP BY MONTH(data)");
@@ -791,7 +830,6 @@ if ($result) {
 
 include 'header.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1639,7 +1677,7 @@ include 'header.php';
                         <span id="currentTime"></span>
                     </div>
                 </div>
-                <div class="cards-grid">
+             <div class="cards-grid">
                     <div class="card">
                         <div class="card-header">
                             <div class="card-icon">
@@ -1715,8 +1753,19 @@ include 'header.php';
                             <span><?php echo $passageiros_mes_atual > 0 ? round(($gratuidade_mes_atual / $passageiros_mes_atual) * 100, 1) : 0; ?>% do total</span>
                         </div>
                     </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: var(--primary-gradient);">
+                                <i class="fas fa-wheelchair"></i>
+                            </div>
+                        </div>
+                        <h3>Gratuidades PCD/Idoso</h3>
+                        <div class="card-value" id="gratPcdIdosoPeriodo"><?php echo number_format($grat_pcd_idoso, 0, ',', '.'); ?></div>
+                        <div class="metric-comparison">
+                            <span><?php echo $passageiros_mes_atual > 0 ? round(($grat_pcd_idoso / $passageiros_mes_atual) * 100, 1) : 0; ?>% do total</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
             <div class="section">
                 <h2>

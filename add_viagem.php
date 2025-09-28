@@ -39,8 +39,8 @@ try {
             exit;
         }
 
-        $sql = "INSERT INTO viagens (bonde, saida, retorno, maquinista, agente, hora, pagantes, gratuidade, moradores, passageiros, tipo_viagem, data, subida_id, created_at)
-                VALUES (:bonde, :saida, :retorno, :maquinista, :agente, :hora, :pagantes, :gratuidade, :moradores, :passageiros, :tipo_viagem, :data, :subida_id, NOW())";
+        $sql = "INSERT INTO viagens (bonde, saida, retorno, maquinista, agente, hora, pagantes, gratuidade, moradores, grat_pcd_idoso, passageiros, tipo_viagem, data, subida_id, created_at)
+                VALUES (:bonde, :saida, :retorno, :maquinista, :agente, :hora, :pagantes, :gratuidade, :moradores, :grat_pcd_idoso, :passageiros, :tipo_viagem, :data, :subida_id, NOW())";
         
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':bonde', $bonde);
@@ -52,6 +52,7 @@ try {
         $stmt->bindParam(':pagantes', $pagantes, PDO::PARAM_INT);
         $stmt->bindParam(':gratuidade', $gratuidade, PDO::PARAM_INT);
         $stmt->bindParam(':moradores', $moradores, PDO::PARAM_INT);
+        $stmt->bindParam(':grat_pcd_idoso', $grat_pcd_idoso, PDO::PARAM_INT);
         $stmt->bindParam(':passageiros', $passageiros, PDO::PARAM_INT);
         $stmt->bindParam(':tipo_viagem', $tipo_viagem);
         $stmt->bindParam(':data', $data);

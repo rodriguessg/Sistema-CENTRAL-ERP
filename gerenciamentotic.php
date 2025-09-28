@@ -254,6 +254,7 @@ if (isset($_GET['get_bandwidth'])) {
             </tr>
         <?php endforeach; ?>
     </table>
+    <iframe src='http://helpdesk.intranet.central.rj.gov.br/front/central.php?embed&dashboard=assistance&entities_id=0&is_recursive=0&token=27a5c20d-fb4a-54a8-a064-c4bc9ea79a7c' frameborder='0' width='800' height='600' allowtransparency>
 
     <script>
         // Função para criar velocímetro com ponteiro

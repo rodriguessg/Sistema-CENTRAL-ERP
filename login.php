@@ -3,7 +3,6 @@ session_start(); // Inicia a sessão
 include 'banco.php'; // Inclui o arquivo de conexão com o banco de dados
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $setor = strtolower(htmlspecialchars($_POST['setor'])); // Setor fornecido no formulário
     $username = htmlspecialchars($_POST['username']); // Nome de usuário fornecido no formulário
     $senha = htmlspecialchars($_POST['senha']); // Senha fornecida no formulário
 
@@ -21,17 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (strtolower($usuario['situacao']) !== 'ativo') {
             registrarLogEvento($con, $username, 'Login falhou: Usuário inativo');
             header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=inativo&pagina=/Sistema-CENTRAL-ERP/index.php");
-
-                   
             exit();
         }
 
-        // Verifica se o setor informado corresponde ao setor do usuário
-        if (strtolower($usuario['setor']) !== $setor) {
-            registrarLogEvento($con, $username, 'Login falhou: Setor incorreto');
-            header("Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=setor_nao_reconhecido&pagina=/Sistema-CENTRAL-ERP/index.php");
-            exit();
-        }
+        // Obtém o setor do usuário diretamente da tabela
+        $setor = strtolower($usuario['setor']);
 
         // Verifica a senha
         if (password_verify($senha, $usuario['senha'])) {

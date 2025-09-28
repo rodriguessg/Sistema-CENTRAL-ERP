@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,24 +83,6 @@
                         <div class="logo-central">
                         <img src="./src/img/LL.png" alt="CENTRAL">
 												</div>
-
-                    <!-- Seletor de área de acesso -->
-                    <div class="wrap-input100 validate-input">
-                        <select class="menu-custom" name="setor" id="setor" required>
-                            <option value="" disabled selected>Área de Acesso</option>
-                            <option value="administrador">Administrador</option>
-                            <option value="patrimonio">Patrimônio</option>
-                            <option value="financeiro">Financeiro</option>
-                            <option value="estoque">Estoque</option>
-                            <option value="recursos_humanos">Recursos Humanos</option>
-                            <option value="contratos">Contratos</option>
-                            <option value="ccooperacao">Bonde Operação</option>
-                            <option value="sisbonde">Bonde Controle</option>
-                            <option value="planejamento">planejamento</option>
-                            <option value="ocorrencia">ocorrencia</option>
-                      
-                        </select>
-                    </div>
 
                     <!-- Campo de Nome de Usuário -->
 <div class="wrap-input100 validate-input" data-validate="Enter username">

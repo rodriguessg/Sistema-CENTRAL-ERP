@@ -93,21 +93,25 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
         }
 
         // Dados para gráficos de passageiros por horário
-        $passageiros_por_horario_diario = array_fill(6, 15, 0);
-        $result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros FROM viagens WHERE DATE(created_at) = CURDATE() AND HOUR(created_at) BETWEEN 6 AND 20 GROUP BY HOUR(created_at)");
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $passageiros_por_horario_diario[(int)$row['hora']] = (int)$row['total_passageiros'];
-            }
-        }
+$passageiros_por_horario_diario = array_fill(6, 15, 0);
+$result = $conn->query("SELECT HOUR(hora) as hora, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros FROM viagens WHERE DATE(data) = CURDATE() AND HOUR(hora) BETWEEN 6 AND 20 GROUP BY HOUR(hora)");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $passageiros_por_horario_diario[(int)$row['hora']] = (int)$row['total_passageiros'];
+    }
+} else {
+    error_log("Erro na consulta de passageiros por horário (diário): " . $conn->error);
+}
 
-        $passageiros_por_horario_mensal = array_fill(6, 15, 0);
-        $result = $conn->query("SELECT HOUR(created_at) as hora, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros FROM viagens WHERE YEAR(created_at) = $current_year AND MONTH(created_at) = $current_month AND HOUR(created_at) BETWEEN 6 AND 20 GROUP BY HOUR(created_at)");
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $passageiros_por_horario_mensal[(int)$row['hora']] = (int)$row['total_passageiros'];
-            }
-        }
+$passageiros_por_horario_mensal = array_fill(6, 15, 0);
+$result = $conn->query("SELECT HOUR(hora) as hora, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month AND HOUR(hora) BETWEEN 6 AND 20 GROUP BY HOUR(hora)");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $passageiros_por_horario_mensal[(int)$row['hora']] = (int)$row['total_passageiros'];
+    }
+} else {
+    error_log("Erro na consulta de passageiros por horário (mensal): " . $conn->error);
+}
 
         // Dados para recorde de passageiros por mês
         $passageiros_por_mes = array_fill(1, 12, 0);

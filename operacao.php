@@ -1394,7 +1394,7 @@ try {
                         <input type="number" id="pagantes" name="pagantes" value="0" min="0" required>
                     </div>
                     <div class="input-item">
-                        <label for="moradores"><i class="fas fa-home"></i> MORADORES</label>
+                        <label for="moradores"><i class="fas fa-home"></i> MORADORES (gratuidade) </label>
                         <input type="number" id="moradores" name="moradores" value="0" min="0" required>
                     </div>
                     <div class="input-item">
@@ -1413,9 +1413,9 @@ try {
                         <input type="number" id="passageiros" name="passageiros" value="0" readonly>
                     </div>
                   <div class="input-item">
-    <label for="viagem"><i class="fas fa-route"></i> VIAGEM</label>
-    <input type="number" id="viagem" name="viagem" value="1" min="1" required readonly>
-</div>
+                        <label for="viagem"><i class="fas fa-route"></i> VIAGEM</label>
+                        <input type="number" id="viagem" name="viagem" value="1" min="1" required readonly>
+                    </div>
                 </div>
                 
                 <div class="input-group">
@@ -1454,16 +1454,18 @@ try {
                 <div class="total-box">
                     <div class="section-title"><i class="fas fa-arrow-up"></i> TOTAL DE PARTIDA </div>
                     <div class="total-item"><span>Pagantes</span><span id="total-subindo-pagantes">0</span></div>
-                    <div class="total-item"><span>Gratuitos</span><span id="total-subindo-gratuitos">0</span></div>
+                    <div class="total-item"><span>Total de Gratuidade</span><span id="total-subindo-gratuitos">0</span></div>
                     <div class="total-item"><span>Moradores</span><span id="total-subindo-moradores">0</span></div>
+                     <div class="total-item"><span>Grat./Pcd/Idoso</span><span id="total-subindo-grat_pcd_idoso">0</span></div>
                     <div class="total-item"><span>Passageiros</span><span id="total-subindo-passageiros">0</span></div>
                     <div class="total-item"><span>Bondes Partida</span><span id="total-bondes-saida">0</span></div>
                 </div>
                 <div class="total-box">
                     <div class="section-title"><i class="fas fa-arrow-down"></i> TOTAL DE CHEGADA</div>
                     <div class="total-item"><span>Pagantes</span><span id="total-retorno-pagantes">0</span></div>
-                    <div class="total-item"><span>Gratuitos</span><span id="total-retorno-gratuitos">0</span></div>
+                    <div class="total-item"><span>Total de Gratuidade</span><span id="total-retorno-gratuitos">0</span></div>
                     <div class="total-item"><span>Moradores</span><span id="total-retorno-moradores">0</span></div>
+                     <div class="total-item"><span>Grat./Pcd/Idoso</span><span id="total-retorno-grat_pcd_idoso">0</span></div>
                     <div class="total-item"><span>Passageiros</span><span id="total-retorno-passageiros">0</span></div>
                     <div class="total-item"><span>Bondes Chegada</span><span id="total-bondes-retorno">0</span></div>
                 </div>
@@ -1489,7 +1491,8 @@ try {
                                 <th><i class="fas fa-user"></i> Agente</th>
                                 <th><i class="fas fa-clock"></i> Hora</th>
                                 <th><i class="fas fa-dollar-sign"></i> Pagantes</th>
-                                <th><i class="fas fa-gift"></i> Gratuidade</th>
+                            
+                                <th><i class="fas fa-gift"></i> Grat. PCD/Idoso</th>
                                 <th><i class="fas fa-home"></i> Moradores</th>
                                 <th><i class="fas fa-users"></i> Passageiros</th>
                                 <th><i class="fas fa-route"></i> Tipo Viagem</th>

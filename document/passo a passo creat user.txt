@@ -1,0 +1,181 @@
+### Como Inserir Novos Usuários e Setores na Nova Tela de Login
+
+Olá! Com a nova versão do sistema de login (onde o setor é determinado automaticamente pelo `username` na tabela `usuario`), o processo de inserção de novos usuários mudou um pouco. Agora, ao cadastrar um usuário, você **não precisa mais selecionar o setor manualmente no login** — o sistema consulta o campo `setor` na tabela `usuario` durante a autenticação. Isso simplifica o login, mas exige que o setor seja definido corretamente no cadastro.
+
+Vou explicar **passo a passo** como inserir novos usuários e setores. Baseado no seu código (como `login.php` e `header.php`), assumo que você tem acesso ao banco de dados `gm_sicbd` e à tabela `usuario`. Se você for **administrador** (setor `administrador`), pode usar a página `cadastro_usuario.php` (mencionada no menu do header). Caso contrário, faça via **phpMyAdmin** ou crie uma página de cadastro.
+
+#### 1. **Pré-requisitos**
+- **Acesso ao Banco**: Use phpMyAdmin (no XAMPP: http://localhost/phpmyadmin) ou MySQL Workbench.
+- **Tabela `usuario`**: Deve ter campos como `username`, `senha` (hashed com `password_hash()`), `setor`, `situacao` (ex: 'ativo'), e outros (ex: `foto`, `email`).
+- **Setores Válidos**: Baseado no seu `login.php`, setores incluem: `administrador`, `patrimonio`, `financeiro`, `estoque`, `recursos_humanos`, `contratos`, `ccooperacao`, `sisbonde`, `planejamento`, `ocorrencia`, etc. O `setor` deve ser em minúsculas.
+- **Segurança**: Sempre hasheie senhas com `password_hash()` e valide entradas para evitar SQL injection.
+
+#### 2. **Inserir um Novo Setor (se necessário)**
+Se o setor não existir na lista de opções, adicione-o no código (em `index.php` para o dropdown antigo, mas agora é interno). No entanto, o setor é armazenado como texto na tabela `usuario`, então não precisa de tabela separada — basta inserir o valor correto.
+
+- **Via phpMyAdmin**:
+  1. Acesse phpMyAdmin > Banco `gm_sicbd` > Tabela `usuario`.
+  2. Ao inserir um usuário, defina o campo `setor` com o nome desejado (ex: `novo_setor`).
+  3. Para adicionar ao menu (header.php), edite o switch em `header.php` para incluir o novo setor.
+
+- **Via Código (Atualize `header.php`)**:
+  Adicione o case no switch de `$menuItens`:
+  ```php
+  case 'novo_setor':
+      $menuItens = [
+          ['link' => 'painel_novo.php', 'nome' => 'Painel Novo Setor', 'icon' => 'home'],
+          // Outros itens...
+      ];
+      break;
+  ```
+
+#### 3. **Inserir um Novo Usuário**
+Existem duas formas: **via página web** (recomendado para admins) ou **direto no banco**.
+
+##### **Opção A: Via Página Web (Usando `cadastro_usuario.php`)**
+Se você tem a página `cadastro_usuario.php` (mencionada no header para admins), ela deve ser similar ao abaixo. Se não existir, crie-a:
+
+- **Crie `cadastro_usuario.php`** (salve no diretório raiz):
+  ```php
+  <?php
+  session_start();
+  include 'banco.php'; // Sua conexão com o banco (mysqli ou PDO)
+
+  // Verifica se é admin
+  if (!isset($_SESSION['setor']) || $_SESSION['setor'] !== 'administrador') {
+      header("Location: index.php");
+      exit;
+  }
+
+  $erro = '';
+  $sucesso = '';
+
+  if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+      $username = trim($_POST['username']);
+      $senha = $_POST['senha'];
+      $confirmar_senha = $_POST['confirmar_senha'];
+      $setor = strtolower(trim($_POST['setor']));
+      $situacao = 'ativo'; // Padrão
+
+      // Validações básicas
+      if (empty($username) || empty($senha) || empty($setor)) {
+          $erro = 'Todos os campos são obrigatórios.';
+      } elseif ($senha !== $confirmar_senha) {
+          $erro = 'Senhas não coincidem.';
+      } elseif (strlen($senha) < 6) {
+          $erro = 'Senha deve ter pelo menos 6 caracteres.';
+      } else {
+          // Verifica se username já existe
+          $stmt = $con->prepare("SELECT id FROM usuario WHERE username = ?");
+          $stmt->bind_param("s", $username);
+          $stmt->execute();
+          if ($stmt->get_result()->num_rows > 0) {
+              $erro = 'Username já existe.';
+          } else {
+              // Hashea a senha
+              $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+
+              // Insere o usuário
+              $stmt = $con->prepare("INSERT INTO usuario (username, senha, setor, situacao) VALUES (?, ?, ?, ?)");
+              $stmt->bind_param("ssss", $username, $senha_hash, $setor, $situacao);
+              if ($stmt->execute()) {
+                  $sucesso = 'Usuário cadastrado com sucesso!';
+              } else {
+                  $erro = 'Erro ao cadastrar: ' . $con->error;
+              }
+          }
+          $stmt->close();
+      }
+  }
+
+  // Lista de setores disponíveis (baseado no seu login.php)
+  $setores = [
+      'administrador', 'patrimonio', 'financeiro', 'estoque', 'recursos_humanos',
+      'contratos', 'ccooperacao', 'sisbonde', 'planejamento', 'ocorrencia'
+  ];
+  ?>
+
+  <!DOCTYPE html>
+  <html lang="pt-BR">
+  <head>
+      <meta charset="UTF-8">
+      <title>Cadastro de Usuário</title>
+      <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+      <!-- Seu CSS aqui -->
+  </head>
+  <body>
+      <div class="container mt-5">
+          <h2>Cadastro de Novo Usuário</h2>
+          <?php if ($erro): ?>
+              <div class="alert alert-danger"><?php echo $erro; ?></div>
+          <?php endif; ?>
+          <?php if ($sucesso): ?>
+              <div class="alert alert-success"><?php echo $sucesso; ?></div>
+          <?php endif; ?>
+
+          <form method="POST">
+              <div class="form-group mb-3">
+                  <label>Username:</label>
+                  <input type="text" name="username" class="form-control" required>
+              </div>
+              <div class="form-group mb-3">
+                  <label>Senha:</label>
+                  <input type="password" name="senha" class="form-control" required minlength="6">
+              </div>
+              <div class="form-group mb-3">
+                  <label>Confirmar Senha:</label>
+                  <input type="password" name="confirmar_senha" class="form-control" required>
+              </div>
+              <div class="form-group mb-3">
+                  <label>Setor:</label>
+                  <select name="setor" class="form-control" required>
+                      <option value="">Selecione o setor</option>
+                      <?php foreach ($setores as $s): ?>
+                          <option value="<?php echo $s; ?>"><?php echo ucfirst($s); ?></option>
+                      <?php endforeach; ?>
+                  </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Cadastrar</button>
+              <a href="painel.php" class="btn btn-secondary">Voltar</a>
+          </form>
+      </div>
+  </body>
+  </html>
+  ```
+
+- **Como usar**:
+  1. Logue como admin.
+  2. Acesse `cadastro_usuario.php` (adicione ao menu se necessário).
+  3. Preencha e submeta — o usuário é inserido com setor definido.
+
+##### **Opção B: Direto no Banco (phpMyAdmin)**
+1. Acesse phpMyAdmin > Banco `gm_sicbd` > Tabela `usuario` > **Inserir**.
+2. Preencha os campos:
+   - `username`: Nome único (ex: `novo_user`).
+   - `senha`: Senha hasheada (gere com PHP: `echo password_hash('senha123', PASSWORD_DEFAULT);` — cole o hash).
+   - `setor`: Nome do setor em minúsculas (ex: `financeiro`).
+   - `situacao`: `ativo`.
+   - Outros campos opcionais (ex: `foto` = null).
+3. Clique **Executar** — pronto! O usuário pode logar com username e senha.
+
+#### 4. **Atualizar Setor de Usuário Existente**
+- **Via phpMyAdmin**: Edite a tabela `usuario` > Selecione o usuário > Altere `setor`.
+- **Via Código**: Crie `editar_usuario.php` similar ao cadastro, com UPDATE:
+  ```php
+  $stmt = $con->prepare("UPDATE usuario SET setor = ? WHERE username = ?");
+  $stmt->bind_param("ss", $novo_setor, $username);
+  $stmt->execute();
+  ```
+
+#### 5. **Melhores Práticas de Segurança**
+- **Hash de Senha**: Sempre use `password_hash($senha, PASSWORD_DEFAULT)` e `password_verify()` (como no seu `login.php`).
+- **Validação**: Verifique username único, senha forte (mín. 8 chars, maiúscula/minúscula/número).
+- **Sanitização**: Use prepared statements para evitar SQL injection (como no exemplo).
+- **Email Confirmação**: Adicione envio de email para ativar conta.
+- **Limite de Tentativas**: No login, implemente bloqueio após 3 erros.
+
+#### 6. **Teste o Cadastro**
+1. Cadastre um usuário teste (ex: username `teste`, senha `123456`, setor `estoque`).
+2. Logue com ele — o sistema deve detectar o setor automaticamente e redirecionar para a página correta (ex: `painelalmoxarifado.php` para `estoque`).
+
+Se precisar do código completo de `cadastro_usuario.php` ou ajustes (ex: adicionar email/foto), me avise! Para setores novos, atualize o `getRedirectionPage()` em `login.php`. Qualquer erro, compartilhe o log. 😊

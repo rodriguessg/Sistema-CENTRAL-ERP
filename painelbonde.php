@@ -93,7 +93,7 @@ if (isset($_GET['api']) && $_GET['api'] === 'data') {
         }
 
         // Dados para gráficos de passageiros por horário
-$passageiros_por_horario_diario = array_fill(6, 15, 0);
+$passageiros_por_horario_diario = array_fill(6, 20, 0);
 $result = $conn->query("SELECT HOUR(hora) as hora, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros FROM viagens WHERE DATE(data) = CURDATE() AND HOUR(hora) BETWEEN 6 AND 20 GROUP BY HOUR(hora)");
 if ($result) {
     while ($row = $result->fetch_assoc()) {
@@ -103,7 +103,7 @@ if ($result) {
     error_log("Erro na consulta de passageiros por horário (diário): " . $conn->error);
 }
 
-$passageiros_por_horario_mensal = array_fill(6, 15, 0);
+$passageiros_por_horario_mensal = array_fill(6, 20, 0);
 $result = $conn->query("SELECT HOUR(hora) as hora, COALESCE(SUM(pagantes + moradores + gratuidade + grat_pcd_idoso), 0) as total_passageiros FROM viagens WHERE YEAR(data) = $current_year AND MONTH(data) = $current_month AND HOUR(hora) BETWEEN 6 AND 20 GROUP BY HOUR(hora)");
 if ($result) {
     while ($row = $result->fetch_assoc()) {
@@ -290,11 +290,11 @@ if ($result) {
                 'passageiros_horario' => [
                     'diario' => [
                         'labels' => ['6h', '7h', '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h'],
-                        'data' => array_values(array_slice($passageiros_por_horario_diario, 6, 15, true))
+                        'data' => array_values(array_slice($passageiros_por_horario_diario, 6, 20, true))
                     ],
                     'mensal' => [
                         'labels' => ['6h', '7h', '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h'],
-                        'data' => array_values(array_slice($passageiros_por_horario_mensal, 6, 15, true))
+                        'data' => array_values(array_slice($passageiros_por_horario_mensal, 6, 20, true))
                     ]
                 ],
                 'passageiros_por_mes' => [
@@ -1704,19 +1704,7 @@ include 'header.php';
                             Operação em andamento
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-icon" style="background: var(--warning-gradient);">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        </div>
-                        <h3>Total de Passageiros</h3>
-                        <div class="card-value" id="passageirosPeriodo"><?php echo number_format($passageiros_mes_atual, 0, ',', '.'); ?></div>
-                        <div class="card-trend trend-up">
-                            <i class="fas fa-arrow-up"></i>
-                            Fluxo crescente
-                        </div>
-                    </div>
+                   
                     <div class="card">
                         <div class="card-header">
                             <div class="card-icon" style="background: var(--secondary-gradient);">
@@ -1741,7 +1729,21 @@ include 'header.php';
                             <span><?php echo $passageiros_mes_atual > 0 ? round(($moradores_mes_atual / $passageiros_mes_atual) * 100, 1) : 0; ?>% do total</span>
                         </div>
                     </div>
+                  
                     <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: var(--primary-gradient);">
+                                <i class="fas fa-wheelchair"></i>
+                            </div>
+                        </div>
+                        <h3>Gratuidades PCD/Idoso</h3>
+                        <div class="card-value" id="gratPcdIdosoPeriodo"><?php echo number_format($grat_pcd_idoso, 0, ',', '.'); ?></div>
+                        <div class="metric-comparison">
+                            <span><?php echo $passageiros_mes_atual > 0 ? round(($grat_pcd_idoso / $passageiros_mes_atual) * 100, 1) : 0; ?>% do total</span>
+                        </div>
+                    </div>
+
+                      <div class="card">
                         <div class="card-header">
                             <div class="card-icon" style="background: var(--danger-gradient);">
                                 <i class="fas fa-gift"></i>
@@ -1753,16 +1755,18 @@ include 'header.php';
                             <span><?php echo $passageiros_mes_atual > 0 ? round(($gratuidade_mes_atual / $passageiros_mes_atual) * 100, 1) : 0; ?>% do total</span>
                         </div>
                     </div>
-                    <div class="card">
+
+                     <div class="card">
                         <div class="card-header">
-                            <div class="card-icon" style="background: var(--primary-gradient);">
-                                <i class="fas fa-wheelchair"></i>
+                            <div class="card-icon" style="background: var(--warning-gradient);">
+                                <i class="fas fa-users"></i>
                             </div>
                         </div>
-                        <h3>Gratuidades PCD/Idoso</h3>
-                        <div class="card-value" id="gratPcdIdosoPeriodo"><?php echo number_format($grat_pcd_idoso, 0, ',', '.'); ?></div>
-                        <div class="metric-comparison">
-                            <span><?php echo $passageiros_mes_atual > 0 ? round(($grat_pcd_idoso / $passageiros_mes_atual) * 100, 1) : 0; ?>% do total</span>
+                        <h3>Total de Passageiros</h3>
+                        <div class="card-value" id="passageirosPeriodo"><?php echo number_format($passageiros_mes_atual, 0, ',', '.'); ?></div>
+                        <div class="card-trend trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            Fluxo crescente
                         </div>
                     </div>
                 </div>

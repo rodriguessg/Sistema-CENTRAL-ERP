@@ -141,7 +141,6 @@ try {
           border-radius: var(--radius-lg);
           box-shadow: var(--shadow-lg);
           border: 1px solid var(--border-color);
-          margin: 0.5rem 0;
           overflow: hidden;
           transition: var(--transition-normal);
           flex: 2;

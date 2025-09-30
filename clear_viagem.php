@@ -1,7 +1,6 @@
 <?php
-// clear_viagem.php
-ob_start(); // Iniciar buffer de saída para evitar saída acidental
-session_start();
+ob_start(); // Iniciar buffer de saída
+session_start(); // Iniciar sessão para obter o usuário logado
 
 // Definir fuso horário de São Paulo (BRT, UTC-3)
 date_default_timezone_set('America/Sao_Paulo');
@@ -9,8 +8,15 @@ date_default_timezone_set('America/Sao_Paulo');
 // Forçar Content-Type como JSON
 header('Content-Type: application/json');
 
-// Simulação de usuário logado
-$_SESSION['username'] = isset($_SESSION['username']) ? $_SESSION['username'] : 'usuario_logado';
+// Verifica se o usuário está logado
+if (!isset($_SESSION['username'])) {
+    ob_end_clean();
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Usuário não autenticado.']);
+    exit;
+}
+
+$logged_user = $_SESSION['username']; // Obtém o username do usuário logado
 
 // Conexão com o banco de dados
 try {
@@ -20,7 +26,7 @@ try {
     ob_end_clean();
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Erro de conexão com o banco de dados: ' . htmlspecialchars($e->getMessage())]);
-    exit();
+    exit;
 }
 
 // Criar a tabela historico_viagens (se não existir)
@@ -36,6 +42,7 @@ try {
             hora TIME NOT NULL,
             pagantes INT NOT NULL DEFAULT 0,
             gratuidade INT NOT NULL DEFAULT 0,
+            grat_pcd_idoso INT NOT NULL DEFAULT 0,
             moradores INT NOT NULL DEFAULT 0,
             passageiros INT NOT NULL DEFAULT 0,
             tipo_viagem VARCHAR(255) NOT NULL,
@@ -48,7 +55,7 @@ try {
     ob_end_clean();
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Erro ao criar a tabela historico_viagens: ' . htmlspecialchars($e->getMessage())]);
-    exit();
+    exit;
 }
 
 // Manipular limpeza da tabela viagens
@@ -56,21 +63,35 @@ try {
     // Iniciar transação para garantir consistência
     $pdo->beginTransaction();
 
-    // Passo 1: Copiar dados da tabela viagens para historico_viagens
-    $sqlCopy = "
-        INSERT INTO historico_viagens (
-            bonde, saida, retorno, maquinista, agente, hora, pagantes, gratuidade, moradores, passageiros, 
-            tipo_viagem, data, created_at, subida_id
-        )
-        SELECT 
-            bonde, saida, retorno, maquinista, agente, hora, pagantes, gratuidade, moradores, passageiros, 
-            tipo_viagem, data, created_at, subida_id
-        FROM viagens";
-    $pdo->exec($sqlCopy);
+    // Passo 1: Verificar se há dados na tabela viagens
+    $sqlCheck = "SELECT COUNT(*) FROM viagens";
+    $count = $pdo->query($sqlCheck)->fetchColumn();
 
-    // Passo 2: Limpar a tabela viagens
+    if ($count > 0) {
+        // Passo 2: Copiar dados da tabela viagens para historico_viagens
+        $sqlCopy = "
+            INSERT INTO historico_viagens (
+                bonde, saida, retorno, maquinista, agente, hora, pagantes, gratuidade, grat_pcd_idoso, moradores, passageiros, 
+                tipo_viagem, data, created_at, subida_id
+            )
+            SELECT 
+                bonde, saida, retorno, maquinista, agente, hora, pagantes, gratuidade, grat_pcd_idoso, moradores, passageiros, 
+                tipo_viagem, data, created_at, subida_id
+            FROM viagens";
+        $pdo->exec($sqlCopy);
+    }
+
+    // Passo 3: Limpar a tabela viagens
     $sqlDelete = "DELETE FROM viagens";
     $pdo->exec($sqlDelete);
+
+    // Passo 4: Inserção no log_eventos (usando PDO e o username do usuário logado)
+    $stmt_log = $pdo->prepare("INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (:matricula, :tipo_operacao, NOW())");
+    $tipo_operacao = "limpou a lista de transações";
+    $stmt_log->execute([
+        ':matricula' => $logged_user,
+        ':tipo_operacao' => $tipo_operacao
+    ]);
 
     // Confirmar transação
     $pdo->commit();
@@ -80,11 +101,12 @@ try {
     echo json_encode(['success' => true, 'message' => 'Tabela limpa com sucesso e dados copiados para o histórico!']);
 } catch (PDOException $e) {
     // Reverter transação em caso de erro
-    $pdo->rollBack();
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     ob_end_clean();
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Erro ao copiar dados ou limpar a tabela: ' . htmlspecialchars($e->getMessage())]);
+    exit;
 }
-
-exit(); // Garantir que nenhuma saída adicional seja gerada
 ?>

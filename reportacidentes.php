@@ -1,5 +1,6 @@
 <?php
-session_start();
+ob_start(); // Iniciar buffer de saída
+session_start(); // Iniciar sessão para obter o usuário logado
 
 // Definir fuso horário de São Paulo (BRT, UTC-3)
 date_default_timezone_set('America/Sao_Paulo');
@@ -8,32 +9,43 @@ date_default_timezone_set('America/Sao_Paulo');
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src/Exception.php';
-require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src/PHPMailer.php';
-require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src/SMTP.php';
+require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src\Exception.php';
+require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src\PHPMailer.php';
+require 'C:\xampp\htdocs\Sistema-CENTRAL-ERP\vendor\phpmailer\phpmailer\src\SMTP.php';
 
 // Configuração do banco de dados
 $host = 'localhost';
 $dbname = 'gm_sicbd';
-$username = 'root';
-$password = '';
+$db_username = 'root';
+$db_password = '';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $db_username, $db_password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Adicionar coluna 'vitima' à tabela acidentes, se ainda não existir
+    // Adicionar colunas à tabela acidentes, se não existirem
     $pdo->exec("ALTER TABLE acidentes ADD COLUMN IF NOT EXISTS vitima VARCHAR(3) DEFAULT 'Não'");
-    // Adicionar coluna 'paralizar_sistema' à tabela acidentes, se ainda não existir
     $pdo->exec("ALTER TABLE acidentes ADD COLUMN IF NOT EXISTS paralizar_sistema VARCHAR(3) DEFAULT 'Não'");
 } catch (PDOException $e) {
-    die("Erro na conexão com o banco de dados: " . $e->getMessage());
+    ob_end_clean();
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Erro na conexão com o banco de dados: ' . htmlspecialchars($e->getMessage())]);
+    exit;
 }
 
+// Verifica se o usuário está logado
 if (!isset($_SESSION['username'])) {
-    die("Erro: Usuário não autenticado ou sessão expirada!");
+    ob_end_clean();
+    header('Content-Type: application/json');
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Usuário não autenticado.']);
+    exit;
 }
-$user = $_SESSION['username'];
+
+$logged_user = $_SESSION['username']; // Obtém o username do usuário logado
+$erro = '';
+$sucesso = '';
 
 // Buscar modelos da tabela bondes
 $modelos = [];
@@ -58,11 +70,10 @@ try {
     $localizacoes = [];
 }
 
-$erro = '';
-$sucesso = '';
-
 // Manipular registro de novo acidente
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['update_status'])) {
+    header('Content-Type: application/json'); // Definir como JSON para respostas AJAX
+
     $descricao = $_POST['descricao'] ?? '';
     $localizacao = $_POST['localizacao'] ?? '';
     $severidade = $_POST['severidade'] ?? '';
@@ -71,129 +82,155 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['update_status'])) {
     $modelo = $_POST['modelo'] ?? '';
     $maquinistas = $_POST['maquinistas'] ?? '';
     $agentes = $_POST['agentes'] ?? '';
-    $data = $_POST['data'] ?? date('Y-m-d H:i:s');
+    $data = $_POST['data'] ?? '';
     $vitima = isset($_POST['vitima']) ? 'Sim' : 'Não';
     $paralizar_sistema = isset($_POST['paralizar_sistema']) ? 'Sim' : 'Não';
+    $redirect = $_POST['redirect'] ?? false; // Parâmetro opcional para redirecionamento
 
+    // Ajustar formato da data
     if (!empty($data)) {
-        $data = str_replace('T', ' ', $data) . ':00';
+        $data = str_replace('T', ' ', $data);
+        if (strlen($data) === 16) { // Formato Y-m-d H:i
+            $data .= ':00';
+        }
+    } else {
+        $data = date('Y-m-d H:i:s');
     }
 
     $valid_maquinistas = ['Sergio Lima', 'Adriano', 'Helio', 'M. Celestino', 'Leonardo', 'Andre'];
     $valid_agentes = ['Samir', 'Vinicius', 'P. Nascimento', 'Oliveira', 'Carlos'];
     $valid_localizacoes = array_column($localizacoes, 'value');
 
+    // Validações
     if (empty($descricao) || empty($severidade) || empty($categoria) || empty($cor) || empty($modelo) || empty($maquinistas) || empty($agentes) || empty($localizacao) || empty($data)) {
-        $erro = "Todos os campos obrigatórios devem ser preenchidos!";
+        ob_end_clean();
+        echo json_encode(['success' => false, 'message' => 'Todos os campos obrigatórios devem ser preenchidos!']);
+        exit;
     } elseif (!in_array($severidade, ['Leve', 'Moderado', 'Grave'])) {
-        $erro = "Severidade inválida!";
+        ob_end_clean();
+        echo json_encode(['success' => false, 'message' => 'Severidade inválida!']);
+        exit;
     } elseif (!in_array($modelo, $modelos)) {
-        $erro = "Modelo de bonde inválido!";
+        ob_end_clean();
+        echo json_encode(['success' => false, 'message' => 'Modelo de bonde inválido!']);
+        exit;
     } elseif (!in_array($maquinistas, $valid_maquinistas)) {
-        $erro = "Maquinista inválido!";
+        ob_end_clean();
+        echo json_encode(['success' => false, 'message' => 'Maquinista inválido!']);
+        exit;
     } elseif (!in_array($agentes, $valid_agentes)) {
-        $erro = "Agente inválido!";
+        ob_end_clean();
+        echo json_encode(['success' => false, 'message' => 'Agente inválido!']);
+        exit;
     } elseif (!in_array($localizacao, $valid_localizacoes)) {
-        $erro = "Localização inválida!";
-    } elseif (!DateTime::createFromFormat('Y-m-d H:i:s', $data)) { //aqui é só alterar a ordem
-        $erro = "Data e hora inválidas!";
-    } else {
+        ob_end_clean();
+        echo json_encode(['success' => false, 'message' => 'Localização inválida!']);
+        exit;
+    } elseif (!DateTime::createFromFormat('Y-m-d H:i:s', $data)) {
+        ob_end_clean();
+        echo json_encode(['success' => false, 'message' => 'Data e hora inválidas!']);
+        exit;
+    }
+
+    try {
+        $pdo->beginTransaction();
+
+        // Inserir registro na tabela acidentes
+        $sql = "INSERT INTO acidentes (descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status, vitima, paralizar_sistema) 
+                VALUES (:descricao, :localizacao, :usuario, :severidade, :categoria, :cor, :modelo, :maquinistas, :agentes, :data_registro, 'em andamento', :vitima, :paralizar_sistema)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':descricao' => $descricao,
+            ':localizacao' => $localizacao,
+            ':usuario' => $logged_user,
+            ':severidade' => $severidade,
+            ':categoria' => $categoria,
+            ':cor' => $cor,
+            ':modelo' => $modelo,
+            ':maquinistas' => $maquinistas,
+            ':agentes' => $agentes,
+            ':data_registro' => $data,
+            ':vitima' => $vitima,
+            ':paralizar_sistema' => $paralizar_sistema
+        ]);
+        $acidente_id = $pdo->lastInsertId();
+
+        // Inserção no log_eventos com detalhes do acidente
+        $stmt_log = $pdo->prepare("INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (:matricula, :tipo_operacao, NOW())");
+        $tipo_operacao = "acidente registrado (ID: $acidente_id, Descrição: " . substr($descricao, 0, 100) . ", Localização: " . substr($localizacao, 0, 50) . ")";
+        $stmt_log->execute([
+            ':matricula' => $logged_user,
+            ':tipo_operacao' => $tipo_operacao
+        ]);
+
+        // Commit da transação
+        $pdo->commit();
+
+        // Enviar e-mail de notificação
+        $mail = new PHPMailer(true);
         try {
-            $pdo->beginTransaction();
+            $mail->isSMTP();
+            $mail->Host = 'smtps2.ebmail.rj.gov.br';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'impressora@central.rj.gov.br';
+            $mail->Password = 'central@123';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port = 465;
+            $mail->CharSet = 'UTF-8';
 
-            // Inserir registro na tabela acidentes
-            $sql = "INSERT INTO acidentes (descricao, localizacao, usuario, severidade, categoria, cor, modelo, maquinistas, agentes, data_registro, status, vitima, paralizar_sistema) 
-                    VALUES (:descricao, :localizacao, :usuario, :severidade, :categoria, :cor, :modelo, :maquinistas, :agentes, :data_registro, 'em andamento', :vitima, :paralizar_sistema)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                'descricao' => $descricao,
-                'localizacao' => $localizacao,
-                'usuario' => $user,
-                'severidade' => $severidade,
-                'categoria' => $categoria,
-                'cor' => $cor,
-                'modelo' => $modelo,
-                'maquinistas' => $maquinistas,
-                'agentes' => $agentes,
-                'data_registro' => $data,
-                'vitima' => $vitima,
-                'paralizar_sistema' => $paralizar_sistema
-            ]);
-            $acidente_id = $pdo->lastInsertId();
+            $mail->setFrom('impressora@central.rj.gov.br', 'Notificações de Ocorrências');
+            $mail->addAddress('grodrigues@central.rj.gov.br');
+            $mail->addAddress('alexandrerocha@central.rj.gov.br');
 
-          
+            $mail->isHTML(true);
+            $mail->Subject = "Novo Acidente Registrado - ID $acidente_id";
+            $mail->Body = "
+                <h2>Novo Acidente Registrado</h2>
+                <p>Um novo acidente foi registrado no sistema. Detalhes abaixo:</p>
+                <table border='1' style='border-collapse: collapse; width: 100%;'>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>ID</th><td style='padding: 8px;'>$acidente_id</td></tr>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>Descrição</th><td style='padding: 8px;'>" . htmlspecialchars($descricao) . "</td></tr>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>Localização</th><td style='padding: 8px;'>" . htmlspecialchars($localizacao) . "</td></tr>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>Usuário</th><td style='padding: 8px;'>" . htmlspecialchars($logged_user) . "</td></tr>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>Severidade</th><td style='padding: 8px;'>" . htmlspecialchars($severidade) . "</td></tr>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>Categoria</th><td style='padding: 8px;'>" . htmlspecialchars($categoria) . "</td></tr>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>Modelo do Bonde</th><td style='padding: 8px;'>" . htmlspecialchars($modelo) . "</td></tr>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>Maquinistas</th><td style='padding: 8px;'>" . htmlspecialchars($maquinistas) . "</td></tr>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>Agentes</th><td style='padding: 8px;'>" . htmlspecialchars($agentes) . "</td></tr>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>Data e Hora de Registro</th><td style='padding: 8px;'>" . date('d/m/Y H:i', strtotime($data)) . "</td></tr>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>Houve Vítima?</th><td style='padding: 8px;'>$vitima</td></tr>
+                    <tr><th style='padding: 8px; background-color: #f2f2f2;'>Paralizar Sistema?</th><td style='padding: 8px;'>$paralizar_sistema</td></tr>
+                </table>
+                <p>Por favor, verifique o sistema para mais detalhes ou ações necessárias.</p>
+            ";
+            $mail->AltBody = "Novo Acidente Registrado - ID: $acidente_id\nDescrição: $descricao\nLocalização: $localizacao\nUsuário: $logged_user\nSeveridade: $severidade\nCategoria: $categoria\nModelo: $modelo\nMaquinistas: $maquinistas\nAgentes: $agentes\nData e Hora: " . date('d/m/Y H:i', strtotime($data)) . "\nHouve Vítima? $vitima\nParalizar Sistema? $paralizar_sistema";
 
-            // Commit da transação
-            $pdo->commit();
-
-            $sucesso = "Acidente registrado com sucesso!";
-
-            // Enviar e-mail de notificação
-            $mail = new PHPMailer(true);
-            try {
-                $mail->isSMTP();
-                $mail->Host = 'smtps2.ebmail.rj.gov.br';
-                $mail->SMTPAuth = true;
-                $mail->Username = 'impressora@central.rj.gov.br';
-                $mail->Password = 'central@123';
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-                $mail->Port = 465;
-                $mail->Timeout = 5;
-                $mail->CharSet = 'UTF-8';
-
-                $mail->setFrom('impressora@central.rj.gov.br', 'Notificações de Ocorrências');
-                $mail->addAddress('grodrigues@central.rj.gov.br');
-                $mail->addAddress('alexandrerocha@central.rj.gov.br');
-
-                $mail->isHTML(true);
-                $mail->Subject = "Novo Acidente Registrado - ID $acidente_id";
-                $mail->Body = "
-                    <h2>Novo Acidente Registrado</h2>
-                    <p>Um novo acidente foi registrado no sistema. Detalhes abaixo:</p>
-                    <table border='1' style='border-collapse: collapse; width: 100%;'>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>ID</th><td style='padding: 8px;'>$acidente_id</td></tr>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Descrição</th><td style='padding: 8px;'>" . htmlspecialchars($descricao) . "</td></tr>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Localização</th><td style='padding: 8px;'>" . htmlspecialchars($localizacao) . "</td></tr>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Usuário</th><td style='padding: 8px;'>" . htmlspecialchars($user) . "</td></tr>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Severidade</th><td style='padding: 8px;'>" . htmlspecialchars($severidade) . "</td></tr>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Categoria</th><td style='padding: 8px;'>" . htmlspecialchars($categoria) . "</td></tr>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Modelo do Bonde</th><td style='padding: 8px;'>" . htmlspecialchars($modelo) . "</td></tr>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Maquinistas</th><td style='padding: 8px;'>" . htmlspecialchars($maquinistas) . "</td></tr>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Agentes</th><td style='padding: 8px;'>" . htmlspecialchars($agentes) . "</td></tr>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Data e Hora de Registro</th><td style='padding: 8px;'>" . date('d/m/Y H:i', strtotime($data)) . "</td></tr>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Houve Vítima?</th><td style='padding: 8px;'>$vitima</td></tr>
-                        <tr><th style='padding: 8px; background-color: #f2f2f2;'>Paralizar Sistema?</th><td style='padding: 8px;'>$paralizar_sistema</td></tr>
-                    </table>
-                    <p>Por favor, verifique o sistema para mais detalhes ou ações necessárias.</p>
-                ";
-                $mail->AltBody = "Novo Acidente Registrado - ID: $acidente_id\nDescrição: $descricao\nLocalização: $localizacao\nUsuário: $user\nSeveridade: $severidade\nCategoria: $categoria\nModelo: $modelo\nMaquinistas: $maquinistas\nAgentes: $agentes\nData e Hora: " . date('d/m/Y H:i', strtotime($data)) . "\nHouve Vítima? $vitima\nParalizar Sistema? $paralizar_sistema";
-
-                $start_time = microtime(true);
-                try {
-                    $mail->send();
-                } catch (Exception $e) {
-                    $elapsed_time = microtime(true) - $start_time;
-                    if ($elapsed_time >= 5) {
-                        $erro .= "Erro: O envio do e-mail excedeu o tempo limite de 5 segundos. Detalhes: " . $mail->ErrorInfo;
-                    } else {
-                        $erro .= "Erro ao enviar e-mail de notificação: " . $mail->ErrorInfo;
-                    }
-                }
-            } catch (Exception $e) {
-                $erro .= "Erro na configuração do e-mail: " . $mail->ErrorInfo;
-            }
-
-            header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=acidente&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
-            exit();
-        } catch (PDOException $e) {
-            $pdo->rollBack();
-            $erro = "Erro ao registrar o acidente: " . $e->getMessage();
+            $mail->send();
+        } catch (Exception $e) {
+            error_log("Erro ao enviar e-mail: " . $mail->ErrorInfo);
         }
+
+        ob_end_clean();
+        if ($redirect) {
+            header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=acidente&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
+            exit;
+        }
+   
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        ob_end_clean();
+        error_log("Erro ao registrar acidente: " . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'Erro ao registrar o acidente: ' . htmlspecialchars($e->getMessage())]);
+        exit;
     }
 }
 
 // Manipular atualização de status e órgãos de emergência
-if (isset($_POST['update_status']) && isset($_POST['id'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status']) && isset($_POST['id'])) {
+    header('Content-Type: application/json'); // Definir como JSON para respostas AJAX
+
     $id = $_POST['id'];
     $policia = isset($_POST['policia'][$id]) ? 1 : 0;
     $bombeiros = isset($_POST['bombeiros'][$id]) ? 1 : 0;
@@ -206,27 +243,42 @@ if (isset($_POST['update_status']) && isset($_POST['id'])) {
         $sql = "UPDATE acidentes SET status = 'resolvido', policia = :policia, bombeiros = :bombeiros, samu = :samu WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            'policia' => $policia,
-            'bombeiros' => $bombeiros,
-            'samu' => $samu,
-            'id' => $id
+            ':policia' => $policia,
+            ':bombeiros' => $bombeiros,
+            ':samu' => $samu,
+            ':id' => (int)$id
         ]);
 
-        // Buscar informações do acidente para obter o bonde e localização
-        $sql_acidente = "SELECT modelo, localizacao, maquinistas, agentes, paralizar_sistema FROM acidentes WHERE id = :id";
-        $stmt_acidente = $pdo->prepare($sql_acidente);
-        $stmt_acidente->execute(['id' => $id]);
-        $acidente = $stmt_acidente->fetch(PDO::FETCH_ASSOC);
+        // Verificar se a atualização afetou alguma linha
+        if ($stmt->rowCount() > 0) {
+          // Inserção no log_eventos com detalhes do acidente
+        $stmt_log = $pdo->prepare("INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (:matricula, :tipo_operacao, NOW())");
+        $tipo_operacao = "acidente registrado (ID: $acidente_id, Descrição: " . substr($descricao, 0, 100) . ", Localização: " . substr($localizacao, 0, 50) . ")";
+        $stmt_log->execute([
+            ':matricula' => $logged_user,
+            ':tipo_operacao' => $tipo_operacao
+        ]);
 
-      
 
-        // Commit da transação
-        $pdo->commit();
-        header("Location: reportacidentes.php?success=2");
-        exit();
+            // Commit da transação
+            $pdo->commit();
+            ob_end_clean();
+             header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=solucionado&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
+            exit;
+        } else {
+            $pdo->rollBack();
+            ob_end_clean();
+            echo json_encode(['success' => false, 'message' => 'Nenhum acidente encontrado com o ID fornecido.']);
+        }
+        exit;
     } catch (PDOException $e) {
-        $pdo->rollBack();
-        $erro = "Erro ao atualizar o status: " . $e->getMessage();
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        ob_end_clean();
+        error_log("Erro ao atualizar status: " . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'Erro ao atualizar o status: ' . htmlspecialchars($e->getMessage())]);
+        exit;
     }
 }
 
@@ -242,7 +294,7 @@ try {
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $fetchSuccess = !empty($result);
 } catch (PDOException $e) {
-    $erro = "Erro ao obter resultados: " . $e->getMessage();
+    error_log("Erro ao obter resultados: " . $e->getMessage());
     $result = [];
     $fetchSuccess = false;
 }
@@ -262,10 +314,9 @@ $colorClasses = [
     'Amarelo/Vermelho' => 'severity-yellow-red'
 ];
 
-// Include header.php only after all header() calls
+// Include header.php for HTML rendering
 include 'header.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>

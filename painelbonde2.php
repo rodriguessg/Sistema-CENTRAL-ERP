@@ -1,223 +1,227 @@
 <?php
-session_start();
+    session_start();
 
-// Configuração do banco de dados
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$dbname = 'gm_sicbd';
+    // Configuração do banco de dados
+    $host = 'localhost';
+    $user = 'root';
+    $password = '';
+    $dbname = 'gm_sicbd';
 
-// Verifica se é uma requisição AJAX para dados
-if (isset($_GET['api']) && $_GET['api'] === 'data') {
-    header('Content-Type: application/json');
-    header('Cache-Control: no-cache, must-revalidate');
-    
-    $conn = new mysqli($host, $user, $password, $dbname);
-    
-    if ($conn->connect_error) {
-        http_response_code(500);
-        echo json_encode(['success' => false, 'error' => 'Erro na conexão com o banco']);
-        exit;
-    }
-    
-    $conn->set_charset('utf8mb4');
-    
-    // Pega os filtros
-    $periodo = isset($_GET['periodo']) ? $_GET['periodo'] : 'diario';
-    $ano = isset($_GET['ano']) ? intval($_GET['ano']) : date('Y');
-    $mes = isset($_GET['mes']) ? intval($_GET['mes']) : date('m');
-    $dia = isset($_GET['dia']) ? intval($_GET['dia']) : date('d');
-    $tipoFuncionario = isset($_GET['tipo_funcionario']) ? $_GET['tipo_funcionario'] : 'todos';
-    
-    // Monta a condição WHERE baseada no período
-    $whereClause = "";
-    if ($periodo === 'diario') {
-        $whereClause = "WHERE DATE(data) = '$ano-$mes-$dia'";
-    } elseif ($periodo === 'mensal') {
-        $whereClause = "WHERE YEAR(data) = $ano AND MONTH(data) = $mes";
-    } elseif ($periodo === 'anual') {
-        $whereClause = "WHERE YEAR(data) = $ano";
-    }
-    
-    $response = [];
-    
-    // KPIs
-    $sql = "SELECT 
-                COUNT(DISTINCT bonde) as total_bondes,
-                COUNT(*) as viagens_realizadas,
-                SUM(pagantes) as passageiros_pagantes,
-                SUM(moradores) as moradores,
-                SUM(grat_pcd_idoso) as gratuidades_pcd,
-                SUM(gratuidade) as gratuidades,
-                SUM(passageiros) as total_passageiros
-            FROM viagens 
-            $whereClause";
-    
-    $result = $conn->query($sql);
-    $kpis = $result->fetch_assoc();
-    $response['kpis'] = $kpis;
-    
-    // Bondes com maior performance
-    $sql = "SELECT bonde, COUNT(*) as num_viagens 
-            FROM viagens 
-            $whereClause 
-            GROUP BY bonde 
-            ORDER BY num_viagens DESC 
-            LIMIT 10";
-    $result = $conn->query($sql);
-    $bondes_performance = [];
-    while ($row = $result->fetch_assoc()) {
-        $bondes_performance[] = $row;
-    }
-    $response['bondes_performance'] = $bondes_performance;
-    
-    $sql = "SELECT 
-                SUM(pagantes) as pagantes,
-                SUM(moradores) as moradores,
-                SUM(grat_pcd_idoso) as grat_pcd_idoso,
-                SUM(gratuidade) as gratuidade
-            FROM viagens 
-            $whereClause";
-    $result = $conn->query($sql);
-    $distribuicao = $result->fetch_assoc();
-    $response['distribuicao'] = $distribuicao;
-    
-    // Padrão semanal de viagens
-    $sql = "SELECT 
-                DAYOFWEEK(data) as dia_semana,
-                COUNT(*) as num_viagens
-            FROM viagens 
-            $whereClause 
-            GROUP BY DAYOFWEEK(data)
-            ORDER BY DAYOFWEEK(data)";
-    $result = $conn->query($sql);
-    $padrao_semanal = [];
-    while ($row = $result->fetch_assoc()) {
-        $padrao_semanal[] = $row;
-    }
-    $response['padrao_semanal'] = $padrao_semanal;
-    
-    // Fluxo de passageiros por horário
-    $sql = "SELECT 
-                HOUR(hora) as hora,
-                SUM(passageiros) as total_passageiros
-            FROM viagens 
-            $whereClause 
-            GROUP BY HOUR(hora)
-            ORDER BY HOUR(hora)";
-    $result = $conn->query($sql);
-    $fluxo_horario = [];
-    while ($row = $result->fetch_assoc()) {
-        $fluxo_horario[] = $row;
-    }
-    $response['fluxo_horario'] = $fluxo_horario;
-    
-    // Quantidade de passageiros por mês (apenas para visão anual)
-    if ($periodo === 'anual') {
+    // Verifica se é uma requisição AJAX para dados
+    if (isset($_GET['api']) && $_GET['api'] === 'data') {
+        header('Content-Type: application/json');
+        header('Cache-Control: no-cache, must-revalidate');
+        
+        $conn = new mysqli($host, $user, $password, $dbname);
+        
+        if ($conn->connect_error) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Erro na conexão com o banco']);
+            exit;
+        }
+        
+        $conn->set_charset('utf8mb4');
+        
+        // Pega os filtros
+        $periodo = isset($_GET['periodo']) ? $_GET['periodo'] : 'diario';
+        $ano = isset($_GET['ano']) ? intval($_GET['ano']) : date('Y');
+        $mes = isset($_GET['mes']) ? intval($_GET['mes']) : date('m');
+        $dia = isset($_GET['dia']) ? intval($_GET['dia']) : date('d');
+        $tipoFuncionario = isset($_GET['tipo_funcionario']) ? $_GET['tipo_funcionario'] : 'todos';
+        
+        // Monta a condição WHERE baseada no período
+        $whereClause = "";
+        if ($periodo === 'diario') {
+            $whereClause = "WHERE DATE(data) = '$ano-$mes-$dia'";
+        } elseif ($periodo === 'mensal') {
+            $whereClause = "WHERE YEAR(data) = $ano AND MONTH(data) = $mes";
+        } elseif ($periodo === 'anual') {
+            $whereClause = "WHERE YEAR(data) = $ano";
+        }
+        
+        $response = [];
+        
+        // KPIs
         $sql = "SELECT 
-                    MONTH(data) as mes,
+                    COUNT(DISTINCT bonde) as total_bondes,
+                    COUNT(*) as viagens_realizadas,
+                    SUM(pagantes) as passageiros_pagantes,
+                    SUM(moradores) as moradores,
+                    SUM(grat_pcd_idoso) as gratuidades_pcd,
+                    SUM(gratuidade) as gratuidades,
                     SUM(passageiros) as total_passageiros
                 FROM viagens 
-                WHERE YEAR(data) = $ano
-                GROUP BY MONTH(data)
-                ORDER BY MONTH(data)";
+                $whereClause";
+        
         $result = $conn->query($sql);
-        $passageiros_mes = [];
+        $kpis = $result->fetch_assoc();
+        $response['kpis'] = $kpis;
+        
+        // Bondes com maior performance
+        $sql = "SELECT bonde, COUNT(*) as num_viagens 
+                FROM viagens 
+                $whereClause 
+                GROUP BY bonde 
+                ORDER BY num_viagens DESC 
+                LIMIT 10";
+        $result = $conn->query($sql);
+        $bondes_performance = [];
         while ($row = $result->fetch_assoc()) {
-            $passageiros_mes[] = $row;
+            $bondes_performance[] = $row;
         }
-        $response['passageiros_mes'] = $passageiros_mes;
-    }
-    
-    // Viagens por maquinista e agente
-    if ($tipoFuncionario === 'maquinistas') {
+        $response['bondes_performance'] = $bondes_performance;
+        
         $sql = "SELECT 
-                    maquinista as nome,
-                    'Maquinista' as tipo,
+                    SUM(pagantes) as pagantes,
+                    SUM(moradores) as moradores,
+                    SUM(grat_pcd_idoso) as grat_pcd_idoso,
+                    SUM(gratuidade) as gratuidade
+                FROM viagens 
+                $whereClause";
+        $result = $conn->query($sql);
+        $distribuicao = $result->fetch_assoc();
+        $response['distribuicao'] = $distribuicao;
+        
+        // Padrão semanal de viagens
+        $sql = "SELECT 
+                    DAYOFWEEK(data) as dia_semana,
                     COUNT(*) as num_viagens
                 FROM viagens 
                 $whereClause 
-                GROUP BY maquinista
-                ORDER BY num_viagens DESC
-                LIMIT 10";
-    } elseif ($tipoFuncionario === 'agentes') {
+                GROUP BY DAYOFWEEK(data)
+                ORDER BY DAYOFWEEK(data)";
+        $result = $conn->query($sql);
+        $padrao_semanal = [];
+        while ($row = $result->fetch_assoc()) {
+            $padrao_semanal[] = $row;
+        }
+        $response['padrao_semanal'] = $padrao_semanal;
+        
+        // Fluxo de passageiros por horário
         $sql = "SELECT 
-                    agente as nome,
-                    'Agente' as tipo,
-                    COUNT(*) as num_viagens
+                    HOUR(hora) as hora,
+                    SUM(passageiros) as total_passageiros
                 FROM viagens 
                 $whereClause 
-                GROUP BY agente
-                ORDER BY num_viagens DESC
-                LIMIT 10";
-    } else {
-        $sql = "SELECT 
-                    maquinista,
-                    agente,
-                    COUNT(*) as num_viagens
-                FROM viagens 
-                $whereClause 
-                GROUP BY maquinista, agente
-                ORDER BY num_viagens DESC
-                LIMIT 10";
+                GROUP BY HOUR(hora)
+                ORDER BY HOUR(hora)";
+        $result = $conn->query($sql);
+        $fluxo_horario = [];
+        while ($row = $result->fetch_assoc()) {
+            $fluxo_horario[] = $row;
+        }
+        $response['fluxo_horario'] = $fluxo_horario;
+        
+        // Quantidade de passageiros por mês (apenas para visão anual)
+        if ($periodo === 'anual') {
+            $sql = "SELECT 
+                        MONTH(data) as mes,
+                        SUM(passageiros) as total_passageiros
+                    FROM viagens 
+                    WHERE YEAR(data) = $ano
+                    GROUP BY MONTH(data)
+                    ORDER BY MONTH(data)";
+            $result = $conn->query($sql);
+            $passageiros_mes = [];
+            while ($row = $result->fetch_assoc()) {
+                $passageiros_mes[] = $row;
+            }
+            $response['passageiros_mes'] = $passageiros_mes;
+        }
+        
+        // Viagens por maquinista e agente
+        if ($tipoFuncionario === 'maquinistas') {
+            $sql = "SELECT 
+                        maquinista as nome,
+                        'Maquinista' as tipo,
+                        COUNT(*) as num_viagens
+                    FROM viagens 
+                    $whereClause 
+                    GROUP BY maquinista
+                    ORDER BY num_viagens DESC
+                    LIMIT 10";
+        } elseif ($tipoFuncionario === 'agentes') {
+            $sql = "SELECT 
+                        agente as nome,
+                        'Agente' as tipo,
+                        COUNT(*) as num_viagens
+                    FROM viagens 
+                    $whereClause 
+                    GROUP BY agente
+                    ORDER BY num_viagens DESC
+                    LIMIT 10";
+        } else {
+            $sql = "SELECT 
+                        maquinista,
+                        agente,
+                        COUNT(*) as num_viagens
+                    FROM viagens 
+                    $whereClause 
+                    GROUP BY maquinista, agente
+                    ORDER BY num_viagens DESC
+                    LIMIT 10";
+        }
+        
+        $result = $conn->query($sql);
+        $viagens_funcionarios = [];
+        while ($row = $result->fetch_assoc()) {
+            $viagens_funcionarios[] = $row;
+        }
+        $response['viagens_funcionarios'] = $viagens_funcionarios;
+        $response['tipo_funcionario'] = $tipoFuncionario;
+        
+        $conn->close();
+        
+        echo json_encode($response);
+        exit;
     }
-    
-    $result = $conn->query($sql);
-    $viagens_funcionarios = [];
-    while ($row = $result->fetch_assoc()) {
-        $viagens_funcionarios[] = $row;
+
+    // Conexão com o banco
+    $conn = new mysqli($host, $user, $password, $dbname);
+
+    // Verifica conexão
+    if ($conn->connect_error) {
+        die("Erro na conexão com o banco de dados: " . $conn->connect_error);
     }
-    $response['viagens_funcionarios'] = $viagens_funcionarios;
-    $response['tipo_funcionario'] = $tipoFuncionario;
-    
-    $conn->close();
-    
-    echo json_encode($response);
-    exit;
-}
 
-// Conexão com o banco
-$conn = new mysqli($host, $user, $password, $dbname);
+    // Data atual para consultas dinâmicas
+    $current_year = date('Y');
+    $current_month = date('m');
+    $current_day = date('d');
 
-// Verifica conexão
-if ($conn->connect_error) {
-    die("Erro na conexão com o banco de dados: " . $conn->connect_error);
-}
+    // Consultas para métricas gerais
+    $total_bondes = 0;
+    $result = $conn->query("SELECT COUNT(*) as total FROM bondes");
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $total_bondes = $row['total'];
+    }
 
-// Data atual para consultas dinâmicas
-$current_year = date('Y');
-$current_month = date('m');
-$current_day = date('d');
+    $total_acidentes = 0;
+    $result = $conn->query("SELECT COUNT(*) as total FROM acidentes");
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $total_acidentes = $row['total'];
+    }
 
-// Consultas para métricas gerais
-$total_bondes = 0;
-$result = $conn->query("SELECT COUNT(*) as total FROM bondes");
-if ($result) {
-    $row = $result->fetch_assoc();
-    $total_bondes = $row['total'];
-}
+    $viagens_anual = 0;
+    $result = $conn->query("SELECT COUNT(*) as total FROM viagens WHERE YEAR(data) = $current_year");
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $viagens_anual = $row['total'];
+    }
 
-$total_acidentes = 0;
-$result = $conn->query("SELECT COUNT(*) as total FROM acidentes");
-if ($result) {
-    $row = $result->fetch_assoc();
-    $total_acidentes = $row['total'];
-}
+    $bondes_ativos = 0;
+    $result = $conn->query("SELECT COUNT(*) as total FROM bondes WHERE id NOT IN (SELECT bonde_afetado FROM manutencoes WHERE status = 'Em Andamento')");
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $bondes_ativos = $row['total'];
+    }
 
-$viagens_anual = 0;
-$result = $conn->query("SELECT COUNT(*) as total FROM viagens WHERE YEAR(data) = $current_year");
-if ($result) {
-    $row = $result->fetch_assoc();
-    $viagens_anual = $row['total'];
-}
+?>
 
-$bondes_ativos = 0;
-$result = $conn->query("SELECT COUNT(*) as total FROM bondes WHERE id NOT IN (SELECT bonde_afetado FROM manutencoes WHERE status = 'Em Andamento')");
-if ($result) {
-    $row = $result->fetch_assoc();
-    $bondes_ativos = $row['total'];
-}
-
+<?php
+include 'header.php';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -857,7 +861,7 @@ if ($result) {
         <span id="realtime-clock">Carregando...</span>
     </div>
 
-    <div class="container" id="dashboard-content">
+    <div class="caderno" id="dashboard-content">
         <div class="header">
             <h1><i class="fas fa-chart-line"></i> Dashboard - Sistema de Controle de Bondes</h1>
             

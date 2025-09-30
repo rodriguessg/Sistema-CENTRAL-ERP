@@ -13,6 +13,7 @@ $mensagens = [
     'acesso_negado' => 'Você não tem acesso a este perfil.',
         'sucesso_bonde' => 'Viagem adicionada!',
     'acidente' => 'Acidente Registrado',
+    'solucionado' => 'Resolvido',
     'deslogado' => 'Logout realizado com sucesso.',
     'senha_invalida' => 'Usuário ou senha inválida.',
     'usuario_invalido' => 'Usuário não encontrado.',

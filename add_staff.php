@@ -7,7 +7,7 @@ $host = 'localhost';
 $dbname = 'gm_sicbd';
 $username = 'root';
 $password = '';
-
+     $logged_user = $_SESSION['username']; // Obtém o username do usuário logado
 try {
     // Connect to the database
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
@@ -54,4 +54,13 @@ try {
     error_log("Erro geral: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Erro inesperado: ' . $e->getMessage()]);
 }
+
+
+        // Inserção no log_eventos (usando PDO e o username do usuário logado)
+        $stmt_log = $pdo->prepare("INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (:matricula, :tipo_operacao, NOW())");
+        $tipo_operacao = "Adicionou maquinista ou agente";
+        $stmt_log->execute([
+            ':matricula' => $logged_user, // Usa o username do usuário logado
+            ':tipo_operacao' => $tipo_operacao
+        ]);
 ?>

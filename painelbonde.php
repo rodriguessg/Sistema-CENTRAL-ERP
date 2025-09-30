@@ -235,7 +235,6 @@ include 'header.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
-        --primary-gradient: linear-gradient(90deg, #192844 67.81%, #472774 100%);
             --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
@@ -271,11 +270,6 @@ include 'header.php';
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.5;
-            overflow-x: hidden;
-            min-height: 100vh;
-            font-size: 14px;
-            padding: 20px;
         }
 
         body::before {
@@ -352,7 +346,7 @@ include 'header.php';
         .section h2 {
             color: var(--text-primary);
             margin-bottom: 1rem;
-            font-size: 1.5rem;
+            font-size: 1rem;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -364,24 +358,24 @@ include 'header.php';
             content: '';
             width: 3px;
             height: 1.5rem;
-            background: var(--primary-gradient);
+             background:white;
             border-radius: 2px;
         }
 
         .section h2 i {
             font-size: 1.2rem;
-            background: var(--primary-gradient);
+            background:white;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .header {
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
 
         .header h1 {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
             margin-bottom: 20px;
             color: #fff;
@@ -389,7 +383,7 @@ include 'header.php';
 
         .real-time-clock {
             position: fixed;
-            top: 20px;
+            top: 10px;
             right: 20px;
             background: rgba(30, 41, 59, 0.95);
             backdrop-filter: blur(10px);
@@ -453,7 +447,7 @@ include 'header.php';
             margin-bottom: 1rem;
             flex-wrap: wrap;
             background: rgba(30, 41, 59, 0.5);
-            padding: 20px;
+            padding: 10px;
             border-radius: 12px;
             backdrop-filter: blur(10px);
         }
@@ -518,16 +512,16 @@ include 'header.php';
 
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
 
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
-            padding: 1.25rem;
+            padding: 1rem;
             position: relative;
             overflow: hidden;
             transition: var(--transition);
@@ -864,8 +858,18 @@ include 'header.php';
     <div class="caderno" id="dashboard-content">
         <div class="header">
             <h1><i class="fas fa-chart-line"></i> Dashboard - Sistema de Controle de Bondes</h1>
+
+             <div class="cards-grid" id="kpis">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-spinner fa-spin"></i></div>
+                </div>
+                <h3>Carregando...</h3>
+                <div class="card-value">...</div>
+            </div>
+        </div>
             
-            <div class="realtime-info">
+            <div class="realtime-info" style="display:none;">
                 <div class="status">
                     <span class="status-dot"></span>
                     <span>Atualização automática a cada 30 segundos</span>
@@ -931,15 +935,7 @@ include 'header.php';
             </div>
         </div>
         
-        <div class="cards-grid" id="kpis">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fas fa-spinner fa-spin"></i></div>
-                </div>
-                <h3>Carregando...</h3>
-                <div class="card-value">...</div>
-            </div>
-        </div>
+       
         
         <div class="section">
             <h2><i class="fas fa-chart-bar"></i> Análise Avançada de Operações</h2>
@@ -1302,7 +1298,7 @@ include 'header.php';
                 { title: 'Passageiros Pagantes', value: kpis.passageiros_pagantes, icon: 'fa-money-bill-wave', color: '#f59e0b' },
                 { title: 'Moradores', value: kpis.moradores, icon: 'fa-home', color: '#06b6d4' },
                 { title: 'Gratuidades PCD/Idoso', value: kpis.gratuidades_pcd, icon: 'fa-wheelchair', color: '#8b5cf6' },
-                { title: 'Total de Gratuidades', value: kpis.gratuidades, icon: 'fa-gift', color: '#ec4899' },
+                { title: 'Gratuidades', value: kpis.gratuidades, icon: 'fa-gift', color: '#ec4899' },
                 { title: 'Total de Passageiros', value: kpis.total_passageiros, icon: 'fa-users', color: '#14b8a6' }
             ];
             
@@ -1407,7 +1403,7 @@ include 'header.php';
             charts.distribuicao = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Pagantes', 'Moradores', 'PCD/Idoso', 'Total de Gratuidades'],
+                    labels: ['Pagantes', 'Moradores', 'PCD/Idoso', 'Gratuidade'],
                     datasets: [{
                         data: [data.pagantes, data.moradores, data.grat_pcd_idoso, data.gratuidade],
                         backgroundColor: [

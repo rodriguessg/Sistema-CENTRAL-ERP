@@ -297,7 +297,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status']) && i
                 header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=status_atualizado&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
                 exit;
             }
-            echo json_encode(['success' => true, 'message' => 'Status atualizado com sucesso!']);
+                 header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=solucionado&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
+                exit;
         } else {
             $pdo->rollBack();
             ob_end_clean();

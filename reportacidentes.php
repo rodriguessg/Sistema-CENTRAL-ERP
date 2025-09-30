@@ -26,11 +26,21 @@ try {
     // Adicionar colunas à tabela acidentes, se não existirem
     $pdo->exec("ALTER TABLE acidentes ADD COLUMN IF NOT EXISTS vitima VARCHAR(3) DEFAULT 'Não'");
     $pdo->exec("ALTER TABLE acidentes ADD COLUMN IF NOT EXISTS paralizar_sistema VARCHAR(3) DEFAULT 'Não'");
+
+    // Verificar e criar tabela log_eventos, se não existir
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS log_eventos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            matricula VARCHAR(50) NOT NULL,
+            tipo_operacao VARCHAR(255) NOT NULL,
+            data_operacao DATETIME NOT NULL
+        )
+    ");
 } catch (PDOException $e) {
     ob_end_clean();
     header('Content-Type: application/json');
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Erro na conexão com o banco de dados: ' . htmlspecialchars($e->getMessage())]);
+    echo json_encode(['success' => false, 'message' => 'Erro na conexão com o banco de dados ou criação de tabela: ' . htmlspecialchars($e->getMessage())]);
     exit;
 }
 
@@ -215,7 +225,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['update_status'])) {
             header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=acidente&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
             exit;
         }
-   
+        header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=acidente&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
+            exit;
     } catch (PDOException $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
@@ -235,9 +246,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status']) && i
     $policia = isset($_POST['policia'][$id]) ? 1 : 0;
     $bombeiros = isset($_POST['bombeiros'][$id]) ? 1 : 0;
     $samu = isset($_POST['samu'][$id]) ? 1 : 0;
+    $redirect = $_POST['redirect'] ?? false; // Parâmetro opcional para redirecionamento
 
     try {
         $pdo->beginTransaction();
+
+        // Verificar se o acidente existe antes de atualizar
+        $stmt_check = $pdo->prepare("SELECT id FROM acidentes WHERE id = :id");
+        $stmt_check->execute([':id' => (int)$id]);
+        if ($stmt_check->rowCount() === 0) {
+            $pdo->rollBack();
+            ob_end_clean();
+            echo json_encode(['success' => false, 'message' => 'Nenhum acidente encontrado com o ID fornecido.']);
+            exit;
+        }
 
         // Atualizar o status do acidente
         $sql = "UPDATE acidentes SET status = 'resolvido', policia = :policia, bombeiros = :bombeiros, samu = :samu WHERE id = :id";
@@ -251,24 +273,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status']) && i
 
         // Verificar se a atualização afetou alguma linha
         if ($stmt->rowCount() > 0) {
-          // Inserção no log_eventos com detalhes do acidente
-        $stmt_log = $pdo->prepare("INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (:matricula, :tipo_operacao, NOW())");
-        $tipo_operacao = "acidente registrado (ID: $acidente_id, Descrição: " . substr($descricao, 0, 100) . ", Localização: " . substr($localizacao, 0, 50) . ")";
-        $stmt_log->execute([
-            ':matricula' => $logged_user,
-            ':tipo_operacao' => $tipo_operacao
-        ]);
+            // Inserção no log_eventos com detalhes do acidente
+            $stmt_log = $pdo->prepare("INSERT INTO log_eventos (matricula, tipo_operacao, data_operacao) VALUES (:matricula, :tipo_operacao, NOW())");
+            $tipo_operacao = "status de acidente atualizado (ID: $id)";
+            $stmt_log->execute([
+                ':matricula' => $logged_user,
+                ':tipo_operacao' => $tipo_operacao
+            ]);
 
+            // Verificar se o log foi inserido corretamente
+            if ($stmt_log->rowCount() === 0) {
+                $pdo->rollBack();
+                ob_end_clean();
+                error_log("Erro ao inserir log_eventos para acidente ID $id: nenhuma linha afetada");
+                echo json_encode(['success' => false, 'message' => 'Erro ao registrar log da atualização de status.']);
+                exit;
+            }
 
             // Commit da transação
             $pdo->commit();
             ob_end_clean();
-             header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=solucionado&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
-            exit;
+            if ($redirect) {
+                header('Location: /Sistema-CENTRAL-ERP/views/mensagem.php?mensagem=status_atualizado&pagina=/Sistema-CENTRAL-ERP/reportacidentes.php');
+                exit;
+            }
+            echo json_encode(['success' => true, 'message' => 'Status atualizado com sucesso!']);
         } else {
             $pdo->rollBack();
             ob_end_clean();
-            echo json_encode(['success' => false, 'message' => 'Nenhum acidente encontrado com o ID fornecido.']);
+            echo json_encode(['success' => false, 'message' => 'Nenhum acidente encontrado com o ID fornecido ou status não alterado.']);
         }
         exit;
     } catch (PDOException $e) {
@@ -276,8 +309,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status']) && i
             $pdo->rollBack();
         }
         ob_end_clean();
-        error_log("Erro ao atualizar status: " . $e->getMessage());
-        echo json_encode(['success' => false, 'message' => 'Erro ao atualizar o status: ' . htmlspecialchars($e->getMessage())]);
+        error_log("Erro ao atualizar status ou registrar log para acidente ID $id: " . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'Erro ao atualizar o status ou registrar log: ' . htmlspecialchars($e->getMessage())]);
         exit;
     }
 }

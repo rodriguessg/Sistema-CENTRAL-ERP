@@ -41,6 +41,7 @@
         
         $response = [];
         
+        
         // KPIs
         $sql = "SELECT 
                     COUNT(DISTINCT bonde) as total_bondes,
@@ -111,6 +112,22 @@
             $fluxo_horario[] = $row;
         }
         $response['fluxo_horario'] = $fluxo_horario;
+        
+        if ($periodo === 'mensal') {
+            $sql = "SELECT 
+                        DAY(data) as dia,
+                        SUM(passageiros) as total_passageiros
+                    FROM viagens 
+                    WHERE YEAR(data) = $ano AND MONTH(data) = $mes
+                    GROUP BY DAY(data)
+                    ORDER BY DAY(data)";
+            $result = $conn->query($sql);
+            $passageiros_dia = [];
+            while ($row = $result->fetch_assoc()) {
+                $passageiros_dia[] = $row;
+            }
+            $response['passageiros_dia'] = $passageiros_dia;
+        }
         
         // Quantidade de passageiros por mês (apenas para visão anual)
         if ($periodo === 'anual') {
@@ -464,6 +481,17 @@ include 'header.php';
             color: #94a3b8;
         }
 
+        /* Increased chart container heights to prevent text cutoff */
+        #chartPassageirosDia {
+            width: 100% !important;
+            height: 300px !important;
+        }
+
+        #chartPassageirosMes {
+            width: 100% !important;
+            height: 300px !important;
+        }
+
         .period-select {
             background: var(--bg-card);
             border: 2px solid var(--border-color);
@@ -591,7 +619,7 @@ include 'header.php';
 
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
             margin-bottom: 2rem;
         }
@@ -602,12 +630,13 @@ include 'header.php';
             gap: 1rem;
         }
 
+        /* Increased chart card height to accommodate larger charts */
         .chart-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             padding: 1.25rem;
-            height: 320px;
+            height: 400px;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -786,7 +815,7 @@ include 'header.php';
             }
             
             .chart-card {
-                height: 350px;
+                height: 400px;
             }
         }
 
@@ -819,7 +848,7 @@ include 'header.php';
             }
             
             .chart-card {
-                height: 300px;
+                height: 350px;
             }
         }
 
@@ -941,12 +970,15 @@ include 'header.php';
             <h2><i class="fas fa-chart-bar"></i> Análise Avançada de Operações</h2>
             
             <div class="charts-grid">
-                <div class="chart-card">
-                    <h3><i class="fas fa-trophy"></i> Bondes com Maior Performance</h3>
+
+             <div class="chart-card" id="chartPassageirosDiaCard" style="display: none;">
+                    <h3><i class="fas fa-calendar-day"></i> Passageiros Transportados por Dia do Mês</h3>
                     <div class="chart-container">
-                        <canvas id="chartBondesPerformance"></canvas>
+                        <canvas id="chartPassageirosDia"></canvas>
                     </div>
                 </div>
+              
+              
                 
                 <div class="chart-card">
                     <h3><i class="fas fa-users"></i> Distribuição de Passageiros</h3>
@@ -969,12 +1001,23 @@ include 'header.php';
                     </div>
                 </div>
                 
+               
+                
                 <div class="chart-card" id="chartPassageirosMesCard" style="display: none;">
                     <h3><i class="fas fa-chart-line"></i> Quantidade de Passageiros por Mês</h3>
                     <div class="chart-container">
                         <canvas id="chartPassageirosMes"></canvas>
                     </div>
                 </div>
+
+                  <div class="chart-card">
+                    <h3><i class="fas fa-trophy"></i> Bondes com Maior Performance</h3>
+                    <div class="chart-container">
+                        <canvas id="chartBondesPerformance"></canvas>
+                    </div>
+                   </div>
+
+
                 
                 <div class="chart-card">
                     <div class="chart-header">
@@ -1196,19 +1239,23 @@ include 'header.php';
             const filterMes = document.getElementById('filter-mes');
             const filterDia = document.getElementById('filter-dia');
             const chartPassageirosMesCard = document.getElementById('chartPassageirosMesCard');
+            const chartPassageirosDiaCard = document.getElementById('chartPassageirosDiaCard');
             
             if (periodo === 'diario') {
                 filterMes.style.display = 'flex';
                 filterDia.style.display = 'flex';
                 chartPassageirosMesCard.style.display = 'none';
+                chartPassageirosDiaCard.style.display = 'none';
             } else if (periodo === 'mensal') {
                 filterMes.style.display = 'flex';
                 filterDia.style.display = 'none';
                 chartPassageirosMesCard.style.display = 'none';
+                chartPassageirosDiaCard.style.display = 'block';
             } else {
                 filterMes.style.display = 'none';
                 filterDia.style.display = 'none';
                 chartPassageirosMesCard.style.display = 'block';
+                chartPassageirosDiaCard.style.display = 'none';
             }
             
             loadData();
@@ -1231,6 +1278,9 @@ include 'header.php';
                     updateChartDistribuicao(data.distribuicao);
                     updateChartPadraoSemanal(data.padrao_semanal);
                     updateChartFluxoHorario(data.fluxo_horario);
+                    if (periodo === 'mensal' && data.passageiros_dia) {
+                        updateChartPassageirosDia(data.passageiros_dia);
+                    }
                     if (periodo === 'anual') {
                         updateChartPassageirosMes(data.passageiros_mes);
                     }
@@ -1240,6 +1290,7 @@ include 'header.php';
                     console.error('Erro ao carregar dados:', error);
                 });
         }
+        
         
         async function exportToPDF() {
             const button = event.target.closest('.export-button');
@@ -1323,16 +1374,16 @@ include 'header.php';
             }
             
             const colors = [
-                'rgba(102, 126, 234, 0.9)',  // Purple
-                'rgba(139, 92, 246, 0.9)',   // Violet
-                'rgba(59, 130, 246, 0.9)',   // Blue
-                'rgba(20, 184, 166, 0.9)',   // Teal
-                'rgba(16, 185, 129, 0.9)',   // Green
-                'rgba(236, 72, 153, 0.9)',   // Pink
-                'rgba(245, 158, 11, 0.9)',   // Orange
-                'rgba(239, 68, 68, 0.9)',    // Red
-                'rgba(99, 102, 241, 0.9)',   // Indigo
-                'rgba(168, 85, 247, 0.9)'    // Purple-pink
+                'rgba(102, 126, 234, 0.9)',
+                'rgba(139, 92, 246, 0.9)',
+                'rgba(59, 130, 246, 0.9)',
+                'rgba(20, 184, 166, 0.9)',
+                'rgba(16, 185, 129, 0.9)',
+                'rgba(236, 72, 153, 0.9)',
+                'rgba(245, 158, 11, 0.9)',
+                'rgba(239, 68, 68, 0.9)',
+                'rgba(99, 102, 241, 0.9)',
+                'rgba(168, 85, 247, 0.9)'
             ];
             
             charts.bondesPerformance = new Chart(ctx, {
@@ -1407,10 +1458,10 @@ include 'header.php';
                     datasets: [{
                         data: [data.pagantes, data.moradores, data.grat_pcd_idoso, data.gratuidade],
                         backgroundColor: [
-                            'rgba(102, 126, 234, 0.9)',  // Purple for Pagantes
-                            'rgba(20, 184, 166, 0.9)',   // Teal for Moradores
-                            'rgba(139, 92, 246, 0.9)',   // Violet for PCD/Idoso
-                            'rgba(236, 72, 153, 0.9)'    // Pink for Gratuidade
+                            'rgba(102, 126, 234, 0.9)',
+                            'rgba(20, 184, 166, 0.9)',
+                            'rgba(139, 92, 246, 0.9)',
+                            'rgba(236, 72, 153, 0.9)'
                         ],
                         borderColor: [
                             'rgba(102, 126, 234, 1)',
@@ -1649,6 +1700,122 @@ include 'header.php';
             });
         }
         
+        function updateChartPassageirosDia(data) {
+    const ctx = document.getElementById('chartPassageirosDia');
+
+    // Destroi o gráfico anterior se já existir
+    if (charts.passageirosDia) {
+        charts.passageirosDia.destroy();
+    }
+
+    const ano = parseInt(document.getElementById('ano').value);
+    const mes = parseInt(document.getElementById('mes').value);
+    const diasNoMes = new Date(ano, mes, 0).getDate();
+
+    const dadosCompletos = Array(diasNoMes).fill(0);
+    data.forEach(d => {
+        dadosCompletos[parseInt(d.dia) - 1] = parseInt(d.total_passageiros);
+    });
+
+    const labels = Array.from({ length: diasNoMes }, (_, i) => `${i + 1}`);
+    const maxValue = Math.max(...dadosCompletos);
+
+    const backgroundColors = dadosCompletos.map(val =>
+        val === maxValue && val > 0 ? 'rgba(239, 68, 68, 0.8)' : 'rgba(59, 130, 246, 0.7)'
+    );
+
+    const borderColors = dadosCompletos.map(val =>
+        val === maxValue && val > 0 ? 'rgba(239, 68, 68, 1)' : 'rgba(59, 130, 246, 1)'
+    );
+
+    charts.passageirosDia = new Chart(ctx, {
+        type: 'bar', // Alterado de 'line' para 'bar'
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Passageiros',
+                data: dadosCompletos,
+                backgroundColor: backgroundColors,
+                borderColor: borderColors,
+                borderWidth: 1,
+                hoverBackgroundColor: 'rgba(59, 130, 246, 0.9)',
+                hoverBorderColor: 'rgba(59, 130, 246, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    top: 70,
+                    bottom: 20,
+                    left: 10,
+                    right: 15
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            const value = context.parsed.y;
+                            const isRecord = value === maxValue && value > 0;
+                            return `${value.toLocaleString('pt-BR')} passageiros${isRecord ? ' (RECORDE!)' : ''}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                    ticks: {
+                        callback: function (value) {
+                            return value.toLocaleString('pt-BR');
+                        },
+                        padding: 8
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Dia do Mês',
+                        color: '#94a3b8',
+                        padding: { top: 10, bottom: 5 }
+                    },
+                    ticks: {
+                        padding: 5
+                    }
+                }
+            }
+        },
+        plugins: [{
+            afterDatasetsDraw: function (chart) {
+                const ctx = chart.ctx;
+                chart.data.datasets.forEach((dataset, i) => {
+                    const meta = chart.getDatasetMeta(i);
+                    meta.data.forEach((bar, index) => {
+                        const data = dataset.data[index];
+                        if (data > 0) {
+                            const isMax = data === maxValue;
+                            ctx.save();
+                            ctx.fillStyle = '#ffffffff';
+                            ctx.font = isMax ? 'bold 13px sans-serif' : '11px sans-serif';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'bottom';
+
+                            const label = parseInt(data).toLocaleString('pt-BR');
+                            ctx.fillText(label, bar.x, bar.y - 5);
+                            ctx.restore();
+                        }
+                    });
+                });
+            }
+        }]
+    });
+}
+
         function updateChartPassageirosMes(data) {
             const ctx = document.getElementById('chartPassageirosMes');
             

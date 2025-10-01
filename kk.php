@@ -127,6 +127,21 @@
                 $passageiros_mes[] = $row;
             }
             $response['passageiros_mes'] = $passageiros_mes;
+            
+            $sql = "SELECT 
+                        DAY(data) as dia,
+                        MONTH(data) as mes,
+                        SUM(passageiros) as total_passageiros
+                    FROM viagens 
+                    WHERE YEAR(data) = $ano
+                    GROUP BY DAY(data), MONTH(data)
+                    ORDER BY MONTH(data), DAY(data)";
+            $result = $conn->query($sql);
+            $passageiros_diarios = [];
+            while ($row = $result->fetch_assoc()) {
+                $passageiros_diarios[] = $row;
+            }
+            $response['passageiros_diarios'] = $passageiros_diarios;
         }
         
         // Viagens por maquinista e agente
@@ -235,6 +250,7 @@ include 'header.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
@@ -358,13 +374,13 @@ include 'header.php';
             content: '';
             width: 3px;
             height: 1.5rem;
-             background:white;
+            background: white;
             border-radius: 2px;
         }
 
         .section h2 i {
             font-size: 1.2rem;
-            background:white;
+            background: white;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -780,6 +796,121 @@ include 'header.php';
             font-weight: 600;
         }
 
+        /* Estilos para a tabela de análise anual */
+        .annual-analysis-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+            display: none;
+        }
+
+        .annual-analysis-card.active {
+            display: block;
+        }
+
+        .annual-table-container {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 600px;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .annual-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .annual-table th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            font-size: 0.7rem;
+            border: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .annual-table th:first-child {
+            left: 0;
+            z-index: 3;
+        }
+
+        .annual-table td {
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .annual-table td:first-child {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            position: sticky;
+            left: 0;
+            z-index: 1;
+        }
+
+        .annual-table tr:hover td {
+            background: var(--bg-card-hover);
+        }
+
+        .annual-table td.absolute-max {
+            background: rgba(234, 179, 8, 0.3) !important;
+            color: #fbbf24;
+            font-weight: 700;
+            border: 2px solid #fbbf24;
+        }
+
+        .annual-table td.monthly-max {
+            background: rgba(239, 68, 68, 0.3) !important;
+            color: #ef4444;
+            font-weight: 700;
+            border: 2px solid #ef4444;
+        }
+
+        .legend-container {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: var(--border-radius-sm);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-box.yellow {
+            background: rgba(234, 179, 8, 0.3);
+            border: 2px solid #fbbf24;
+        }
+
+        .legend-box.red {
+            background: rgba(239, 68, 68, 0.3);
+            border: 2px solid #ef4444;
+        }
+
         @media (max-width: 1200px) {
             .charts-grid {
                 grid-template-columns: 1fr;
@@ -859,15 +990,15 @@ include 'header.php';
         <div class="header">
             <h1><i class="fas fa-chart-line"></i> Dashboard - Sistema de Controle de Bondes</h1>
 
-             <div class="cards-grid" id="kpis">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fas fa-spinner fa-spin"></i></div>
+            <div class="cards-grid" id="kpis">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                    <h3>Carregando...</h3>
+                    <div class="card-value">...</div>
                 </div>
-                <h3>Carregando...</h3>
-                <div class="card-value">...</div>
             </div>
-        </div>
             
             <div class="realtime-info" style="display:none;">
                 <div class="status">
@@ -935,7 +1066,48 @@ include 'header.php';
             </div>
         </div>
         
-       
+         Nova seção de análise anual de passageiros 
+        <div class="section" id="annual-analysis-section">
+            <h2><i class="fas fa-table"></i> Análise Anual de Passageiros por Dia</h2>
+            
+            <div class="annual-analysis-card" id="annualAnalysisCard">
+                <div class="legend-container">
+                    <div class="legend-item">
+                        <div class="legend-box yellow"></div>
+                        <span>Recorde Absoluto do Ano</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box red"></div>
+                        <span>Recorde Mensal do Dia</span>
+                    </div>
+                </div>
+                
+                <div class="annual-table-container">
+                    <table class="annual-table" id="annualTable">
+                        <thead>
+                            <tr>
+                                <th>Dia</th>
+                                <th>JAN</th>
+                                <th>FEV</th>
+                                <th>MAR</th>
+                                <th>ABR</th>
+                                <th>MAI</th>
+                                <th>JUN</th>
+                                <th>JUL</th>
+                                <th>AGO</th>
+                                <th>SET</th>
+                                <th>OUT</th>
+                                <th>NOV</th>
+                                <th>DEZ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="annualTableBody">
+                             Será preenchido via JavaScript 
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         
         <div class="section">
             <h2><i class="fas fa-chart-bar"></i> Análise Avançada de Operações</h2>
@@ -989,7 +1161,6 @@ include 'header.php';
                         <canvas id="chartViagensFunc"></canvas>
                     </div>
                 </div>
-             
             </div>
         </div>
 
@@ -1197,19 +1368,23 @@ include 'header.php';
             const filterMes = document.getElementById('filter-mes');
             const filterDia = document.getElementById('filter-dia');
             const chartPassageirosMesCard = document.getElementById('chartPassageirosMesCard');
+            const annualAnalysisCard = document.getElementById('annualAnalysisCard');
             
             if (periodo === 'diario') {
                 filterMes.style.display = 'flex';
                 filterDia.style.display = 'flex';
                 chartPassageirosMesCard.style.display = 'none';
+                annualAnalysisCard.classList.remove('active');
             } else if (periodo === 'mensal') {
                 filterMes.style.display = 'flex';
                 filterDia.style.display = 'none';
                 chartPassageirosMesCard.style.display = 'none';
+                annualAnalysisCard.classList.remove('active');
             } else {
                 filterMes.style.display = 'none';
                 filterDia.style.display = 'none';
                 chartPassageirosMesCard.style.display = 'block';
+                annualAnalysisCard.classList.add('active');
             }
             
             loadData();
@@ -1234,12 +1409,76 @@ include 'header.php';
                     updateChartFluxoHorario(data.fluxo_horario);
                     if (periodo === 'anual') {
                         updateChartPassageirosMes(data.passageiros_mes);
+                        updateAnnualTable(data.passageiros_diarios);
                     }
                     updateChartViagensFunc(data.viagens_funcionarios, data.tipo_funcionario);
                 })
                 .catch(error => {
                     console.error('Erro ao carregar dados:', error);
                 });
+        }
+        
+        function updateAnnualTable(data) {
+            const tbody = document.getElementById('annualTableBody');
+            tbody.innerHTML = '';
+            
+            // Criar matriz 31x12 (dias x meses)
+            const matrix = Array(31).fill(null).map(() => Array(12).fill(0));
+            
+            // Preencher matriz com dados
+            data.forEach(item => {
+                const dia = parseInt(item.dia) - 1;
+                const mes = parseInt(item.mes) - 1;
+                const total = parseInt(item.total_passageiros);
+                matrix[dia][mes] = total;
+            });
+            
+            // Encontrar o máximo absoluto
+            let absoluteMax = 0;
+            matrix.forEach(row => {
+                row.forEach(val => {
+                    if (val > absoluteMax) absoluteMax = val;
+                });
+            });
+            
+            // Encontrar o máximo de cada dia (linha)
+            const dayMaxValues = matrix.map(row => Math.max(...row));
+            
+            // Criar linhas da tabela
+            for (let dia = 0; dia < 31; dia++) {
+                const tr = document.createElement('tr');
+                
+                // Coluna do dia
+                const tdDia = document.createElement('td');
+                tdDia.textContent = dia + 1;
+                tr.appendChild(tdDia);
+                
+                // Colunas dos meses
+                for (let mes = 0; mes < 12; mes++) {
+                    const td = document.createElement('td');
+                    const value = matrix[dia][mes];
+                    
+                    if (value > 0) {
+                        td.textContent = value.toLocaleString('pt-BR');
+                        
+                        // Destacar recorde absoluto em amarelo
+                        if (value === absoluteMax) {
+                            td.classList.add('absolute-max');
+                        }
+                        // Destacar recorde mensal do dia em vermelho
+                        else if (value === dayMaxValues[dia] && value > 0) {
+                            td.classList.add('monthly-max');
+                        }
+                    } else {
+                        td.textContent = '-';
+                        td.style.color = 'var(--text-muted)';
+                    }
+                    
+                    tr.appendChild(td);
+                }
+                
+                tbody.appendChild(tr);
+            }
         }
         
         async function exportToPDF() {
@@ -1299,7 +1538,7 @@ include 'header.php';
                 { title: 'Passageiros Pagantes', value: kpis.passageiros_pagantes, icon: 'fa-money-bill-wave', color: '#f59e0b' },
                 { title: 'Moradores', value: kpis.moradores, icon: 'fa-home', color: '#06b6d4' },
                 { title: 'Gratuidades PCD/Idoso', value: kpis.gratuidades_pcd, icon: 'fa-wheelchair', color: '#8b5cf6' },
-                { title: 'Total de Gratuidades', value: kpis.gratuidades, icon: 'fa-gift', color: '#ec4899' },
+                { title: 'Gratuidades', value: kpis.gratuidades, icon: 'fa-gift', color: '#ec4899' },
                 { title: 'Total de Passageiros', value: kpis.total_passageiros, icon: 'fa-users', color: '#14b8a6' }
             ];
             
@@ -1324,16 +1563,16 @@ include 'header.php';
             }
             
             const colors = [
-                'rgba(102, 126, 234, 0.9)',  // Purple
-                'rgba(139, 92, 246, 0.9)',   // Violet
-                'rgba(59, 130, 246, 0.9)',   // Blue
-                'rgba(20, 184, 166, 0.9)',   // Teal
-                'rgba(16, 185, 129, 0.9)',   // Green
-                'rgba(236, 72, 153, 0.9)',   // Pink
-                'rgba(245, 158, 11, 0.9)',   // Orange
-                'rgba(239, 68, 68, 0.9)',    // Red
-                'rgba(99, 102, 241, 0.9)',   // Indigo
-                'rgba(168, 85, 247, 0.9)'    // Purple-pink
+                'rgba(102, 126, 234, 0.7)',
+                'rgba(139, 92, 246, 0.7)',
+                'rgba(59, 130, 246, 0.7)',
+                'rgba(20, 184, 166, 0.7)',
+                'rgba(16, 185, 129, 0.7)',
+                'rgba(236, 72, 153, 0.7)',
+                'rgba(245, 158, 11, 0.7)',
+                'rgba(239, 68, 68, 0.7)',
+                'rgba(99, 102, 241, 0.7)',
+                'rgba(168, 85, 247, 0.7)'
             ];
             
             charts.bondesPerformance = new Chart(ctx, {
@@ -1344,7 +1583,7 @@ include 'header.php';
                         label: 'Número de Viagens',
                         data: data.map(d => d.num_viagens),
                         backgroundColor: data.map((_, i) => colors[i % colors.length]),
-                        borderColor: data.map((_, i) => colors[i % colors.length].replace('0.9', '1')),
+                        borderColor: data.map((_, i) => colors[i % colors.length].replace('0.7', '1')),
                         borderWidth: 2,
                         borderRadius: 8
                     }]
@@ -1404,14 +1643,14 @@ include 'header.php';
             charts.distribuicao = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Pagantes', 'Moradores', 'PCD/Idoso', 'Total de Gratuidade'],
+                    labels: ['Pagantes', 'Moradores', 'PCD/Idoso', 'Gratuidade'],
                     datasets: [{
                         data: [data.pagantes, data.moradores, data.grat_pcd_idoso, data.gratuidade],
                         backgroundColor: [
-                            'rgba(102, 126, 234, 0.9)',  // Purple for Pagantes
-                            'rgba(20, 184, 166, 0.9)',   // Teal for Moradores
-                            'rgba(139, 92, 246, 0.9)',   // Violet for PCD/Idoso
-                            'rgba(236, 72, 153, 0.9)'    // Pink for Gratuidade
+                            'rgba(102, 126, 234, 0.7)',
+                            'rgba(20, 184, 166, 0.7)',
+                            'rgba(139, 92, 246, 0.7)',
+                            'rgba(236, 72, 153, 0.7)'
                         ],
                         borderColor: [
                             'rgba(102, 126, 234, 1)',
@@ -1505,7 +1744,7 @@ include 'header.php';
                     datasets: [{
                         label: 'Viagens',
                         data: dadosCompletos,
-                        backgroundColor: 'rgba(16, 185, 129, 0.9)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
                         borderColor: 'rgba(16, 185, 129, 1)',
                         borderWidth: 2,
                         borderRadius: 8
@@ -1665,10 +1904,10 @@ include 'header.php';
             });
             
             const monthColors = [
-                'rgba(102, 126, 234, 0.9)', 'rgba(139, 92, 246, 0.9)', 'rgba(59, 130, 246, 0.9)',
-                'rgba(20, 184, 166, 0.9)', 'rgba(16, 185, 129, 0.9)', 'rgba(236, 72, 153, 0.9)',
-                'rgba(245, 158, 11, 0.9)', 'rgba(239, 68, 68, 0.9)', 'rgba(99, 102, 241, 0.9)',
-                'rgba(168, 85, 247, 0.9)', 'rgba(236, 72, 153, 0.9)', 'rgba(59, 130, 246, 0.9)'
+                'rgba(102, 126, 234, 0.7)', 'rgba(139, 92, 246, 0.7)', 'rgba(59, 130, 246, 0.7)',
+                'rgba(20, 184, 166, 0.7)', 'rgba(16, 185, 129, 0.7)', 'rgba(236, 72, 153, 0.7)',
+                'rgba(245, 158, 11, 0.7)', 'rgba(239, 68, 68, 0.7)', 'rgba(99, 102, 241, 0.7)',
+                'rgba(168, 85, 247, 0.7)', 'rgba(236, 72, 153, 0.7)', 'rgba(59, 130, 246, 0.7)'
             ];
             
             charts.passageirosMes = new Chart(ctx, {
@@ -1679,7 +1918,7 @@ include 'header.php';
                         label: 'Passageiros',
                         data: dadosCompletos,
                         backgroundColor: monthColors,
-                        borderColor: monthColors.map(c => c.replace('0.9', '1')),
+                        borderColor: monthColors.map(c => c.replace('0.7', '1')),
                         borderWidth: 2,
                         borderRadius: 8
                     }]
@@ -1744,10 +1983,10 @@ include 'header.php';
             }
             
             const colors = [
-                'rgba(102, 126, 234, 0.9)', 'rgba(139, 92, 246, 0.9)', 'rgba(59, 130, 246, 0.9)',
-                'rgba(20, 184, 166, 0.9)', 'rgba(16, 185, 129, 0.9)', 'rgba(236, 72, 153, 0.9)',
-                'rgba(245, 158, 11, 0.9)', 'rgba(239, 68, 68, 0.9)', 'rgba(99, 102, 241, 0.9)',
-                'rgba(168, 85, 247, 0.9)'
+                'rgba(102, 126, 234, 0.7)', 'rgba(139, 92, 246, 0.7)', 'rgba(59, 130, 246, 0.7)',
+                'rgba(20, 184, 166, 0.7)', 'rgba(16, 185, 129, 0.7)', 'rgba(236, 72, 153, 0.7)',
+                'rgba(245, 158, 11, 0.7)', 'rgba(239, 68, 68, 0.7)', 'rgba(99, 102, 241, 0.7)',
+                'rgba(168, 85, 247, 0.7)'
             ];
             
             charts.viagensFunc = new Chart(ctx, {
@@ -1758,7 +1997,7 @@ include 'header.php';
                         label: 'Viagens',
                         data: data.map(d => d.num_viagens),
                         backgroundColor: data.map((_, i) => colors[i % colors.length]),
-                        borderColor: data.map((_, i) => colors[i % colors.length].replace('0.9', '1')),
+                        borderColor: data.map((_, i) => colors[i % colors.length].replace('0.7', '1')),
                         borderWidth: 2,
                         borderRadius: 8
                     }]

@@ -116,7 +116,10 @@
         if ($periodo === 'mensal') {
             $sql = "SELECT 
                         DAY(data) as dia,
-                        SUM(passageiros) as total_passageiros
+                        SUM(passageiros) as total_passageiros,
+                        SUM(moradores) as moradores,
+                        SUM(grat_pcd_idoso) as idosos,
+                        SUM(pagantes) as pagantes
                     FROM viagens 
                     WHERE YEAR(data) = $ano AND MONTH(data) = $mes
                     GROUP BY DAY(data)
@@ -481,10 +484,10 @@ include 'header.php';
             color: #94a3b8;
         }
 
-        /* Increased chart container heights to prevent text cutoff */
+        /* Increased chart container heights significantly for better visibility */
         #chartPassageirosDia {
             width: 100% !important;
-            height: 300px !important;
+            height: 350px !important;
         }
 
         #chartPassageirosMes {
@@ -601,6 +604,14 @@ include 'header.php';
             box-shadow: var(--shadow-light);
         }
 
+        .chartjs-legend .legend-label, 
+.chartjs-tooltip, 
+.chartjs-legend {
+    color: #ffffff !important; /* Força a cor branca */
+}
+
+
+        
         .card h3 {
             font-size: 0.8rem;
             color: var(--text-secondary);
@@ -630,7 +641,7 @@ include 'header.php';
             gap: 1rem;
         }
 
-        /* Increased chart card height to accommodate larger charts */
+        /* Increased chart card height significantly for the daily passengers chart */
         .chart-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -646,6 +657,7 @@ include 'header.php';
             cursor: pointer;
         }
 
+    
         .chart-card:hover {
             transform: scale(1.02) translateY(-2px);
             box-shadow: var(--shadow-heavy);
@@ -657,7 +669,7 @@ include 'header.php';
             font-size: 1rem;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -817,6 +829,10 @@ include 'header.php';
             .chart-card {
                 height: 400px;
             }
+
+            #chartPassageirosDiaCard {
+                height: 650px !important;
+            }
         }
 
         @media (max-width: 768px) {
@@ -849,6 +865,10 @@ include 'header.php';
             
             .chart-card {
                 height: 350px;
+            }
+
+            #chartPassageirosDiaCard {
+                height: 600px !important;
             }
         }
 
@@ -1209,9 +1229,9 @@ include 'header.php';
         let charts = {};
         let autoRefreshInterval;
         
-        Chart.defaults.color = '#94a3b8';
-        Chart.defaults.borderColor = 'rgba(148, 163, 184, 0.1)';
-        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        Chart.defaults.color = '#94a3b8'; // Default text color for chart elements
+        Chart.defaults.borderColor = 'rgba(148, 163, 184, 0.1)'; // Default grid line color
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'; // Default font
         
         function updateClock() {
             const now = new Date();
@@ -1231,7 +1251,7 @@ include 'header.php';
         function startAutoRefresh() {
             autoRefreshInterval = setInterval(() => {
                 loadData();
-            }, 30000);
+            }, 30000); // Refresh every 30 seconds
         }
         
         function updateFilters() {
@@ -1251,14 +1271,14 @@ include 'header.php';
                 filterDia.style.display = 'none';
                 chartPassageirosMesCard.style.display = 'none';
                 chartPassageirosDiaCard.style.display = 'block';
-            } else {
+            } else { // anual
                 filterMes.style.display = 'none';
                 filterDia.style.display = 'none';
                 chartPassageirosMesCard.style.display = 'block';
                 chartPassageirosDiaCard.style.display = 'none';
             }
             
-            loadData();
+            loadData(); // Reload data when filters change
         }
         
         function loadData() {
@@ -1268,16 +1288,24 @@ include 'header.php';
             const dia = document.getElementById('dia').value;
             const tipoFuncionario = document.getElementById('tipoFuncionario').value;
             
+            // Construct the URL for the API call
             const url = `?api=data&periodo=${periodo}&ano=${ano}&mes=${mes}&dia=${dia}&tipo_funcionario=${tipoFuncionario}`;
             
             fetch(url)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     updateKPIs(data.kpis);
                     updateChartBondesPerformance(data.bondes_performance);
                     updateChartDistribuicao(data.distribuicao);
                     updateChartPadraoSemanal(data.padrao_semanal);
                     updateChartFluxoHorario(data.fluxo_horario);
+                    
+                    // Conditionally update charts based on selected period
                     if (periodo === 'mensal' && data.passageiros_dia) {
                         updateChartPassageirosDia(data.passageiros_dia);
                     }
@@ -1288,6 +1316,7 @@ include 'header.php';
                 })
                 .catch(error => {
                     console.error('Erro ao carregar dados:', error);
+                    // Optionally display an error message to the user
                 });
         }
         
@@ -1301,19 +1330,22 @@ include 'header.php';
                 const { jsPDF } = window.jspdf;
                 const content = document.getElementById('dashboard-content');
                 
+                // Use html2canvas to capture the dashboard content
                 const canvas = await html2canvas(content, {
-                    scale: 1.5,
-                    backgroundColor: '#0f172a',
-                    logging: false,
-                    windowWidth: content.scrollWidth,
-                    windowHeight: content.scrollHeight
+                    scale: 1.5, // Increase scale for better resolution
+                    backgroundColor: '#0f172a', // Set background color to match theme
+                    logging: false, // Disable logging
+                    windowWidth: content.scrollWidth, // Capture full width
+                    windowHeight: content.scrollHeight // Capture full height
                 });
                 
                 const imgData = canvas.toDataURL('image/png');
                 
+                // Set PDF dimensions (A4 landscape)
                 const pdfWidth = 297;
                 const pdfHeight = 210;
                 
+                // Calculate image dimensions to fit PDF
                 const imgWidth = canvas.width;
                 const imgHeight = canvas.height;
                 const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
@@ -1321,12 +1353,14 @@ include 'header.php';
                 const scaledWidth = imgWidth * ratio;
                 const scaledHeight = imgHeight * ratio;
                 
+                // Center the image on the PDF page
                 const xOffset = (pdfWidth - scaledWidth) / 2;
                 const yOffset = (pdfHeight - scaledHeight) / 2;
                 
                 const pdf = new jsPDF('landscape', 'mm', 'a4');
                 pdf.addImage(imgData, 'PNG', xOffset, yOffset, scaledWidth, scaledHeight);
                 
+                // Generate filename with current date and time
                 const now = new Date();
                 const filename = `dashboard_${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}_${now.getHours()}${now.getMinutes()}.pdf`;
                 pdf.save(filename);
@@ -1343,6 +1377,7 @@ include 'header.php';
         function updateKPIs(kpis) {
             const kpisContainer = document.getElementById('kpis');
             
+            // Define KPI data with titles, corresponding icons, and colors
             const kpiData = [
                 { title: 'Total de Bondes', value: kpis.total_bondes, icon: 'fa-train', color: '#3b82f6' },
                 { title: 'Viagens Realizadas', value: kpis.viagens_realizadas, icon: 'fa-route', color: '#10b981' },
@@ -1350,9 +1385,10 @@ include 'header.php';
                 { title: 'Moradores', value: kpis.moradores, icon: 'fa-home', color: '#06b6d4' },
                 { title: 'Gratuidades PCD/Idoso', value: kpis.gratuidades_pcd, icon: 'fa-wheelchair', color: '#8b5cf6' },
                 { title: 'Gratuidades', value: kpis.gratuidades, icon: 'fa-gift', color: '#ec4899' },
-                { title: 'Total de Passageiros', value: kpis.total_passageiros, icon: 'fa-users', color: '#14b8a6' }
+                { title: 'Total de Passageiros', value: kpis.total_passageiros, icon: 'fa-users', color: '#14b6a6' }
             ];
             
+            // Generate HTML for each KPI card
             kpisContainer.innerHTML = kpiData.map(kpi => `
                 <div class="card">
                     <div class="card-header">
@@ -1369,41 +1405,38 @@ include 'header.php';
         function updateChartBondesPerformance(data) {
             const ctx = document.getElementById('chartBondesPerformance');
             
+            // Destroy existing chart if it exists
             if (charts.bondesPerformance) {
                 charts.bondesPerformance.destroy();
             }
             
+            // Define a palette of colors for the bars
             const colors = [
-                'rgba(102, 126, 234, 0.9)',
-                'rgba(139, 92, 246, 0.9)',
-                'rgba(59, 130, 246, 0.9)',
-                'rgba(20, 184, 166, 0.9)',
-                'rgba(16, 185, 129, 0.9)',
-                'rgba(236, 72, 153, 0.9)',
-                'rgba(245, 158, 11, 0.9)',
-                'rgba(239, 68, 68, 0.9)',
-                'rgba(99, 102, 241, 0.9)',
-                'rgba(168, 85, 247, 0.9)'
+                'rgba(102, 126, 234, 0.9)', 'rgba(59, 130, 246, 0.9)',
+                'rgba(20, 184, 166, 0.9)', 'rgba(16, 185, 129, 0.9)',
+                'rgba(245, 158, 11, 0.9)', 'rgba(239, 68, 68, 0.9)', 'rgba(99, 102, 241, 0.9)',
+                
             ];
             
+            // Create the bar chart
             charts.bondesPerformance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: data.map(d => d.bonde),
+                    labels: data.map(d => d.bonde), // Bonde names as labels
                     datasets: [{
                         label: 'Número de Viagens',
-                        data: data.map(d => d.num_viagens),
-                        backgroundColor: data.map((_, i) => colors[i % colors.length]),
-                        borderColor: data.map((_, i) => colors[i % colors.length].replace('0.9', '1')),
+                        data: data.map(d => d.num_viagens), // Number of trips as data
+                        backgroundColor: data.map((_, i) => colors[i % colors.length]), // Assign colors
+                        borderColor: data.map((_, i) => colors[i % colors.length].replace('0.9', '1')), // Darker border color
                         borderWidth: 2,
-                        borderRadius: 8
+                        borderRadius: 8 // Rounded corners for bars
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: false, // Allow chart to resize freely
                     layout: {
-                        padding: {
+                        padding: { // Add padding around the chart
                             top: 30,
                             bottom: 10,
                             left: 10,
@@ -1411,18 +1444,19 @@ include 'header.php';
                         }
                     },
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false } // Hide legend as it's not necessary
                     },
                     scales: {
                         y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                            beginAtZero: true, // Start Y-axis at 0
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' } // Grid line color
                         },
                         x: {
-                            grid: { display: false }
+                            grid: { display: false } // Hide X-axis grid lines
                         }
                     }
                 },
+                // Plugin to display data labels on bars
                 plugins: [{
                     afterDatasetsDraw: function(chart) {
                         const ctx = chart.ctx;
@@ -1430,11 +1464,11 @@ include 'header.php';
                             const meta = chart.getDatasetMeta(i);
                             meta.data.forEach((bar, index) => {
                                 const data = dataset.data[index];
-                                ctx.fillStyle = '#fff';
-                                ctx.font = 'bold 14px sans-serif';
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'bottom';
-                                ctx.fillText(data, bar.x, bar.y - 8);
+                                ctx.fillStyle = '#fff'; // Text color
+                                ctx.font = 'bold 14px sans-serif'; // Font style
+                                ctx.textAlign = 'center'; // Text alignment
+                                ctx.textBaseline = 'bottom'; // Text baseline
+                                ctx.fillText(data, bar.x, bar.y - 8); // Draw text above the bar
                             });
                         });
                     }
@@ -1449,25 +1483,27 @@ include 'header.php';
                 charts.distribuicao.destroy();
             }
             
+            // Calculate total passengers for percentage calculation
             const total = parseInt(data.pagantes) + parseInt(data.moradores) + parseInt(data.grat_pcd_idoso) + parseInt(data.gratuidade);
             
+            // Create the doughnut chart
             charts.distribuicao = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Pagantes', 'Moradores', 'PCD/Idoso', 'Gratuidade'],
+                    labels: ['Pagantes', 'Moradores', 'PCD/Idoso', 'Gratuidade'], // Labels for chart segments
                     datasets: [{
-                        data: [data.pagantes, data.moradores, data.grat_pcd_idoso, data.gratuidade],
-                        backgroundColor: [
+                        data: [data.pagantes, data.moradores, data.grat_pcd_idoso, data.gratuidade], // Data for segments
+                        backgroundColor: [ // Colors for segments
                             'rgba(102, 126, 234, 0.9)',
                             'rgba(20, 184, 166, 0.9)',
                             'rgba(139, 92, 246, 0.9)',
-                            'rgba(245, 158, 11, 0.9)'
+                            'rgba(245, 158, 11, 0.9)',
                         ],
-                        borderColor: [
+                        borderColor: [ // Border colors for segments
                             'rgba(102, 126, 234, 1)',
                             'rgba(20, 184, 166, 1)',
                             'rgba(139, 92, 246, 1)',
-                           'rgba(245, 158, 11, 0.9)'
+                             'rgba(245, 158, 11, 0.9)',
                         ],
                         borderWidth: 2
                     }]
@@ -1477,35 +1513,36 @@ include 'header.php';
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom',
-                            labels: { padding: 15, font: { size: 12 } },
-                            onClick: function(e, legendItem, legend) {
+                            position: 'bottom', // Position legend at the bottom
+                            labels: { padding: 15, font: { size: 12 } }, // Legend styling
+                            onClick: function(e, legendItem, legend) { // Handle legend clicks to toggle segments
                                 const index = legendItem.index;
                                 const chart = legend.chart;
                                 const meta = chart.getDatasetMeta(0);
                                 
-                                meta.data[index].hidden = !meta.data[index].hidden;
-                                chart.update();
+                                meta.data[index].hidden = !meta.data[index].hidden; // Toggle visibility
+                                chart.update(); // Update chart
                             }
                         },
-                        tooltip: {
+                        tooltip: { // Customize tooltips
                             callbacks: {
                                 label: function(context) {
                                     const value = context.parsed;
-                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                    return `${context.label}: ${value.toLocaleString('pt-BR')} (${percentage}%)`;
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0; // Calculate percentage
+                                    return `${context.label}: ${value.toLocaleString('pt-BR')} (${percentage}%)`; // Format tooltip
                                 }
                             }
                         }
                     }
                 },
+                // Plugin to display percentage labels on chart segments
                 plugins: [{
                     afterDatasetsDraw: function(chart) {
                         const ctx = chart.ctx;
                         const dataset = chart.data.datasets[0];
                         const meta = chart.getDatasetMeta(0);
                         
-                        let visibleTotal = 0;
+                        let visibleTotal = 0; // Calculate total of visible segments
                         meta.data.forEach((arc, index) => {
                             if (!arc.hidden) {
                                 visibleTotal += parseInt(dataset.data[index]);
@@ -1513,19 +1550,19 @@ include 'header.php';
                         });
                         
                         meta.data.forEach((arc, index) => {
-                            if (!arc.hidden) {
+                            if (!arc.hidden) { // Only draw labels for visible segments
                                 const data = parseInt(dataset.data[index]);
                                 const percentage = visibleTotal > 0 ? ((data / visibleTotal) * 100).toFixed(1) : 0;
                                 
                                 const midAngle = (arc.startAngle + arc.endAngle) / 2;
-                                const x = arc.x + Math.cos(midAngle) * (arc.outerRadius * 0.7);
-                                const y = arc.y + Math.sin(midAngle) * (arc.outerRadius * 0.7);
+                                const x = arc.x + Math.cos(midAngle) * (arc.outerRadius * 0.7); // Position for label
+                                const y = arc.y + Math.sin(midAngle) * (arc.outerRadius * 0.7); // Position for label
                                 
-                                ctx.fillStyle = '#fff';
-                                ctx.font = 'bold 16px sans-serif';
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
-                                ctx.fillText(percentage + '%', x, y);
+                                ctx.fillStyle = '#fff'; // Label color
+                                ctx.font = 'bold 16px sans-serif'; // Font style
+                                ctx.textAlign = 'center'; // Text alignment
+                                ctx.textBaseline = 'middle'; // Text baseline
+                                ctx.fillText(percentage + '%', x, y); // Draw percentage label
                             }
                         });
                     }
@@ -1540,14 +1577,15 @@ include 'header.php';
                 charts.padraoSemanal.destroy();
             }
             
-            const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-            const totalViagens = data.reduce((sum, d) => sum + parseInt(d.num_viagens), 0);
+            const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']; // Day labels
+            const totalViagens = data.reduce((sum, d) => sum + parseInt(d.num_viagens), 0); // Calculate total trips
             
-            const dadosCompletos = Array(7).fill(0);
+            const dadosCompletos = Array(7).fill(0); // Initialize array for all 7 days
             data.forEach(d => {
-                dadosCompletos[d.dia_semana - 1] = parseInt(d.num_viagens);
+                dadosCompletos[d.dia_semana - 1] = parseInt(d.num_viagens); // Map data to correct day index
             });
             
+            // Create the bar chart
             charts.padraoSemanal = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1555,7 +1593,7 @@ include 'header.php';
                     datasets: [{
                         label: 'Viagens',
                         data: dadosCompletos,
-                        backgroundColor: 'rgba(16, 185, 129, 0.9)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.9)', // Green color
                         borderColor: 'rgba(16, 185, 129, 1)',
                         borderWidth: 2,
                         borderRadius: 8
@@ -1585,6 +1623,7 @@ include 'header.php';
                         }
                     }
                 },
+                // Plugin to display percentage labels on bars
                 plugins: [{
                     afterDatasetsDraw: function(chart) {
                         const ctx = chart.ctx;
@@ -1594,11 +1633,11 @@ include 'header.php';
                                 const data = dataset.data[index];
                                 const percentage = totalViagens > 0 ? ((data / totalViagens) * 100).toFixed(1) : 0;
                                 
-                                ctx.fillStyle = '#fff';
-                                ctx.font = 'bold 12px sans-serif';
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'bottom';
-                                ctx.fillText(percentage + '%', bar.x, bar.y - 8);
+                                ctx.fillStyle = '#fff'; // Text color
+                                ctx.font = 'bold 12px sans-serif'; // Font style
+                                ctx.textAlign = 'center'; // Text alignment
+                                ctx.textBaseline = 'bottom'; // Text baseline
+                                ctx.fillText(percentage + '%', bar.x, bar.y - 8); // Draw percentage
                             });
                         });
                     }
@@ -1613,14 +1652,15 @@ include 'header.php';
                 charts.fluxoHorario.destroy();
             }
             
-            const dadosCompletos = Array(24).fill(0);
+            const dadosCompletos = Array(24).fill(0); // Initialize for all 24 hours
             data.forEach(d => {
-                dadosCompletos[parseInt(d.hora)] = parseInt(d.total_passageiros);
+                dadosCompletos[parseInt(d.hora)] = parseInt(d.total_passageiros); // Map data to correct hour
             });
             
-            const labels = Array.from({length: 24}, (_, i) => `${i}h`);
-            const maxValue = Math.max(...dadosCompletos);
+            const labels = Array.from({length: 24}, (_, i) => `${i}h`); // Hour labels (0h, 1h, ...)
+            const maxValue = Math.max(...dadosCompletos); // Find max value for styling
             
+            // Create the line chart
             charts.fluxoHorario = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1628,16 +1668,16 @@ include 'header.php';
                     datasets: [{
                         label: 'Passageiros',
                         data: dadosCompletos,
-                        borderColor: 'rgba(245, 158, 11, 0.9)',
-                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderColor:  'rgba(245, 158, 11, 0.9)', // Purple color
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)', // Semi-transparent fill
                         borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: dadosCompletos.map(val => val > 0 ? 5 : 3),
+                        fill: true, // Enable fill
+                        tension: 0.4, // Smooth curve
+                        pointRadius: dadosCompletos.map(val => val > 0 ? 5 : 3), // Larger points for data points
                         pointBackgroundColor: dadosCompletos.map(val => 
-                            val === maxValue && val > 0 ? 'rgba(245, 158, 11, 0.9)' : 'rgba(139, 92, 246, 1)'
+                            val === maxValue && val > 0 ? 'rgba(239, 68, 68, 1)' :  'rgba(245, 158, 11, 0.9)' // Highlight max point
                         ),
-                        pointBorderColor: '#fff',
+                        pointBorderColor: '#fff', // White point border
                         pointBorderWidth: 2
                     }]
                 },
@@ -1665,6 +1705,7 @@ include 'header.php';
                         }
                     }
                 },
+                // Plugin to display data values above points
                 plugins: [{
                     afterDatasetsDraw: function(chart) {
                         const ctx = chart.ctx;
@@ -1673,37 +1714,38 @@ include 'header.php';
                         
                         meta.data.forEach((point, index) => {
                             const data = dataset.data[index];
-                            if (data > 0) {
-                                const isMax = data === maxValue;
-                                
-                                const textWidth = ctx.measureText(data.toString()).width;
+                            if (data > 0) { // Only show labels for points with data
+                                ctx.save();
+                                ctx.fillStyle = '#ffffff'; // White text for data labels
+                                ctx.font = 'bold 12px sans-serif'; // Font style
+                                ctx.textAlign = 'center'; // Text alignment
+                                ctx.textBaseline = 'middle'; // Text baseline
+                                const textWidth = ctx.measureText(data.toString()).width; // Measure text width
                                 const padding = 6;
                                 const boxHeight = 22;
                                 
-                                ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                                // Draw a background box for better readability
+                                ctx.fillStyle = 'rgba(15, 23, 42, 0.9)'; // Dark background box
                                 ctx.fillRect(
-                                    point.x - textWidth/2 - padding,
-                                    point.y - boxHeight - 8,
-                                    textWidth + padding * 2,
-                                    boxHeight
+                                    point.x - textWidth/2 - padding, // X position of box
+                                    point.y - boxHeight - 8, // Y position of box
+                                    textWidth + padding * 2, // Width of box
+                                    boxHeight // Height of box
                                 );
                                 
-                                ctx.fillStyle = isMax ? '#ef4444' : '#fff';
-                                ctx.font = isMax ? 'bold 14px sans-serif' : 'bold 12px sans-serif';
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
-                                ctx.fillText(data.toString(), point.x, point.y - boxHeight/2 - 8);
+                                ctx.fillStyle = data === maxValue ? '#ef4444' : '#fff'; // Highlight max value in red
+                                ctx.font = data === maxValue ? 'bold 14px sans-serif' : 'bold 12px sans-serif'; // Slightly larger font for max value
+                                ctx.fillText(data.toString(), point.x, point.y - boxHeight/2 - 8); // Draw the data value
+                                ctx.restore();
                             }
                         });
                     }
                 }]
             });
         }
-        
-        function updateChartPassageirosDia(data) {
+function updateChartPassageirosDia(data) {
     const ctx = document.getElementById('chartPassageirosDia');
 
-    // Destroi o gráfico anterior se já existir
     if (charts.passageirosDia) {
         charts.passageirosDia.destroy();
     }
@@ -1712,55 +1754,141 @@ include 'header.php';
     const mes = parseInt(document.getElementById('mes').value);
     const diasNoMes = new Date(ano, mes, 0).getDate();
 
-    const dadosCompletos = Array(diasNoMes).fill(0);
+    const dadosTotais = Array(diasNoMes).fill(0);
+    const dadosMoradores = Array(diasNoMes).fill(0);
+    const dadosIdosos = Array(diasNoMes).fill(0);
+    const dadosPagantes = Array(diasNoMes).fill(0);
+
     data.forEach(d => {
-        dadosCompletos[parseInt(d.dia) - 1] = parseInt(d.total_passageiros);
+        const i = parseInt(d.dia) - 1;
+        dadosTotais[i] = parseInt(d.total_passageiros || 0);
+        dadosMoradores[i] = parseInt(d.moradores || 0);
+        dadosIdosos[i] = parseInt(d.idosos || 0);
+        dadosPagantes[i] = parseInt(d.pagantes || 0);
     });
 
+    const mediaTotal = dadosTotais.reduce((a, b) => a + b, 0) / diasNoMes;
+    const mediaMoradores = dadosMoradores.reduce((a, b) => a + b, 0) / diasNoMes;
+    const mediaIdosos = dadosIdosos.reduce((a, b) => a + b, 0) / diasNoMes;
+    const mediaPagantes = dadosPagantes.reduce((a, b) => a + b, 0) / diasNoMes;
+    const maxValue = Math.max(...dadosTotais);
+    const indexMax = dadosTotais.indexOf(maxValue);
+
     const labels = Array.from({ length: diasNoMes }, (_, i) => `${i + 1}`);
-    const maxValue = Math.max(...dadosCompletos);
 
-    const backgroundColors = dadosCompletos.map(val =>
-        val === maxValue && val > 0 ? 'rgba(239, 68, 68, 0.8)' : 'rgba(59, 130, 246, 0.7)'
+    // 🔥 cores dinâmicas para destacar o recorde
+    const backgroundColors = dadosTotais.map((v, i) =>
+        i === indexMax ? 'rgba(239, 68, 68, 0.8)' : 'rgba(96, 165, 250, 0.8)'
     );
-
-    const borderColors = dadosCompletos.map(val =>
-        val === maxValue && val > 0 ? 'rgba(239, 68, 68, 1)' : 'rgba(59, 130, 246, 1)'
+    const borderColors = dadosTotais.map((v, i) =>
+        i === indexMax ? 'rgba(239, 68, 68, 1)' : 'rgba(96, 165, 250, 1)'
     );
 
     charts.passageirosDia = new Chart(ctx, {
-        type: 'bar', // Alterado de 'line' para 'bar'
+        type: 'bar',
         data: {
             labels: labels,
-            datasets: [{
-                label: 'Passageiros',
-                data: dadosCompletos,
-                backgroundColor: backgroundColors,
-                borderColor: borderColors,
-                borderWidth: 1,
-                hoverBackgroundColor: 'rgba(59, 130, 246, 0.9)',
-                hoverBorderColor: 'rgba(59, 130, 246, 1)'
-            }]
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'Total Transportado',
+                    data: dadosTotais,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 1,
+                    order: 2
+                },
+                {
+                    type: 'line',
+                    label: `Média Total (${Math.round(mediaTotal).toLocaleString('pt-BR')})`,
+                    data: Array(diasNoMes).fill(mediaTotal),
+                    borderColor: '#ef4444',
+                    borderDash: [10, 5],
+                    borderWidth: 3,
+                    pointRadius: 0,
+                    fill: false,
+                    order: 1
+                },
+                {
+                    type: 'line',
+                    label: `Média Moradores (${Math.round(mediaMoradores).toLocaleString('pt-BR')})`,
+                    data: Array(diasNoMes).fill(mediaMoradores),
+                    borderColor: '#22c55e',
+                    borderDash: [6, 4],
+                    borderWidth: 3,
+                    pointRadius: 0,
+                    fill: false,
+                    order: 1
+                },
+                {
+                    type: 'line',
+                    label: `Média Idosos/PCD (${Math.round(mediaIdosos).toLocaleString('pt-BR')})`,
+                    data: Array(diasNoMes).fill(mediaIdosos),
+                    borderColor: '#eab308',
+                    borderDash: [2, 3],
+                    borderWidth: 3,
+                    pointRadius: 0,
+                    fill: false,
+                    order: 1
+                },
+                {
+                    type: 'line',
+                    label: `Média Pagantes (${Math.round(mediaPagantes).toLocaleString('pt-BR')})`,
+                    data: Array(diasNoMes).fill(mediaPagantes),
+                    borderColor: '#a855f7',
+                    borderDash: [8, 4],
+                    borderWidth: 3,
+                    pointRadius: 0,
+                    fill: false,
+                    order: 1
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             layout: {
-                padding: {
-                    top: 70,
-                    bottom: 20,
-                    left: 10,
-                    right: 15
-                }
+                padding: { top: 10, bottom: 20, left: 0, right: 15 }
             },
             plugins: {
-                legend: { display: false },
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    align: 'start',
+                    labels: {
+                        color: '#ffffff',
+                        padding: 10,
+                        font: { size: 12, weight: '500' },
+                        usePointStyle: true,
+                        pointStyle: 'line',
+                        boxWidth: 40,
+                        boxHeight: 3,
+                       generateLabels: function(chart) {
+                            const datasets = chart.data.datasets;
+                            return datasets.map((dataset, i) => ({
+                                text: dataset.label,
+                                fillStyle: dataset.borderColor || dataset.backgroundColor,
+                                strokeStyle: dataset.borderColor || dataset.backgroundColor,
+                                lineWidth: dataset.borderWidth || 2,
+                                lineDash: dataset.borderDash || [],
+                                hidden: !chart.isDatasetVisible(i),
+                                datasetIndex: i,
+                                fontColor: '#ffffff',
+                        color: '#ffffff'
+                            }));
+                        }
+                    },
+                    maxWidth: 250
+                },
                 tooltip: {
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
                     callbacks: {
                         label: function (context) {
-                            const value = context.parsed.y;
-                            const isRecord = value === maxValue && value > 0;
-                            return `${value.toLocaleString('pt-BR')} passageiros${isRecord ? ' (RECORDE!)' : ''}`;
+                            if (context.dataset.label.includes('Média')) {
+                                return context.dataset.label;
+                            }
+                            return `${context.parsed.y.toLocaleString('pt-BR')} passageiros`;
                         }
                     }
                 }
@@ -1768,24 +1896,33 @@ include 'header.php';
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.15)',
+                        drawBorder: false
+                    },
                     ticks: {
+                        color: '#ffffff',
                         callback: function (value) {
                             return value.toLocaleString('pt-BR');
                         },
-                        padding: 8
+                        padding: 10,
+                        font: { size: 11 }
                     }
                 },
                 x: {
                     grid: { display: false },
+                    ticks: {
+                        color: '#ffffff',
+                        padding: 8,
+                        font: { size: 11 }
+                    },
                     title: {
                         display: true,
                         text: 'Dia do Mês',
-                        color: '#94a3b8',
-                        padding: { top: 10, bottom: 5 }
-                    },
-                    ticks: {
-                        padding: 5
+                        color: '#ffffff',
+                        font: { size: 13, weight: '600' },
+                        padding: { top: 10 },
+                        position: 'top',
                     }
                 }
             }
@@ -1793,30 +1930,28 @@ include 'header.php';
         plugins: [{
             afterDatasetsDraw: function (chart) {
                 const ctx = chart.ctx;
-                chart.data.datasets.forEach((dataset, i) => {
-                    const meta = chart.getDatasetMeta(i);
-                    meta.data.forEach((bar, index) => {
-                        const data = dataset.data[index];
-                        if (data > 0) {
-                            const isMax = data === maxValue;
-                            ctx.save();
-                            ctx.fillStyle = '#ffffffff';
-                            ctx.font = isMax ? 'bold 13px sans-serif' : '11px sans-serif';
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'bottom';
-
-                            const label = parseInt(data).toLocaleString('pt-BR');
-                            ctx.fillText(label, bar.x, bar.y - 8);
-                            ctx.restore();
-                        }
-                    });
+                const dataset = chart.data.datasets[0];
+                const meta = chart.getDatasetMeta(0);
+                
+                meta.data.forEach((bar, index) => {
+                    const data = dataset.data[index];
+                    if (data > 0) {
+                        ctx.save();
+                        ctx.fillStyle = data === maxValue ? '#ef4444' : '#ffffff';
+                        ctx.font = 'bold 12px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        const label = parseInt(data).toLocaleString('pt-BR');
+                        ctx.fillText(label, bar.x, bar.y - 6);
+                        ctx.restore();
+                    }
                 });
             }
         }]
     });
 }
 
-        function updateChartPassageirosMes(data) {
+ function updateChartPassageirosMes(data) {
             const ctx = document.getElementById('chartPassageirosMes');
             
             if (charts.passageirosMes) {
@@ -1894,6 +2029,7 @@ include 'header.php';
                 }]
             });
         }
+
         
         function updateChartViagensFunc(data, tipoFuncionario) {
             const ctx = document.getElementById('chartViagensFunc');
@@ -1910,9 +2046,10 @@ include 'header.php';
             }
             
             const colors = [
-                'rgba(102, 126, 234, 0.9)', 'rgba(59, 130, 246, 0.9)',
+                'rgba(59, 130, 246, 0.9)',
                 'rgba(20, 184, 166, 0.9)', 'rgba(16, 185, 129, 0.9)',
-                'rgba(245, 158, 11, 0.9)',
+                'rgba(245, 158, 11, 0.9)', 'rgba(239, 68, 68, 0.9)', 
+                
             ];
             
             charts.viagensFunc = new Chart(ctx, {
@@ -1929,7 +2066,7 @@ include 'header.php';
                     }]
                 },
                 options: {
-                    indexAxis: 'y',
+                    indexAxis: 'y', // Horizontal bar chart
                     responsive: true,
                     maintainAspectRatio: false,
                     layout: {
@@ -1937,7 +2074,7 @@ include 'header.php';
                             top: 10,
                             bottom: 10,
                             left: 10,
-                            right: 50
+                            right: 50 // Extra space for data labels
                         }
                     },
                     plugins: {
@@ -1960,11 +2097,11 @@ include 'header.php';
                             const meta = chart.getDatasetMeta(i);
                             meta.data.forEach((bar, index) => {
                                 const data = dataset.data[index];
-                                ctx.fillStyle = '#fff';
-                                ctx.font = 'bold 12px sans-serif';
-                                ctx.textAlign = 'left';
-                                ctx.textBaseline = 'middle';
-                                ctx.fillText(data, bar.x + 8, bar.y);
+                                ctx.fillStyle = '#fff'; // White text for labels
+                                ctx.font = 'bold 12px sans-serif'; // Font style
+                                ctx.textAlign = 'left'; // Text alignment
+                                ctx.textBaseline = 'middle'; // Text baseline
+                                ctx.fillText(data, bar.x + 8, bar.y); // Draw text to the right of the bar
                             });
                         });
                     }
@@ -1972,11 +2109,12 @@ include 'header.php';
             });
         }
         
+        // Initialize everything when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
-            updateClock();
-            setInterval(updateClock, 1000);
-            updateFilters();
-            startAutoRefresh();
+            updateClock(); // Set initial clock time
+            setInterval(updateClock, 1000); // Update clock every second
+            updateFilters(); // Set initial filter states and load data
+            startAutoRefresh(); // Start automatic data refresh
         });
     </script>
 </body>

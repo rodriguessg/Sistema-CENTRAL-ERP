@@ -1462,13 +1462,13 @@ include 'header.php';
                             'rgba(102, 126, 234, 0.9)',
                             'rgba(20, 184, 166, 0.9)',
                             'rgba(139, 92, 246, 0.9)',
-                            'rgba(236, 72, 153, 0.9)'
+                            'rgba(245, 158, 11, 0.9)'
                         ],
                         borderColor: [
                             'rgba(102, 126, 234, 1)',
                             'rgba(20, 184, 166, 1)',
                             'rgba(139, 92, 246, 1)',
-                            'rgba(236, 72, 153, 1)'
+                           'rgba(245, 158, 11, 0.9)'
                         ],
                         borderWidth: 2
                     }]
@@ -1629,14 +1629,14 @@ include 'header.php';
                     datasets: [{
                         label: 'Passageiros',
                         data: dadosCompletos,
-                        borderColor: 'rgba(139, 92, 246, 1)',
+                        borderColor: 'rgba(245, 158, 11, 0.9)',
                         backgroundColor: 'rgba(139, 92, 246, 0.1)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.4,
                         pointRadius: dadosCompletos.map(val => val > 0 ? 5 : 3),
                         pointBackgroundColor: dadosCompletos.map(val => 
-                            val === maxValue && val > 0 ? 'rgba(239, 68, 68, 1)' : 'rgba(139, 92, 246, 1)'
+                            val === maxValue && val > 0 ? 'rgba(245, 158, 11, 0.9)' : 'rgba(139, 92, 246, 1)'
                         ),
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2
@@ -1807,7 +1807,7 @@ include 'header.php';
                             ctx.textBaseline = 'bottom';
 
                             const label = parseInt(data).toLocaleString('pt-BR');
-                            ctx.fillText(label, bar.x, bar.y - 5);
+                            ctx.fillText(label, bar.x, bar.y - 8);
                             ctx.restore();
                         }
                     });
@@ -1911,10 +1911,9 @@ include 'header.php';
             }
             
             const colors = [
-                'rgba(102, 126, 234, 0.9)', 'rgba(139, 92, 246, 0.9)', 'rgba(59, 130, 246, 0.9)',
-                'rgba(20, 184, 166, 0.9)', 'rgba(16, 185, 129, 0.9)', 'rgba(236, 72, 153, 0.9)',
-                'rgba(245, 158, 11, 0.9)', 'rgba(239, 68, 68, 0.9)', 'rgba(99, 102, 241, 0.9)',
-                'rgba(168, 85, 247, 0.9)'
+                'rgba(102, 126, 234, 0.9)', 'rgba(59, 130, 246, 0.9)',
+                'rgba(20, 184, 166, 0.9)', 'rgba(16, 185, 129, 0.9)',
+                'rgba(245, 158, 11, 0.9)',
             ];
             
             charts.viagensFunc = new Chart(ctx, {

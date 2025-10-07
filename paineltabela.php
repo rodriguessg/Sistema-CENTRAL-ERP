@@ -201,7 +201,7 @@
         }
 
         .container {
-            max-width: 1600px;
+
             margin: 0 auto;
         }
 
@@ -342,7 +342,6 @@
         .annual-table-container {
             overflow-x: auto;
             overflow-y: auto;
-            max-height: 600px;
             border-radius: var(--border-radius-sm);
             border: 1px solid var(--border-color);
         }
